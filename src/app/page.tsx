@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { Users, MailCheck, Inbox } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
-const prisma = new PrismaClient();
 
 export default async function DashboardOverview() {
   const [totalLeads, enriched, sent, replied, suppressed] = await Promise.all([

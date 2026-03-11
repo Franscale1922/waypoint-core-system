@@ -1,7 +1,5 @@
 import { inngest } from "./client";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export const leadHunterProcess = inngest.createFunction(
     { id: "lead-hunter-process" },

@@ -1,8 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
 import { MessageSquareReply, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
-const prisma = new PrismaClient();
 
 export default async function InboxManager() {
     const replies = await prisma.reply.findMany({

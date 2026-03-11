@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 // This endpoint receives incoming email webhooks from Resend/Instantly
 export async function POST(req: Request) {
