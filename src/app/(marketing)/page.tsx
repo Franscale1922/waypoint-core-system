@@ -52,7 +52,7 @@ export default function HomePage() {
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: "url('/images/hero-mountains.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/90 via-[#0c1929]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 via-[#0c1929]/25 to-transparent" />
 
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 md:pb-28">
           <p className="text-[#d4a55a] text-xs font-semibold uppercase tracking-[0.25em] mb-4 sm:mb-6 animate-fade-in-up">

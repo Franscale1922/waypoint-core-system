@@ -23,7 +23,7 @@ export default function AboutPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/images/fly-fishing-about.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/65 via-[#0c1929]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
           <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
             About

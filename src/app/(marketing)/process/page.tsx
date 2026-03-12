@@ -129,7 +129,7 @@ export default function ProcessPage() {
           backgroundPosition: "center 30%",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/60 via-[#0c1929]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/55 via-[#0c1929]/20 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
             How It Works

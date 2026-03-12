@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import TidyCalEmbed from "./TidyCalEmbed";
 
 export const metadata: Metadata = {
   title: "Book a Free Discovery Call",
@@ -46,24 +46,17 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* TidyCal Embed — official embed script (self-sizing) */}
+      {/* TidyCal Embed — client component injects embed.js after mount */}
       <section className="py-10 sm:py-16 bg-[#FAF8F4]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="rounded-xl sm:rounded-2xl border border-slate-100 shadow-lg bg-white overflow-hidden min-h-[600px]">
-            {/* TidyCal target div — their embed.js finds this and injects the calendar */}
-            <div className="tidycal-embed" data-path="m7v2jox/waypoint30" />
+          <div className="rounded-xl sm:rounded-2xl border border-slate-100 shadow-lg bg-white overflow-hidden">
+            <TidyCalEmbed path="m7v2jox/waypoint30" />
           </div>
           <p className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-slate-400">
             100% free. Franchise brands pay the referral fee, not you.
           </p>
         </div>
       </section>
-
-      {/* TidyCal embed script — loaded after page is interactive */}
-      <Script
-        src="https://asset-tidycal.b-cdn.net/js/embed.js"
-        strategy="lazyOnload"
-      />
     </>
   );
 }
