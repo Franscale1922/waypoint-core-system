@@ -1,6 +1,20 @@
-"use client";
-import { useState } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
+import { FAQItem } from "./FAQItem";
+
+export const metadata: Metadata = {
+  title: "FAQ | Waypoint Franchise Advisors",
+  description:
+    "Honest answers to the most common questions about franchise consulting, cost, capital requirements, the process timeline, and how franchises work.",
+  alternates: { canonical: "https://waypointfranchise.com/faq" },
+  openGraph: {
+    title: "Frequently Asked Questions | Waypoint Franchise Advisors",
+    description:
+      "No jargon, no pitch. Straight answers about what franchise consulting costs, how the process works, and what it takes to get started.",
+    url: "https://waypointfranchise.com/faq",
+    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint FAQ" }],
+  },
+};
 
 const faqs = [
   {
@@ -81,36 +95,31 @@ const faqs = [
   },
 ];
 
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-b border-[#e8e0d0]">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full text-left py-5 flex justify-between items-start gap-4 group"
-        aria-expanded={open}
-      >
-        <span className="font-medium text-[#0c1929] leading-snug group-hover:text-[#d4a55a] transition-colors">
-          {q}
-        </span>
-        <span className="flex-shrink-0 mt-1 text-[#d4a55a] text-lg leading-none">
-          {open ? "−" : "+"}
-        </span>
-      </button>
-      {open && (
-        <div className="pb-6 pr-8">
-          <p className="text-[#5a5a4a] leading-relaxed">{a}</p>
-        </div>
-      )}
-    </div>
-  );
-}
+// Build FAQPage schema from the faqs array above
+const faqPageSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.flatMap(({ questions }) =>
+    questions.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: a,
+      },
+    }))
+  ),
+};
 
 export default function FAQPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }}
+      />
 
-      {/* ── Hero ────────────────────────────────────────── */}
+      {/* Hero */}
       <section className="relative pt-24 pb-16 px-6 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -130,7 +139,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* ── FAQ body ────────────────────────────────────── */}
+      {/* FAQ body */}
       <section className="max-w-3xl mx-auto px-6 py-16 sm:py-24 space-y-16">
         {faqs.map(({ category, questions }) => (
           <div key={category}>
@@ -146,7 +155,7 @@ export default function FAQPage() {
         ))}
       </section>
 
-      {/* ── Still have questions ─────────────────────── */}
+      {/* Still have questions */}
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">
           Still have a question?

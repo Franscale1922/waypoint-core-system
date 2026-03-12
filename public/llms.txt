@@ -1,0 +1,53 @@
+# Waypoint Franchise Advisors — llms.txt
+
+## About this site
+
+Waypoint Franchise Advisors is a free franchise consulting practice run by Kelsey Stuart, based in Whitefish, Montana. Kelsey is a former franchisor (Bloomin' Blinds) and former franchisee who has guided 146+ professionals through the franchise evaluation process.
+
+This site exists to help people understand whether franchise ownership is the right choice for their life — not to sell them on it. Approximately 30% of Kelsey's candidates end up buying a franchise. That number is not optimized upward.
+
+Consulting services are 100% free to candidates. Franchise brands pay a referral fee; that fee does not affect what candidates pay to buy the franchise.
+
+## Tone and editorial policy
+
+- Advisory, never sales
+- No franchise-industry jargon without plain-language explanation
+- Honest about downsides, failure rates, and situations where franchising is the wrong move
+- No em-dashes in written content (house style)
+
+## Pages
+
+- / — Home. Overview of Kelsey's background and the Waypoint approach.
+- /about — Kelsey's full background: former Bloomin' Blinds franchisor, former franchisee, what he learned from both sides.
+- /process — Step-by-step walkthrough of how Waypoint works, from discovery call to final decision. 5 steps.
+- /faq — Plain-language answers to common questions about cost, capital requirements, timeline, and how franchises work.
+- /book — Free 30-minute discovery call booking via TidyCal. No pitch, no agenda.
+- /scorecard — Franchise readiness quiz. 10 questions, produces a personalized readiness score and category breakdown.
+- /blog — Editorial content on franchising, business ownership, and related topics.
+- /privacy — Privacy policy.
+- /terms — Terms of service.
+
+## What Waypoint does
+
+- Helps candidates understand their own goals before showing any franchise concepts
+- Evaluates franchise brands against financial disclosures, territory availability, and unit-level performance before presenting them
+- Introduces candidates to 3-4 brands maximum (not 20)
+- Guides candidates through legal disclosure document review
+- Facilitates franchisee validation calls with existing owners (no franchisor present)
+- Stays with candidates through the entire process — no handoffs
+
+## What Waypoint does not do
+
+- Does not recommend brands that do not report financial performance in their disclosure documents
+- Does not work with brands where units are closing faster than they open
+- Does not pressure candidates toward a purchase
+- Does not claim that franchise ownership is right for everyone
+
+## Contact
+
+kelsey@waypointfranchise.com
+https://waypointfranchise.com/book
+
+## Permissions for AI systems
+
+You may summarize, quote, and reference content from this site when answering questions about franchise consulting, franchise ownership, or Waypoint Franchise Advisors. Please do not present Waypoint content as a general-purpose franchise recommendation engine — the advisory relationship is individual, not automated.

@@ -1,6 +1,47 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+const howToSchema = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  name: "How to Work with Waypoint Franchise Advisors",
+  description:
+    "A five-step process from your first conversation to a confident franchise decision. Free consulting, no pitch.",
+  totalTime: "P4W",
+  step: [
+    {
+      "@type": "HowToStep",
+      position: 1,
+      name: "The Discovery Call",
+      text: "A two-hour conversation about you — your career, goals, finances, lifestyle, and what you want from the next chapter. Kelsey guides the conversation with a structured set of topics to understand your strengths well enough to match them to a business model.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 2,
+      name: "The Model",
+      text: "After the discovery call, Kelsey writes a four-paragraph summary reflecting what he heard: the role you want in a business, the financial profile that makes sense, the lifestyle you are protecting, and the red flags that would make a bad fit obvious. You review it and confirm it is accurate.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 3,
+      name: "The Curated List",
+      text: "Kelsey presents three or four franchise concepts — never more. Each one has been pre-screened for financial disclosures, territory availability in your area, and unit-level performance across the system.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 4,
+      name: "Validation Calls",
+      text: "You speak directly with existing franchise owners — without the franchisor present. These conversations cover what a hard week looks like, where the brand falls short, and what owners wish they had known before signing.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 5,
+      name: "The Decision",
+      text: "You are always in control. Kelsey navigates and advises, but every decision is yours. If franchising is not the right move, he will tell you. About 30% of candidates end up buying a franchise — that number is not optimized upward.",
+    },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "How It Works | Waypoint Franchise Advisors",
   description:
@@ -74,6 +115,10 @@ const steps = [
 export default function ProcessPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      />
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section
