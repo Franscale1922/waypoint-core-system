@@ -84,7 +84,7 @@ export default function ProcessPage() {
           backgroundPosition: "center 30%",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/85 via-[#0c1929]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/60 via-[#0c1929]/30 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
             How It Works
@@ -104,7 +104,7 @@ export default function ProcessPage() {
           {[
             { stat: "250+", label: "Franchise concepts in our inventory" },
             { stat: "3-4", label: "Brands presented per candidate, maximum" },
-            { stat: "~30%", label: "Of candidates end up buying — and that is okay" },
+            { stat: "~30%", label: "Of candidates end up buying a franchise. That is okay." },
           ].map(({ stat, label }) => (
             <div key={stat}>
               <div className="font-playfair text-4xl text-[#d4a55a] mb-2">{stat}</div>
@@ -207,7 +207,7 @@ export default function ProcessPage() {
           backgroundPosition: "center",
         }}
       >
-        <div className="absolute inset-0 bg-[#0c1929]/75" />
+        <div className="absolute inset-0 bg-[#0c1929]/50" />
         <div className="relative z-10 max-w-2xl mx-auto">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
             Ready to Start

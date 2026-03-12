@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import TidyCalEmbed from "@/app/components/TidyCalEmbed";
 
 export const metadata: Metadata = {
   title: "Book a Free Discovery Call",
@@ -23,7 +24,7 @@ export default function BookPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/85 to-[#0c1929]/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/55 to-[#0c1929]/35" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
             Let&apos;s Talk
@@ -41,16 +42,9 @@ export default function BookPage() {
 
       {/* TidyCal Embed */}
       <section className="py-10 sm:py-16 bg-[#FAF8F4]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6">
-          <div className="rounded-xl sm:rounded-2xl overflow-hidden border border-slate-100 shadow-lg">
-            <iframe
-              src="https://tidycal.com/m7v2jox/waypoint30"
-              width="100%"
-              height="700"
-              frameBorder="0"
-              title="Book a call with Kelsey Stuart"
-              className="w-full min-h-[500px] sm:min-h-[700px]"
-            />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="rounded-xl sm:rounded-2xl overflow-hidden border border-slate-100 shadow-lg bg-white">
+            <TidyCalEmbed path="m7v2jox/waypoint30" />
           </div>
           <p className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-slate-400">
             100% free. Franchise brands pay the referral fee, not you.

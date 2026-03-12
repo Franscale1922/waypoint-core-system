@@ -71,7 +71,7 @@ const faqs = [
     questions: [
       {
         q: "What if I decide franchising is not right for me?",
-        a: "Then we end the conversation with no hard feelings and no pressure. I would rather tell you that this is not the right move than watch you make a decision that does not fit. If it is not the right time, or the right path, or the right life situation, I will say so. That is what I am here for.",
+        a: "Then we end the conversation with no hard feelings and no pressure. I would rather tell you that this is not the right move than watch you make a decision that does not fit. If it is not the right time, or the right path, or the right life situation, I will say so. That is what I am here for. Only about 30% of my clients end up buying a franchise. I hope 100% of them are making the right decision.",
       },
       {
         q: "Can I bring a partner or spouse into the process?",

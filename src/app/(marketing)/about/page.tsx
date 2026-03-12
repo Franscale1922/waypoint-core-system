@@ -21,9 +21,9 @@ export default function AboutPage() {
       <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/fly-fishing.png')" }}
+          style={{ backgroundImage: "url('/images/fly-fishing-about.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/90 via-[#0c1929]/70 to-[#0c1929]/50" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/70 via-[#0c1929]/30 to-transparent" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
           <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
             About
@@ -84,10 +84,10 @@ export default function AboutPage() {
             </h2>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
               I could live anywhere and do this job. I chose Whitefish because
-              it reminds me every single day why I left corporate. The mountains,
-              the rivers, the slower pace. Most of my clients are in the middle
-              of that same realization: life is too short to spend it building
-              someone else&apos;s thing. I get it because I have been there.
+              it fits the life I have always been trying to build: one where you
+              are accountable to your own decisions, not someone else&apos;s
+              calendar. My entire adult career has been self-employed. Every
+              chapter has been my own business, my own risk, my own call.
             </p>
           </div>
 
