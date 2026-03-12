@@ -65,7 +65,7 @@ export default async function InboxManager() {
                         </div>
                     );
                 })}
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

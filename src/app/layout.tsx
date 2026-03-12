@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-playfair",
+});
 
 export const metadata: Metadata = {
-  title: "Waypoint Franchise Advisors",
-  description: "AntiGravity Cold Email Machine Dashboard",
+  title: "Waypoint Franchise Advisors | Franchise Guidance from Whitefish, MT",
+  description:
+    "Free franchise consulting from a former Bloomin' Blinds franchisor. Find the franchise that fits your life, capital, and goals. Book a free discovery call.",
 };
 
 export default function RootLayout({
@@ -17,13 +22,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-slate-50 text-slate-900`}>
-        <div className="flex min-h-screen">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
-        </div>
+      <body
+        className={`${inter.variable} ${playfair.variable} ${inter.className} bg-white text-slate-900`}
+      >
+        {children}
       </body>
     </html>
   );

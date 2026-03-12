@@ -11,7 +11,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const navItems = [
-    { name: "Overview", href: "/", icon: LayoutDashboard },
+    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Leads Manager", href: "/leads", icon: Users },
     { name: "Inbox & Replies", href: "/inbox", icon: Inbox },
     { name: "Settings", href: "/settings", icon: Settings },

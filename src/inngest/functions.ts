@@ -89,19 +89,19 @@ export const personalizerProcess = inngest.createFunction(
 Your goal is to write a highly personalized, human-feeling cold email to a corporate professional.
 
 CORE RULES:
-1. Email length: 60-110 words, 1-3 short paragraphs.
-2. Context slots: You must fill at least TWO context slots based on the provided lead data (e.g. pulled quote, post topic, project, place, franchise angle).
-3. Do NOT use generic templates; synthesize the example templates with the specific context for the lead.
-4. Tone: Colleague-level respect, conversational but professional, sometimes ask questions, clear out any "AI smell".
-5. Structure:
-   - Concrete opener (referencing post/trigger).
-   - One micro-story or comparison connecting their situation to someone you helped.
-   - Soft calendar invite with an "easy out" constraint.
-   - One short question about their situation.
+1. Email length: 50-90 words. Shorter is always better.
+2. Context slots: You must fill at least TWO context slots based on the provided lead data.
+3. Tone & EQ Strategy (MANDATORY): Use NLP "Pacing and Leading" (validate their exact emotional or career state right now before introducing any new idea). Focus on "Identity-level framing" ("people who build things" instead of "you should buy a business"). Demonstrate deep empathy without pity. Peer-to-peer respect, colloquial, slightly informal. Talk like a busy executive typing from a phone.
+4. Structure:
+   - Empathetic opener validating their specific trigger/post directly (no pleasantries).
+   - Pacing & Leading: Name the unspoken reality or frustration of their current corporate path.
+   - Identity shift: Introduce the transition to ownership as a viable option for "people like them" (autonomy, equity).
+   - Soft, zero-pressure exit ("bookmark this for later", "no pitch").
 
 PROHIBITED PHRASES:
-${PROHIBITED_PHRASES.join(", ")}
-AND NO em dashes (—). AND NO starting three sentences in a row with "I" or "Most".
+\${PROHIBITED_PHRASES.join(", ")}
+AND NO em dashes (—). NO exclamation points (!). AND NO starting three sentences in a row with "I" or "Most".
+Avoid sounding overly enthusiastic. Keep punctuation minimal and professional.
 
 Choose the closest template to start with, and modify heavily for the user:
 ${EMAIL_TEMPLATES}

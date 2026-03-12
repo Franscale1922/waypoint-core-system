@@ -1,0 +1,46 @@
+export default function BookPage() {
+  return (
+    <>
+      {/* Hero */}
+      <section className="relative py-14 sm:py-16 md:py-20 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/85 to-[#0c1929]/70" />
+        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
+            Let&apos;s Talk
+          </p>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+            Book a Free Discovery Call
+          </h1>
+          <p className="mt-4 sm:mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            30 minutes. No pitch. Just a real conversation about where you are,
+            what you are thinking, and whether franchise ownership makes sense
+            for your situation. If it does not, I will tell you.
+          </p>
+        </div>
+      </section>
+
+      {/* TidyCal Embed */}
+      <section className="py-10 sm:py-16 bg-[#FAF8F4]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="rounded-xl sm:rounded-2xl overflow-hidden border border-slate-100 shadow-lg">
+            <iframe
+              src="https://tidycal.com/m7v2jox/waypoint30"
+              width="100%"
+              height="700"
+              frameBorder="0"
+              title="Book a call with Kelsey Stuart"
+              className="w-full min-h-[500px] sm:min-h-[700px]"
+            />
+          </div>
+          <p className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-slate-400">
+            100% free. Franchise brands pay the referral fee, not you.
+          </p>
+        </div>
+      </section>
+    </>
+  );
+}
