@@ -340,7 +340,7 @@ export default function HomePage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
         />
-        <div className="absolute inset-0 bg-[#0c1929]/70" />
+        <div className="absolute inset-0 bg-[#0c1929]/40" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <div className="reveal">
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">

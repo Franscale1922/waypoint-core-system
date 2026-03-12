@@ -111,16 +111,23 @@ export default function FAQPage() {
     <main className="bg-[#FAF8F4] text-[#0c1929]">
 
       {/* ── Hero ────────────────────────────────────────── */}
-      <section className="bg-[#0c1929] pt-24 pb-16 px-6 text-center">
-        <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
-          Common Questions
-        </p>
-        <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
-          Honest answers.
-        </h1>
-        <p className="text-white/70 text-lg max-w-xl mx-auto leading-relaxed">
-          If something is not covered here, just ask. There are no questions that are too basic.
-        </p>
+      <section className="relative pt-24 pb-16 px-6 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: "url('/images/faq-hero.png')", backgroundPosition: "center 40%" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/75 via-[#0c1929]/55 to-[#0c1929]/30" />
+        <div className="relative z-10 max-w-4xl mx-auto text-center">
+          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
+            Common Questions
+          </p>
+          <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
+            Honest answers.
+          </h1>
+          <p className="text-white/80 text-lg max-w-xl mx-auto leading-relaxed">
+            If something is not covered here, just ask. There are no questions that are too basic.
+          </p>
+        </div>
       </section>
 
       {/* ── FAQ body ────────────────────────────────────── */}

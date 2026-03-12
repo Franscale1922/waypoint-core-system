@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import TidyCalEmbed from "@/app/components/TidyCalEmbed";
 
 export const metadata: Metadata = {
   title: "Book a Free Discovery Call",
@@ -24,15 +23,21 @@ export default function BookPage() {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/55 to-[#0c1929]/35" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/40 to-[#0c1929]/25" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
             Let&apos;s Talk
           </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight">
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight"
+            style={{ textShadow: "0 2px 12px rgba(12,25,41,0.6)" }}
+          >
             Book a Free Discovery Call
           </h1>
-          <p className="mt-4 sm:mt-5 text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+          <p
+            className="mt-4 sm:mt-5 text-base sm:text-lg text-white max-w-2xl mx-auto leading-relaxed"
+            style={{ textShadow: "0 1px 8px rgba(12,25,41,0.7)" }}
+          >
             30 minutes. No pitch. Just a real conversation about where you are,
             what you are thinking, and whether franchise ownership makes sense
             for your situation. If it does not, I will tell you.
@@ -43,8 +48,16 @@ export default function BookPage() {
       {/* TidyCal Embed */}
       <section className="py-10 sm:py-16 bg-[#FAF8F4]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="rounded-xl sm:rounded-2xl overflow-hidden border border-slate-100 shadow-lg bg-white">
-            <TidyCalEmbed path="m7v2jox/waypoint30" />
+          <div className="rounded-xl sm:rounded-2xl border border-slate-100 shadow-lg bg-white">
+            <iframe
+              src="https://tidycal.com/m7v2jox/waypoint30"
+              width="100%"
+              height="900"
+              frameBorder="0"
+              scrolling="no"
+              title="Book a call with Kelsey Stuart"
+              className="w-full block"
+            />
           </div>
           <p className="mt-5 sm:mt-6 text-center text-xs sm:text-sm text-slate-400">
             100% free. Franchise brands pay the referral fee, not you.
