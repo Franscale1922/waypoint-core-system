@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description:
       "Pick a time that works. 30 minutes, completely free. If franchising isn't right for you, I'll tell you that too.",
     url: "https://waypointfranchise.com/book",
-    images: [{ url: "/og-book.png", width: 1200, height: 630, alt: "Book a Call with Kelsey Stuart" }],
+    images: [{ url: "/og_book_1773343995375.png", width: 1200, height: 630, alt: "Book a Call with Kelsey Stuart" }],
   },
 };
 

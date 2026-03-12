@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description:
       "I helped build a $40M franchise system and then failed as a franchisee. That combination is exactly why you should talk to me first.",
     url: "https://waypointfranchise.com/about",
-    images: [{ url: "/og-about.png", width: 1200, height: 630, alt: "Kelsey Stuart — Franchise Advisor" }],
+    images: [{ url: "/og_about_1773343956962.png", width: 1200, height: 630, alt: "Kelsey Stuart, Franchise Advisor" }],
   },
 };
 

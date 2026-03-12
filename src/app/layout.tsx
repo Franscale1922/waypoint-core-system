@@ -50,7 +50,7 @@ export const metadata: Metadata = {
       "Free franchise consulting from a former franchisor who's been on both sides. I'll tell you what actually fits, or tell you it's not the right move. No pitch, no pressure.",
     images: [
       {
-        url: `/og-default.png`,
+        url: `/og_default_1773343895292.png`,
         width: 1200,
         height: 630,
         alt: "Waypoint Franchise Advisors — Whitefish, Montana",
@@ -62,7 +62,7 @@ export const metadata: Metadata = {
     title: "Find the Franchise That Fits Your Life | Waypoint",
     description:
       "Free franchise consulting. 146+ owners helped. No pitch, no pressure. Book a free discovery call.",
-    images: [`/og-default.png`],
+    images: [`/og_default_1773343895292.png`],
   },
   alternates: {
     canonical: SITE_URL,

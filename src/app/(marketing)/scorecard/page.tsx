@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     url: "https://waypointfranchise.com/scorecard",
     images: [
       {
-        url: "/og-scorecard.png",
+        url: "/og_scorecard_1773343944094.png",
         width: 1200,
         height: 630,
         alt: "Franchise Readiness Quiz — Waypoint Franchise Advisors",

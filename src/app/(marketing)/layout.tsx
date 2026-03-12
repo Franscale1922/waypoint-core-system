@@ -32,6 +32,18 @@ export default function MarketingLayout({
               About
             </Link>
             <Link
+              href="/process"
+              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Process
+            </Link>
+            <Link
+              href="/faq"
+              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              FAQ
+            </Link>
+            <Link
               href="/scorecard"
               className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
@@ -72,8 +84,18 @@ export default function MarketingLayout({
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
+                  <Link href="/process" className="hover:text-white transition-colors inline-block py-1">
+                    How It Works
+                  </Link>
+                </li>
+                <li>
                   <Link href="/scorecard" className="hover:text-white transition-colors inline-block py-1">
                     Readiness Quiz
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/faq" className="hover:text-white transition-colors inline-block py-1">
+                    FAQ
                   </Link>
                 </li>
                 <li>
@@ -107,9 +129,11 @@ export default function MarketingLayout({
             <span>
               &copy; {new Date().getFullYear()} Waypoint Franchise Advisors
             </span>
-            <span>
-              Free to candidates. Franchise brands pay the referral fee.
-            </span>
+            <div className="flex gap-4">
+              <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+              <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+              <span>Free to candidates. Franchise brands pay the referral fee.</span>
+            </div>
           </div>
         </div>
       </footer>

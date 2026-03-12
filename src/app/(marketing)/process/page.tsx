@@ -1,0 +1,240 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "How It Works | Waypoint Franchise Advisors",
+  description:
+    "Two hours before you see a single brand. Here is exactly what happens from your first conversation to the day you make a decision.",
+  openGraph: {
+    title: "How the Waypoint Process Works",
+    description:
+      "Two hours before you see a single brand. A step-by-step look at how Kelsey guides candidates from curious to confident.",
+    url: "https://waypointfranchise.com/process",
+    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "The Waypoint Process" }],
+  },
+  alternates: { canonical: "https://waypointfranchise.com/process" },
+};
+
+const steps = [
+  {
+    number: "01",
+    label: "The Discovery Call",
+    headline: "Two hours before you see a single brand.",
+    body: [
+      "Most franchise consultants send you a list within 48 hours of your first conversation. That list tells you almost nothing about whether any of those businesses are actually right for you.",
+      "The first thing we do is talk. Not about franchises. About you. Your career, your goals, your family, what fills you up and what drains you, how you handle risk, what you want out of the next chapter.",
+      "I guide the conversation with a structured set of topics, but the goal is simple: I want to understand your strengths well enough to match them to a business model, not just a brand name.",
+      "By the end of that call, I usually have a clear picture. You will too.",
+    ],
+  },
+  {
+    number: "02",
+    label: "The Model",
+    headline: "Your unemotional baseline, in writing.",
+    body: [
+      "After every discovery call, I write what I call a model. It is roughly four paragraphs that reflect back what I heard: the role you want to play in a business, the financial profile that makes sense, the lifestyle you are protecting, and the things that would make the wrong franchise feel obvious in hindsight.",
+      "I send it to you and ask you to tell me if I got it right. More often than not, I do. If something is off, we adjust.",
+      "The reason this matters: franchise development teams are excellent salespeople. They can get you excited about something that does not fit. The model gives us both an unemotional reference point to come back to throughout the process.",
+    ],
+  },
+  {
+    number: "03",
+    label: "The Curated List",
+    headline: "Three or four brands. Never more.",
+    body: [
+      "I work with roughly 250 franchise concepts across dozens of industries. Before I present anything, I have already reviewed the financial disclosures, checked territory availability in your area, and screened how units are performing across the system.",
+      "What I will not bring you is a brand that does not report its financials, a brand where locations are closing faster than they are opening, or a brand that has no available territory near you.",
+      "What I look for are what I call triple-A brands. Not household names. Dunkin' and Domino's are the major leagues. Their best territories are long gone. Triple-A brands are established enough to have real systems and real support, but they still have open territory with room to grow. That is the sweet spot.",
+      "I bring you three or four. Not twenty. Too many and you start making decisions based on marketing instead of fit.",
+    ],
+  },
+  {
+    number: "04",
+    label: "Validation Calls",
+    headline: "Talking to real owners, without the franchisor in the room.",
+    body: [
+      "After your first couple of conversations with each brand, they will invite you to a group call with existing owners. The franchisor is not on that call. Nobody is watching what gets said.",
+      "This is where you ask the questions that actually matter. What does a bad week look like? What does the support actually do? What do you wish you had known before you signed? Where does the brand fall short?",
+      "These conversations are, in my opinion, the most valuable part of the entire process. You are not hearing from the marketing team. You are hearing from people who are doing the thing, in real markets, with their own money on the line.",
+    ],
+  },
+  {
+    number: "05",
+    label: "The Decision",
+    headline: "You are always in control.",
+    body: [
+      "I use an analogy I made up on a call once and have never stopped using: I am the chauffeur. You own the car. You tell me where you want to go, and I drive and navigate and point out things worth noticing. But if you want to turn left, or slow down, or stop entirely, you tell me and we do that.",
+      "At every step of this process, you are the one making decisions. My job is to make sure those decisions are informed ones.",
+      "If franchising is not the right move, I will tell you that. About thirty percent of the candidates I talk with end up buying a franchise. I am not trying to move that number. I have the financial freedom to do this because I want to, not because I need a referral fee. A fit that is wrong for you is wrong for both of us.",
+      "If it is the right move, you will feel it. The decision, when it comes, should feel more like excitement than fear.",
+    ],
+  },
+];
+
+export default function ProcessPage() {
+  return (
+    <main className="bg-[#FAF8F4] text-[#0c1929]">
+
+      {/* ── Hero ─────────────────────────────────────────── */}
+      <section
+        className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6"
+        style={{
+          backgroundImage: "url('/images/hero-mountains.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+        }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/85 via-[#0c1929]/40 to-transparent" />
+        <div className="relative z-10 max-w-3xl mx-auto w-full">
+          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
+            How It Works
+          </p>
+          <h1 className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6">
+            Two hours before<br className="hidden sm:block" /> you see a single brand.
+          </h1>
+          <p className="text-white/80 text-lg sm:text-xl max-w-xl leading-relaxed">
+            Most consultants send you a list in 48 hours. That list tells you almost nothing about whether any of those businesses are right for you.
+          </p>
+        </div>
+      </section>
+
+      {/* ── Intro context bar ──────────────────────────── */}
+      <section className="border-b border-[#e8e0d0]">
+        <div className="max-w-4xl mx-auto px-6 py-10 sm:py-14 grid sm:grid-cols-3 gap-8 text-center">
+          {[
+            { stat: "250+", label: "Franchise concepts in our inventory" },
+            { stat: "3-4", label: "Brands presented per candidate, maximum" },
+            { stat: "~30%", label: "Of candidates end up buying — and that is okay" },
+          ].map(({ stat, label }) => (
+            <div key={stat}>
+              <div className="font-playfair text-4xl text-[#d4a55a] mb-2">{stat}</div>
+              <div className="text-sm text-[#5a5a4a] leading-snug">{label}</div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Steps ─────────────────────────────────────── */}
+      <section className="max-w-4xl mx-auto px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
+        {steps.map((step, i) => (
+          <div
+            key={step.number}
+            className={`flex flex-col ${i % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"} gap-10 sm:gap-16 items-start`}
+          >
+            {/* Number + label */}
+            <div className="flex-shrink-0 sm:w-40 text-center sm:text-right">
+              <span className="block font-playfair text-6xl sm:text-7xl text-[#d4a55a]/30 leading-none">
+                {step.number}
+              </span>
+              <span className="block text-xs tracking-[0.18em] uppercase text-[#d4a55a] mt-2 font-medium">
+                {step.label}
+              </span>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 pt-2">
+              <div className="w-12 h-[2px] bg-[#d4a55a] mb-6" />
+              <h2 className="font-playfair text-2xl sm:text-3xl leading-snug mb-6">
+                {step.headline}
+              </h2>
+              <div className="space-y-4">
+                {step.body.map((para, j) => (
+                  <p key={j} className="text-[#3a3a2e] leading-relaxed">
+                    {para}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* ── Divider quote ─────────────────────────────── */}
+      <section className="bg-[#0c1929] py-20 px-6 text-center">
+        <p className="font-playfair text-2xl sm:text-3xl text-white max-w-2xl mx-auto leading-relaxed italic">
+          &ldquo;The worst outcome is making a $300,000 decision on incomplete information.&rdquo;
+        </p>
+        <p className="text-[#d4a55a] text-sm mt-6 tracking-widest uppercase">
+          Something Kelsey says in every first call
+        </p>
+      </section>
+
+      {/* ── What you need to start ────────────────────── */}
+      <section className="max-w-3xl mx-auto px-6 py-20 sm:py-28">
+        <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4 text-center">
+          Before We Talk
+        </p>
+        <h2 className="font-playfair text-3xl sm:text-4xl text-center mb-12">
+          What you actually need to get started.
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-6">
+          {[
+            {
+              title: "Liquid capital of $100K or more",
+              body: "This is not a hard floor, but it is where conversations get practical. The right amount depends on the business model we find. We will talk through what you have and what makes sense.",
+            },
+            {
+              title: "A willingness to explore",
+              body: "You do not need to know anything about franchising. Most candidates do not. You just need to be open to learning and honest about what you are looking for. I will handle the rest.",
+            },
+            {
+              title: "A couple of hours for a real conversation",
+              body: "The discovery call is not a 20-minute pitch. It is a real conversation that I guide through your background, your goals, and your life. Budget two hours and show up willing to talk openly.",
+            },
+            {
+              title: "A sense of what you do not want",
+              body: "You do not need to know what you want to own. It helps a lot to know what you do not want. Industries you would not enjoy, work styles that drain you, commitments you cannot make. That clarity shapes everything.",
+            },
+          ].map(({ title, body }) => (
+            <div
+              key={title}
+              className="bg-white border border-[#e8e0d0] rounded-lg p-6"
+            >
+              <div className="w-8 h-[2px] bg-[#d4a55a] mb-4" />
+              <h3 className="font-playfair text-lg mb-3">{title}</h3>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed">{body}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── CTA ───────────────────────────────────────── */}
+      <section
+        className="relative py-24 px-6 text-center overflow-hidden"
+        style={{
+          backgroundImage: "url('/images/mountain-lake.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-[#0c1929]/75" />
+        <div className="relative z-10 max-w-2xl mx-auto">
+          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
+            Ready to Start
+          </p>
+          <h2 className="font-playfair text-3xl sm:text-5xl text-white mb-6">
+            The first conversation costs you nothing.
+          </h2>
+          <p className="text-white/75 text-lg mb-10">
+            No pitch. No obligation. Just a real conversation about whether this path makes sense for you.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/book"
+              className="inline-block bg-[#d4a55a] text-white px-8 py-4 text-sm tracking-widest uppercase hover:bg-[#c4953a] transition-colors"
+            >
+              Book a Discovery Call
+            </Link>
+            <Link
+              href="/scorecard"
+              className="inline-block border border-white/40 text-white px-8 py-4 text-sm tracking-widest uppercase hover:border-white/80 transition-colors"
+            >
+              Take the Readiness Quiz
+            </Link>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  );
+}
