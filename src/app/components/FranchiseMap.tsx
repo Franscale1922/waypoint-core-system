@@ -159,10 +159,18 @@ export default function FranchiseMap() {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#d4a55a] mb-4 sm:mb-6">
             Trusted Nationwide
           </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight max-w-2xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight max-w-2xl mx-auto leading-tight">
             {loading
-              ? "Loading territories..."
-              : `${territories.length} franchise territories awarded across ${uniqueStates} states.`}
+              ? "Loading..."
+              : (
+                <>
+                  I&rsquo;ve helped{" "}
+                  <span className="text-[#d4a55a]">
+                    {territories.length}+ owners
+                  </span>{" "}
+                  find and start the right franchise.
+                </>
+              )}
           </h2>
         </div>
 
@@ -281,9 +289,8 @@ export default function FranchiseMap() {
         {/* Caption */}
         <div className="reveal mt-8 sm:mt-12 text-center">
           <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-lg mx-auto">
-            Every pin represents a community where someone trusted me to help
-            them find the right franchise. This map updates automatically as
-            new territories are awarded.
+            Every pin is an owner who trusted me to get it right.
+            Across {uniqueStates} states and counting. This map updates live as new clients launch.
           </p>
         </div>
       </div>

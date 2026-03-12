@@ -1,5 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import FranchiseMap from "../components/FranchiseMap";
+import Testimonials from "../components/Testimonials";
+
+export const metadata: Metadata = {
+  title: "Find the Franchise That Fits Your Life",
+  description:
+    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners across 35 states find the right franchise. No pitch, no pressure.",
+  alternates: { canonical: "https://waypointfranchise.com" },
+  openGraph: {
+    title: "Find the Franchise That Fits Your Life | Waypoint",
+    description:
+      "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
+    url: "https://waypointfranchise.com",
+    images: [{ url: "/og-home.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors" }],
+  },
+};
 
 export default function HomePage() {
   const personas = [
@@ -233,6 +249,11 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ============================================
+          TESTIMONIALS — social proof after process steps
+          ============================================ */}
+      <Testimonials />
 
       {/* ============================================
           WHY ME — photo-forward, asymmetric
