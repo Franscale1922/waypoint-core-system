@@ -41,8 +41,10 @@ export default function AboutPage() {
 
       {/* Content */}
       <section className="py-14 sm:py-20 bg-[#FAF8F4]">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-10 sm:space-y-12">
-          <div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+
+          {/* The Short Version */}
+          <div className="mb-10 sm:mb-12">
             <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
               The Short Version
             </h2>
@@ -59,7 +61,18 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div>
+          {/* Photo Zone A — After "The Short Version" — community/life context */}
+          <div className="mb-10 sm:mb-12 overflow-hidden rounded-xl sm:rounded-2xl">
+            <img
+              src="/images/kelsey-campfire-group.png"
+              alt="Kelsey Stuart with family and friends in Montana"
+              className="w-full object-cover"
+              style={{ height: "420px", objectPosition: "center 40%" }}
+            />
+          </div>
+
+          {/* How I Work */}
+          <div className="mb-10 sm:mb-12">
             <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
               How I Work
             </h2>
@@ -78,7 +91,8 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div>
+          {/* Why I Do This from Montana */}
+          <div className="mb-10 sm:mb-12">
             <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
               Why I Do This from Montana
             </h2>
@@ -91,7 +105,8 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div>
+          {/* What I Am Not */}
+          <div className="mb-10 sm:mb-12">
             <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
               What I Am Not
             </h2>
@@ -105,6 +120,7 @@ export default function AboutPage() {
             </p>
           </div>
 
+          {/* CTA */}
           <div className="bg-[#0c1929] rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10">
             <h3 className="text-base sm:text-lg font-semibold text-[#d4a55a] mb-3">
               Want to have a real conversation?
@@ -120,6 +136,7 @@ export default function AboutPage() {
               Book a Free Call
             </a>
           </div>
+
         </div>
       </section>
     </>

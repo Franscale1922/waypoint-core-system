@@ -56,7 +56,7 @@ export default function BookPage() {
             {/* Photo */}
             <div
               className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-cover bg-center bg-[#0c1929]"
-              style={{ backgroundImage: "url('/images/kelsey-campfire-group.png')" }}
+              style={{ backgroundImage: "url('/images/kelsey-coffee-outdoors.png')", backgroundPosition: "center 35%" }}
             />
 
             {/* Name + title */}
