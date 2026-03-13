@@ -263,8 +263,11 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-0 lg:min-h-[600px]">
           {/* Photo side */}
           <div
-            className="relative min-h-[250px] sm:min-h-[350px] lg:min-h-full bg-cover bg-center"
-            style={{ backgroundImage: "url('/images/fly-fishing.png')" }}
+            className="relative min-h-[250px] sm:min-h-[350px] lg:min-h-full bg-cover"
+            style={{
+              backgroundImage: "url('/images/kelsey-fly-fishing-river.png')",
+              backgroundPosition: "center 30%",
+            }}
           />
           {/* Text side */}
           <div className="bg-[#0c1929] px-5 sm:px-8 md:px-16 py-12 sm:py-16 md:py-24 flex items-center">
