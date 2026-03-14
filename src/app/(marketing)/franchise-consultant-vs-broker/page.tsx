@@ -127,7 +127,7 @@ export default function FranchiseConsultantVsBrokerPage() {
                 <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[30%]">Dimension</th>
                 <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Consultant</th>
                 <th className="text-left py-3 pl-4 pr-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Broker</th>
-                <th className="text-left py-3 pl-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[6%]"></th>
+                <th className="text-left py-3 pl-4 pr-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[6%]"></th>
               </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@ export default function FranchiseConsultantVsBrokerPage() {
                   <td className="py-4 pl-4 pr-6 font-medium text-[#0c1929] align-top">{row.dimension}</td>
                   <td className="py-4 pl-4 pr-6 text-[#3a3a2e] leading-relaxed align-top">{row.consultant}</td>
                   <td className="py-4 pl-4 pr-4 text-[#3a3a2e] leading-relaxed align-top">{row.broker}</td>
-                  <td className="py-4 align-top">
+                  <td className="py-4 pl-4 pr-4 align-top">
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
                       row.note === "Same" ? "bg-[#e8f0eb] text-[#3a6a4a]" :
                       row.note === "Different" ? "bg-[#f5ece0] text-[#8a4a20]" :
