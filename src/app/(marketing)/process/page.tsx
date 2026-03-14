@@ -126,7 +126,7 @@ export default function ProcessPage() {
         style={{
           backgroundImage: "url('/images/process-hero-highline.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "center top",
+          backgroundPosition: "center 65%",
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/60 via-[#0c1929]/15 to-[#0c1929]/30" />
