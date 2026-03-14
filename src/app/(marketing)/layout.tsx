@@ -8,7 +8,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F4] overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F4]">
       <ScrollReveal />
 
       {/* Navigation */}

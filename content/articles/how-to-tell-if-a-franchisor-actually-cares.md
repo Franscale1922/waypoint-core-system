@@ -8,19 +8,19 @@ excerpt: "Your incentives and your franchisor's incentives are not automatically
 ---
 Your incentives and your franchisor's incentives are not automatically the same. This is the thing most buyers don't realize until they're already inside the system.
 
-Understanding the structural tension — and knowing what alignment actually looks like — is one of the most important things you can do before you sign.
+Understanding the structural tension, and knowing what alignment actually looks like, is one of the most important things you can do before you sign.
 
 ## The Incentive Gap
 
-Franchisors collect a royalty as a percentage of your gross revenue — typically 5–8%. The bigger your top line, the more they make.
+Franchisors collect a royalty as a percentage of your gross revenue, typically 5–8%. The bigger your top line, the more they make.
 
 You make money on unit-level cash flow: what's left after royalties, rent, labor, supplies, and everything else.
 
 You can see the potential conflict. A franchisor who pushes you toward high volume, discounted pricing, or aggressive promotions might be optimizing for their royalty check rather than your margin. The two aren't always the same thing.
 
-The Subway $5 footlong is the canonical example. It drove enormous volume and gross revenue. It also destroyed franchisee margins at scale — many operators couldn't price-adjust because of brand-wide pricing pressure, and a significant number went under. Corporate was collecting royalties on revenue that wasn't profitable for the people generating it.
+The Subway $5 footlong is the canonical example. It drove enormous volume and gross revenue. It also destroyed franchisee margins at scale. Many operators couldn't price-adjust because of brand-wide pricing pressure, and a significant number went under. Corporate was collecting royalties on revenue that wasn't profitable for the people generating it.
 
-This doesn't mean every franchisor is misaligned. Most aren't. But the incentive structure means you shouldn't assume alignment — you should confirm it.
+This doesn't mean every franchisor is misaligned. Most aren't. But the incentive structure means you shouldn't assume alignment. You should confirm it.
 
 ## Signs of Misalignment
 
@@ -34,17 +34,17 @@ This doesn't mean every franchisor is misaligned. Most aren't. But the incentive
 
 ## Signs of Alignment
 
-**Market-sensitive pricing.** A good franchisor allows pricing flexibility by market — a unit in Manhattan prices differently than one in rural Tennessee. When the system accommodates local economics, it's because the franchisor understands that their success depends on franchisee profitability.
+**Market-sensitive pricing.** A good franchisor allows pricing flexibility by market. A unit in Manhattan prices differently than one in rural Tennessee. When the system accommodates local economics, it's because the franchisor understands that their success depends on franchisee profitability.
 
 **Territory protection backed by data.** Top franchisors use demographic data to determine where new locations go. They're not just eyeballing a map and approving territory applications. They're protecting existing operators from cannibalization because they know that's what sustains the system.
 
-**Franchisee review boards or advisory councils.** When the franchisor has a formal mechanism for franchisees to provide input on major decisions, that's structural alignment — not just a feel-good feature. It exists because the relationship is built for the long term.
+**Franchisee review boards or advisory councils.** When the franchisor has a formal mechanism for franchisees to provide input on major decisions, that's structural alignment, not just a feel-good feature. It exists because the relationship is built for the long term.
 
 **The FDD Item 20 retention rate.** This is the clearest data point. Item 20 requires the franchisor to disclose every franchisee who has left the system in the last 3 years, including whether they transferred, terminated, or left for reasons the franchisor can classify. A high retention rate, across a large system, is the best evidence that the system actually works for operators.
 
 ## How to Actually Find Out
 
-Validation calls — conversations with current franchisees — are where you learn this. Not the success stories the franchisor points you to. The ones who had a rough year 2.
+Validation calls, meaning conversations with current franchisees, are where you learn this. Not the success stories the franchisor points you to. The ones who had a rough year 2.
 
 Specific questions that surface alignment:
 - "If you had a bad month and needed to talk to someone at corporate, what happened?"
@@ -56,7 +56,7 @@ One franchise attorney told me that the answers to those four questions tell you
 
 ## The Bottom Line
 
-Franchisor alignment isn't something you can tell from a sales conversation or a corporate visit. It shows up in the hard moments — when your numbers are soft, when corporate makes a decision that affects profitability, when something goes wrong in the system.
+Franchisor alignment isn't something you can tell from a sales conversation or a corporate visit. It shows up in the hard moments: when your numbers are soft, when corporate makes a decision that affects profitability, when something goes wrong in the system.
 
 You find out before signing by talking to the franchisees who've already been through it.
 

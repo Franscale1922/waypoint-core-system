@@ -18,7 +18,7 @@ Three structural advantages that consistently appear in B2B franchise models:
 
 **1. No inventory, no storefront, lower overhead.** Most B2B service franchises are home-based at launch. No retail lease, no equipment warehouse. The primary investment is time and relationship-building, not physical infrastructure. This keeps the financial floor much lower than consumer concepts.
 
-**2. Recurring revenue from fewer clients.** A successful B2B franchise doesn't need thousands of customers. It needs 20 to 50 solid commercial relationships. That's a fundamentally different sales model — one where depth matters more than volume.
+**2. Recurring revenue from fewer clients.** A successful B2B franchise doesn't need thousands of customers. It needs 20 to 50 solid commercial relationships. That's a fundamentally different sales model, one where depth matters more than volume.
 
 **3. Recession resilience.** When economies tighten, companies look for ways to cut costs (making cost-reduction consulting more valuable, not less) and invest in leadership development to hold onto their best people. The demand signals in B2B often strengthen during downturns that punish consumer businesses.
 
@@ -36,7 +36,7 @@ The business itself is lean. No office required. No staff until you scale. Acces
 
 **Executive coaching**
 
-The executive coaching franchise category tends to attract people who came from corporate leadership and want to continue contributing without going back to a corporate role. The better concepts in this space are built on recognizable methodologies with decades of documented results — not proprietary fluff invented last year.
+The executive coaching franchise category tends to attract people who came from corporate leadership and want to continue contributing without going back to a corporate role. The better concepts in this space are built on recognizable methodologies with decades of documented results, not proprietary fluff invented last year.
 
 The financial structure in some of these models is notably different: a flat monthly royalty instead of a percentage of revenue. For strong performers, that means cleaner margins as revenue grows. A consultant billing $30K per month has a very different margin profile under a flat fee than under a standard 6–8% royalty.
 
@@ -48,7 +48,7 @@ The right buyer: someone with real business credibility. You are the product in 
 
 It's worth being direct about what this category isn't, because some candidates come in with the wrong mental model.
 
-B2B franchises are not passive investments. The relationship-driven sales process requires genuine engagement in the early phase. You are not running ads and waiting for leads. You're going where your potential clients are — industry groups, chambers of commerce, referral networks — and building credibility over time.
+B2B franchises are not passive investments. The relationship-driven sales process requires genuine engagement in the early phase. You are not running ads and waiting for leads. You're going where your potential clients are: industry groups, chambers of commerce, referral networks, and building credibility over time.
 
 They're also not quick ramp businesses. A consumer franchise can hit meaningful revenue in three to six months if the marketing engine works. A B2B consultancy might spend six months building relationships before recognizing significant revenue. The ceiling is higher, but the on-ramp is longer.
 
@@ -62,7 +62,7 @@ The archetypal successful B2B franchise owner in this category has most of these
 
 - 15+ years in a professional or leadership role
 - Existing relationships with business owners, executives, or operators in their market
-- Comfortable working independently without a team structure around them — at least initially
+- Comfortable working independently without a team structure around them, at least initially
 - No interest in managing employees or physical operations
 - Long-term orientation (willing to invest in relationships before seeing returns)
 
@@ -74,7 +74,7 @@ The profile this doesn't fit: first-time business owners who need structure and 
 
 B2B franchises don't get the franchise search attention they deserve because they're not visually interesting and they don't have consumer name recognition. The buyer who gets past that bias and evaluates them on fundamentals often finds that the risk profile, cash flow dynamics, and operator fit are significantly better than the consumer brands they originally had in mind.
 
-If your background is corporate, operational, or relationship-heavy — and you're looking for a business that rewards that experience directly — the B2B category is worth a serious look.
+If your background is corporate, operational, or relationship-heavy and you're looking for a business that rewards that experience directly, the B2B category is worth a serious look.
 
 *Not sure if B2B is the right vertical for your background? That's a 20-minute conversation. [Book a call →](/book)*
 

@@ -8,7 +8,7 @@ excerpt: "If you're looking at a franchise that's been opening 50 new locations 
 ---
 If you're looking at a franchise that's been opening 50 new locations per year, the first instinct for most buyers is suspicion. It feels reckless. It sounds like corners are being cut.
 
-Slow growth feels safer. It feels responsible. But that instinct is often wrong — and acting on it can lead you toward the worse investment.
+Slow growth feels safer. It feels responsible. But that instinct is often wrong, and acting on it can lead you toward the worse investment.
 
 ## The Real Argument for Fast Growth
 
@@ -22,7 +22,7 @@ When a franchise is expanding quickly, three things are happening simultaneously
 
 Rapid growth has real trade-offs. Support can lag behind expansion. Systems that haven't been codified at 50 units get stressed at 300. Franchisee experience in a fast-growing system can be inconsistent. If you're someone who needs a fully polished, tightly structured system, a fast-growing brand may frustrate you.
 
-But those are manageable trade-offs with a clearly performing model. Slow growth presents a different — and less manageable — problem.
+But those are manageable trade-offs with a clearly performing model. Slow growth presents a different and less manageable problem.
 
 ## The Real Concern Is Slow Growth
 
@@ -32,9 +32,9 @@ This matters for several reasons:
 
 A stagnant system isn't building the scale required to invest in infrastructure, technology, or field support. The franchisees inside a flat system are collectively generating less royalty revenue for the franchisor, which means less money to improve what they offer operators.
 
-A brand that's losing market share to competitors who are expanding isn't holding its position — it's retreating. In franchise categories where speed of expansion matters (anything dependent on local brand awareness or network density), a stagnant system hands ground to competitors permanently.
+A brand that's losing market share to competitors who are expanding isn't holding its position. It's retreating. In franchise categories where speed of expansion matters (anything dependent on local brand awareness or network density), a stagnant system hands ground to competitors permanently.
 
-When you look at the Item 20 data for a slow-growing system, pay attention not just to the closure rate but to the tenure distribution. If a high percentage of franchisees are in their first 2 years, that's a young and still-proving system. If most franchisees are in years 5–10 but the brand isn't growing, that's a different picture — it means the experienced operators aren't buying more and there aren't enough new buyers to replace normal attrition.
+When you look at the Item 20 data for a slow-growing system, pay attention not just to the closure rate but to the tenure distribution. If a high percentage of franchisees are in their first 2 years, that's a young and still-proving system. If most franchisees are in years 5–10 but the brand isn't growing, that's a different picture. It means the experienced operators aren't buying more and there aren't enough new buyers to replace normal attrition.
 
 ## How to Actually Evaluate the Growth
 
@@ -44,13 +44,13 @@ The questions that matter more:
 
 **Where is the growth happening?** A brand adding 50 units per year all in one geographic region is proving the model in a specific market. A brand adding 50 units scattered across 30 states with no regional density is not building the same kind of compounding advantage.
 
-**What is the attrition rate?** Check Item 20. How many franchisees left the system in the last 3 years? A system can be adding 80 units per year while losing 60 — net growth of 20, but a churn problem underneath. The best-run systems combine strong new unit additions with high franchisee retention.
+**What is the attrition rate?** Check Item 20. How many franchisees left the system in the last 3 years? A system can be adding 80 units per year while losing 60. That's a net growth of 20, but a churn problem underneath. The best-run systems combine strong new unit additions with high franchisee retention.
 
 **What do franchisees in years 2–4 say?** These are the people who chose the brand during a growth phase and are now living with what the system delivers. Validation calls with this group tell you whether the growth is producing satisfied operators or overwhelmed ones.
 
 ## The Bottom Line
 
-Fast growth is a signal that the model is working well enough that buyers and the franchisor both want more of it. Slow growth is a signal that something isn't working — either the model, the support, or the market.
+Fast growth is a signal that the model is working well enough that buyers and the franchisor both want more of it. Slow growth is a signal that something isn't working: either the model, the support, or the market.
 
 Neither extreme tells the whole story. The attrition rate tells you more than the growth rate. But defaulting to slow-growth brands because it "feels safer" is one of the more common mistakes in franchise evaluation.
 

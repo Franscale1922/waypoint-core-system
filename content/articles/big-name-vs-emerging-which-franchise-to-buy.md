@@ -12,9 +12,9 @@ That reasoning is mostly wrong. And it can cost you in ways that aren't obvious 
 
 ## What Brand Recognition Actually Does (and Doesn't) Do
 
-The idea that you're paying franchise fees for brand recognition has become one of the most persistent misconceptions in franchise buying. Royalties do a lot of things — they fund national marketing, R&D, vendor relationships, training infrastructure, and ongoing operational support. For most franchise concepts, "people recognizing the name" is a small part of the return you're getting on those fees.
+The idea that you're paying franchise fees for brand recognition has become one of the most persistent misconceptions in franchise buying. Royalties do a lot of things. They fund national marketing, R&D, vendor relationships, training infrastructure, and ongoing operational support. For most franchise concepts, "people recognizing the name" is a small part of the return you're getting on those fees.
 
-Think about CertaPro Painters. They're the largest painting brand in North America — 300-plus locations across 43 states. Most homeowners have never heard of them. Operators don't wait for brand recognition to drive leads. They rely on the system's marketing tools, referral networks, and local lead generation — all of which are funded by the royalty.
+Think about CertaPro Painters. They're the largest painting brand in North America, with 300-plus locations across 43 states. Most homeowners have never heard of them. Operators don't wait for brand recognition to drive leads. They rely on the system's marketing tools, referral networks, and local lead generation, all of which are funded by the royalty.
 
 There are maybe 10 brands in franchising where name recognition alone drives meaningful customer traffic. Those all start with McDonald's. For everything else, the ROI on your royalty is in the infrastructure, not the logo.
 

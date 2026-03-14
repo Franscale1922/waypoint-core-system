@@ -14,7 +14,7 @@ The problem isn't that these concepts don't work. Some of them have real science
 
 Franchise buyers who have struggled in wellness most often did so because they bet entirely on one trend at the wrong moment.
 
-The counterpoint: diversified wellness concepts are a genuinely different investment. If IV drips are 20% of your revenue and demand drops by half, that's a 10% hit — painful but survivable, not fatal.
+The counterpoint: diversified wellness concepts are a genuinely different investment. If IV drips are 20% of your revenue and demand drops by half, that's a 10% hit. That's painful but survivable, not fatal.
 
 **The filter:** Before evaluating any wellness franchise, ask how many distinct services it offers, what percentage of revenue each one drives, and whether those services have independent demand or are trend-linked. If the answer is "mostly one thing," treat it accordingly.
 
@@ -28,7 +28,7 @@ Setting aside the fad problem, there are legitimate structural tailwinds behind 
 Biohacking, performance optimization, and longevity-focused health are no longer niche interests. The target customer for premium wellness services is increasingly a high-income professional who perceives these services as investments in productive years, not luxuries. The global wellness and longevity industry is projected to reach $9.8 trillion by 2029, up from $6.8 trillion in 2024. More relevantly: customers in this segment have pricing power tolerance that Planet Fitness members do not.
 
 **2. GLP-1 drugs are expanding the market, not shrinking it.**
-The concern that Ozempic kills fitness is directionally wrong. Weight loss drugs reduce obesity rates, and people who achieve that milestone tend to invest more (not less) in maintaining and optimizing their health. Recovery, performance, longevity — these become more relevant after weight loss, not less. The addressable market for premium wellness is likely to expand as GLP-1 adoption grows.
+The concern that Ozempic kills fitness is directionally wrong. Weight loss drugs reduce obesity rates, and people who achieve that milestone tend to invest more (not less) in maintaining and optimizing their health. Recovery, performance, and longevity become more relevant after weight loss, not less. The addressable market for premium wellness is likely to expand as GLP-1 adoption grows.
 
 **3. Nurse recruitment is surprisingly easy in this sector.**
 For wellness franchises that require clinical staff (IV therapy, hormone optimization, medical aesthetics), the talent pool is better than most people expect. Roughly 63% of registered nurses report job dissatisfaction, driven by hospital hours, bureaucracy, and burnout risk. A wellness clinic that offers better hours, better pay, and a different work culture can attract and retain clinical staff that hospital systems struggle to hold. This is a real operational advantage.
@@ -47,7 +47,7 @@ The unit economics in men's health are strong when the service model is tight. B
 
 ## The Operator Question
 
-Who succeeds in wellness franchises? Not necessarily people who are personally obsessed with wellness — though that doesn't hurt.
+Who succeeds in wellness franchises? Not necessarily people who are personally obsessed with wellness, though that doesn't hurt.
 
 The better predictors are:
 

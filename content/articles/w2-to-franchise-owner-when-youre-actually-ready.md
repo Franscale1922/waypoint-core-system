@@ -16,7 +16,7 @@ Before the romanticism of "being your own boss" takes over, be honest about what
 
 **Predictable income.** You know what's hitting your account every two weeks. That predictability has real value, especially if you have a mortgage, dependents, or tuition payments. Run the numbers on replacing your health insurance before you leave. It's expensive.
 
-**Defined scope.** In your corporate role, someone else handles the things outside your department. Your responsibilities have edges. Franchise ownership removes those edges entirely — marketing, operations, hiring, compliance, cash flow, and legal issues all land on your desk.
+**Defined scope.** In your corporate role, someone else handles the things outside your department. Your responsibilities have edges. Franchise ownership removes those edges entirely. Marketing, operations, hiring, compliance, cash flow, and legal issues all land on your desk.
 
 **Limited downside.** The worst outcome of your current job is getting fired. You can find another job. The worst outcome of a poorly selected franchise includes personal guarantee liability that follows you for years.
 
@@ -32,17 +32,17 @@ The reasons to make the leap are also real.
 
 (Realistic note: Year one probably means more hours for less money than your current job. The leverage comes in years 3–5, not months 2–4.)
 
-**Autonomy at scale.** Not the "I don't have a boss" kind of autonomy — that's a myth; you have customers, vendors, employees, and a franchisor. Real autonomy: you set the strategy, you make the capital decisions, you control the exit. You're not waiting for annual reviews to change your financial trajectory.
+**Autonomy at scale.** Not the "I don't have a boss" kind of autonomy. That's a myth. You have customers, vendors, employees, and a franchisor. Real autonomy means: you set the strategy, you make the capital decisions, you control the exit. You're not waiting for annual reviews to change your financial trajectory.
 
 **Tax structure.** Business owners have access to tax advantages that W-2 employees largely don't. Depreciation, deductions, capital gains treatment on sale. Your CPA becomes one of the most important relationships in your professional life.
 
-**Revenue diversification.** Your entire income currently comes from one employer. One bad quarter, one reorganization, one new VP who doesn't like you — 100% of your income is at risk at all times. A franchise business distributes that risk across hundreds or thousands of customers. In most franchise models, even your single largest customer represents less than 15% of revenue.
+**Revenue diversification.** Your entire income currently comes from one employer. One bad quarter, one reorganization, one new VP who doesn't like you: 100% of your income is at risk at all times. A franchise business distributes that risk across hundreds or thousands of customers. In most franchise models, even your single largest customer represents less than 15% of revenue.
 
 ## The Real Readiness Test
 
 After working through this with hundreds of people, the single best indicator of readiness isn't capital or credit score or business experience.
 
-The test: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job, before the business stabilizes — and does that excite you or terrify you?
+The test: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job before the business stabilizes, and does that excite you or terrify you?
 
 If it excites you, you're probably ready.
 
@@ -68,7 +68,7 @@ Know those three things clearly before you talk to a franchise consultant. The f
 
 ## The Bottom Line
 
-Corporate life has real advantages worth acknowledging before you leave. Franchise ownership has real upsides that corporate can't offer. The decision isn't about which is better — it's about which set of trade-offs fits your life right now.
+Corporate life has real advantages worth acknowledging before you leave. Franchise ownership has real upsides that corporate can't offer. The decision isn't about which is better. It's about which set of trade-offs fits your life right now.
 
 The readiness question is about hunger, not just capital.
 

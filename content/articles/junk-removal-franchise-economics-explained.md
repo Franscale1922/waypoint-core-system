@@ -31,7 +31,7 @@ The two most visible brands in franchised junk removal are 1-800-GOT-JUNK? and C
 - Average gross revenue (franchisees open 72+ months): approximately $2.6M
 - Royalty: 8% of gross sales
 - Liquid capital required: $80,000–$90,000 minimum
-- 1-800-GOT-JUNK guarantees franchisees $100,000 in first-year revenue or provides a refund — which tells you something about how confident the system is in its launch model
+- 1-800-GOT-JUNK guarantees franchisees $100,000 in first-year revenue or provides a refund, which tells you something about how confident the system is in its launch model
 
 **College H.U.N.K.S. Hauling Junk & Moving**
 - Total initial investment: $203,000–$355,000
@@ -46,7 +46,7 @@ On the investment-to-revenue ratio, junk removal compares favorably to almost an
 
 ## The D1 Training Connection (From Source A04)
 
-The Groce Franchise Anonymous research (A04) examined D1 athlete-style training alongside a contents restoration concept. What's relevant to junk removal here is the structural parallel. Like athlete-style fitness, junk removal benefits from a clear operations manual that doesn't require industry experience — what you need is the ability to manage a crew and follow the system.
+The Groce Franchise Anonymous research (A04) examined D1 athlete-style training alongside a contents restoration concept. What's relevant to junk removal here is the structural parallel. Like athlete-style fitness, junk removal benefits from a clear operations manual that doesn't require industry experience. What you need is the ability to manage a crew and follow the system.
 
 The fitness comparison also highlights a meaningful difference: junk removal has a lower real estate dependency. The D1 model requires 4,000–5,000 square feet of commercial space in the right trade area. Junk removal starts from wherever you park the truck. That's a meaningful difference in startup risk and launch speed.
 
@@ -56,9 +56,9 @@ The fitness comparison also highlights a meaningful difference: junk removal has
 
 Junk removal is not glamorous, and there are real operational demands worth knowing:
 
-**You are managing hourly workers.** This isn't a knowledge worker business — it requires recruiting, training, and retaining people who do physically demanding work in weather, traffic, and client homes. Turnover in hourly service businesses is a real management challenge.
+**You are managing hourly workers.** This isn't a knowledge worker business. It requires recruiting, training, and retaining people who do physically demanding work in weather, traffic, and client homes. Turnover in hourly service businesses is a real management challenge.
 
-**Pricing discipline is required.** The junk removal market has independent operators who will undercut franchise pricing. Holding your price point requires confidence in your brand, your service, and your follow-up. The franchise systems that perform best have strong booking and pricing protocols — stick to them rather than discounting to win marginal jobs.
+**Pricing discipline is required.** The junk removal market has independent operators who will undercut franchise pricing. Holding your price point requires confidence in your brand, your service, and your follow-up. The franchise systems that perform best have strong booking and pricing protocols. Stick to them rather than discounting to win marginal jobs.
 
 **Seasonal variation is real in some markets.** Cold-weather markets see reduced residential demand in winter months. Commercial and estate work tends to be more stable year-round. Volume smoothing over the calendar year requires active commercial relationship-building.
 
@@ -82,7 +82,7 @@ It's not the right fit for buyers who want a passive or semi-absentee business f
 
 Junk removal earns its reputation as a high-ROI franchise investment because the numbers are straightforward: reasonable entry cost, strong revenue potential, quick ramp, and durable demand. The market is growing, the model is simple, and the cat systems have been validated across hundreds of locations.
 
-If you like the idea of building a real operational business with a team behind you — and don't need the category to be flashy — this one delivers.
+If you like the idea of building a real operational business with a team behind you and don't need the category to be flashy, this one delivers.
 
 *Most people in your position find it useful to just have the first conversation. [Schedule 30 minutes →](/book)*
 

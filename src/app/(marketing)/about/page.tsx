@@ -22,21 +22,23 @@ export default function AboutPage() {
       <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover"
-          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: '75% 60%' }}
+          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 60%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
-          <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
-            About
-          </p>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
-            I am Kelsey Stuart
-          </h1>
-          <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
-            Franchise consultant, former Bloomin&apos; Blinds franchisor, and the
-            guy who will be completely honest with you about whether franchise
-            ownership is actually the right move for your life.
-          </p>
+        <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="max-w-sm">
+            <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
+              About
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
+              I am Kelsey Stuart
+            </h1>
+            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-300 leading-relaxed">
+              Franchise consultant, former Bloomin&apos; Blinds franchisor, and the
+              guy who will be completely honest with you about whether franchise
+              ownership is actually the right move for your life.
+            </p>
+          </div>
         </div>
       </section>
 

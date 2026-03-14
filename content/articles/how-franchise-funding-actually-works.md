@@ -8,11 +8,11 @@ excerpt: "Most people looking at franchises picture one scenario: walking into a
 ---
 Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works.
 
-Franchise funding has two dominant paths — SBA loans and ROBS — and knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase, you're probably overcomplicating it. Most buyers use one of these two tools. Everything else is a footnote.
+Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase, you're probably overcomplicating it. Most buyers use one of these two tools. Everything else is a footnote.
 
 ## The Two Paths That Actually Matter
 
-**SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly — it guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
+**SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
 
 A typical SBA loan setup: you put in 10–30% as a down payment (most buyers land at 15–20%), the bank covers the rest, and you repay over 10 years. For a franchise costing $300,000, that might mean $45,000–$60,000 out of pocket at the start, with monthly payments spread over a decade.
 
@@ -23,7 +23,7 @@ What SBA does well:
 
 What SBA costs you:
 - A credit score above 680, collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
-- 60–90 days to close — sometimes longer
+- 60–90 days to close, sometimes longer
 - A personal guarantee, meaning your personal assets back the loan
 - Fixed monthly payments whether the business has a good month or a bad one
 
@@ -41,9 +41,9 @@ What ROBS does well:
 - No credit score or collateral required
 
 What ROBS costs you:
-- Your retirement savings are the investment — and the risk
+- Your retirement savings are the investment, and so is the risk
 - Ongoing compliance and administrative costs (a good ROBS provider handles this, but it's a real expense)
-- You're limited to what's in your retirement account — ROBS can't scale the way an SBA loan can
+- You're limited to what's in your retirement account, so ROBS can't scale the way an SBA loan can
 
 The right question isn't "which is better?" It's "what lets my business succeed, and what lets me sleep?"
 
@@ -51,7 +51,7 @@ The right question isn't "which is better?" It's "what lets my business succeed,
 
 There are a few other options that come up, and they're legitimate in the right circumstances:
 
-**HELOC (Home Equity Line of Credit):** If most of your wealth is in your home, you can borrow against it. Lower interest rate, no credit score cliff — but your house is collateral.
+**HELOC (Home Equity Line of Credit):** If most of your wealth is in your home, you can borrow against it. Lower interest rate, no credit score cliff. But your house is collateral.
 
 **SBLOC (Securities-Backed Line of Credit):** Same concept, but against your investment portfolio. More volatile collateral, so there's more risk if markets move against you.
 
@@ -63,9 +63,9 @@ There are a few other options that come up, and they're legitimate in the right 
 
 Before you get to a financing conversation with a lender, there are three numbers you need to know about yourself:
 
-1. **Your liquid capital** — what you have available without touching retirement accounts or home equity
-2. **Your credit score** — if it's below 700, SBA is going to be harder and slower
-3. **Your retirement account balance** — this determines whether ROBS is even on the table
+1. **Your liquid capital:** what you have available without touching retirement accounts or home equity
+2. **Your credit score:** if it's below 700, SBA is going to be harder and slower
+3. **Your retirement account balance:** this determines whether ROBS is even on the table
 
 Most franchise consultants can tell you which funding path makes sense for your situation in the first conversation. The numbers aren't complicated; it's the personal trade-offs that take some thinking through.
 

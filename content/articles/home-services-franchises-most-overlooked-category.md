@@ -6,7 +6,7 @@ category: "Industry Spotlights"
 tier: 3
 excerpt: "Consumer-facing brands get all the attention during franchise searches. You recognize the name. You understand the product. You can picture yourself in the business."
 ---
-## Why Home Services Gets Overlooked — And Why That's a Mistake
+## Why Home Services Gets Overlooked (And Why That's a Mistake)
 
 Consumer-facing brands get all the attention during franchise searches. You recognize the name. You understand the product. You can picture yourself in the business.
 
