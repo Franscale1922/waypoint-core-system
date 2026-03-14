@@ -22,7 +22,7 @@ export default function AboutPage() {
       <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover"
-          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 35%' }}
+          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: '75% 60%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
