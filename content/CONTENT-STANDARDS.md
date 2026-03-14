@@ -154,3 +154,98 @@ Before any article is considered complete, verify all of the following:
 - [ ] New article slug added to at least 1 existing article's `relatedSlugs` (Section 5)
 - [ ] Article pool table in `new-article-checklist.md` updated (Section 5)
 - [ ] Page renders correctly at `localhost:3000/resources/{slug}` with Keep Reading section visible
+- [ ] No date-sensitive claim exists without an "as of [year]" qualifier (Section 6)
+- [ ] Each section passes the Island Test — it can be read alone without the rest of the article (Section 7)
+- [ ] Any article comparing two or more options includes a comparison table (Section 8)
+- [ ] Article with 3+ factual claims uses a `faqs:` frontmatter block with 4 questions (Section 9)
+
+---
+
+## Section 6 — Freshness and Date Qualification
+
+### Rule: Anchor time-sensitive facts to a year
+
+Any claim that can change year over year must include an "as of [year]" qualifier inline. Do not add the qualifier as a footnote or endnote — it must be part of the sentence containing the claim.
+
+**Date qualification is required for any claim involving:**
+- Investment ranges (franchise fees, total investment, working capital minimums)
+- Financing parameters (SBA down payment %, loan caps, credit score thresholds)
+- Brand or system counts ("4,000+ franchise brands in the US")
+- Regulatory timelines or legal requirements
+- Any statistic sourced from a third-party study
+
+**Date qualification is NOT required for:**
+- Structural explanations (how an FDD works, what Items 19 and 20 contain)
+- Strategic advice and frameworks
+- Historical references (what happened in 2008, what the 2020 closures looked like)
+- Process steps that are definitional rather than market-driven
+
+### Freshness review cadence
+
+| Content type | Review cadence |
+|---|---|
+| Investment and cost articles | Every 12 months (or when FTC updates) |
+| Financing articles (SBA, ROBS) | Every 12 months |
+| Category analysis (home services, B2B, fitness) | Every 18 months |
+| Process/structural articles (FDD, Discovery Day, agreements) | Every 24 months or when regulation changes |
+| Strategic/mindset articles | No scheduled review |
+
+---
+
+## Section 7 — The Island Test
+
+Every **section** in an article (every block between two H2 headings, and every FAQ Q&A) must pass the Island Test:
+
+**A section passes the Island Test if a reader who sees only that section — with no other context — understands the point and has enough information to act on it or move forward.**
+
+This is not just a readability principle. It is an extraction principle. AI systems and featured snippets frequently pull single sections or single Q&A blocks out of an article. If a section requires context from an earlier section to make sense, it will fail when extracted.
+
+**Practical checks:**
+- Does the section define or briefly restate any key terms it uses, even if they were introduced earlier?
+- Does the section end with a conclusion or takeaway — not just data?
+- Would a reader arriving mid-article on this section still understand what point is being made?
+
+If the answer to any of these is no, revise the section before publication.
+
+---
+
+## Section 8 — Comparison Content
+
+When an article naturally discusses two or more options (e.g., SBA vs. ROBS, owner-operator vs. semi-absentee, brick-and-mortar vs. asset-light), a comparison table is required.
+
+### Comparison table format
+
+| Dimension | Option A | Option B |
+|---|---|---|
+| [Factor 1] | [A's position] | [B's position] |
+| [Factor 2] | [A's position] | [B's position] |
+
+Include at minimum 4 dimensions. Use rows that highlight trade-offs, not rows that make one option look definitively better. The goal is honest, extractable comparison — not advocacy.
+
+**The comparison table must appear before or alongside the narrative, not only after.** A table buried at the bottom of 1,500 words of prose will not be extracted by AI systems effectively. If possible, lead with the table.
+
+---
+
+## Section 9 — FAQ Frontmatter Requirement
+
+Every Tier 1 article and any article covering a high-query topic must include a `faqs:` array in its YAML frontmatter. This drives two outputs simultaneously:
+
+1. A `FAQPage` JSON-LD schema block in the page's `<head>` (emitted by the article page template)
+2. A visible "## Common Questions" section in the article body
+
+### Frontmatter format
+
+```yaml
+faqs:
+  - q: "Question exactly as a searcher would phrase it?"
+    a: "Complete, self-contained answer. No references to 'see above' or 'as discussed.' Each answer must pass the Island Test."
+```
+
+### FAQ content rules
+
+- Use 4 questions minimum per article
+- Each question should target a distinct search intent (definition, comparison, process, timing)
+- Open with the broadest definition question first
+- Ensure at least one question addresses a "should I / do I need to" decision-stage query
+- Answers must be 2–5 sentences. Short enough to be scanned. Long enough to be complete.
+- Do NOT hedge inside FAQ answers with "it depends" as the only response. Give the direct answer, then qualify.

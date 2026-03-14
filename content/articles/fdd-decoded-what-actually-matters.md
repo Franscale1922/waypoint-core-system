@@ -9,6 +9,15 @@ date: "2025-09-11"
 category: "Getting Started"
 tier: 1
 excerpt: "The FDD is the document every franchise candidate gets and almost nobody reads correctly."
+faqs:
+  - q: "What is an FDD (Franchise Disclosure Document)?"
+    a: "The Franchise Disclosure Document is a legally mandated document that every franchisor must provide to prospective franchisees at least 14 calendar days before any agreement is signed or money changes hands. It is organized into 23 items covering the franchisor's history, leadership team, litigation history, fee structure, investment requirements, territory definitions, financial performance data (Item 19, if disclosed), and a contact list of all current franchisees (Item 20). It typically runs 200 to 400 pages."
+  - q: "How long do you have to review the franchise disclosure document?"
+    a: "Federal law requires a minimum 14-day waiting period between when you receive the FDD and when you can sign any binding agreement or make any payment. This is a mandatory cooling-off period, not a deadline. Most buyers take four to eight weeks to review the document, consult a franchise attorney, and complete validation calls with existing franchisees before signing."
+  - q: "What is Item 19 of the FDD?"
+    a: "Item 19 is the section where franchisors may voluntarily disclose financial performance data for existing units in their system — including revenue, costs, and sometimes earnings. Item 19 disclosure is not required by law. Franchisors who choose not to disclose are not required to explain why. Strong-performing brands generally report in Item 19. When Item 19 data exists, averages across the full system can mask significant variation between top and bottom performers — always ask how the data is segmented."
+  - q: "Where can you get a copy of a franchise's FDD?"
+    a: "Franchisors are required to provide the FDD before you sign or pay anything. Most FDDs are also publicly available through state franchise registries. The Wisconsin Department of Financial Institutions maintains one of the most complete public databases and allows searches by brand name. You can pull and review a document before ever raising your hand with the franchisor."
 ---
 The FDD is the document every franchise candidate gets and almost nobody reads correctly.
 
@@ -126,5 +135,24 @@ I've reviewed hundreds of these documents. When I work with a candidate on a spe
 
 If you're at the point where you have an FDD in front of you and want a second set of eyes, that's a good reason to get on a call.
 
-[Talk through your FDD with Kelsey](/book)
+---
 
+## Common Questions
+
+**What is an FDD (Franchise Disclosure Document)?**
+
+The Franchise Disclosure Document is a legally mandated document that every franchisor must provide at least 14 calendar days before any agreement is signed or money changes hands. It is organized into 23 items and typically runs 200 to 400 pages. The most important sections for buyers are Items 5, 6, 7 (costs), Item 12 (territory), Item 19 (financial performance), and Item 20 (franchisee contact list).
+
+**How long do you have to review the FDD before you sign?**
+
+Federal law requires a minimum 14-day waiting period between receiving the FDD and signing any binding agreement or making any payment. This is a floor, not a deadline. Most buyers take four to eight weeks to review the document, consult an attorney, and complete validation calls before committing.
+
+**What is Item 19 of the FDD?**
+
+Item 19 is where franchisors may voluntarily disclose financial performance data for existing units — including revenue, costs, and sometimes earnings. Disclosure is not required. Strong performers generally report here. When data exists, be careful with system-wide averages: they can mask significant variation between top and bottom performers. Always ask how the data is segmented.
+
+**Where can you get a copy of a franchise's FDD?**
+
+Franchisors must provide it before you sign or pay. Most FDDs are also publicly available through state franchise registries. The Wisconsin Department of Financial Institutions maintains one of the most complete public databases. You can pull and review a document before ever raising your hand with the franchisor.
+
+[Talk through your FDD with Kelsey](/book)

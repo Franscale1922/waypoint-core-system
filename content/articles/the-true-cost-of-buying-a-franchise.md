@@ -9,6 +9,15 @@ date: "2025-10-10"
 category: "Getting Started"
 tier: 1
 excerpt: "The number most people see first is the franchise fee. It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters."
+faqs:
+  - q: "How much does it cost to buy a franchise?"
+    a: "The total cost to buy a franchise as of 2026 typically ranges from $150,000 to $800,000+ depending on the business model. Brick-and-mortar concepts (fitness studios, food service, retail) generally run $300,000 to $800,000 all-in. Non-brick-and-mortar concepts (home services, B2B, restoration, senior care) typically run $150,000 to $350,000. The initial franchise fee alone is typically $40,000 to $60,000 for an established brand — but that is a fraction of the total investment."
+  - q: "What is a franchise fee and is it the same as the total investment?"
+    a: "No. The franchise fee is a one-time payment to the franchisor — typically $40,000 to $60,000 — that grants you the right to operate under their brand and system in your territory. The total investment also includes build-out, equipment, working capital, marketing at launch, and pre-opening expenses. These additional costs are detailed in Item 7 of the Franchise Disclosure Document."
+  - q: "Do you need all the money in cash to buy a franchise?"
+    a: "No. Most franchise buyers use a combination of liquid capital and financing. The two most common paths are SBA 7(a) loans (which typically require 15-20% down as of 2026) and ROBS, which lets you invest 401(k) or IRA funds into the business without triggering early withdrawal penalties. Having $100,000 in liquid capital opens up most serious franchise options when combined with financing."
+  - q: "What is working capital in a franchise context?"
+    a: "Working capital is the reserve you maintain to cover operating expenses until the business is cash-flow positive. Most franchise advisors recommend budgeting for at least three to six months of operating costs before revenue stabilizes. Underestimating working capital is one of the most common mistakes first-time franchise buyers make — it leads to cutting marketing spend or skipping hires at exactly the wrong moment."
 ---
 The number most people see first is the franchise fee. It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters.
 
@@ -24,11 +33,11 @@ Here's how to think about all four before you look at a single concept.
 
 Before anything else, the type of franchise you're buying changes the cost conversation completely.
 
-**Brick-and-mortar franchises** (wellness studios, fitness concepts, child enrichment, retail, food) run $300,000 to $800,000 or more all-in. Real estate, buildout, equipment, and leasehold improvements drive those numbers up fast. You are building out a physical space from scratch in most cases, and construction costs are what they are.
+**Brick-and-mortar franchises** (wellness studios, fitness concepts, child enrichment, retail, food) run $300,000 to $800,000 or more all-in as of 2026. Real estate, buildout, equipment, and leasehold improvements drive those numbers up fast. You are building out a physical space from scratch in most cases, and construction costs are what they are.
 
-**Non-brick-and-mortar franchises** (home services, B2B operators, cleaning, restoration, senior care) run $150,000 to $350,000 in most cases. Leaner footprint, faster to open, less capital sitting in a buildout before you've made your first dollar.
+**Non-brick-and-mortar franchises** (home services, B2B operators, cleaning, restoration, senior care) run $150,000 to $350,000 in most cases as of 2026. Leaner footprint, faster to open, less capital sitting in a buildout before you've made your first dollar.
 
-Neither number is the franchise fee. The franchise fee is typically $40,000 to $60,000 for an established brand. What you see above is the total investment, which includes the fee plus everything else it takes to actually open the doors.
+Neither number is the franchise fee. The franchise fee is typically $40,000 to $60,000 for an established brand as of 2026. What you see above is the total investment, which includes the fee plus everything else it takes to actually open the doors.
 
 ---
 
@@ -64,7 +73,7 @@ Most buyers use an SBA 7(a) loan, which is a government-backed business loan tha
 
 The other path is a ROBS, which stands for Rollover for Business Startups. This lets you invest funds from a 401(k) or IRA into your business without triggering early withdrawal penalties or a tax event. Many buyers combine a ROBS with an SBA loan to cover the equity requirement without touching liquid savings.
 
-The minimum profile I typically work with: $250,000 net worth and $100,000 in liquid capital. At that level, you have real options. You don't have to pass on a good fit because of cost, and you're not stretching to make the numbers work.
+The minimum profile I typically work with as of 2026: $250,000 net worth and $100,000 in liquid capital. At that level, you have real options. You don't have to pass on a good fit because of cost, and you're not stretching to make the numbers work.
 
 ---
 
@@ -78,5 +87,24 @@ Get your number. Know how you're funding it. Then you can evaluate opportunities
 
 If you want help figuring out where your capital puts you in terms of options, that's one of the first things we cover in an intro call.
 
-[Talk to Kelsey about what fits your budget](/book)
+---
 
+## Common Questions
+
+**How much does it cost to buy a franchise?**
+
+The total cost as of 2026 typically ranges from $150,000 to $800,000+ depending on the business model. Non-brick-and-mortar service concepts generally run $150,000 to $350,000. Brick-and-mortar concepts run $300,000 to $800,000 or more. The initial franchise fee alone is typically $40,000 to $60,000 for an established brand — that number is the entry point, not the total cost.
+
+**What is a franchise fee and is it the same as the total investment?**
+
+No. The franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand in your territory. The total investment also includes build-out, equipment, working capital, marketing at launch, and pre-opening costs — all of which are detailed in Item 7 of the FDD.
+
+**Do you need all the money in cash to buy a franchise?**
+
+No. Most buyers use a combination of liquid capital and financing. Common paths include SBA 7(a) loans (typically 15-20% down as of 2026) and ROBS (rolling 401(k) funds into the business without early withdrawal penalties). Having $100,000 in liquid capital opens most serious franchise options when combined with financing.
+
+**What is working capital in franchising?**
+
+Working capital is the reserve you keep to cover operating expenses until your business is cash-flow positive. Most advisors recommend budgeting three to six months of operating costs. Underestimating this number is one of the most common mistakes first-time buyers make.
+
+[Talk to Kelsey about what fits your budget](/book)

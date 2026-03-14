@@ -9,6 +9,15 @@ date: "2025-08-12"
 category: "Getting Started"
 tier: 1
 excerpt: "Most people who reach out to me have already been thinking about this for a while. They've looked at a few brands online. Maybe they've talked to a friend who owns a franchise. They want to know what the process looks li…"
+faqs:
+  - q: "How much money do you need to buy a franchise?"
+    a: "The minimum practical threshold as of 2026 is $100,000 in liquid capital. Most strong franchise options require a total investment between $150,000 and $500,000, with financing covering a portion. The number you need in liquid form depends on what you are trying to buy and how you plan to fund it."
+  - q: "How long does it take to buy a franchise?"
+    a: "From first conversation to signed franchise agreement, the typical timeline is three to six months. A mandatory 14-day waiting period after receiving the FDD is required by law. Discovery Day, validation calls, legal review, and financing each add time. Buyers who start with their financials and goals already defined tend to move faster."
+  - q: "What kind of person is a good fit for franchise ownership?"
+    a: "Candidates who do well are people who follow systems, hire well, and can manage without needing to invent everything from scratch. They do not need to love the industry. They need operational discipline, patience to ramp up before cash flow stabilizes, and enough capital to survive that ramp-up period."
+  - q: "What is the difference between a semi-absentee franchise and an owner-operated franchise?"
+    a: "An owner-operated franchise means you work in the business full-time, often in a frontline role in the early months. A semi-absentee model is designed to be run by a hired manager so you can stay in your current job or oversee the business a few hours per week. Semi-absentee requires more working capital upfront because you are funding a manager's salary from day one."
 ---
 Most people who reach out to me have already been thinking about this for a while. They've looked at a few brands online. Maybe they've talked to a friend who owns a franchise. They want to know what the process looks like.
 
@@ -56,7 +65,7 @@ You need two things nailed down before you start talking to franchisors.
 
 **Your total investment range.** How much are you comfortable putting into this? Not how much you technically have. How much you're willing to put in. Franchise costs vary enormously. Some concepts come in under $100,000 all-in. Others require $500,000 or more before you open the doors. You need to know your ceiling before you start looking, or you're going to spend significant time falling in love with something that isn't financially viable for you.
 
-**Your funding plan.** If you have the liquid capital, that's straightforward. But most buyers don't pay cash. The two most common paths are SBA loans (government-backed, typically requires 15-20% down) and ROBS (Rollover for Business Startups, which lets you invest retirement funds without early-withdrawal penalties or taxes). Both are real options. Both have implications you need to understand before you're in the middle of a discovery process.
+**Your funding plan.** If you have the liquid capital, that's straightforward. But most buyers don't pay cash. The two most common paths are SBA loans (government-backed, typically requires 15-20% down as of 2026) and ROBS (Rollover for Business Startups, which lets you invest retirement funds without early-withdrawal penalties or taxes). Both are real options. Both have implications you need to understand before you're in the middle of a discovery process.
 
 If you don't know how you're funding this, stop. Figure that out first. I'm happy to point you toward people who can help with that. But going into franchisor conversations without a clear capital plan is going to slow you down at exactly the wrong moment.
 
@@ -64,7 +73,7 @@ If you don't know how you're funding this, stop. Figure that out first. I'm happ
 
 ## Question 3: What Does the Right Opportunity Actually Look Like?
 
-There are over 4,000 franchise brands in the US. Browsing without a filter is a good way to spend a year and end up no closer to a decision.
+There are over 4,000 franchise brands in the US as of 2026. Browsing without a filter is a good way to spend a year and end up no closer to a decision.
 
 You need a short list of criteria you're actually using to evaluate opportunities. Not a vague sense of "I'd like something in the home services space." Real criteria that let you quickly say yes or no.
 
@@ -88,5 +97,24 @@ If you're still fuzzy on any of them, that's fine. That's exactly what the first
 
 No pitch. No pressure. Just the honest answer.
 
-[Book a free call with Kelsey](/book)
+---
 
+## Common Questions
+
+**How much money do you need to buy a franchise?**
+
+The minimum practical threshold as of 2026 is $100,000 in liquid capital. Most strong franchise options require a total investment between $150,000 and $500,000, with financing covering a portion. The number you need in liquid form depends on what you are trying to buy and how you plan to fund it.
+
+**How long does it take to buy a franchise?**
+
+From first conversation to signed franchise agreement, the typical timeline is three to six months. A mandatory 14-day waiting period after receiving the FDD is required by law. Discovery Day, validation calls, legal review, and financing each add time. Buyers who start with their financials and goals already defined move faster.
+
+**What kind of person is a good fit for franchise ownership?**
+
+Candidates who do well are people who follow systems, hire well, and can manage without needing to invent everything from scratch. They do not need to love the industry. They need operational discipline, patience to ramp up before cash flow stabilizes, and enough capital to survive that ramp-up period.
+
+**What is the difference between a semi-absentee franchise and an owner-operated one?**
+
+An owner-operated franchise means you work in the business full-time, often in a frontline role in the early months. A semi-absentee model is designed to be run by a hired manager so you can stay in your current job or oversee the business a few hours per week. Semi-absentee requires more upfront working capital because you are funding a manager's salary from day one.
+
+[Book a free call with Kelsey](/book)

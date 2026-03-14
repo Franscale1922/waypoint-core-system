@@ -9,6 +9,15 @@ date: "2025-09-23"
 category: "Getting Started"
 tier: 1
 excerpt: "'Recession-proof' is one of the most misused terms in franchising. Franchisors use it as a selling point. Brokers use it to move deals. And buyers repeat it without checking whether it's actually true for the specific op…"
+faqs:
+  - q: "What makes a franchise recession-proof?"
+    a: "No franchise is truly recession-proof. The more useful question is whether the business serves a customer who keeps spending when the economy slows. The most durable franchises tend to sell to customers with strong financial cushions (higher-income households, businesses with long-term contracts) or provide services people cannot defer (essential home repairs, senior care, non-optional B2B services). Category labels matter less than customer profile and local market composition."
+  - q: "Which franchise categories hold up best in a recession?"
+    a: "The categories with documented durability through downturns include: in-home senior care (driven by demographics, not consumer confidence), essential home services like restoration and repair (triggered by necessity, not discretionary spending), and B2B service models with recurring contracts. Premium home services in high-income markets have also shown strong retention through 2008 and 2020 compared to middle-market consumer concepts."
+  - q: "How do I verify if a franchise actually survived the last recession?"
+    a: "Look at Item 20 of the Franchise Disclosure Document. Item 20 includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or were transferred during those periods. Ask the franchisor directly for franchisee retention rates from those years. Then call franchisees from Item 20's contact list who opened before 2008 or 2019 and are still operating. Their experience is the real data."
+  - q: "Are home services franchises recession-resistant?"
+    a: "Essential home services — specifically restoration (water damage, fire damage), plumbing, and electrical — have shown strong recession resistance because they are triggered by necessity rather than consumer choice. Discretionary home services (landscaping, decorative upgrades, non-urgent improvements) are more exposed to consumer confidence. The key is distinguishing between services customers choose and services they have no choice but to address."
 ---
 "Recession-proof" is one of the most misused terms in franchising. Franchisors use it as a selling point. Brokers use it to move deals. And buyers repeat it without checking whether it's actually true for the specific opportunity in front of them.
 
@@ -78,5 +87,24 @@ That data exists. It is in the FDD, in franchisee conversations, and in public r
 
 When I evaluate a concept with a candidate, this is part of the conversation early. Not as a reason to pass, but as a way to make sure what you're buying actually matches what you think you're buying.
 
+---
+
+## Common Questions
+
+**What makes a franchise recession-proof?**
+
+No franchise is truly recession-proof. The more useful question is whether the business serves a customer who keeps spending when the economy slows. The most durable franchises sell to customers with strong financial cushions or provide services people cannot defer. Category labels matter less than customer profile and local market composition.
+
+**Which franchise categories hold up best in a recession?**
+
+Categories with documented durability through 2008 and 2020 include: in-home senior care (driven by demographics, not discretionary spending), essential home services like restoration and repair (triggered by necessity), and B2B service models with recurring contracts. Premium home services in high-income markets have also shown strong retention compared to middle-market consumer concepts.
+
+**How do I verify if a franchise actually survived the last recession?**
+
+Look at Item 20 of the Franchise Disclosure Document. It includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or transferred during those periods. Then call franchisees from the Item 20 contact list who opened before 2007 or 2019 and are still operating. Their experience is the real data.
+
+**Are home services franchises recession-resistant?**
+
+Essential home services — restoration, plumbing, electrical — have shown strong recession resistance because they are triggered by necessity. Discretionary home services like landscaping or decorative upgrades are more exposed to consumer confidence. The distinction that matters is whether customers choose the service or have no real option but to address it.
 
 *Evaluating a concept for recession resilience? That's part of every conversation we have. [Book a call →](/book)*

@@ -34,7 +34,7 @@ export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) notFound();
-  const { meta, content, relatedSlugs } = article;
+  const { meta, content, relatedSlugs, faqs } = article;
   const related = getRelatedArticles(relatedSlugs);
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
@@ -70,6 +70,22 @@ export default async function ArticlePage({ params }: Props) {
           }),
         }}
       />
+      {faqs && faqs.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "FAQPage",
+              mainEntity: faqs.map(({ q, a }) => ({
+                "@type": "Question",
+                name: q,
+                acceptedAnswer: { "@type": "Answer", text: a },
+              })),
+            }),
+          }}
+        />
+      )}
       <section className="max-w-3xl mx-auto px-6 pt-16 sm:pt-24 pb-10">
         <Link href="/resources" className="inline-flex items-center text-xs text-[#c08b3e] tracking-wide uppercase font-medium hover:text-[#d4a55a] transition-colors mb-8">
           ← Resources

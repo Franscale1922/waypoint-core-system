@@ -18,15 +18,15 @@ Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one 
 
 **SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
 
-A typical SBA loan setup: you put in 10–30% as a down payment (most buyers land at 15–20%), the bank covers the rest, and you repay over 10 years. For a franchise costing $300,000, that might mean $45,000–$60,000 out of pocket at the start, with monthly payments spread over a decade.
+A typical SBA loan setup as of 2026: you put in 10–30% as a down payment (most buyers land at 15–20%), the bank covers the rest, and you repay over 10 years. For a franchise costing $300,000, that might mean $45,000–$60,000 out of pocket at the start, with monthly payments spread over a decade.
 
 What SBA does well:
-- Access to real capital (up to $5.5M)
+- Access to real capital (up to $5.5M as of 2026)
 - Long repayment terms that keep monthly payments manageable
 - Your retirement savings stay where they are
 
 What SBA costs you:
-- A credit score above 680, collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
+- A credit score above 680 as of 2026 (lenders' minimum thresholds can shift), collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
 - 60–90 days to close, sometimes longer
 - A personal guarantee, meaning your personal assets back the loan
 - Fixed monthly payments whether the business has a good month or a bad one

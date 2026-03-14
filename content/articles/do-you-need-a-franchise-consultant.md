@@ -9,6 +9,15 @@ date: "2025-09-02"
 category: "Getting Started"
 tier: 1
 excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is."
+faqs:
+  - q: "How much does a franchise consultant cost?"
+    a: "Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant."
+  - q: "What does a franchise consultant actually do?"
+    a: "A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that actually match your situation. They then present a shortlist of curated options rather than a large catalog, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson."
+  - q: "How do you tell a good franchise consultant from a bad one?"
+    a: "Look for two things: experience on both sides of the table (ideally someone who has owned franchises themselves), and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile doesn't fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value."
+  - q: "Do you need a franchise consultant, or can you go directly to a franchise brand?"
+    a: "You do not need a consultant. You can go directly to franchise brands through their development teams. The difference is that a brand's development team works for the franchisor — their job is to qualify you for their specific brand. A consultant's job is to figure out which franchise is right for you across hundreds of options, and the service is free either way. Using a consultant adds representation without adding cost."
 ---
 The skepticism is fair. "Franchise consultant" sounds like a sales title, and in a lot of cases, it is.
 
@@ -82,5 +91,24 @@ If you're far enough along in your thinking that you know you want a franchise a
 
 That's what I do. And if it turns out you're not ready, I'll tell you that too.
 
-[Book a call with Kelsey](/book)
+---
 
+## Common Questions
+
+**How much does a franchise consultant cost?**
+
+Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant.
+
+**What does a franchise consultant actually do?**
+
+A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that actually match your situation. They then present a shortlist of curated options, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson.
+
+**How do you tell a good franchise consultant from a bad one?**
+
+Look for experience on both sides of the table — ideally someone who has owned franchises themselves — and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile does not fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value.
+
+**Do you need a consultant, or can you go directly to a franchise brand?**
+
+You do not need a consultant. You can go directly to brands through their development teams. The difference is that a brand's development team works for the franchisor. A consultant's job is to figure out which franchise is right for you across hundreds of options — and the service is free either way.
+
+[Book a call with Kelsey](/book)
