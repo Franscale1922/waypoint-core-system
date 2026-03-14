@@ -1,5 +1,9 @@
 ---
 title: "Your First 90 Days as a Franchise Owner"
+relatedSlugs:
+  - "what-to-expect-at-discovery-day"
+  - "how-to-tell-if-a-franchisor-actually-cares"
+  - "the-semi-absentee-franchise-real-talk"
 slug: "your-first-90-days-as-a-franchise-owner"
 date: "2026-01-30"
 category: "Going Deeper"

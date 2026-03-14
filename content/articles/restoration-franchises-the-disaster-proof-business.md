@@ -1,5 +1,9 @@
 ---
 title: "Restoration Franchises: The Disaster-Proof Business"
+relatedSlugs:
+  - "b2b-franchise-opportunities-lower-risk-steadier-cash"
+  - "home-services-franchises-most-overlooked-category"
+  - "recession-proof-franchise-categories"
 slug: "restoration-franchises-the-disaster-proof-business"
 date: "2026-03-07"
 category: "Industry Spotlights"
@@ -30,7 +34,7 @@ This is the category most people picture: water damage, fire damage, mold remedi
 
 The business case for this model is breadth. Insurance companies and adjusters prefer vendors who can handle the entire job with one invoice. If you can take a water loss call and stay with the project through drywall and paint, you control more revenue per job. That's a meaningful advantage in an industry where subcontractors typically hand jobs off.
 
-From the Groce Franchise Anonymous research (A18), full-service restoration models that have been operating for decades have built national insurance relationships that benefit franchisees from day one in most markets. You're not introducing yourself to the adjusting community cold. You're walking in with a recognizable name that has an established track record.
+Full-service restoration models that have been operating for decades have built national insurance relationships that benefit franchisees from day one in most markets. You're not introducing yourself to the adjusting community cold. You're walking in with a recognizable name that has an established track record.
 
 The honest trade-off: this is an operationally demanding business. You need technicians available around the clock. Jobs don't wait for business hours. Managing a crew through a complex, multi-week remediation project requires operational discipline. The business scales well, but it scales by adding operational complexity before it adds simplicity.
 
@@ -40,7 +44,7 @@ One of the more interesting developments in the category is the emergence of nic
 
 Cabinet restoration is a prime example. When a kitchen floods, the conventional approach is to remove and replace the cabinets. A specialty cabinet restoration franchise does something different: they remove the cabinets, restore them off-site, and reinstall. It's faster, cheaper, and causes less disruption to the homeowner. Insurance companies like this outcome because it reduces claim costs. Homeowners like it because they stay in their house.
 
-This model (cited in Groce A22) operates in a niche with virtually no franchised competitors and a documented pipeline from insurance referrals. Roughly 40–50% of jobs come through insurance relationships, with the rest coming from general contractors, mitigation companies, and direct custom work.
+This model operates in a niche with virtually no franchised competitors and a documented pipeline from insurance referrals. Roughly 40–50% of jobs come through insurance relationships, with the rest coming from general contractors, mitigation companies, and direct custom work.
 
 The advantage of specialization: you're not competing head-to-head with every full-service restoration company in your market. You're the specialist those companies and their insurance partners call for a specific component they can't handle in-house.
 
@@ -66,7 +70,7 @@ The operators who do well share a few characteristics:
 - **Gross margins:** 40–60% on restoration services; somewhat higher on specialty niche work with lower overhead
 - **Revenue from insurance:** 40–100% depending on model
 
-Restoration has produced some of the most documented high-revenue franchise stories in any category. The Acquisitions Anonymous podcast (cited in Groce's research) profiled a restoration franchise making nearly $500K per year in profit. For reference, that's the profit number, not revenue.
+Restoration has produced some of the most documented high-revenue franchise stories in any category. Some operators in well-established restoration systems have reported profit figures approaching $500K per year. For reference, that's the profit number, not revenue.
 
 ---
 

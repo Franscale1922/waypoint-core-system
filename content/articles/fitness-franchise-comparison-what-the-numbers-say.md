@@ -1,5 +1,9 @@
 ---
 title: "Fitness Franchise Comparison: What the Numbers Say"
+relatedSlugs:
+  - "health-wellness-franchises-fad-vs-durable-business"
+  - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
+  - "recession-proof-franchise-categories"
 slug: "fitness-franchise-comparison-what-the-numbers-say"
 date: "2026-02-10"
 category: "Industry Spotlights"
@@ -58,7 +62,7 @@ Technology-forward fitness concepts (particularly EMS, or electrical muscle stim
 
 The risk is exactly what the wellness article covers: single-modality dependence. If the technology loses consumer excitement, the entire revenue model is affected. EMS has grown significantly in Europe and is expanding in the U.S., but it's still an emerging category with limited long-term data in the American market.
 
-From Groce's Franchise Anonymous research (A17), the EMS model offers lower overhead and a smaller physical footprint than traditional fitness concepts, but carries higher concept-adoption risk. Buyers who are comfortable with that trade-off and can accurately assess the demand in their specific market will find a compelling entry cost relative to potential returns.
+The EMS model offers lower overhead and a smaller physical footprint than traditional fitness concepts, but carries higher concept-adoption risk. Buyers who are comfortable with that trade-off and can accurately assess the demand in their specific market will find a compelling entry cost relative to potential returns.
 
 **Best for:** Buyers in urban markets with early-adopter consumer bases. Not a fit for suburban markets where fitness innovation is slower.
 

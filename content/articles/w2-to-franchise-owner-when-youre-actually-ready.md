@@ -1,5 +1,9 @@
 ---
 title: "W-2 to Franchise Owner: When You're Actually Ready"
+relatedSlugs:
+  - "are-you-ready-to-own-a-franchise"
+  - "the-semi-absentee-franchise-real-talk"
+  - "you-dont-need-to-love-your-franchise"
 slug: "w2-to-franchise-owner-when-youre-actually-ready"
 date: "2026-01-06"
 category: "Going Deeper"

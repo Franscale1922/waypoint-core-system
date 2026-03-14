@@ -1,5 +1,9 @@
 ---
 title: "Are You Ready to Own a Franchise?"
+relatedSlugs:
+  - "do-you-need-a-franchise-consultant"
+  - "w2-to-franchise-owner-when-youre-actually-ready"
+  - "the-true-cost-of-buying-a-franchise"
 slug: "are-you-ready-to-own-a-franchise"
 date: "2025-08-12"
 category: "Getting Started"

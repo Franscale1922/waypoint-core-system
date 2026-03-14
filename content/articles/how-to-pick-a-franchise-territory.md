@@ -1,5 +1,9 @@
 ---
 title: "How to Pick a Franchise Territory"
+relatedSlugs:
+  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
+  - "the-franchise-agreement-what-you-can-and-cant-negotiate"
+  - "the-true-cost-of-buying-a-franchise"
 slug: "how-to-pick-a-franchise-territory"
 date: "2025-11-22"
 category: "Going Deeper"

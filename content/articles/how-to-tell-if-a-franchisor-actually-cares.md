@@ -1,5 +1,9 @@
 ---
 title: "How to Tell If a Franchisor Actually Cares"
+relatedSlugs:
+  - "fdd-decoded-what-actually-matters"
+  - "what-to-expect-at-discovery-day"
+  - "the-franchise-agreement-what-you-can-and-cant-negotiate"
 slug: "how-to-tell-if-a-franchisor-actually-cares"
 date: "2025-12-01"
 category: "Going Deeper"

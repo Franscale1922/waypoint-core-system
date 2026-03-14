@@ -1,5 +1,9 @@
 ---
 title: "Should You Buy a Car Wash Franchise?"
+relatedSlugs:
+  - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
+  - "what-is-your-time-worth-the-roi-math-of-franchise-ownership"
+  - "how-franchise-funding-actually-works"
 slug: "should-you-buy-a-car-wash-franchise"
 date: "2026-03-13"
 category: "Industry Spotlights"

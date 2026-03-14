@@ -1,5 +1,9 @@
 ---
 title: "Asset-Light vs. Capital-Heavy: How to Choose the Right Franchise Type"
+relatedSlugs:
+  - "the-true-cost-of-buying-a-franchise"
+  - "how-franchise-funding-actually-works"
+  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
 slug: "asset-light-vs-capital-heavy-choosing-your-franchise-type"
 date: "2025-08-21"
 category: "Getting Started"

@@ -1,5 +1,9 @@
 ---
 title: "FDD Decoded: What Actually Matters"
+relatedSlugs:
+  - "the-franchise-agreement-what-you-can-and-cant-negotiate"
+  - "what-to-expect-at-discovery-day"
+  - "how-to-tell-if-a-franchisor-actually-cares"
 slug: "fdd-decoded-what-actually-matters"
 date: "2025-09-11"
 category: "Getting Started"

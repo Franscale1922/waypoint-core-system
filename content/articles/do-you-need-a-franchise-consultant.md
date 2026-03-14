@@ -1,5 +1,9 @@
 ---
 title: "Do You Need a Franchise Consultant? Here's the Honest Answer."
+relatedSlugs:
+  - "are-you-ready-to-own-a-franchise"
+  - "how-to-tell-if-a-franchisor-actually-cares"
+  - "red-flags-franchise-types-to-avoid"
 slug: "do-you-need-a-franchise-consultant"
 date: "2025-09-02"
 category: "Getting Started"

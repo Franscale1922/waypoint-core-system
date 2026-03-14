@@ -1,5 +1,9 @@
 ---
 title: "How Franchise Funding Actually Works"
+relatedSlugs:
+  - "the-true-cost-of-buying-a-franchise"
+  - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
+  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
 slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"

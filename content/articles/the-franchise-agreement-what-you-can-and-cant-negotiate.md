@@ -1,5 +1,9 @@
 ---
 title: "The Franchise Agreement: What You Can and Can't Negotiate"
+relatedSlugs:
+  - "fdd-decoded-what-actually-matters"
+  - "what-to-expect-at-discovery-day"
+  - "how-to-tell-if-a-franchisor-actually-cares"
 slug: "the-franchise-agreement-what-you-can-and-cant-negotiate"
 date: "2025-12-18"
 category: "Going Deeper"

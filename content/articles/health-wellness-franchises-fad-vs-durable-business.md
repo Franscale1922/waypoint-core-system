@@ -1,5 +1,9 @@
 ---
 title: "Health & Wellness Franchises: Fad vs. Durable Business"
+relatedSlugs:
+  - "fitness-franchise-comparison-what-the-numbers-say"
+  - "red-flags-franchise-types-to-avoid"
+  - "fast-growing-franchise-brand-good-sign-or-red-flag"
 slug: "health-wellness-franchises-fad-vs-durable-business"
 date: "2026-02-18"
 category: "Industry Spotlights"

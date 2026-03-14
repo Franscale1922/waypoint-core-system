@@ -1,5 +1,9 @@
 ---
 title: "The True Cost of Buying a Franchise"
+relatedSlugs:
+  - "how-franchise-funding-actually-works"
+  - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
+  - "fdd-decoded-what-actually-matters"
 slug: "the-true-cost-of-buying-a-franchise"
 date: "2025-10-10"
 category: "Getting Started"

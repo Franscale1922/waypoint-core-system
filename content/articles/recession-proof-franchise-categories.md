@@ -1,5 +1,9 @@
 ---
 title: "Recession-Proof Franchise Categories (And What That Term Actually Means)"
+relatedSlugs:
+  - "home-services-franchises-most-overlooked-category"
+  - "b2b-franchise-opportunities-lower-risk-steadier-cash"
+  - "restoration-franchises-the-disaster-proof-business"
 slug: "recession-proof-franchise-categories"
 date: "2025-09-23"
 category: "Getting Started"
@@ -60,7 +64,7 @@ Not every popular category earns the recession-proof label it gets marketed with
 
 **Consumer discretionary services in middle-income markets.** A pet grooming or specialty food concept in a middle-income suburban market is more exposed than the same concept serving an affluent zip code. The product or service category matters less than the customer's financial cushion. Same category, different territory profile, very different results.
 
-**Trend-driven wellness.** Anything that is primarily selling an experience or a trend rather than a measurable health outcome is more vulnerable. Cryotherapy, IV drip lounges, and similar concepts have shown up in multiple Franchise Anonymous breakdowns with strong launch metrics and weaker long-term retention. The business looks good until the trend plateaus.
+**Trend-driven wellness.** Anything that is primarily selling an experience or a trend rather than a measurable health outcome is more vulnerable. Cryotherapy, IV drip lounges, and similar concepts have shown strong launch metrics in multiple analyses but weaker long-term retention. The business looks good until the trend plateaus.
 
 ---
 

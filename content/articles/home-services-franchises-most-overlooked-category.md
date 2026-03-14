@@ -1,5 +1,9 @@
 ---
 title: "Home Services Franchises: The Most Overlooked Category"
+relatedSlugs:
+  - "b2b-franchise-opportunities-lower-risk-steadier-cash"
+  - "restoration-franchises-the-disaster-proof-business"
+  - "recession-proof-franchise-categories"
 slug: "home-services-franchises-most-overlooked-category"
 date: "2026-02-25"
 category: "Industry Spotlights"
@@ -30,7 +34,7 @@ Think parking lots, driveways, commercial properties. This isn't a guy-with-a-pa
 The catch: crew management and night work. Most jobs happen overnight or on weekends when lots are empty. If you want a 9-to-5 business, this is not it.
 
 **Holiday lighting (seasonal residential and commercial)**
-This one has an interesting footnote. Connor Groce (whose Franchise Anonymous research informs this piece) actually owned a multi-service home franchise early in his career. Window cleaning, pressure washing, gutters. He says he hated three of those four services and loved one: the holiday lighting side. This category now exists as a standalone franchise.
+This one has an interesting origin. The holiday lighting franchise category grew partly out of operators who ran multi-service home franchises — window cleaning, pressure washing, gutters — and discovered that one service stood apart from the rest in margin, repeatability, and customer enthusiasm. That service was holiday lighting. It now exists as a standalone franchise category.
 
 The model works because the competition is almost entirely local operators with no systems, no recurring client follow-up, and no ability to scale. A franchised approach adds centralized marketing, structured hiring, and the option to add permanent outdoor lighting as a year-round revenue stream. Launch cost is low. No storefront required.
 

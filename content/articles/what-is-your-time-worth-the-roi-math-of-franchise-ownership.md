@@ -1,5 +1,9 @@
 ---
 title: "What Is Your Time Worth? The ROI Math of Franchise Ownership"
+relatedSlugs:
+  - "the-true-cost-of-buying-a-franchise"
+  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
+  - "how-franchise-funding-actually-works"
 slug: "what-is-your-time-worth-the-roi-math-of-franchise-ownership"
 date: "2026-01-14"
 category: "Going Deeper"

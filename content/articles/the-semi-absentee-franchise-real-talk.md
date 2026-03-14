@@ -1,5 +1,9 @@
 ---
 title: "The Semi-Absentee Franchise: Real Talk"
+relatedSlugs:
+  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
+  - "w2-to-franchise-owner-when-youre-actually-ready"
+  - "what-is-your-time-worth-the-roi-math-of-franchise-ownership"
 slug: "the-semi-absentee-franchise-real-talk"
 date: "2025-12-29"
 category: "Going Deeper"

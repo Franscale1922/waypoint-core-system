@@ -1,5 +1,9 @@
 ---
 title: "What to Expect at Discovery Day"
+relatedSlugs:
+  - "fdd-decoded-what-actually-matters"
+  - "the-franchise-agreement-what-you-can-and-cant-negotiate"
+  - "your-first-90-days-as-a-franchise-owner"
 slug: "what-to-expect-at-discovery-day"
 date: "2026-01-22"
 category: "Going Deeper"

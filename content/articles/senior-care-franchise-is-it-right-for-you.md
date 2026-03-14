@@ -1,5 +1,9 @@
 ---
 title: "Senior Care Franchise: Is It Right for You?"
+relatedSlugs:
+  - "home-services-franchises-most-overlooked-category"
+  - "the-semi-absentee-franchise-real-talk"
+  - "recession-proof-franchise-categories"
 slug: "senior-care-franchise-is-it-right-for-you"
 date: "2026-03-11"
 category: "Industry Spotlights"

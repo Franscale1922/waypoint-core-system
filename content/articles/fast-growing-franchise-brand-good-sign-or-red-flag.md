@@ -1,5 +1,9 @@
 ---
 title: "Fast-Growing Franchise Brand: Good Sign or Red Flag?"
+relatedSlugs:
+  - "big-name-vs-emerging-which-franchise-to-buy"
+  - "how-to-tell-if-a-franchisor-actually-cares"
+  - "red-flags-franchise-types-to-avoid"
 slug: "fast-growing-franchise-brand-good-sign-or-red-flag"
 date: "2025-11-05"
 category: "Going Deeper"

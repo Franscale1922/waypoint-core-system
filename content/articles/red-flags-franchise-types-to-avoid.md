@@ -1,5 +1,9 @@
 ---
 title: "Red Flags: Franchise Types to Avoid"
+relatedSlugs:
+  - "fdd-decoded-what-actually-matters"
+  - "how-to-tell-if-a-franchisor-actually-cares"
+  - "big-name-vs-emerging-which-franchise-to-buy"
 slug: "red-flags-franchise-types-to-avoid"
 date: "2025-10-02"
 category: "Getting Started"

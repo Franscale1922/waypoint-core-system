@@ -1,5 +1,9 @@
 ---
 title: "One Unit or Multi-Unit? What First-Timers Get Wrong"
+relatedSlugs:
+  - "how-to-pick-a-franchise-territory"
+  - "the-semi-absentee-franchise-real-talk"
+  - "what-is-your-time-worth-the-roi-math-of-franchise-ownership"
 slug: "one-unit-or-multi-unit-what-first-timers-get-wrong"
 date: "2025-12-09"
 category: "Going Deeper"
