@@ -121,6 +121,28 @@ export default function MarketingLayout({
                 </li>
               </ul>
             </div>
+          <div>
+              <h4 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+                Guides &amp; Tools
+              </h4>
+              <ul className="space-y-3 text-sm">
+                <li>
+                  <Link href="/investment" className="hover:text-white transition-colors inline-block py-1">
+                    Investment Guide
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/glossary" className="hover:text-white transition-colors inline-block py-1">
+                    Franchise Glossary
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/franchise-consultant-vs-broker" className="hover:text-white transition-colors inline-block py-1">
+                    Consultant vs. Broker
+                  </Link>
+                </li>
+              </ul>
+            </div>
             <div>
               <h4 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Contact

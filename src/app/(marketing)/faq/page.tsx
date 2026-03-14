@@ -81,6 +81,35 @@ const faqs = [
     ],
   },
   {
+    category: "Understanding Franchises",
+    questions: [
+      {
+        q: "What is the difference between a good franchise brand and a bad one?",
+        a: "I think of franchise brands the way baseball fans think about the farm system. Major league brands are the household names: they are established, but the best territories were claimed years ago. What I look for are what I call triple-A brands. They are mature enough to have real systems, real support structures, and a track record worth trusting. But they still have open territory, which means you are not buying the scraps of a market someone else built.",
+      },
+      {
+        q: "What is a franchisee validation call?",
+        a: "At a certain point in the process, the franchise brand will connect you with existing owners across their system. The brand is not on those calls. It is just you and people who are actually running the business, in real markets, with their own money invested. You can ask them anything: what a hard week looks like, where the brand falls short, what they wish they had known before signing. These conversations are, in my experience, the most valuable part of the entire process.",
+      },
+      {
+        q: "What is the legal disclosure document and why does it matter?",
+        a: "Every franchise brand is required to give potential buyers a federal disclosure document before you commit to anything. This document, which can be anywhere from 100 to 300 pages, contains the full financial picture: fees, royalties, reported revenue and earnings from existing locations, how many units have opened and closed, and the legal history of the brand. I review this document before I ever show you a brand. If a brand does not report their financial performance in that document, I will not bring them to you.",
+      },
+      {
+        q: "What percentage of people who go through this process actually buy a franchise?",
+        a: "About thirty percent. I tell candidates this up front because I want you to know that I am not approaching this conversation trying to close a deal. The majority of people I talk with do not end up buying a franchise, and that is completely fine. I have the financial freedom to do this because I enjoy it, not because I need every conversation to convert.",
+      },
+      {
+        q: "What is the difference between a franchise consultant and a franchise broker?",
+        a: "In practice, the terms are often used interchangeably, and both are paid by the franchise brand when a candidate becomes a franchisee. The distinction that matters is how they work: a broker hands you a catalog; a consultant spends time understanding your situation before showing you anything. At Waypoint, I do not show a single brand until I have completed a full discovery conversation, written a profile of what I heard, and had you confirm it is accurate. The brand presentation comes after the fit analysis, not before it.",
+      },
+      {
+        q: "What is a franchise fee, and what does it cover?",
+        a: "The initial franchise fee is a one-time payment to the franchisor that grants you the right to operate under their brand, system, and intellectual property within a defined territory. It typically ranges from $20,000 to $60,000 depending on the brand, and it is paid at the time you sign the franchise agreement. The fee covers your onboarding, initial training, access to the brand\'s systems and manuals, and territory rights. It does not cover build-out costs, equipment, working capital, or any of the ongoing royalties and fees that come once you are operating.",
+      },
+    ],
+  },
+  {
     category: "Making the Decision",
     questions: [
       {
@@ -90,6 +119,10 @@ const faqs = [
       {
         q: "Can I bring a partner or spouse into the process?",
         a: "Yes, and I would encourage it. Big financial decisions that affect a household usually need both people in the room at some point. The earlier your partner is involved, the better. It avoids a lot of the back-and-forth that can slow things down unnecessarily.",
+      },
+      {
+        q: "What are the signs that it is the wrong time to buy a franchise?",
+        a: "A few situations genuinely disqualify the timing, even if the person is otherwise a strong candidate. If your liquid capital is under $75,000 to $100,000, most solid options are off the table. If you are in the middle of a major life transition — divorce, a health crisis, a recent job loss with no financial runway — the stress load of starting a business on top of that is a real risk. If you need the business to replace your income in the first six months, that is also a warning sign. Franchises take time to ramp up. The candidates who struggle most are the ones who needed the money to flow before they were positioned for it.",
       },
     ],
   },

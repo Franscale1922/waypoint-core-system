@@ -43,12 +43,30 @@ export default async function ArticlePage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
+            "@type": "BlogPosting",
+            "@id": `https://waypointfranchise.com/resources/${slug}`,
+            url: `https://waypointfranchise.com/resources/${slug}`,
             headline: meta.title,
             description: meta.excerpt,
             datePublished: meta.date,
-            author: { "@type": "Person", name: "Kelsey Stuart" },
-            publisher: { "@type": "Organization", name: "Waypoint Franchise Advisors", url: "https://waypointfranchise.com" },
+            dateModified: meta.date,
+            image: "https://waypointfranchise.com/og_default_1773343895292.png",
+            author: {
+              "@type": "Person",
+              "@id": "https://waypointfranchise.com/about#kelsey",
+              name: "Kelsey Stuart",
+              url: "https://waypointfranchise.com/about",
+            },
+            publisher: {
+              "@type": "Organization",
+              "@id": "https://waypointfranchise.com/#business",
+              name: "Waypoint Franchise Advisors",
+              url: "https://waypointfranchise.com",
+            },
+            mainEntityOfPage: {
+              "@type": "WebPage",
+              "@id": `https://waypointfranchise.com/resources/${slug}`,
+            },
           }),
         }}
       />

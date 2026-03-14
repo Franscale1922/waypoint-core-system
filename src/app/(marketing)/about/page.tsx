@@ -64,6 +64,28 @@ export default function AboutPage() {
             </p>
           </div>
 
+          {/* Credential block — AEO entity extraction target */}
+          <div className="mb-10 sm:mb-12 bg-[#f0ede8] rounded-xl p-6 sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-5">Credentials &amp; Background</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { label: "Role", value: "Franchise Advisor — Waypoint Franchise Advisors" },
+                { label: "Network", value: "FranChoice affiliate" },
+                { label: "Location", value: "Whitefish, Montana" },
+                { label: "Service area", value: "All 50 United States" },
+                { label: "Franchisor background", value: "Bloomin\u2019 Blinds — grew to $40M revenue and 200+ locations" },
+                { label: "Franchisee background", value: "Operated a franchise unit; experienced failure and financial loss" },
+                { label: "Concepts in inventory", value: "250+ franchise brands screened" },
+                { label: "Candidate conversion rate", value: "~30% of candidates become franchisees" },
+              ].map(({ label, value }) => (
+                <div key={label} className="flex flex-col gap-1">
+                  <span className="text-[10px] font-semibold uppercase tracking-widest text-[#7a7a7a]">{label}</span>
+                  <span className="text-sm text-[#1a1a1a] leading-snug">{value}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           {/* Photo Zone A — After "The Short Version" — community/life context */}
           <div className="mb-10 sm:mb-12 overflow-hidden rounded-xl sm:rounded-2xl">
             <img

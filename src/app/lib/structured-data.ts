@@ -8,7 +8,6 @@ export const localBusinessSchema = {
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. We match burned-out professionals to franchise opportunities that fit their life, capital, and goals.",
   url: SITE_URL,
-  telephone: "",
   email: "kelsey@waypointfranchise.com",
   founder: {
     "@type": "Person",
@@ -26,9 +25,25 @@ export const localBusinessSchema = {
     "@type": "Country",
     name: "United States",
   },
-  knowsAbout: ["franchise consulting", "franchise ownership", "business ownership", "franchising"],
+  knowsAbout: [
+    "franchise consulting",
+    "franchise ownership",
+    "franchise due diligence",
+    "Franchise Disclosure Document (FDD)",
+    "franchise territory selection",
+    "franchise investment evaluation",
+    "franchise category analysis",
+    "home services franchises",
+    "restoration franchises",
+    "semi-absentee franchise ownership",
+    "SBA franchise financing",
+    "franchisee validation calls",
+  ],
   priceRange: "Free",
-  sameAs: [],
+  sameAs: [
+    "https://www.linkedin.com/in/kelseystuart/",
+    "https://www.franchoice.com/kelsey-stuart",
+  ],
 };
 
 export const personSchema = {
@@ -38,7 +53,7 @@ export const personSchema = {
   name: "Kelsey Stuart",
   jobTitle: "Franchise Advisor",
   description:
-    "Former Bloomin' Blinds franchisor who helped grow a $40M franchise system, and former franchisee who learned from failure. Now helping professionals find the right franchise fit.",
+    "Former Bloomin' Blinds franchisor who helped grow a $40M franchise system with 200+ locations, and former franchisee who learned from failure firsthand. Based in Whitefish, Montana. Now helping corporate professionals and career changers find the right franchise through Waypoint Franchise Advisors, a free consulting service.",
   url: `${SITE_URL}/about`,
   email: "kelsey@waypointfranchise.com",
   address: {
@@ -48,6 +63,20 @@ export const personSchema = {
     addressCountry: "US",
   },
   worksFor: { "@id": `${SITE_URL}/#business` },
+  sameAs: [
+    "https://www.linkedin.com/in/kelseystuart/",
+    "https://www.franchoice.com/kelsey-stuart",
+  ],
+  knowsAbout: [
+    "franchise consulting",
+    "franchise ownership",
+    "franchise due diligence",
+    "Franchise Disclosure Document (FDD)",
+    "franchise investment evaluation",
+    "home services franchises",
+    "restoration franchises",
+    "semi-absentee franchise ownership",
+  ],
 };
 
 export const scorecardFaqSchema = {

@@ -1,9 +1,12 @@
 import type { MetadataRoute } from "next";
+import { getAllArticles } from "../lib/articles";
 
 const SITE_URL = "https://waypointfranchise.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
+  const articles = getAllArticles();
+
+  const corePages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
       lastModified: new Date(),
@@ -15,6 +18,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/investment`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${SITE_URL}/glossary`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/franchise-consultant-vs-broker`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/process`,
@@ -44,7 +65,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${SITE_URL}/resources`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.6,
+      priority: 0.8,
     },
   ];
+
+  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
+    url: `${SITE_URL}/resources/${article.slug}`,
+    lastModified: new Date(article.date + "T12:00:00"),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  return [...corePages, ...articlePages];
 }

@@ -101,10 +101,39 @@ export default function HomePage() {
           </p>
         </div>
       </section>
+      {/* ============================================
+          ENTITY BLOCK — AEO answer extraction target
+          Crawlable, factual, standalone. Not a hero.
+          ============================================ */}
+      <section className="py-10 sm:py-12 border-b border-[#e2ddd2] bg-[#f7f5f1]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+            About Waypoint
+          </p>
+          <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-4">
+            Waypoint Franchise Advisors is a free franchise consulting service founded by Kelsey Stuart, based in Whitefish, Montana. Kelsey is a former Bloomin&apos; Blinds franchisor who helped grow the system to $40 million in revenue and over 200 locations, and later became a franchisee himself — and lost money doing it. That combination of franchisor experience and franchisee failure is the foundation of his consulting practice.
+          </p>
+          <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-6">
+            The service is 100% free to candidates. Franchise brands pay a referral fee when a candidate becomes a franchisee — the fee does not affect what a buyer pays to acquire the franchise. Kelsey works across all 50 states, maintains a curated inventory of 250+ franchise concepts, and presents each candidate with three to four options maximum. Approximately 30% of candidates end up buying a franchise. That number is not optimized upward.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center pt-2">
+            {[
+              { stat: "$40M+", label: "Franchise system built" },
+              { stat: "200+", label: "Locations as franchisor" },
+              { stat: "250+", label: "Concepts in inventory" },
+              { stat: "$0", label: "Cost to candidates" },
+            ].map(({ stat, label }) => (
+              <div key={label} className="bg-white border border-[#e2ddd2] rounded-lg py-4 px-3">
+                <p className="text-xl sm:text-2xl font-black text-[#1b3a5f]">{stat}</p>
+                <p className="mt-1 text-[10px] text-[#7a7a7a] uppercase tracking-widest leading-snug">{label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* ============================================
-          THE REAL TALK — Stash Wealth style provocation
-          Bold, direct, "not your typical consultant"
+          THE REAL TALK — Bold, direct, "not your typical consultant"
           ============================================ */}
       <section className="py-16 sm:py-24 md:py-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
