@@ -114,7 +114,7 @@ const steps = [
 
 export default function ProcessPage() {
   return (
-    <main className="bg-[#FAF8F4] text-[#0c1929]">
+    <main className="text-[#0c1929]">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
@@ -126,7 +126,7 @@ export default function ProcessPage() {
         style={{
           backgroundImage: "url('/images/process-hero-highline.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "center 30%",
+          backgroundPosition: "center top",
         }}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/60 via-[#0c1929]/15 to-[#0c1929]/30" />
