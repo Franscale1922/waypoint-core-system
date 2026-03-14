@@ -1,38 +1,38 @@
 "use client";
-import { useEffect } from "react";
+
+import Script from "next/script";
 
 /**
- * TidyCalEmbed — loads TidyCal's embed.js only after this component mounts,
- * guaranteeing the target div is in the DOM before the script runs.
- * Using next/script with lazyOnload or beforeInteractive can race with React
- * hydration; useEffect is the only reliable pattern for third-party embeds.
+ * TidyCalEmbed — reliable TidyCal widget integration.
+ *
+ * Why next/script instead of manual useEffect injection:
+ * - next/script deduplicates the script tag, so it won't double-load
+ * - onLoad fires after the script is fully parsed and executed
+ * - We call TidyCal's own init() function in onLoad so it always
+ *   finds the .tidycal-embed div, regardless of Next.js hydration timing
+ * - strategy="afterInteractive" means it waits for React to hydrate first
  */
 export default function TidyCalEmbed({ path }: { path: string }) {
-  useEffect(() => {
-    // Remove any existing instance to avoid double-init on hot reload
-    const existing = document.querySelector(
-      'script[src="https://asset-tidycal.b-cdn.net/js/embed.js"]'
-    );
-    if (existing) {
-      existing.remove();
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://asset-tidycal.b-cdn.net/js/embed.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    return () => {
-      // Cleanup on unmount
-      script.remove();
-    };
-  }, [path]);
-
   return (
-    <div
-      className="tidycal-embed"
-      data-path={path}
-      style={{ minHeight: "600px" }}
-    />
+    <>
+      {/* Target div must be rendered before the script runs */}
+      <div
+        className="tidycal-embed"
+        data-path={path}
+        style={{ minHeight: "600px" }}
+      />
+
+      <Script
+        src="https://asset-tidycal.b-cdn.net/js/embed.js"
+        strategy="afterInteractive"
+        onLoad={() => {
+          // TidyCal exposes a global init function — call it after the
+          // script loads to guarantee the embed div is already in the DOM
+          if (typeof window !== "undefined" && (window as Window & { TidyCal?: { init?: () => void } }).TidyCal?.init) {
+            (window as Window & { TidyCal?: { init?: () => void } }).TidyCal!.init!();
+          }
+        }}
+      />
+    </>
   );
 }
