@@ -61,21 +61,40 @@ export default function IndustrySpotlightsPage() {
         </div>
       </section>
 
-      {/* Related pages */}
-      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-8">
-        <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Before diving into a category</p>
-        <div className="flex flex-wrap gap-6">
-          <Link href="/resources/getting-started" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            ← Getting Started articles
+      {/* Related pages — card format */}
+      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-8 h-[2px] bg-[#d4a55a]" />
+          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Before Diving Into a Category</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href="/resources/getting-started" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Getting Started</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Getting Started articles</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Start here if you are new — readiness, costs, FDD basics, consultant vs. broker, and finding the right fit.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Browse →</p>
           </Link>
-          <Link href="/investment" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Investment guide →
+          <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Investment guide</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Total capital ranges by category, how funding works, and what to budget before your first dollar goes in.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/glossary" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Franchise glossary →
+          <Link href="/glossary" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Reference</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Franchise glossary</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Every term you will encounter when evaluating a franchise — defined in plain language without jargon.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Browse →</p>
           </Link>
-          <Link href="/resources/going-deeper" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Going Deeper →
+          <Link href="/resources/going-deeper" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Going Deeper articles</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Beyond the basics — funding paths, territory math, agreement negotiation, and what the first year looks like.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Explore →</p>
           </Link>
         </div>
       </section>

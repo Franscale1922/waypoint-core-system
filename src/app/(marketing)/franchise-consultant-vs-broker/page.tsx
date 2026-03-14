@@ -215,19 +215,59 @@ export default function FranchiseConsultantVsBrokerPage() {
         </div>
       </section>
 
-      {/* Internal links */}
-      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-8">
-        <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Related resources</p>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/resources/do-you-need-a-franchise-consultant" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Do you need a franchise consultant? →
+      {/* Related resources — card format */}
+      <section className="max-w-4xl mx-auto px-6 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-8 h-[2px] bg-[#d4a55a]" />
+          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Related Resources</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-3">
+
+          <Link
+            href="/resources/do-you-need-a-franchise-consultant"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Getting Started</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              Do you need a franchise consultant?
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">
+              What a consultant actually does, how they differ from a broker, and how to tell if working with one makes sense for your search.
+            </p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/process" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            How the Waypoint process works →
+
+          <Link
+            href="/process"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">The Process</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              How the Waypoint process works
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">
+              A step-by-step look at what happens from the first conversation through candidate presentation and due diligence.
+            </p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">See the process →</p>
           </Link>
-          <Link href="/faq" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Frequently asked questions →
+
+          <Link
+            href="/faq"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Common Questions</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              Frequently asked questions
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">
+              Honest answers to the most common questions about cost, capital requirements, timing, and how the whole process works.
+            </p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
+
         </div>
       </section>
 

@@ -1,26 +1,27 @@
 // ============================================================
 // Waypoint Franchise Advisors — Archetype Data Layer
-// ============================================================
-// This file is the single source of truth for the personality
-// archetype quiz. Edit archetypes, industries, and questions here.
+// Research basis: FranNet personality matching, DISC profiles,
+// Perplexity franchise industry analysis, validated brand fit data.
 // ============================================================
 
 export type ArchetypeId =
-  | "builder"
+  | "educator"
+  | "empath"
+  | "connector"
   | "operator"
-  | "investor"
-  | "escape_artist"
-  | "explorer"
-  | "maximizer";
+  | "driver"
+  | "community_builder"
+  | "analyst"
+  | "creative";
 
 export interface Archetype {
   id: ArchetypeId;
   name: string;
   tagline: string;
   description: string;
-  /** Kelsey's first-person framing for the result screen */
   advisorNote: string;
   emoji: string;
+  discProfile: string;
   strongFits: string[];
   weakFits: string[];
   strongFitReason: string;
@@ -28,108 +29,278 @@ export interface Archetype {
 }
 
 export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
-  builder: {
-    id: "builder",
-    name: "The Builder",
-    tagline: "You're not buying a job. You're planting a tree.",
+  educator: {
+    id: "educator",
+    name: "The Educator",
+    tagline: "You turn complicated into clear — and people follow because of it.",
     description:
-      "You think in decades, not quarters. The business you want to own isn't just an income stream — it's a legacy asset. You're willing to put in the hard early years because you have a clear picture of what you're building toward. You're not looking for the fastest path; you're looking for the right one.",
+      "You naturally break things down. When you explain something, people actually understand it — and that energy keeps you going. You're patient where others get frustrated, structured where others go on instinct, and you get real satisfaction from watching someone grow because you handed them the right tools. You're not just building a business. You're building something you can teach.",
     advisorNote:
-      "Builders do best when they choose a brand with genuine long-term staying power — strong validation from existing franchisees and a category that will still be relevant in 20 years. I'll steer you toward models where early-stage effort translates into compounding value.",
-    emoji: "🏗️",
-    strongFits: ["Senior Care & Healthcare", "B2B Services", "Education & Childcare", "Home Services"],
-    weakFits: ["Fitness & Wellness", "Food & Beverage (QSR)"],
+      "Educators thrive where the training process IS the competitive advantage — where your ability to develop staff and educate customers is literally the product. I'll point you toward models where the franchisor's curriculum and your natural instruction style compound into something hard to copy. The biggest trap for your type: over-explaining the sale. We'll work on that.",
+    emoji: "📚",
+    discProfile: "S/I",
+    strongFits: ["Children's Education & Enrichment", "Senior Care", "Business Services (Consulting/Coaching)", "Home Services"],
+    weakFits: ["Food & Beverage (QSR)", "Junk Removal", "Pest Control"],
     strongFitReason:
-      "These categories reward patience and relationship-building. Recurring clients, strong franchisee retention, and real community ties — that's where Builders compound.",
+      "Education and enrichment franchises put your training instincts at the center of delivery. Senior care rewards owners who can develop caregiver competency. Coaching and consulting brands like ActionCOACH are literally built around the Educator's core skill.",
     weakFitReason:
-      "High-trend categories with fickle consumer demand and labor-heavy day-to-day can frustrate a Builder's long-view orientation. The timeline for profitability often conflicts with the personal investment required.",
+      "QSR, junk removal, and pest control live and die on throughput speed and transactional volume. The Educator's instinct to explain the 'why' behind every step slows execution in these models — and the margin for patience is thin.",
+  },
+
+  empath: {
+    id: "empath",
+    name: "The Caregiver",
+    tagline: "You built trust before you knew it was a business strategy.",
+    description:
+      "You read rooms the way other people read spreadsheets. You remember what matters to people — their names, their situations, the thing they mentioned three weeks ago. The people you serve don't just become customers; they become relationships. You're drawn to work that has purpose beyond the transaction, and you bring a kind of loyalty-building that can't be manufactured.",
+    advisorNote:
+      "Caregivers dominate in any business where trust is the product. Senior care, pet services, and children's programs all run on repeat referrals from families who believe you genuinely care — because you do. The blind spot I watch for: taking rejection personally. When a family says no or a client leaves, it can hit deeper than it should. We'll make sure the business model has enough margin for the emotional complexity of this work.",
+    emoji: "🤝",
+    discProfile: "S",
+    strongFits: ["Senior Care", "Pet Services", "Children's Education & Enrichment", "Medical Wellness"],
+    weakFits: ["Junk Removal", "Business Services (B2B Sales)", "Restoration & Cleaning"],
+    strongFitReason:
+      "Senior care brands explicitly recruit for 'a heart for service' — your instinct to genuinely care for vulnerable people is their most valuable trait. Pet services runs on the same trust dynamic. Families hand you what they love most and pay a premium for the peace of mind.",
+    weakFitReason:
+      "Junk removal and high-volume B2B sales require transaction speed and emotional distance from rejection. Restoration work demands cool-headed project management under pressure. These models drain Caregivers rather than energizing them.",
+  },
+
+  connector: {
+    id: "connector",
+    name: "The Connector",
+    tagline: "You've never met a stranger — and that's a business asset.",
+    description:
+      "You remember names. You work rooms without trying. Referrals happen naturally because people want to send business to someone they trust, and you've spent your career building that reputation without thinking of it as a strategy. You track relationships the way others track inventory, and you understand instinctively that most businesses are really just networks in disguise.",
+    advisorNote:
+      "Connectors have a massive advantage in any business where referral generation is survival. The categories I'll show you have one thing in common: your network IS your pipeline. The risk for your type is that you can over-rely on relationships and under-invest in systems. The right franchise model gives you the structure so your natural people skill can focus where it creates the most value.",
+    emoji: "🌐",
+    discProfile: "I",
+    strongFits: ["Senior Care", "Beauty & Personal Care", "Business Services (Consulting/Coaching)", "Real Estate & Home Improvement", "Medical Wellness"],
+    weakFits: ["Lawn & Landscape", "Pest Control", "Food & Beverage (QSR)"],
+    strongFitReason:
+      "Senior care and medical wellness live on referral networks — discharge planners, elder law attorneys, physicians. Beauty and personal care builds loyalty through relationships. Real estate is fundamentally a connector's game. These categories reward exactly what you do naturally.",
+    weakFitReason:
+      "Route-based businesses like lawn care and pest control succeed on operational density and efficiency — not relationship breadth. QSR is transactional by design. These models don't leverage your strongest asset.",
   },
 
   operator: {
     id: "operator",
     name: "The Operator",
-    tagline: "Give me a proven system and I'll run it better than anyone.",
+    tagline: "You see the system. Everyone else just sees the chaos.",
     description:
-      "You thrive inside structure. You're not the idea person — you're the person who makes ideas actually work. You want documented processes, clear KPIs, and a team you can develop. Chaos isn't exciting to you; efficiency is. The best franchise for you is one that has already figured out the playbook, because you'll execute it without skipping steps.",
+      "You walk into a business and immediately see what's inefficient. You love SOPs, checklists, dispatch software, and P&L discipline. You get frustrated when people 'wing it' and deeply satisfied when a process runs exactly as designed. You're not the visionary — you're the person who makes the vision actually work. And in franchising, that's worth more than almost anything else.",
     advisorNote:
-      "Operators are the franchise industry's most reliable success story. The key is matching you to a brand where their training and support infrastructure is genuinely strong, not just marketed as such. I'll help you separate the real operators from the brands that sell the idea of a system.",
+      "Operators are the franchise industry's most reliable success story. The system you're buying into was designed for someone exactly like you. The key is matching you to a brand where their training and support infrastructure is genuinely strong, not just marketed that way. I'll help you tell the difference — and steer you toward the categories where process discipline produces the widest margins.",
     emoji: "⚙️",
-    strongFits: ["Home Services", "Automotive", "Food & Beverage (QSR)", "Senior Care & Healthcare"],
-    weakFits: ["Technology / IT Services", "Staffing & Placement"],
+    discProfile: "C/S",
+    strongFits: ["Home Services", "Restoration & Cleaning", "Fitness & Wellness", "Food & Beverage (QSR)", "Lawn & Landscape", "Pest Control"],
+    weakFits: ["Real Estate & Home Improvement (Brokerage)", "Entertainment & Events"],
     strongFitReason:
-      "Operators shine in service delivery businesses with repeatable day-to-day workflows, local market ownership, and team-based execution. These categories reward consistency above creativity.",
+      "Home services, restoration, lawn care, and pest control are process machines. Your instinct to build tight systems, control labor costs, and track utilization metrics is precisely what separates profitable operators from the ones that grind and break even. These categories reward Operators disproportionately.",
     weakFitReason:
-      "Categories that require high adaptability, fluid sales cycles, or B2B consulting dynamics can feel structureless to an Operator — leading to frustration when the playbook isn't as clear as promised.",
+      "Real estate brokerage depends on recruiting and managing independent salespeople — a people flexibility game that fights your instinct for process standardization. Large-format entertainment requires creative community energy alongside operations, which dilutes your core strength.",
   },
 
-  investor: {
-    id: "investor",
-    name: "The Investor",
-    tagline: "You want a return. That's not greed — that's math.",
+  driver: {
+    id: "driver",
+    name: "The Driver",
+    tagline: "No doesn't stop you. It just tells you which way to go next.",
     description:
-      "You look at franchise ownership the way you'd look at any capital deployment: through a lens of risk-adjusted return. You're comfortable delegating management, you've done your due diligence on other assets, and you want to know if a franchise can generate a meaningful return without you being the one opening and closing every day. You probably have other income or assets already.",
+      "You're comfortable with rejection in a way that most people aren't. Quotas and measurable outcomes feel like oxygen to you — they tell you where you stand and what to do next. You communicate directly, close confidently, and get impatient when relationships take longer to develop than the deal requires. You don't need to love the product to sell it. You need to know it works.",
     advisorNote:
-      "The investor profile is common, and the traps are real. Semi-absentee works when the brand has a strong GM hire profile, validated AUV data, and a territory setup that supports it. I'll point you toward the models where the Investor math actually works — and away from the ones where it's just marketed to sound like it does.",
+      "Drivers excel in businesses where daily prospecting is the difference between survival and momentum. I'll show you categories where that energy is the fuel — not the exception. The one thing I'll push back on: make sure you're not underestimating what it takes to build the operational side. Drivers sell their way into business and sometimes manage their way out of it. The right franchise system solves that.",
+    emoji: "🎯",
+    discProfile: "D",
+    strongFits: ["Junk Removal", "Real Estate & Home Improvement", "Business Services (B2B Sales)", "Pest Control", "Home Services"],
+    weakFits: ["Senior Care", "Children's Education & Enrichment", "Pet Services"],
+    strongFitReason:
+      "Commercial cleaning and B2B business services owners report 60–80 hours/week of prospecting in Year 1 — that's exactly where Drivers thrive. Junk removal and pest control run on high call volume and daily close rates. Real estate brokerage rewards the Drivers who can out-hustle the market.",
+    weakFitReason:
+      "Senior care and children's programs require patient trust-building with families making emotional decisions. Pet services depends on community goodwill. Drivers can build these businesses, but the pace of relationship development frustrates the 'get to the close' instinct.",
+  },
+
+  community_builder: {
+    id: "community_builder",
+    name: "The Community Builder",
+    tagline: "You don't just run a business. You create a place people belong.",
+    description:
+      "You know everyone. You organize the events, chair the committee, remember the fundraiser. People follow your energy because you make them feel like they're part of something. Your marketing doesn't feel like marketing — it feels like an invitation. And the businesses that work best for you are the ones where your local presence and genuine community investment IS the competitive moat.",
+    advisorNote:
+      "Community Builders are unusually powerful in local-market businesses where the owner's personality becomes the brand. Boutique fitness studios, children's programs, and pet services are all categories where the founding member community you create in Year 1 becomes the referral network that carries you through Year 3. The risk: you'll spend time on community when the business needs operations attention. I'll help you balance both.",
+    emoji: "🏘️",
+    discProfile: "S/I",
+    strongFits: ["Fitness & Wellness", "Children's Education & Enrichment", "Pet Services", "Beauty & Personal Care", "Entertainment & Events"],
+    weakFits: ["Business Services (B2B Sales)", "Pest Control", "Junk Removal"],
+    strongFitReason:
+      "Boutique fitness success is tied directly to 'founding member' community energy — your natural ability to create belonging is the product. Children's enrichment and pet services both rely on word-of-mouth within tight-knit parent and pet-owner communities where your authentic local presence compounds over time.",
+    weakFitReason:
+      "B2B services, pest control, and junk removal are efficiency and prospecting businesses. The energy you put into community events and relationship cultivation doesn't translate as directly into revenue in these models, and the daily grind can feel disconnected from your natural strengths.",
+  },
+
+  analyst: {
+    id: "analyst",
+    name: "The Analyst",
+    tagline: "You need the numbers to work before you move. That instinct will protect you.",
+    description:
+      "You build the model before you believe the pitch. You ask 'what's the data?' before 'what do you think?' You find patterns other people miss, and you're deeply skeptical of vibes-based decision-making. In franchising, this makes you one of the safest candidates — you'll do the due diligence that protects you from bad brands and bad territory decisions. You're not risk-averse. You're risk-disciplined.",
+    advisorNote:
+      "Analysts tend to make the best franchise investment decisions — not because they move fastest, but because they verify everything. I'll give you the Item 19 data, the franchisee validation conversations, and the territory analysis you need to make a confident decision. The trap for your type: analysis paralysis. At some point the model has to be good enough to start. I'll help you find that line.",
     emoji: "📊",
-    strongFits: ["B2B Services", "Staffing & Placement", "Technology / IT Services", "Retail / Brick-and-Mortar"],
-    weakFits: ["Senior Care & Healthcare", "Fitness & Wellness"],
+    discProfile: "C",
+    strongFits: ["Restoration & Cleaning", "Medical Wellness", "Food & Beverage (QSR)", "Lawn & Landscape", "Pest Control", "Pool & Outdoor"],
+    weakFits: ["Entertainment & Events", "Real Estate & Home Improvement (Brokerage)", "Senior Care (emotional complexity)"],
     strongFitReason:
-      "B2B models and staffing franchises often have strong unit economics with a capable GM structure that allows real semi-absentee operation. The client relationships compound. Retail works for multi-unit investors with capital reserves.",
+      "Restoration franchises (water damage, fire, mold) live on Xactimate estimating accuracy, insurance claim discipline, and job cost control — all Analyst strengths. Medical wellness requires meticulous HIPAA, compliance, and financial modeling. QSR franchise success drops 40% without strong cost discipline. These are the categories where your rigor pays dividends.",
     weakFitReason:
-      "Senior care requires genuine owner engagement to protect quality of care. Fitness wellness trends cycle quickly and demand high owner presence — the Investor model fights the business model in these categories.",
+      "Large entertainment concepts require intuitive community energy and experience design that goes beyond what data alone can drive. Real estate brokerage succeeds on agent relationship fluidity. Senior care's emotional complexity can be hard to systematize — which frustrates the Analyst's instinct to resolve everything with a better process.",
   },
 
-  escape_artist: {
-    id: "escape_artist",
-    name: "The Escape Artist",
-    tagline: "The W2 life doesn't fit anymore. It's time to build your own.",
+  creative: {
+    id: "creative",
+    name: "The Creative",
+    tagline: "You see what it could be — and then you build it.",
     description:
-      "You've hit a wall — a layoff, a ceiling, or just a slow-building certainty that you can't do this for another 10 years. You want out of the corporate structure with its politics and its performance reviews and its income cap. Franchise ownership appeals because it's structured enough to feel safe, but it's yours. You're motivated, a little impatient, and ready to move.",
+      "You think visually. You notice the design before the price, the experience before the product, the story before the pitch. You're trend-aware, platform-native, and instinctively understand what makes something worth talking about. You don't settle for 'good enough' when you know it could be remarkable. In franchising, that energy is a marketing multiplier — if you're in a category where it matters.",
     advisorNote:
-      "The Escape Artist is one of my most motivated client profiles — and the one I watch most carefully for urgency bias. When someone really wants out, they can rush toward the first exciting thing rather than the right thing. I'll make sure your energy is pointed at a model with a realistic ramp timeline and first-year economics that match your situation.",
-    emoji: "🔓",
-    strongFits: ["Home Services", "Fitness & Wellness", "B2B Services"],
-    weakFits: ["Retail / Brick-and-Mortar", "Food & Beverage (QSR)", "Staffing & Placement"],
+      "Creatives bring an unfair advantage in categories where brand experience IS the differentiation. Beauty, fitness, and entertainment businesses live on Instagram and word-of-mouth — and your natural instinct to create something worth sharing is exactly what the franchisor's marketing playbook is missing at the local level. The risk: make sure operations don't suffer while you're optimizing the aesthetic. We'll talk about how to protect both.",
+    emoji: "🎨",
+    discProfile: "I",
+    strongFits: ["Beauty & Personal Care", "Fitness & Wellness (Boutique)", "Entertainment & Events", "Children's Education & Enrichment"],
+    weakFits: ["Lawn & Landscape", "Pest Control", "Junk Removal", "Restoration & Cleaning"],
     strongFitReason:
-      "Home services and B2B models have lower barriers to first revenue and a realistic path to owner income in Year 1 or early Year 2 — important for someone who needs their business to replace a salary on a real timeline.",
+      "Beauty franchise success correlates with Instagram engagement — your visual instincts are a direct revenue driver. Boutique fitness studios succeed when the opening-week social energy you create converts to founding memberships. Entertainment concepts live on experience design, which is the Creative's native language.",
     weakFitReason:
-      "Retail and QSR have high build-out costs, longer ramp windows, and depend heavily on foot traffic and location strategy. For someone focused on replacing W2 income quickly, those timelines can create serious pressure.",
-  },
-
-  explorer: {
-    id: "explorer",
-    name: "The Explorer",
-    tagline: "You want all the information before you make a move. That's not a weakness.",
-    description:
-      "You've been thinking about this for a while. You read everything, you've done the searches, you've probably looked at five different business models and still feel like you need more data before you commit. You're not risk-averse — you're risk-aware, and that's different. You want to feel confident, not just excited. The right franchise for you is one where the due diligence process gives you the clarity to actually pull the trigger.",
-    advisorNote:
-      "Explorers often become my best-prepared candidates once they find a process that gives them real answers — not sales pitches. My job with you isn't to rush you; it's to point you toward brands where Validation Calls with actual franchisees will give you the confidence to move. If you can't get excited after talking to real owners, it's not the right fit.",
-    emoji: "🔭",
-    strongFits: ["Education & Childcare", "Home Services", "Senior Care & Healthcare"],
-    weakFits: ["Food & Beverage (QSR)", "Automotive"],
-    strongFitReason:
-      "Categories with strong franchisee communities and transparent FDD data reward the Explorer's research mindset. Mission-driven categories like education and senior care often have long-tenured franchisees who give straightforward validation answers.",
-    weakFitReason:
-      "High-capital, location-dependent concepts like QSR require a willingness to commit before having perfect information. Explorers can find the research loop difficult to close in categories where the real data only comes after signing.",
-  },
-
-  maximizer: {
-    id: "maximizer",
-    name: "The Maximizer",
-    tagline: "You've already built something. Now you want to scale.",
-    description:
-      "You're not new to this. You've run a team, managed a P&L, maybe owned a business before. You understand operations, you're comfortable with risk, and you're looking at franchise ownership as a portfolio addition — a way to multiply what you've already built. You want a brand that can support multi-unit expansion and a structure that leverages your experience rather than ignoring it.",
-    advisorNote:
-      "Maximizers are my most sophisticated clients — which also means they're the most likely to underestimate how different a franchise system is from what they've built before. The best match for you is a brand with a strong multi-unit development agreement, room for territorial expansion, and support infrastructure that scales. I'll help you find the ones where your experience is an asset, not a liability.",
-    emoji: "⚡",
-    strongFits: ["B2B Services", "Retail / Brick-and-Mortar", "Staffing & Placement", "Food & Beverage (QSR)"],
-    weakFits: ["Education & Childcare", "Fitness & Wellness"],
-    strongFitReason:
-      "Multi-unit B2B, staffing, and retail concepts reward the Maximizer's operational sophistication and capital position. These categories have proven multi-unit pathways and the kind of market complexity that experienced operators navigate well.",
-    weakFitReason:
-      "Education and wellness franchises often prioritize owner passion and community presence over operational scale — which can feel limiting to a Maximizer whose instinct is to grow quickly and systematically.",
+      "Pest control, lawn care, junk removal, and restoration are operational efficiency businesses. There's no experience to design, no brand identity to differentiate locally, no visual story to tell. These models reward discipline and volume — and slowly drain the Creative's energy.",
   },
 };
+
+// ============================================================
+// Industry Definitions
+// Source: Perplexity franchise industry analysis + FranChoice data
+// ============================================================
+
+export interface Industry {
+  name: string;
+  shortDescription: string;
+  investmentRange: string;
+  topFits: ArchetypeId[];
+  poorFits: ArchetypeId[];
+}
+
+export const INDUSTRIES: Industry[] = [
+  {
+    name: "Senior Care",
+    shortDescription: "Non-medical in-home care for aging adults",
+    investmentRange: "$90K–$430K",
+    topFits: ["empath", "connector", "community_builder"],
+    poorFits: ["driver", "analyst"],
+  },
+  {
+    name: "Home Services",
+    shortDescription: "Handyman, plumbing, cleaning, HVAC, renovation",
+    investmentRange: "$55K–$507K",
+    topFits: ["operator", "driver"],
+    poorFits: ["creative", "empath"],
+  },
+  {
+    name: "Restoration & Cleaning",
+    shortDescription: "Water, fire, mold restoration + carpet/floor cleaning",
+    investmentRange: "$70K–$511K",
+    topFits: ["operator", "analyst"],
+    poorFits: ["empath", "creative"],
+  },
+  {
+    name: "Beauty & Personal Care",
+    shortDescription: "Hair, wax, skincare, massage, barbershops",
+    investmentRange: "$188K–$1,010K",
+    topFits: ["connector", "creative", "community_builder"],
+    poorFits: ["driver", "analyst"],
+  },
+  {
+    name: "Fitness & Wellness",
+    shortDescription: "Boutique studios, gyms, membership-based fitness",
+    investmentRange: "$100K–$1,850K",
+    topFits: ["operator", "community_builder", "creative"],
+    poorFits: ["analyst", "empath"],
+  },
+  {
+    name: "Children's Education & Enrichment",
+    shortDescription: "Tutoring, swim schools, STEM, art, sports programs",
+    investmentRange: "$65K–$1,310K",
+    topFits: ["educator", "community_builder"],
+    poorFits: ["driver", "analyst"],
+  },
+  {
+    name: "Pet Services",
+    shortDescription: "Daycare, boarding, grooming, training",
+    investmentRange: "$50K–$2,040K",
+    topFits: ["empath", "operator", "community_builder"],
+    poorFits: ["driver", "analyst"],
+  },
+  {
+    name: "Business Services",
+    shortDescription: "B2B printing, signage, coaching, consulting, staffing",
+    investmentRange: "$50K–$403K",
+    topFits: ["connector", "educator", "driver"],
+    poorFits: ["empath", "creative"],
+  },
+  {
+    name: "Food & Beverage",
+    shortDescription: "QSR, fast casual, smoothies, coffee, desserts",
+    investmentRange: "$100K–$7,200K",
+    topFits: ["operator", "driver"],
+    poorFits: ["educator", "creative"],
+  },
+  {
+    name: "Lawn & Landscape",
+    shortDescription: "Lawn treatment, fertilization, commercial maintenance",
+    investmentRange: "$55K–$325K",
+    topFits: ["operator", "analyst"],
+    poorFits: ["creative", "empath"],
+  },
+  {
+    name: "Pool & Outdoor",
+    shortDescription: "Pool maintenance, outdoor living, holiday lighting",
+    investmentRange: "$20K–$837K",
+    topFits: ["operator", "connector"],
+    poorFits: ["creative", "empath"],
+  },
+  {
+    name: "Real Estate & Home Improvement",
+    shortDescription: "Brokerages, budget blinds, kitchen/floor remodeling",
+    investmentRange: "$16K–$512K",
+    topFits: ["connector", "driver"],
+    poorFits: ["operator", "empath"],
+  },
+  {
+    name: "Junk Removal",
+    shortDescription: "Residential and commercial debris hauling",
+    investmentRange: "$30K–$481K",
+    topFits: ["driver", "operator"],
+    poorFits: ["empath", "creative"],
+  },
+  {
+    name: "Pest Control",
+    shortDescription: "Mosquito, tick, and general pest treatment programs",
+    investmentRange: "$50K–$220K",
+    topFits: ["operator", "driver", "analyst"],
+    poorFits: ["empath", "creative"],
+  },
+  {
+    name: "Medical Wellness",
+    shortDescription: "IV therapy, med spas, chiropractic, cryotherapy",
+    investmentRange: "$147K–$1,300K",
+    topFits: ["connector", "analyst"],
+    poorFits: ["driver", "educator"],
+  },
+  {
+    name: "Entertainment & Events",
+    shortDescription: "Trampoline parks, pickleball, painting studios, bowling",
+    investmentRange: "$119K–$8,300K",
+    topFits: ["creative", "community_builder"],
+    poorFits: ["operator", "analyst"],
+  },
+];
 
 // ============================================================
 // Quiz Questions & Scoring
@@ -137,7 +308,6 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
 
 export interface QuizOption {
   label: string;
-  /** Partial score contribution toward each archetype */
   scores: Partial<Record<ArchetypeId, number>>;
 }
 
@@ -149,198 +319,306 @@ export interface QuizQuestion {
 
 export const QUIZ_QUESTIONS: QuizQuestion[] = [
   {
-    id: "work_style",
-    question: "When you're doing your best work, what does that look like?",
+    id: "energy_source",
+    question: "At the end of a long day, what kind of work actually left you energized?",
     options: [
       {
-        label: "Leading a team toward a goal I've defined",
-        scores: { builder: 3, maximizer: 2 },
+        label: "Training someone who finally understood something difficult",
+        scores: { educator: 4, community_builder: 1 },
       },
       {
-        label: "Running a tight operation where every step is dialed in",
-        scores: { operator: 3, maximizer: 1 },
+        label: "Helping someone through a hard situation — and knowing it meant something",
+        scores: { empath: 4, community_builder: 1 },
       },
       {
-        label: "Reviewing performance data and making strategic decisions",
-        scores: { investor: 3, maximizer: 2 },
+        label: "A conversation that turned into a relationship, a referral, or an opportunity",
+        scores: { connector: 4, driver: 1 },
       },
       {
-        label: "Working independently without a lot of bureaucracy",
-        scores: { escape_artist: 3, explorer: 1 },
+        label: "Finishing a process that now runs better than it did yesterday",
+        scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Researching, planning, and getting the details exactly right",
-        scores: { explorer: 3, builder: 1 },
+        label: "Closing something — hitting a number, finishing a deal, winning a pitch",
+        scores: { driver: 4, operator: 1 },
+      },
+      {
+        label: "Bringing people together around something I organized or created",
+        scores: { community_builder: 4, connector: 1 },
+      },
+      {
+        label: "Solving a problem with data that nobody else thought to look at",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "Making something look, feel, or sound better than it did before",
+        scores: { creative: 4, community_builder: 1 },
       },
     ],
   },
   {
-    id: "motivation",
-    question: "What would owning a successful franchise actually mean for you?",
+    id: "strength",
+    question: "Other people consistently come to you for...",
     options: [
       {
-        label: "Leaving something for my family — an asset that outlasts me",
-        scores: { builder: 4, operator: 1 },
+        label: "Explaining or simplifying something complicated",
+        scores: { educator: 4, analyst: 1 },
       },
       {
-        label: "Never having to answer to someone else about my income",
-        scores: { escape_artist: 4, operator: 1 },
+        label: "Listening without judgment and giving thoughtful support",
+        scores: { empath: 4, community_builder: 1 },
       },
       {
-        label: "A return that makes the capital work harder than it does anywhere else",
-        scores: { investor: 4, maximizer: 2 },
+        label: "Introductions — \"you should meet so-and-so\"",
+        scores: { connector: 4, community_builder: 1 },
       },
       {
-        label: "Proving to myself that I can build something on my own",
-        scores: { escape_artist: 2, explorer: 2, builder: 1 },
+        label: "Making something run smoother or more consistently",
+        scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Adding income streams to a portfolio I'm already building",
-        scores: { maximizer: 4, investor: 2 },
+        label: "Honest, direct advice — even when it's not what they want to hear",
+        scores: { driver: 3, analyst: 2 },
+      },
+      {
+        label: "Knowing what's happening in the community, who to call, how to get involved",
+        scores: { community_builder: 4, connector: 2 },
+      },
+      {
+        label: "Finding the pattern or the number that changes the decision",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "Making things look and feel right — design, story, experience",
+        scores: { creative: 4, community_builder: 1 },
       },
     ],
   },
   {
-    id: "involvement",
-    question: "How involved do you want to be in the day-to-day operation?",
+    id: "discomfort",
+    question: "What kind of work makes you quietly dread showing up?",
     options: [
       {
-        label: "Fully hands-on, at least early on — I want to learn every part of it",
-        scores: { operator: 4, builder: 1, escape_artist: 1 },
+        label: "Cold outreach or aggressive quota pressure",
+        scores: { educator: 2, empath: 2, analyst: 1 },
       },
       {
-        label: "Present owner, but building toward a team that runs it without me",
-        scores: { builder: 3, maximizer: 2, operator: 1 },
+        label: "High-conflict situations or environments where people don't care",
+        scores: { empath: 3, educator: 1, community_builder: 1 },
       },
       {
-        label: "I want a strong manager in place fairly quickly — I check in, I don't run it",
-        scores: { investor: 4, maximizer: 2 },
+        label: "Solitary technical work with minimal human interaction",
+        scores: { connector: 3, community_builder: 2 },
       },
       {
-        label: "As minimal as possible — I have other commitments",
-        scores: { investor: 3, maximizer: 1 },
+        label: "Unstructured chaos where nothing is documented or repeatable",
+        scores: { operator: 3, analyst: 2 },
+      },
+      {
+        label: "Long, slow processes where results take months to materialize",
+        scores: { driver: 3, creative: 1 },
+      },
+      {
+        label: "Anonymous corporate environments where nobody knows each other",
+        scores: { community_builder: 3, connector: 2 },
+      },
+      {
+        label: "Decisions made on gut feel with no data to validate them",
+        scores: { analyst: 3, operator: 2 },
+      },
+      {
+        label: "Repetitive execution with no room to improve or differentiate",
+        scores: { creative: 3, empath: 1 },
       },
     ],
   },
   {
-    id: "team",
-    question: "How do you feel about hiring and managing employees?",
+    id: "people_style",
+    question: "How do you naturally operate with the people around you?",
     options: [
       {
-        label: "I've built and led teams — it's one of my strengths",
-        scores: { builder: 2, operator: 2, maximizer: 3 },
+        label: "I develop people — I invest in their growth and capability",
+        scores: { educator: 3, empath: 2, community_builder: 1 },
       },
       {
-        label: "I can do it, but I'd rather hire a general manager to handle it",
-        scores: { investor: 3, maximizer: 2 },
+        label: "I read people — I know what they need before they say it",
+        scores: { empath: 4, connector: 1, community_builder: 1 },
       },
       {
-        label: "I'm comfortable with it but I haven't done it at scale",
-        scores: { operator: 2, escape_artist: 2, explorer: 1 },
+        label: "I connect people — I'm always making introductions and building bridges",
+        scores: { connector: 4, community_builder: 2 },
       },
       {
-        label: "I'm a solo contributor by nature — lean team is better",
-        scores: { escape_artist: 3, investor: 1 },
+        label: "I manage people — I'm clear about expectations and hold them to it",
+        scores: { operator: 3, driver: 2 },
+      },
+      {
+        label: "I persuade people — I'm direct and I move them toward a decision",
+        scores: { driver: 4, connector: 1 },
+      },
+      {
+        label: "I mobilize people — I create the group energy that makes things happen",
+        scores: { community_builder: 4, connector: 1 },
+      },
+      {
+        label: "I advise people — I bring the analysis that makes decisions defensible",
+        scores: { analyst: 4, educator: 1 },
+      },
+      {
+        label: "I inspire people — I create things worth being excited about",
+        scores: { creative: 3, community_builder: 2 },
       },
     ],
   },
   {
-    id: "risk",
-    question: "When you think about putting capital into a business, what's your honest reaction?",
+    id: "rejection",
+    question: "When something doesn't work — a prospect says no, a plan fails — what happens for you?",
     options: [
       {
-        label: "This is a long-term commitment — I'm prepared to weather the early years",
-        scores: { builder: 4, operator: 1 },
+        label: "I immediately want to understand why so I can improve the approach",
+        scores: { educator: 3, analyst: 2 },
       },
       {
-        label: "I've modeled it carefully — the numbers have to work within a defined window",
-        scores: { investor: 4, explorer: 2 },
+        label: "I take it personally, especially if a relationship was involved",
+        scores: { empath: 3, community_builder: 2 },
       },
       {
-        label: "I need to replace my income, so the ramp timeline matters a lot",
-        scores: { escape_artist: 4, operator: 1 },
+        label: "I start working my network to find another way in",
+        scores: { connector: 4, driver: 1 },
       },
       {
-        label: "I want more information before I get comfortable committing",
-        scores: { explorer: 4, escape_artist: 1 },
+        label: "I figure out what broke in the process and fix it",
+        scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "I have experience with this — capital deployment is not new to me",
-        scores: { maximizer: 4, investor: 2 },
+        label: "I move on fast — 'no' just tells me where to go next",
+        scores: { driver: 4, operator: 1 },
+      },
+      {
+        label: "I check in on the team and make sure the group is still motivated",
+        scores: { community_builder: 3, empath: 2 },
+      },
+      {
+        label: "I go back to the data to figure out what I missed",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "I look for a more compelling angle or a better way to tell the story",
+        scores: { creative: 3, connector: 1 },
       },
     ],
   },
   {
-    id: "timeline",
-    question: "What does your timeline look like?",
+    id: "metrics",
+    question: "If you owned a business, what number would you wake up thinking about?",
     options: [
       {
-        label: "I want to be open within 6 months — I'm ready to move",
-        scores: { escape_artist: 3, operator: 1 },
+        label: "How many people on my team got better this week",
+        scores: { educator: 4, empath: 1 },
       },
       {
-        label: "6 to 12 months — I want to do this right, not fast",
-        scores: { builder: 2, operator: 2, explorer: 2 },
+        label: "Client satisfaction — are the people we serve actually happy?",
+        scores: { empath: 4, community_builder: 1 },
       },
       {
-        label: "12 to 24 months — I'm building toward this deliberately",
-        scores: { builder: 3, investor: 2, maximizer: 1 },
+        label: "New referrals and active relationships in my network",
+        scores: { connector: 4, driver: 1 },
       },
       {
-        label: "I don't have a hard deadline — I'm doing my research",
-        scores: { explorer: 4, investor: 1 },
+        label: "Labor percentage, utilization rate, cost per job",
+        scores: { operator: 3, analyst: 3 },
+      },
+      {
+        label: "Revenue, close rate, pipeline velocity",
+        scores: { driver: 4, analyst: 1 },
+      },
+      {
+        label: "Community engagement — reviews, events, word of mouth",
+        scores: { community_builder: 4, connector: 1 },
+      },
+      {
+        label: "Profit margin, cash flow, and return on invested capital",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "Brand perception — how does the market see us?",
+        scores: { creative: 4, connector: 1 },
       },
     ],
   },
   {
     id: "background",
-    question: "What's your professional background?",
+    question: "When you look back at your career, which chapter fits best?",
     options: [
       {
-        label: "Corporate management — I've run teams, budgets, and P&Ls",
-        scores: { operator: 3, builder: 2, maximizer: 2 },
+        label: "I taught, trained, coached, or built curriculum at some point",
+        scores: { educator: 4, community_builder: 1 },
       },
       {
-        label: "Sales or business development",
-        scores: { escape_artist: 2, operator: 2, maximizer: 2 },
+        label: "I worked in healthcare, social work, caregiving, or counseling",
+        scores: { empath: 4, educator: 1 },
       },
       {
-        label: "Finance, analysis, or investment",
-        scores: { investor: 4, explorer: 1, maximizer: 2 },
+        label: "I was in sales, business development, or account management",
+        scores: { connector: 2, driver: 3 },
       },
       {
-        label: "Business owner or entrepreneur (past or present)",
-        scores: { maximizer: 4, builder: 2, investor: 1 },
+        label: "I ran operations — managed teams, owned P&Ls, built processes",
+        scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Service, healthcare, education, or skilled trades",
-        scores: { operator: 2, builder: 2, explorer: 2 },
+        label: "I was in enterprise sales, B2B, or high-ticket closing",
+        scores: { driver: 4, connector: 1 },
+      },
+      {
+        label: "I was community-facing — nonprofit, chamber, local government, events",
+        scores: { community_builder: 4, connector: 1 },
+      },
+      {
+        label: "I was in finance, analysis, or strategy",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "I was in marketing, design, media, or brand",
+        scores: { creative: 4, connector: 1 },
       },
     ],
   },
   {
-    id: "fear",
-    question: "What's your honest biggest concern about this?",
+    id: "ownership_vision",
+    question: "When you imagine yourself three years into owning a franchise, what does the good version look like?",
     options: [
       {
-        label: "Putting my family's financial security at risk",
-        scores: { explorer: 2, builder: 1 },
+        label: "I've built a great team — people who grew because of how I developed them",
+        scores: { educator: 4, community_builder: 1 },
       },
       {
-        label: "Trading one kind of trap for another — still not free",
-        scores: { escape_artist: 2, investor: 1 },
+        label: "I have clients who've been with me from the start and genuinely trust me",
+        scores: { empath: 4, connector: 1 },
       },
       {
-        label: "Not having the right skills to actually run it",
-        scores: { explorer: 2, escape_artist: 1 },
+        label: "I'm known in my market — everyone refers to me because of the relationships I've built",
+        scores: { connector: 4, community_builder: 1 },
       },
       {
-        label: "Choosing the wrong brand and being locked in",
-        scores: { explorer: 3, builder: 1 },
+        label: "The operation runs like a machine — consistent, scalable, and profitable",
+        scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Honestly, my biggest fear is doing nothing and being in the same place in 3 years",
-        scores: { escape_artist: 3, maximizer: 1, operator: 1 },
+        label: "I've hit my revenue targets and I'm thinking about what to open next",
+        scores: { driver: 4, operator: 1 },
+      },
+      {
+        label: "I've created something people feel genuinely proud to be part of",
+        scores: { community_builder: 4, creative: 1 },
+      },
+      {
+        label: "My unit economics are dialed in and I'm investing the returns elsewhere",
+        scores: { analyst: 4, operator: 1 },
+      },
+      {
+        label: "My brand stands out locally — better experience, stronger story, more talked about",
+        scores: { creative: 4, connector: 1 },
       },
     ],
   },
@@ -350,20 +628,16 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
 // Scoring Engine
 // ============================================================
 
-/**
- * Takes an array of selected option objects and returns the winning archetype.
- * In the event of a tie, the first tied archetype in the defined order wins.
- */
-export function calculateArchetype(
-  selectedOptions: QuizOption[]
-): ArchetypeId {
+export function calculateArchetype(selectedOptions: QuizOption[]): ArchetypeId {
   const totals: Record<ArchetypeId, number> = {
-    builder: 0,
+    educator: 0,
+    empath: 0,
+    connector: 0,
     operator: 0,
-    investor: 0,
-    escape_artist: 0,
-    explorer: 0,
-    maximizer: 0,
+    driver: 0,
+    community_builder: 0,
+    analyst: 0,
+    creative: 0,
   };
 
   for (const option of selectedOptions) {
@@ -372,8 +646,5 @@ export function calculateArchetype(
     }
   }
 
-  // Return the archetype with the highest score
-  return (Object.entries(totals).sort(
-    ([, a], [, b]) => b - a
-  )[0][0]) as ArchetypeId;
+  return (Object.entries(totals).sort(([, a], [, b]) => b - a)[0][0]) as ArchetypeId;
 }

@@ -61,21 +61,40 @@ export default function GoingDeeperPage() {
         </div>
       </section>
 
-      {/* Related pages */}
-      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-8">
-        <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Useful alongside these articles</p>
-        <div className="flex flex-wrap gap-6">
-          <Link href="/investment" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Full investment guide →
+      {/* Related pages — card format */}
+      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-8 h-[2px] bg-[#d4a55a]" />
+          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Useful Alongside These Articles</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Full investment guide</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">The full capital picture — franchise fee, build-out, working capital, and ongoing fees explained.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/franchise-consultant-vs-broker" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Consultant vs. broker →
+          <Link href="/franchise-consultant-vs-broker" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Reference</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Consultant vs. broker</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">What distinguishes an independent franchise advisor from a broker — and why it matters for your search.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/resources/getting-started" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            ← Getting Started articles
+          <Link href="/resources/getting-started" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Getting Started</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Getting Started articles</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Foundational guides on readiness, costs, the FDD, how consultants work, and finding the right fit.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Browse →</p>
           </Link>
-          <Link href="/resources/industry-spotlights" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Industry Spotlights →
+          <Link href="/resources/industry-spotlights" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Industry Spotlights</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Industry Spotlights</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Category-specific reads on home services, senior care, B2B, fitness, and more — with honest economics.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Explore →</p>
           </Link>
         </div>
       </section>

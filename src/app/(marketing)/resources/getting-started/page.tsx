@@ -61,21 +61,40 @@ export default function GettingStartedPage() {
         </div>
       </section>
 
-      {/* Related pages */}
-      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-8">
-        <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Once you have the basics</p>
-        <div className="flex flex-wrap gap-6">
-          <Link href="/investment" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Full investment guide →
+      {/* Related pages — card format */}
+      <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-8 h-[2px] bg-[#d4a55a]" />
+          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Once You Have the Basics</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Full investment guide</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Total capital required, how it breaks down, and what to budget beyond the franchise fee.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/glossary" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Franchise glossary →
+          <Link href="/glossary" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Reference</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Franchise glossary</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Plain-language definitions of every term you will encounter: FDD, royalty, territory, Item 19, and more.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Browse →</p>
           </Link>
-          <Link href="/resources/going-deeper" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Going Deeper articles →
+          <Link href="/resources/going-deeper" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Going Deeper articles</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Funding, territory selection, multi-unit strategy, franchise agreements, and validation calls.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Explore →</p>
           </Link>
-          <Link href="/faq" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            FAQ →
+          <Link href="/faq" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Common Questions</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Frequently asked questions</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Answers to the most common questions about cost, process, working with a consultant, and timing.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
         </div>
       </section>
