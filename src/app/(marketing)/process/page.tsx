@@ -124,7 +124,7 @@ export default function ProcessPage() {
       <section
         className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6"
         style={{
-          backgroundImage: "url('/images/process-hero-mountain-pass.png')",
+          backgroundImage: "url('/images/process-hero-highline.png')",
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
         }}
