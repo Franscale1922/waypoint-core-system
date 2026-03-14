@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { getAllArticles, getArticleBySlug } from "../../../../lib/articles";
+import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
+import RelatedArticles from "../../../../components/RelatedArticles";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -33,7 +34,8 @@ export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) notFound();
-  const { meta, content } = article;
+  const { meta, content, relatedSlugs } = article;
+  const related = getRelatedArticles(relatedSlugs);
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <script
@@ -63,9 +65,10 @@ export default async function ArticlePage({ params }: Props) {
         </div>
         <div className="w-full h-px bg-[#e8e0d0] mt-8" />
       </section>
-      <article className="max-w-3xl mx-auto px-6 pb-20 sm:pb-28 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#c08b3e] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
+      <article className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#c08b3e] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
         <MDXRemote source={content} />
       </article>
+      <RelatedArticles articles={related} />
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-xl sm:text-2xl text-white mb-4">Ready to talk through your situation?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">30 minutes. No pitch. Just an honest conversation about where you stand.</p>
@@ -74,3 +77,4 @@ export default async function ArticlePage({ params }: Props) {
     </main>
   );
 }
+

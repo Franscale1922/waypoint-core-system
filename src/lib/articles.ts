@@ -31,14 +31,33 @@ export function getAllArticles(): Article[] {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getArticleBySlug(slug: string): { meta: Article; content: string } | null {
+export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[] } | null {
   const fullPath = nodePath.join(articlesDir, `${slug}.md`);
   if (!fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
     meta: { slug, title: data.title, date: data.date, category: data.category, tier: data.tier, excerpt: data.excerpt },
     content,
+    relatedSlugs: (data.relatedSlugs as string[]) ?? [],
   };
+}
+
+export function getRelatedArticles(relatedSlugs: string[]): Article[] {
+  return relatedSlugs
+    .map((slug) => {
+      const fullPath = nodePath.join(articlesDir, `${slug}.md`);
+      if (!fs.existsSync(fullPath)) return null;
+      const { data } = matter(fs.readFileSync(fullPath, "utf8"));
+      return {
+        slug,
+        title: data.title as string,
+        date: data.date as string,
+        category: data.category as string,
+        tier: data.tier as number,
+        excerpt: data.excerpt as string,
+      };
+    })
+    .filter((a): a is Article => a !== null);
 }
 
 export function getArticlesByCategory(): Record<string, Article[]> {
