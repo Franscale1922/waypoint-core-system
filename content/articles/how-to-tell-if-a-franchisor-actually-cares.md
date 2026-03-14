@@ -22,7 +22,7 @@ You make money on unit-level cash flow: what's left after royalties, rent, labor
 
 You can see the potential conflict. A franchisor who pushes you toward high volume, discounted pricing, or aggressive promotions might be optimizing for their royalty check rather than your financial health. The two aren't always the same thing.
 
-The Subway $5 footlong is the canonical example. It drove enormous volume and gross revenue. It also destroyed franchisee economics at scale. Many operators couldn't price-adjust because of brand-wide pricing pressure, and a significant number went under. Corporate was collecting royalties on revenue that wasn't financially viable for the people generating it.
+The history of franchising has clear examples of franchisors driving system-wide promotions — deeply discounted pricing, promotional offers, aggressive volume plays — that expanded gross revenue and royalty collections while eroding the unit economics of individual operators. Many franchisees in those situations couldn't price-adjust because of brand-wide pricing mandates, and a number went under. Corporate was collecting royalties on revenue that wasn't financially viable for the people generating it.
 
 This doesn't mean every franchisor is misaligned. Most aren't. But the incentive structure means you shouldn't assume alignment. You should confirm it.
 

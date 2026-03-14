@@ -72,8 +72,8 @@ The EMS model offers lower overhead and a smaller physical footprint than tradit
 
 A few useful benchmarks when evaluating any fitness franchise FDD:
 
-- **Boutique fitness break-even:** Typically 12–18 months, but highly location-dependent
-- **Attrition in mass-market fitness:** 50–80% annual churn is normal (this is why Planet Fitness oversells memberships)
+- **Boutique fitness ramp time:** Typically 12–24 months to reach stable revenue, but highly location-dependent
+- **Attrition in mass-market fitness:** 50–80% annual churn is normal in low-price-point models, which is why large volume concepts intentionally oversell memberships
 - **Premium/niche fitness retention:** Strong concepts run 10–15% annual churn
 - **Investment range:** $250,000–$600,000 for mid-size gym concepts; $100,000–$250,000 for smaller boutique studios
 - **Key FDD data points:** Item 19 (average unit revenue), Item 20 (franchisee departures from system), Item 21 (audited financials)

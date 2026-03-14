@@ -24,7 +24,7 @@ The most common first-month mistake is treating training as a prerequisite to "t
 
 Before your doors open, you should know:
 - Your average ticket or revenue per transaction
-- Your weekly break-even in dollars
+- Your target weekly revenue and what drives it
 - The 3 operational metrics your franchisor's top performers track obsessively
 - What your first marketing spend looks like and what it's supposed to produce
 
@@ -50,7 +50,7 @@ By month three, you have actual operating data. The question shifts from "is thi
 
 Every franchise has a constraint: the one thing that, if fixed, would move the revenue curve more than anything else. For a service concept, it's usually hiring and staffing. For a retail concept, it's usually traffic-driving or customer frequency. For a B2B model, it's usually sales cycle and close rate.
 
-Identify your constraint by month three, not month six. The operators who find it early and fix it early are the ones who hit the break-even point faster.
+Identify your constraint by month three, not month six. The operators who find it early and fix it early are the ones who build momentum into year two instead of spending it catching up.
 
 At the 90-day mark, you should have a clear picture of:
 1. Whether you're tracking ahead of, at, or behind the Item 19 average

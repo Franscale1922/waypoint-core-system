@@ -29,7 +29,7 @@ The counterpoint: diversified wellness concepts are a genuinely different invest
 Setting aside the fad problem, there are legitimate structural tailwinds behind wellness as a franchise category:
 
 **1. Longevity is a growing consumer obsession, driven by affluent buyers.**
-Biohacking, performance optimization, and longevity-focused health are no longer niche interests. The target customer for premium wellness services is increasingly a high-income professional who perceives these services as investments in productive years, not luxuries. The global wellness and longevity industry is projected to reach $9.8 trillion by 2029, up from $6.8 trillion in 2024. More relevantly: customers in this segment have pricing power tolerance that Planet Fitness members do not.
+Biohacking, performance optimization, and longevity-focused health are no longer niche interests. The target customer for premium wellness services is increasingly a high-income professional who perceives these services as investments in productive years, not luxuries. The global wellness and longevity industry is projected to reach $9.8 trillion by 2029, up from $6.8 trillion in 2024. More relevantly: customers in this segment have pricing power tolerance that low-price-point gym members do not.
 
 **2. GLP-1 drugs are expanding the market, not shrinking it.**
 The concern that Ozempic kills fitness is directionally wrong. Weight loss drugs reduce obesity rates, and people who achieve that milestone tend to invest more (not less) in maintaining and optimizing their health. Recovery, performance, and longevity become more relevant after weight loss, not less. The addressable market for premium wellness is likely to expand as GLP-1 adoption grows.
@@ -65,7 +65,7 @@ The operator who struggles: people who assume that "people love wellness" transl
 
 ## Bottom Line
 
-Wellness is a real category with genuine growth behind it. Most of the risk in this space is concept-selection risk, not category risk. A diversified, scientifically-grounded, well-managed wellness franchise can produce strong returns. A single-trend concept in a saturated market is a different bet entirely.
+Wellness is a real category with genuine growth behind it. Most of the risk in this space is concept-selection risk, not category risk. A diversified, scientifically-grounded, well-managed wellness franchise has meaningfully better unit economics than a single-trend concept in a saturated market. Those are two very different bets.
 
 If you're looking at specific wellness concepts, the conversation should start with unit economics from the FDD and honest answers about what percentage of revenue each service line represents.
 

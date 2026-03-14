@@ -28,23 +28,13 @@ A few structural advantages drive the economics:
 
 ## What the Numbers Look Like
 
-The two most visible brands in franchised junk removal are 1-800-GOT-JUNK? and College H.U.N.K.S. Hauling Junk & Moving. Both have public FDD data:
+The investment range for franchised junk removal is meaningful but accessible relative to other service categories. Most established systems fall in the $150,000–$350,000 range for total initial investment, with liquid capital requirements typically starting around $80,000–$100,000.
 
-**1-800-GOT-JUNK?**
-- Total initial investment: $165,000–$258,000
-- Average gross revenue (franchisees open 72+ months): approximately $2.6M
-- Royalty: 8% of gross sales
-- Liquid capital required: $80,000–$90,000 minimum
-- 1-800-GOT-JUNK guarantees franchisees $100,000 in first-year revenue or provides a refund, which tells you something about how confident the system is in its launch model
+What distinguishes junk removal from many franchise categories at the same investment level is the ratio between what you put in and the revenue potential that franchise systems disclose in their Item 19 data. Look closely at how long franchisees have been operating when reviewing those figures — revenue at year one versus year three or four are meaningfully different numbers, and the better systems separate those cohorts in their disclosures.
 
-**College H.U.N.K.S. Hauling Junk & Moving**
-- Total initial investment: $203,000–$355,000
-- Average gross revenue (all franchises, 2024): $1.45M
-- Top 25%: approximately $3.09M gross revenue
-- Royalty: 7% of gross sales
-- Payback period: estimated 2.3–4.3 years
+Royalty structures across established junk removal systems typically run 7–8% of gross revenue. That's within the standard range, and in a model with low fixed overhead, your operating leverage improves as volume grows.
 
-On the investment-to-revenue ratio, junk removal compares favorably to almost any category at the same investment level. A $200,000 investment with a realistic path to $1.4M–$2.6M in revenue by year three is a better ratio than what many consumer-facing service concepts offer at twice the investment.
+One signal worth noting when evaluating a system: some franchisors in this category provide explicit launch guarantees or minimum revenue commitments in the early months. When a franchisor is confident enough in their launch model to back it financially, that tells you something about the maturity of their onboarding systems.
 
 ---
 
@@ -76,7 +66,7 @@ The junk removal franchise works best for buyers who:
 - Are comfortable managing hourly crews and building team culture
 - Want relatively quick revenue ramp without a long relationship-building sales cycle
 - Have $150,000–$350,000 available for investment with clear access to working capital
-- Are looking at a realistic 3–5 year payback on their investment
+- Are looking at a multi-year build rather than a quick exit
 
 It's not the right fit for buyers who want a passive or semi-absentee business from day one, or who find people management genuinely draining.
 
@@ -84,7 +74,7 @@ It's not the right fit for buyers who want a passive or semi-absentee business f
 
 ## Bottom Line
 
-Junk removal earns its reputation as a high-ROI franchise investment because the numbers are straightforward: reasonable entry cost, strong revenue potential, quick ramp, and durable demand. The market is growing, the model is simple, and the cat systems have been validated across hundreds of locations.
+Junk removal earns its reputation as a strong entry-point franchise because the numbers are straightforward: reasonable entry cost, strong revenue potential supported by Item 19 disclosures, quick ramp, and durable demand. The market is growing, the model is simple, and the operating systems have been validated across hundreds of locations.
 
 If you like the idea of building a real operational business with a team behind you and don't need the category to be flashy, this one delivers.
 

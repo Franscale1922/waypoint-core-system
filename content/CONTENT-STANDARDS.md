@@ -26,10 +26,11 @@ The following are banned in all forms, including paraphrases, approximations, or
 
 ### What is permitted
 
+- **Revenue ranges and investment ranges are explicitly permitted.** Prospective buyers need and deserve this context. Stating that a category's initial investment typically runs $150K–$350K, or that Item 19 disclosures show average unit revenue in a range, is factual and useful. This is not a profitability statement.
 - Describing the *structure* of how a franchise model generates revenue (e.g., recurring vs. one-time, membership vs. transactional)
-- Stating that a franchisor *provides* financial performance data in their FDD Item 19, without reproducing or editorializing on those figures
-- Discussing *capital requirements* — how much it costs to get in — without projecting what comes back
-- Referring readers to validate financial performance directly with franchisees during their due diligence, without providing numbers
+- Stating that a franchisor *provides* financial performance data in their FDD Item 19, without editorializing on those figures
+- Discussing royalty percentages and fee structures — these are investment inputs, not profit projections
+- Referring readers to validate financial performance directly with franchisees during their due diligence
 
 ### When in doubt
 
