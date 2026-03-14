@@ -7,8 +7,8 @@ import {
   calculateArchetype,
   QuizOption,
   ArchetypeId,
-} from "../../lib/archetypes";
-import { trackQuizStarted, trackQuizCompleted, trackBookCallClicked } from "../../lib/analytics";
+} from "@/lib/archetypes";
+import { trackQuizStarted, trackQuizCompleted, trackBookCallClicked } from "@/app/lib/analytics";
 
 type Phase = "quiz" | "capture" | "result";
 

@@ -50,10 +50,16 @@ export default function MarketingLayout({
               Resources
             </Link>
             <Link
+              href="/archetype"
+              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Archetype
+            </Link>
+            <Link
               href="/scorecard"
               className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
-              Quiz
+              Scorecard
             </Link>
             <Link
               href="/book"
@@ -97,6 +103,11 @@ export default function MarketingLayout({
                 <li>
                   <Link href="/scorecard" className="hover:text-white transition-colors inline-block py-1">
                     Readiness Quiz
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/archetype" className="hover:text-white transition-colors inline-block py-1">
+                    Archetype Quiz
                   </Link>
                 </li>
                 <li>

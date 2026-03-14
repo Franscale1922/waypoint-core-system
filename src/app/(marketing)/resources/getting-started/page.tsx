@@ -86,19 +86,21 @@ export default function GettingStartedPage() {
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
           30 minutes. No pitch. Just an honest read on where you stand.
         </p>
-        <Link
-          href="/book"
-          className="inline-block bg-[#d4a55a] text-white px-8 py-4 text-sm tracking-widest uppercase hover:bg-[#c4953a] transition-colors"
-        >
-          Book a Free Call
-        </Link>
-        <a
-          href="sms:+12149951062"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-white/70 hover:text-[#d4a55a] transition-colors mt-4"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          Or text me — (214) 995-1062
-        </a>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <Link
+            href="/book"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+          >
+            Book a Free Call
+          </Link>
+          <a
+            href="sms:+12149951062"
+            className="inline-flex items-center justify-center gap-1.5 px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            Text Me
+          </a>
+        </div>
       </section>
     </main>
   );

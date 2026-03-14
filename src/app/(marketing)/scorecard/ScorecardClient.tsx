@@ -155,6 +155,12 @@ export default function ScorecardClient() {
               <p className="mt-3 text-xs text-slate-400">
                 This call is free. Franchise brands pay the referral fee, not you.
               </p>
+              <p className="mt-5 text-sm text-slate-500">
+                Want to know what kind of franchise owner you are?{" "}
+                <a href="/archetype" className="text-[#c08b3e] underline hover:text-[#1b3a5f]">
+                  Take the Archetype Quiz →
+                </a>
+              </p>
             </>
           ) : (
             <div className="mt-6 sm:mt-8 space-y-3">

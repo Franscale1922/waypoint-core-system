@@ -28,6 +28,17 @@ export const ScorecardSchema = z.object({
   biggestFear: z.string().optional(),
 });
 
+// ── Archetype quiz submission (POST /api/archetype-complete) ─────────────────
+
+export const ArchetypeSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Must be a valid email"),
+  archetype: z.string().min(1),
+  archetypeName: z.string().min(1),
+  strongFits: z.array(z.string()),
+  weakFits: z.array(z.string()),
+});
+
 // ── Inbound webhook (POST /api/webhooks/inbound) ─────────────────────────────
 
 export const InboundWebhookSchema = z.object({

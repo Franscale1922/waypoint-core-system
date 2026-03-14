@@ -70,7 +70,7 @@ export default function ResourcesPage() {
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">The fastest way to get a real answer is a real conversation.</p>
-        <Link href="/book" className="inline-block bg-[#d4a55a] text-white px-8 py-4 text-sm tracking-widest uppercase hover:bg-[#c4953a] transition-colors">Book a Free Call</Link>
+        <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
       </section>
     </main>
   );
