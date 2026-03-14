@@ -145,16 +145,16 @@ export default function ProcessPage() {
       </section>
 
       {/* ── Intro context bar ──────────────────────────── */}
-      <section className="border-b border-[#e8e0d0]">
-        <div className="max-w-4xl mx-auto px-6 py-10 sm:py-14 grid sm:grid-cols-3 gap-8 text-center">
+      <section className="border-b border-[#e8e0d0] bg-[#f7f5f1]">
+        <div className="max-w-4xl mx-auto px-6 py-10 sm:py-14 grid sm:grid-cols-3 gap-5 text-center">
           {[
             { stat: "250+", label: "Franchise concepts in our inventory" },
             { stat: "3–4", label: "Brands presented per candidate, maximum" },
             { stat: "~30%", label: "Of candidates end up buying a franchise. That is okay." },
           ].map(({ stat, label }) => (
-            <div key={stat}>
-              <div className="font-playfair text-4xl text-[#d4a55a] mb-2">{stat}</div>
-              <div className="text-sm text-[#5a5a4a] leading-snug">{label}</div>
+            <div key={stat} className="bg-white border border-[#e2ddd2] rounded-lg py-5 px-4">
+              <p className="text-2xl sm:text-3xl font-black text-[#1b3a5f] tracking-tight mb-2">{stat}</p>
+              <p className="text-[10px] text-[#7a7a7a] uppercase tracking-widest leading-snug">{label}</p>
             </div>
           ))}
         </div>

@@ -158,7 +158,7 @@ export default function InvestmentPage() {
             { stat: "$75K+", label: "Liquid capital minimum" },
             { stat: "Item 7", label: "Where total costs live in the FDD" },
           ].map(({ stat, label }) => (
-            <div key={label}>
+            <div key={label} className="bg-white border border-[#e2ddd2] rounded-lg py-5 px-4">
               <p className="text-xl sm:text-2xl font-black text-[#1b3a5f]">{stat}</p>
               <p className="mt-1 text-[10px] text-[#7a7a7a] uppercase tracking-widest leading-snug">{label}</p>
             </div>
@@ -308,22 +308,66 @@ export default function InvestmentPage() {
         </div>
       </section>
 
-      {/* Internal links */}
-      <section className="max-w-4xl mx-auto px-10 py-10 border-t border-[#e8e0d0]">
-        <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Related resources</p>
-        <div className="flex flex-wrap gap-4">
-          <Link href="/resources/the-true-cost-of-buying-a-franchise" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            The true cost of buying a franchise →
+      {/* Related resources — card format */}
+      <section className="max-w-4xl mx-auto px-10 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
+        <div className="flex items-center gap-4 mb-8">
+          <div className="w-8 h-[2px] bg-[#d4a55a]" />
+          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Related Resources</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+
+          <Link
+            href="/resources/the-true-cost-of-buying-a-franchise"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Getting Started</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              The true cost of buying a franchise
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Beyond the franchise fee — what you actually spend to get open and operating.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/resources/how-franchise-funding-actually-works" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            How franchise funding actually works →
+
+          <Link
+            href="/resources/how-franchise-funding-actually-works"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              How franchise funding actually works
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">SBA loans, ROBS, HELOC, and franchisor financing — how buyers actually fund the deal.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/resources/fdd-decoded-what-actually-matters" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            FDD decoded: what actually matters →
+
+          <Link
+            href="/resources/fdd-decoded-what-actually-matters"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              FDD decoded: what actually matters
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Which items in the Franchise Disclosure Document tell you the most — and what to look for in each.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/faq" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
-            Common questions →
+
+          <Link
+            href="/faq"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+          >
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Common Questions</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+              Frequently asked questions
+            </h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Honest answers about cost, capital, process timeline, and what working with a consultant actually looks like.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
+
         </div>
       </section>
 
