@@ -215,12 +215,14 @@ export default function HomePage() {
                 }`}
                 style={{ transitionDelay: `${i * 100}ms` }}
               >
-                <h3 className="text-base sm:text-lg font-semibold text-[#d4a55a] mb-3 sm:mb-4">
-                  {persona.title}
-                </h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  {persona.text}
-                </p>
+                <div className={i === personas.length - 1 && personas.length % 2 !== 0 ? "max-w-2xl mx-auto text-center" : ""}>
+                  <h3 className="text-base sm:text-lg font-semibold text-[#d4a55a] mb-3 sm:mb-4">
+                    {persona.title}
+                  </h3>
+                  <p className="text-sm text-slate-400 leading-relaxed">
+                    {persona.text}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
