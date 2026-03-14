@@ -92,7 +92,7 @@ export default function MobileNav() {
                 { href: "/process", label: "How It Works" },
                 { href: "/faq", label: "FAQ" },
                 { href: "/scorecard", label: "Readiness Quiz" },
-                { href: "/blog", label: "Insights" },
+                { href: "/resources", label: "Resources" },
                 { href: "/book", label: "Book a Call" },
               ].map((link) => (
                 <Link

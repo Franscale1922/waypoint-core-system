@@ -66,6 +66,7 @@ export default function AboutPage() {
             <img
               src="/images/kelsey-campfire-group.jpg"
               alt="Kelsey Stuart with family and friends in Montana"
+              loading="lazy"
               className="w-full object-cover"
               style={{ height: "420px", objectPosition: "center 40%" }}
             />
@@ -110,6 +111,7 @@ export default function AboutPage() {
               <img
                 src="/images/kelsey-trail-selfie.jpg"
                 alt="Kelsey Stuart on a Montana trail overlook"
+                loading="lazy"
                 className="w-full object-cover"
                 style={{ height: "280px", objectPosition: "center 20%" }}
               />

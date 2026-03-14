@@ -199,6 +199,7 @@ export default function ProcessPage() {
         <img
           src="/images/kelsey-process-map.jpg"
           alt="Kelsey Stuart reviewing a topographic map at an outdoor table in Montana"
+          loading="lazy"
           className="w-full object-cover"
           style={{ height: '420px', objectPosition: 'center 45%' }}
         />

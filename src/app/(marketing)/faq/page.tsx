@@ -43,7 +43,7 @@ const faqs = [
     questions: [
       {
         q: "What happens after I book a call?",
-        a: "We schedule a two-hour discovery conversation. It is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
+        a: "We start with a short intro call — usually 20 to 30 minutes — to understand where you are in the process and whether going deeper makes sense. If it does, we schedule the two-hour discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
       },
       {
         q: "How long does the whole process take?",

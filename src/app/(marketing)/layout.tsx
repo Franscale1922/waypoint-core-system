@@ -44,6 +44,12 @@ export default function MarketingLayout({
               FAQ
             </Link>
             <Link
+              href="/resources"
+              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Resources
+            </Link>
+            <Link
               href="/scorecard"
               className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
@@ -96,6 +102,11 @@ export default function MarketingLayout({
                 <li>
                   <Link href="/faq" className="hover:text-white transition-colors inline-block py-1">
                     FAQ
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/resources" className="hover:text-white transition-colors inline-block py-1">
+                    Resources
                   </Link>
                 </li>
                 <li>

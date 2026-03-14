@@ -123,6 +123,7 @@ export default function HomePage() {
               <img
                 src="/images/kelsey-honest-portrait.jpg"
                 alt="Kelsey Stuart, franchise advisor"
+                loading="lazy"
                 className="w-full object-cover"
                 style={{ height: "380px", objectPosition: "center 25%" }}
               />
@@ -221,6 +222,7 @@ export default function HomePage() {
             <img
               src="/images/kelsey-process-conversation.jpg"
               alt="Kelsey Stuart leading the way down a forest trail"
+              loading="lazy"
               className="w-full object-cover"
               style={{ height: "380px", objectPosition: "center 30%" }}
             />
