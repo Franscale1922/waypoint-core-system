@@ -118,6 +118,15 @@ export default function HomePage() {
               life-changing decision.
             </h2>
             <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
+            {/* Honest portrait — full width between headline and body text */}
+            <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-12">
+              <img
+                src="/images/kelsey-honest-portrait.jpg"
+                alt="Kelsey Stuart, franchise advisor"
+                className="w-full object-cover"
+                style={{ height: "380px", objectPosition: "center 25%" }}
+              />
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
               <div>
                 <p className="text-sm sm:text-base text-[#4a4a4a] leading-relaxed">
