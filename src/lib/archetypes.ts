@@ -32,11 +32,11 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
   educator: {
     id: "educator",
     name: "The Educator",
-    tagline: "You turn complicated into clear — and people follow because of it.",
+    tagline: "You turn complicated into clear. People follow because of it.",
     description:
-      "You naturally break things down. When you explain something, people actually understand it — and that energy keeps you going. You're patient where others get frustrated, structured where others go on instinct, and you get real satisfaction from watching someone grow because you handed them the right tools. You're not just building a business. You're building something you can teach.",
+      "You naturally break things down. When you explain something, people actually understand it, and that energy keeps you going. You're patient where others get frustrated, structured where others go on instinct, and you get real satisfaction from watching someone grow because you handed them the right tools. You're not just building a business. You're building something you can teach.",
     advisorNote:
-      "Educators thrive where the training process IS the competitive advantage — where your ability to develop staff and educate customers is literally the product. I'll point you toward models where the franchisor's curriculum and your natural instruction style compound into something hard to copy. The biggest trap for your type: over-explaining the sale. We'll work on that.",
+      "Educators thrive where the training process IS the competitive advantage. Your ability to develop staff and educate customers is literally the product. I'll point you toward models where the franchisor's curriculum and your natural instruction style build something hard for competitors to copy. The biggest trap for your type: over-explaining the sale. We'll work on that.",
     emoji: "📚",
     discProfile: "S/I",
     strongFits: ["Children's Education & Enrichment", "Senior Care", "Business Services (Consulting/Coaching)", "Home Services"],
@@ -44,7 +44,7 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     strongFitReason:
       "Education and enrichment franchises put your training instincts at the center of delivery. Senior care rewards owners who can develop caregiver competency. Coaching and consulting brands like ActionCOACH are literally built around the Educator's core skill.",
     weakFitReason:
-      "QSR, junk removal, and pest control live and die on throughput speed and transactional volume. The Educator's instinct to explain the 'why' behind every step slows execution in these models — and the margin for patience is thin.",
+      "QSR, junk removal, and pest control live and die on throughput speed and transactional volume. The Educator's instinct to explain the 'why' behind every step slows execution in these models. The margin for patience is thin.",
   },
 
   empath: {
@@ -52,15 +52,15 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     name: "The Caregiver",
     tagline: "You built trust before you knew it was a business strategy.",
     description:
-      "You read rooms the way other people read spreadsheets. You remember what matters to people — their names, their situations, the thing they mentioned three weeks ago. The people you serve don't just become customers; they become relationships. You're drawn to work that has purpose beyond the transaction, and you bring a kind of loyalty-building that can't be manufactured.",
+      "You read rooms the way other people read spreadsheets. You remember what matters to people: their names, their situations, the thing they mentioned three weeks ago. The people you serve don't just become customers; they become relationships. You're drawn to work that has purpose beyond the transaction, and you bring a kind of loyalty-building that can't be manufactured.",
     advisorNote:
-      "Caregivers dominate in any business where trust is the product. Senior care, pet services, and children's programs all run on repeat referrals from families who believe you genuinely care — because you do. The blind spot I watch for: taking rejection personally. When a family says no or a client leaves, it can hit deeper than it should. We'll make sure the business model has enough margin for the emotional complexity of this work.",
+      "Caregivers do well in any business where trust is the product. Senior care, pet services, and children's programs all run on repeat referrals from families who believe you genuinely care. Because they're right. The blind spot I watch for: taking rejection personally. When a family says no or a client leaves, it can hit deeper than it should. We'll make sure the business model has enough room for the emotional complexity of this work.",
     emoji: "🤝",
     discProfile: "S",
     strongFits: ["Senior Care", "Pet Services", "Children's Education & Enrichment", "Medical Wellness"],
     weakFits: ["Junk Removal", "Business Services (B2B Sales)", "Restoration & Cleaning"],
     strongFitReason:
-      "Senior care brands explicitly recruit for 'a heart for service' — your instinct to genuinely care for vulnerable people is their most valuable trait. Pet services runs on the same trust dynamic. Families hand you what they love most and pay a premium for the peace of mind.",
+      "Senior care brands explicitly recruit for 'a heart for service.' Your instinct to genuinely care for vulnerable people is their most valuable trait. Pet services runs on the same trust dynamic. Families hand you what they love most and pay a premium for the peace of mind.",
     weakFitReason:
       "Junk removal and high-volume B2B sales require transaction speed and emotional distance from rejection. Restoration work demands cool-headed project management under pressure. These models drain Caregivers rather than energizing them.",
   },
@@ -68,19 +68,19 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
   connector: {
     id: "connector",
     name: "The Connector",
-    tagline: "You've never met a stranger — and that's a business asset.",
+    tagline: "You've never met a stranger. That's a business asset.",
     description:
       "You remember names. You work rooms without trying. Referrals happen naturally because people want to send business to someone they trust, and you've spent your career building that reputation without thinking of it as a strategy. You track relationships the way others track inventory, and you understand instinctively that most businesses are really just networks in disguise.",
     advisorNote:
-      "Connectors have a massive advantage in any business where referral generation is survival. The categories I'll show you have one thing in common: your network IS your pipeline. The risk for your type is that you can over-rely on relationships and under-invest in systems. The right franchise model gives you the structure so your natural people skill can focus where it creates the most value.",
+      "Connectors have a real edge in any business where referral generation is survival. The categories I'll show you have one thing in common: your network IS your pipeline. The risk for your type is that you can lean too hard on relationships and under-invest in systems. The right franchise model gives you the structure so your natural people skill can focus where it creates the most value.",
     emoji: "🌐",
     discProfile: "I",
     strongFits: ["Senior Care", "Beauty & Personal Care", "Business Services (Consulting/Coaching)", "Real Estate & Home Improvement", "Medical Wellness"],
     weakFits: ["Lawn & Landscape", "Pest Control", "Food & Beverage (QSR)"],
     strongFitReason:
-      "Senior care and medical wellness live on referral networks — discharge planners, elder law attorneys, physicians. Beauty and personal care builds loyalty through relationships. Real estate is fundamentally a connector's game. These categories reward exactly what you do naturally.",
+      "Senior care and medical wellness live on referral networks: discharge planners, elder law attorneys, physicians. Beauty and personal care builds loyalty through relationships. Real estate is fundamentally a connector's game. These categories reward exactly what you do naturally.",
     weakFitReason:
-      "Route-based businesses like lawn care and pest control succeed on operational density and efficiency — not relationship breadth. QSR is transactional by design. These models don't leverage your strongest asset.",
+      "Route-based businesses like lawn care and pest control succeed on operational density and efficiency, not relationship breadth. QSR is transactional by design. These models don't put your strongest asset to work.",
   },
 
   operator: {
@@ -88,9 +88,9 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     name: "The Operator",
     tagline: "You see the system. Everyone else just sees the chaos.",
     description:
-      "You walk into a business and immediately see what's inefficient. You love SOPs, checklists, dispatch software, and P&L discipline. You get frustrated when people 'wing it' and deeply satisfied when a process runs exactly as designed. You're not the visionary — you're the person who makes the vision actually work. And in franchising, that's worth more than almost anything else.",
+      "You walk into a business and immediately see what's inefficient. You love SOPs, checklists, dispatch software, and P&L discipline. You get frustrated when people 'wing it' and deeply satisfied when a process runs exactly as designed. You're not the visionary. You're the person who makes the vision actually work. And in franchising, that's worth more than almost anything else.",
     advisorNote:
-      "Operators are the franchise industry's most reliable success story. The system you're buying into was designed for someone exactly like you. The key is matching you to a brand where their training and support infrastructure is genuinely strong, not just marketed that way. I'll help you tell the difference — and steer you toward the categories where process discipline produces the widest margins.",
+      "Operators are the franchise industry's most reliable success story. The system you're buying into was designed for someone exactly like you. What matters is matching you to a brand where their training and support infrastructure is genuinely strong, not just marketed that way. I'll help you tell the difference and point you toward the categories where process discipline produces the widest margins.",
     emoji: "⚙️",
     discProfile: "C/S",
     strongFits: ["Home Services", "Restoration & Cleaning", "Fitness & Wellness", "Food & Beverage (QSR)", "Lawn & Landscape", "Pest Control"],
@@ -98,7 +98,7 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     strongFitReason:
       "Home services, restoration, lawn care, and pest control are process machines. Your instinct to build tight systems, control labor costs, and track utilization metrics is precisely what separates profitable operators from the ones that grind and break even. These categories reward Operators disproportionately.",
     weakFitReason:
-      "Real estate brokerage depends on recruiting and managing independent salespeople — a people flexibility game that fights your instinct for process standardization. Large-format entertainment requires creative community energy alongside operations, which dilutes your core strength.",
+      "Real estate brokerage depends on recruiting and managing independent salespeople. It's a people flexibility game that fights your instinct for process standardization. Large-format entertainment requires creative community energy alongside operations, which pulls focus from what you're actually good at.",
   },
 
   driver: {
@@ -106,15 +106,15 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     name: "The Driver",
     tagline: "No doesn't stop you. It just tells you which way to go next.",
     description:
-      "You're comfortable with rejection in a way that most people aren't. Quotas and measurable outcomes feel like oxygen to you — they tell you where you stand and what to do next. You communicate directly, close confidently, and get impatient when relationships take longer to develop than the deal requires. You don't need to love the product to sell it. You need to know it works.",
+      "You're comfortable with rejection in a way that most people aren't. Quotas and measurable outcomes feel like oxygen to you. They tell you where you stand and what to do next. You communicate directly, close confidently, and get impatient when relationships take longer to develop than the deal requires. You don't need to love the product to sell it. You need to know it works.",
     advisorNote:
-      "Drivers excel in businesses where daily prospecting is the difference between survival and momentum. I'll show you categories where that energy is the fuel — not the exception. The one thing I'll push back on: make sure you're not underestimating what it takes to build the operational side. Drivers sell their way into business and sometimes manage their way out of it. The right franchise system solves that.",
+      "Drivers do well in businesses where daily prospecting is the difference between survival and momentum. I'll show you categories where that energy is the fuel, not the exception. The one thing I'll push back on: make sure you're not underestimating what it takes to build the operational side. Drivers sell their way into business and sometimes manage their way out of it. The right franchise system solves that.",
     emoji: "🎯",
     discProfile: "D",
     strongFits: ["Junk Removal", "Real Estate & Home Improvement", "Business Services (B2B Sales)", "Pest Control", "Home Services"],
     weakFits: ["Senior Care", "Children's Education & Enrichment", "Pet Services"],
     strongFitReason:
-      "Commercial cleaning and B2B business services owners report 60–80 hours/week of prospecting in Year 1 — that's exactly where Drivers thrive. Junk removal and pest control run on high call volume and daily close rates. Real estate brokerage rewards the Drivers who can out-hustle the market.",
+      "Commercial cleaning and B2B business services owners report 60–80 hours/week of prospecting in Year 1. That's exactly where Drivers thrive. Junk removal and pest control run on high call volume and daily close rates. Real estate brokerage rewards the people who can out-hustle the market.",
     weakFitReason:
       "Senior care and children's programs require patient trust-building with families making emotional decisions. Pet services depends on community goodwill. Drivers can build these businesses, but the pace of relationship development frustrates the 'get to the close' instinct.",
   },
@@ -124,15 +124,15 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     name: "The Community Builder",
     tagline: "You don't just run a business. You create a place people belong.",
     description:
-      "You know everyone. You organize the events, chair the committee, remember the fundraiser. People follow your energy because you make them feel like they're part of something. Your marketing doesn't feel like marketing — it feels like an invitation. And the businesses that work best for you are the ones where your local presence and genuine community investment IS the competitive moat.",
+      "You know everyone. You organize the events, chair the committee, remember the fundraiser. People follow your energy because you make them feel like they're part of something. Your marketing doesn't feel like marketing. It feels like an invitation. And the businesses that work best for you are the ones where your local presence and genuine community investment IS the competitive moat.",
     advisorNote:
-      "Community Builders are unusually powerful in local-market businesses where the owner's personality becomes the brand. Boutique fitness studios, children's programs, and pet services are all categories where the founding member community you create in Year 1 becomes the referral network that carries you through Year 3. The risk: you'll spend time on community when the business needs operations attention. I'll help you balance both.",
+      "Community Builders are strong in local-market businesses where the owner's personality becomes the brand. Boutique fitness studios, children's programs, and pet services are all categories where the founding member community you create in Year 1 becomes the referral network that carries you through Year 3. The risk: you'll spend time on community when the business needs operations attention. I'll help you balance both.",
     emoji: "🏘️",
     discProfile: "S/I",
     strongFits: ["Fitness & Wellness", "Children's Education & Enrichment", "Pet Services", "Beauty & Personal Care", "Entertainment & Events"],
     weakFits: ["Business Services (B2B Sales)", "Pest Control", "Junk Removal"],
     strongFitReason:
-      "Boutique fitness success is tied directly to 'founding member' community energy — your natural ability to create belonging is the product. Children's enrichment and pet services both rely on word-of-mouth within tight-knit parent and pet-owner communities where your authentic local presence compounds over time.",
+      "Boutique fitness success is tied directly to 'founding member' community energy. Your natural ability to create belonging is the product. Children's enrichment and pet services both rely on word-of-mouth within tight-knit parent and pet-owner communities where your authentic local presence builds on itself over time.",
     weakFitReason:
       "B2B services, pest control, and junk removal are efficiency and prospecting businesses. The energy you put into community events and relationship cultivation doesn't translate as directly into revenue in these models, and the daily grind can feel disconnected from your natural strengths.",
   },
@@ -142,35 +142,35 @@ export const ARCHETYPES: Record<ArchetypeId, Archetype> = {
     name: "The Analyst",
     tagline: "You need the numbers to work before you move. That instinct will protect you.",
     description:
-      "You build the model before you believe the pitch. You ask 'what's the data?' before 'what do you think?' You find patterns other people miss, and you're deeply skeptical of vibes-based decision-making. In franchising, this makes you one of the safest candidates — you'll do the due diligence that protects you from bad brands and bad territory decisions. You're not risk-averse. You're risk-disciplined.",
+      "You build the model before you believe the pitch. You ask 'what's the data?' before 'what do you think?' You find patterns other people miss, and you're deeply skeptical of vibes-based decision-making. In franchising, this makes you one of the safer candidates. You'll do the due diligence that protects you from bad brands and bad territory decisions. You're not risk-averse. You're risk-disciplined.",
     advisorNote:
-      "Analysts tend to make the best franchise investment decisions — not because they move fastest, but because they verify everything. I'll give you the Item 19 data, the franchisee validation conversations, and the territory analysis you need to make a confident decision. The trap for your type: analysis paralysis. At some point the model has to be good enough to start. I'll help you find that line.",
+      "Analysts tend to make the best franchise investment decisions. Not because they move fastest, but because they verify everything. I'll give you the Item 19 data, the franchisee validation conversations, and the territory analysis you need to make a confident call. The trap for your type: analysis paralysis. At some point the model has to be good enough to start. I'll help you find that line.",
     emoji: "📊",
     discProfile: "C",
     strongFits: ["Restoration & Cleaning", "Medical Wellness", "Food & Beverage (QSR)", "Lawn & Landscape", "Pest Control", "Pool & Outdoor"],
     weakFits: ["Entertainment & Events", "Real Estate & Home Improvement (Brokerage)", "Senior Care (emotional complexity)"],
     strongFitReason:
-      "Restoration franchises (water damage, fire, mold) live on Xactimate estimating accuracy, insurance claim discipline, and job cost control — all Analyst strengths. Medical wellness requires meticulous HIPAA, compliance, and financial modeling. QSR franchise success drops 40% without strong cost discipline. These are the categories where your rigor pays dividends.",
+      "Restoration franchises (water damage, fire, mold) live on Xactimate estimating accuracy, insurance claim discipline, and job cost control. All Analyst strengths. Medical wellness requires meticulous HIPAA, compliance, and financial modeling. QSR franchise success drops significantly without strong cost discipline. These are the categories where your rigor pays dividends.",
     weakFitReason:
-      "Large entertainment concepts require intuitive community energy and experience design that goes beyond what data alone can drive. Real estate brokerage succeeds on agent relationship fluidity. Senior care's emotional complexity can be hard to systematize — which frustrates the Analyst's instinct to resolve everything with a better process.",
+      "Large entertainment concepts require intuitive community energy and experience design that goes beyond what data alone can drive. Real estate brokerage succeeds on agent relationship fluidity. Senior care's emotional complexity can be hard to systematize, which frustrates the Analyst's instinct to resolve everything with a better process.",
   },
 
   creative: {
     id: "creative",
     name: "The Creative",
-    tagline: "You see what it could be — and then you build it.",
+    tagline: "You see what it could be. Then you build it.",
     description:
-      "You think visually. You notice the design before the price, the experience before the product, the story before the pitch. You're trend-aware, platform-native, and instinctively understand what makes something worth talking about. You don't settle for 'good enough' when you know it could be remarkable. In franchising, that energy is a marketing multiplier — if you're in a category where it matters.",
+      "You think visually. You notice the design before the price, the experience before the product, the story before the pitch. You're trend-aware, platform-native, and you understand instinctively what makes something worth talking about. You don't settle for 'good enough' when you know it could be remarkable. In franchising, that instinct is a real marketing advantage in the right category.",
     advisorNote:
-      "Creatives bring an unfair advantage in categories where brand experience IS the differentiation. Beauty, fitness, and entertainment businesses live on Instagram and word-of-mouth — and your natural instinct to create something worth sharing is exactly what the franchisor's marketing playbook is missing at the local level. The risk: make sure operations don't suffer while you're optimizing the aesthetic. We'll talk about how to protect both.",
+      "Creatives do well in categories where brand experience IS the differentiation. Beauty, fitness, and entertainment businesses live on Instagram and word-of-mouth, and your instinct to create something worth sharing is exactly what the franchisor's marketing playbook is missing at the local level. The risk: make sure operations don't suffer while you're optimizing the aesthetic. We'll talk about how to protect both.",
     emoji: "🎨",
     discProfile: "I",
     strongFits: ["Beauty & Personal Care", "Fitness & Wellness (Boutique)", "Entertainment & Events", "Children's Education & Enrichment"],
     weakFits: ["Lawn & Landscape", "Pest Control", "Junk Removal", "Restoration & Cleaning"],
     strongFitReason:
-      "Beauty franchise success correlates with Instagram engagement — your visual instincts are a direct revenue driver. Boutique fitness studios succeed when the opening-week social energy you create converts to founding memberships. Entertainment concepts live on experience design, which is the Creative's native language.",
+      "Beauty franchise success ties directly to Instagram engagement. Your visual instincts are a direct revenue driver. Boutique fitness studios succeed when the opening-week social energy you create converts to founding memberships. Entertainment concepts live on experience design, which is where Creatives are most at home.",
     weakFitReason:
-      "Pest control, lawn care, junk removal, and restoration are operational efficiency businesses. There's no experience to design, no brand identity to differentiate locally, no visual story to tell. These models reward discipline and volume — and slowly drain the Creative's energy.",
+      "Pest control, lawn care, junk removal, and restoration are operational efficiency businesses. There's no experience to design, no brand story to build locally, no visual identity to differentiate. These models reward discipline and volume, and they tend to grind the Creative's energy down over time.",
   },
 };
 
