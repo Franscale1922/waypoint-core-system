@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
+import { verifyBearer } from "@/app/lib/webhook-auth";
 
 // This endpoint receives incoming email webhooks from Resend/Instantly
 export async function POST(req: Request) {
+    const authError = verifyBearer(req, process.env.RESEND_WEBHOOK_SECRET);
+    if (authError) return authError;
+
     try {
+
         const body = await req.json();
 
         // Depending on Resend's exact webhook payload shape

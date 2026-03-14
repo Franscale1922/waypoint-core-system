@@ -299,6 +299,13 @@ export default function ProcessPage() {
             >
               Take the Readiness Quiz
             </Link>
+            <a
+              href="sms:+12149951062"
+              className="inline-flex items-center justify-center gap-1.5 border border-white/40 text-white px-8 py-4 text-sm tracking-widest uppercase hover:border-white/80 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              Text Me
+            </a>
           </div>
         </div>
       </section>

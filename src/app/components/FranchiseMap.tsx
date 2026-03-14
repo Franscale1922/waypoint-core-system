@@ -3,9 +3,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { CITY_COORDS, STATE_COORDS } from "../data/territoryCoords";
 
-// Google Sheet published as CSV
-const SHEET_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1nUQaiUoZ6yB67O5U2DgR07If1GBUf9vSGbFTJKLhlM4/export?format=csv";
+// Fetched server-side via API route to avoid CORS issues
+const MAP_API_URL = "/api/map-cities";
 
 // Albers USA projection
 function albersProject(lat: number, lng: number): [number, number] {
@@ -92,12 +91,6 @@ interface Territory {
   y: number;
 }
 
-function parseCSV(csv: string): string[] {
-  return csv
-    .split(/\r?\n/)
-    .map((line) => line.replace(/^"|"$/g, "").trim())
-    .filter((line) => line.length > 0);
-}
 
 function geocodeCity(name: string): [number, number] | null {
   const normalized = name.toLowerCase().trim();
@@ -121,10 +114,10 @@ export default function FranchiseMap() {
   const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(SHEET_CSV_URL)
-      .then((res) => res.text())
-      .then((csv) => {
-        setCities(parseCSV(csv));
+    fetch(MAP_API_URL)
+      .then((res) => res.json())
+      .then((data: { cities?: string[] }) => {
+        setCities(data.cities ?? []);
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -166,7 +159,7 @@ export default function FranchiseMap() {
                 <>
                   I&rsquo;ve helped{" "}
                   <span className="text-[#d4a55a]">
-                    {territories.length}+ owners
+                    {cities.length > 0 ? `${cities.length}+` : "146+"} owners
                   </span>{" "}
                   find and start the right franchise.
                 </>

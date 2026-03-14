@@ -142,7 +142,17 @@ export default function ScorecardClient() {
               >
                 Book a Free Call With Me
               </a>
-              <p className="mt-4 text-xs text-slate-400">
+              <div className="mt-3 flex items-center justify-center gap-3">
+                <span className="text-xs text-slate-400">or</span>
+                <a
+                  href="sms:+12149951062"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#c08b3e] hover:text-[#d4a55a] transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                  Text me instead
+                </a>
+              </div>
+              <p className="mt-3 text-xs text-slate-400">
                 This call is free. Franchise brands pay the referral fee, not you.
               </p>
             </>

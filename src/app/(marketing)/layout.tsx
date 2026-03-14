@@ -153,6 +153,20 @@ export default function MarketingLayout({
               >
                 kelsey@waypointfranchise.com
               </a>
+              <div className="mt-2 flex items-center gap-3">
+                <a
+                  href="tel:+12149951062"
+                  className="text-sm hover:text-white transition-colors py-1"
+                >
+                  (214) 995-1062
+                </a>
+                <a
+                  href="sms:+12149951062"
+                  className="text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] px-2 py-0.5 rounded transition-colors"
+                >
+                  Text me
+                </a>
+              </div>
               <p className="mt-3 text-xs text-[#444]">
                 Whitefish, Montana
               </p>

@@ -4,38 +4,23 @@ import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
 import { followUpDay2Html, followUpDay2Text } from "@/app/emails/follow-up-day2";
 import { followUpDay5Html, followUpDay5Text } from "@/app/emails/follow-up-day5";
+import { ScorecardSchema } from "@/app/lib/schemas";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
 
-interface ScorecardsPayload {
-  name: string;
-  email: string;
-  score: number;
-  primaryDriver: string;
-  biggestFear: string;
-}
-
-/**
- * POST /api/scorecard-complete
- * Saves the lead to DB (or updates existing) and triggers 3-email nurture sequence via Resend.
- * Email 1: immediate score results
- * Email 2: "3 questions to ask" — sent via Resend Broadcasts or a scheduled job (see note)
- * Email 3: Day-5 soft close — same
- *
- * NOTE: Resend doesn't natively support delayed sends at the moment.
- * Email 1 fires immediately. Emails 2 & 3 are enqueued via Resend Broadcasts
- * or a cron job in Vercel. For now, we store the sequence state in the Lead record
- * and a Vercel cron at /api/cron/send-followups handles the timing.
- */
 export async function POST(req: Request) {
   try {
-    const body: ScorecardsPayload = await req.json();
-    const { name, email, score, primaryDriver, biggestFear } = body;
-
-    if (!name || !email) {
-      return NextResponse.json({ error: "Missing name or email" }, { status: 400 });
+    const raw = await req.json();
+    const parsed = ScorecardSchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid payload", errors: parsed.error.flatten() },
+        { status: 400 }
+      );
     }
+
+    const { name, email, score, primaryDriver, biggestFear } = parsed.data;
 
     // ── 1. Upsert lead in DB ──────────────────────────────────────────────────
     const existing = await prisma.lead.findFirst({ where: { email } });
@@ -66,10 +51,11 @@ export async function POST(req: Request) {
       from: FROM,
       to: email,
       subject: `Your Franchise Readiness Score: ${score}/100`,
-      html: scoreResultsHtml({ name, score, primaryDriver, biggestFear }),
-      text: scoreResultsText({ name, score, primaryDriver, biggestFear }),
+      html: scoreResultsHtml({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
+      text: scoreResultsText({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
       tags: [{ name: "sequence", value: "scorecard-email-1" }],
     });
+
 
     // ── 3. Schedule Email 2 (Day 2) via Resend Scheduled ─────────────────────
     // Resend supports "scheduledAt" on the email send payload

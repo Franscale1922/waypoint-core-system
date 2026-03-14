@@ -1,19 +1,28 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
+import { LeadSchema } from "@/app/lib/schemas";
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const leads = Array.isArray(body) ? body : [body];
+        const rawLeads = Array.isArray(body) ? body : [body];
 
         const results = [];
 
-        for (const leadData of leads) {
-            if (!leadData.name || !leadData.linkedinUrl) {
-                results.push({ success: false, error: "Name and LinkedIn URL required", raw: leadData });
+        for (const rawLead of rawLeads) {
+            const parsed = LeadSchema.safeParse(rawLead);
+            if (!parsed.success) {
+                results.push({
+                    success: false,
+                    error: "Validation failed",
+                    errors: parsed.error.flatten(),
+                    raw: rawLead,
+                });
                 continue;
             }
+
+            const leadData = parsed.data;
 
             // Upsert lead so we don't duplicate on same linkedin
             const lead = await prisma.lead.upsert({
@@ -57,7 +66,8 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ processed: results.length, results }, { status: 200 });
-    } catch (err: any) {
-        return NextResponse.json({ error: err.message }, { status: 500 });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }

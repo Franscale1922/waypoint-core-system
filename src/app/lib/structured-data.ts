@@ -9,6 +9,7 @@ export const localBusinessSchema = {
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. We match burned-out professionals to franchise opportunities that fit their life, capital, and goals.",
   url: SITE_URL,
   email: "kelsey@waypointfranchise.com",
+  telephone: "+1-214-995-1062",
   founder: {
     "@type": "Person",
     name: "Kelsey Stuart",
@@ -61,6 +62,7 @@ export const personSchema = {
     "Former Bloomin' Blinds franchisor who helped grow a $40M franchise system with 200+ locations, and former franchisee who learned from failure firsthand. Based in Whitefish, Montana. Now helping corporate professionals and career changers find the right franchise through Waypoint Franchise Advisors, a free consulting service.",
   url: `${SITE_URL}/about`,
   email: "kelsey@waypointfranchise.com",
+  telephone: "+1-214-995-1062",
   address: {
     "@type": "PostalAddress",
     addressLocality: "Whitefish",

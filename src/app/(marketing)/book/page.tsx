@@ -98,6 +98,26 @@ export default function BookPage() {
             <p className="text-xs text-[#9a9a8a] text-center leading-relaxed">
               100% free to you. Franchise brands pay the referral fee when you purchase, not before.
             </p>
+
+            {/* Prefer to text? */}
+            <div className="border-t border-[#e8e0d0] pt-4 text-center">
+              <p className="text-xs text-[#9a9a8a] mb-2">Prefer a quicker hello?</p>
+              <div className="flex items-center justify-center gap-3">
+                <a
+                  href="tel:+12149951062"
+                  className="text-sm text-[#5a5a4a] hover:text-[#0c1929] transition-colors"
+                >
+                  (214) 995-1062
+                </a>
+                <a
+                  href="sms:+12149951062"
+                  className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] px-2.5 py-1 rounded transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                  Text me
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Right: TidyCal calendar */}

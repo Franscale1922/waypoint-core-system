@@ -1,0 +1,28 @@
+import { auth } from "@/auth";
+import { NextResponse } from "next/server";
+
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const { pathname } = req.nextUrl;
+
+  // API routes return 401 JSON — they can't redirect to a login page
+  const isProtectedApi =
+    pathname.startsWith("/api/leads") || pathname.startsWith("/api/settings");
+
+  if (!isLoggedIn) {
+    if (isProtectedApi) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    // Admin pages redirect to login
+    const loginUrl = new URL("/admin/login", req.nextUrl.origin);
+    loginUrl.searchParams.set("callbackUrl", req.nextUrl.href);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
+});
+
+export const config = {
+  // Protect admin pages + sensitive API routes (NOT webhooks — those use shared secrets)
+  matcher: ["/admin/:path*", "/api/leads/:path*", "/api/settings/:path*"],
+};

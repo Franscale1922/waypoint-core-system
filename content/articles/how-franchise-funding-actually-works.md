@@ -1,5 +1,5 @@
 ---
-title: "How Franchise Funding Actually Works"
+title: "How Franchise Funding Works"
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
@@ -8,7 +8,7 @@ slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"
 tier: 2
-excerpt: "Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works."
+excerpt: "Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move."
 faqs:
   - q: "What is the most common way to finance a franchise?"
     a: "SBA 7(a) loans are the most common financing path for franchise buyers. The Small Business Administration guarantees up to 75% of the loan, which lowers the bank's lending risk. As of 2026, buyers typically put in 15–20% as a down payment, with repayment over 10 years. ROBS (Rollover for Business Startups) is the second most common approach for buyers who have significant retirement savings and want to avoid debt."
@@ -21,9 +21,9 @@ faqs:
 ---
 Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works.
 
-Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase, you're probably overcomplicating it. Most buyers use one of these two tools. Everything else is a footnote.
+Franchise funding has two dominant paths — SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase and it feels overwhelming, it probably shouldn't. Most buyers use one of these two tools. Everything else is a footnote.
 
-## The Two Paths That Actually Matter
+## The Two Paths That Matter
 
 | | SBA 7(a) Loan | ROBS |
 |---|---|---|
@@ -36,7 +36,7 @@ Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one 
 | **Retirement savings at risk** | No | Yes — directly |
 | **Best for** | Buyers who want to preserve liquidity and spread cost over time | Buyers with $100K+ in retirement savings who want to avoid debt |
 
-**SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
+**SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly — it guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
 
 A typical SBA loan setup as of 2026: you put in 10–30% as a down payment (most buyers land at 15–20%), the bank covers the rest, and you repay over 10 years. For a franchise costing $300,000, that might mean $45,000–$60,000 out of pocket at the start, with monthly payments spread over a decade.
 
@@ -46,18 +46,18 @@ What SBA does well:
 - Your retirement savings stay where they are
 
 What SBA costs you:
-- A credit score above 680 as of 2026 (lenders' minimum thresholds can shift), collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
+- A credit score above 680 as of 2026, collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
 - 60–90 days to close, sometimes longer
 - A personal guarantee, meaning your personal assets back the loan
 - Fixed monthly payments whether the business has a good month or a bad one
 
 That last point matters more than people think. When you have a fixed debt payment, you lose flexibility. The business has to generate enough cash to cover that payment before you take anything home.
 
-**ROBS (Rollover for Business Startups)** is the move for buyers who have meaningful retirement savings and want to avoid debt entirely.
+**ROBS (Rollover for Business Startups)** is the path for buyers who have meaningful retirement savings and want to avoid debt entirely.
 
 Here's how it works: A ROBS provider sets up a C-Corp for you. That C-Corp sells stock. Your retirement account (401(k) or traditional IRA) buys that stock. The proceeds go into the business. You've now invested your retirement savings into your franchise without triggering early withdrawal penalties or a taxable event.
 
-The result: you own your franchise free and clear, with no monthly debt payments.
+The result: you own your franchise with no monthly debt payments.
 
 What ROBS does well:
 - No loan, no interest, no fixed monthly obligation
@@ -79,7 +79,7 @@ There are a few other options that come up, and they're legitimate in the right 
 
 **SBLOC (Securities-Backed Line of Credit):** Same concept, but against your investment portfolio. More volatile collateral, so there's more risk if markets move against you.
 
-**Asset-Backed Loan (ABL):** Worth knowing if you're buying a capital-heavy franchise where a single asset (like a truck or equipment) makes up most of the cost. Lenders give better terms when the loan is backed by something they can repossess. A $400,000 junk removal franchise where the truck represents $275,000 of that cost might be a candidate for this approach.
+**Asset-Backed Loan (ABL):** Worth knowing if you're buying a capital-heavy franchise where a single asset makes up most of the cost. Lenders give better terms when the loan is backed by something they can repossess.
 
 **Cash:** No debt, no fixed payments, complete flexibility. If you can do it without wiping yourself out, it's the cleanest option.
 
@@ -91,7 +91,7 @@ Before you get to a financing conversation with a lender, there are three number
 2. **Your credit score:** if it's below 700, SBA is going to be harder and slower
 3. **Your retirement account balance:** this determines whether ROBS is even on the table
 
-Most franchise consultants can tell you which funding path makes sense for your situation in the first conversation. The numbers aren't complicated; it's the personal trade-offs that take some thinking through.
+Most franchise consultants can tell you which funding path makes sense for your situation in the first conversation. The numbers aren't complicated — it's the personal trade-offs that take some thinking through.
 
 ## The Bottom Line
 

@@ -8,14 +8,14 @@ slug: "do-you-need-a-franchise-consultant"
 date: "2025-09-02"
 category: "Getting Started"
 tier: 1
-excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is."
+excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is. Here is what a good one does, what they cost, and how to tell the bad ones from the good ones quickly."
 faqs:
   - q: "How much does a franchise consultant cost?"
     a: "Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant."
-  - q: "What does a franchise consultant actually do?"
-    a: "A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that actually match your situation. They then present a shortlist of curated options rather than a large catalog, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson."
+  - q: "What does a franchise consultant do?"
+    a: "A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that match your situation. They present a shortlist of curated options, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson."
   - q: "How do you tell a good franchise consultant from a bad one?"
-    a: "Look for two things: experience on both sides of the table (ideally someone who has owned franchises themselves), and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile doesn't fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value."
+    a: "Look for two things: experience on both sides of the table, ideally someone who has owned franchises themselves, and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile does not fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value."
   - q: "Do you need a franchise consultant, or can you go directly to a franchise brand?"
     a: "You do not need a consultant. You can go directly to franchise brands through their development teams. The difference is that a brand's development team works for the franchisor — their job is to qualify you for their specific brand. A consultant's job is to figure out which franchise is right for you across hundreds of options, and the service is free either way. Using a consultant adds representation without adding cost."
 ---
@@ -23,7 +23,7 @@ The skepticism is fair. "Franchise consultant" sounds like a sales title, and in
 
 So let me answer the question directly: no, you don't need one. Plenty of people buy franchises without ever talking to a consultant. But a good one makes the process significantly better, and understanding what "good" looks like is worth knowing before you decide.
 
-Here is what a franchise consultant actually does, what they cost you, and how to tell the bad ones from the good ones quickly.
+Here is what a franchise consultant does, what they cost you, and how to tell the bad ones from the good ones quickly.
 
 ---
 
@@ -37,7 +37,7 @@ The process starts with understanding you: your capital position, your skills, t
 
 From there, a consultant brings you a shortlist of concepts that actually fit what you're looking for, rather than you having to filter 4,000 brands on your own. They give you their honest read on each one's strengths and weaknesses. They help you figure out what questions to ask during the evaluation process and what the answers should sound like.
 
-When it gets to funding, a good consultant connects you with lenders who have actually financed deals in that specific franchise system. The fit matters. An SBA lender who has worked with a brand before knows the system's financials and moves faster.
+When it gets to funding, a good consultant connects you with lenders who have financed deals in that specific franchise system. The fit matters. An SBA lender who has worked with a brand before knows the system's financials and moves faster.
 
 Throughout all of it, you have a sounding board who has been through this multiple times and can tell you when something is worth your time and when it isn't.
 
@@ -53,7 +53,7 @@ Franchise consultants are paid by the franchisor when a deal closes, out of fees
 
 This is the same structure as buyer's representation in real estate. The seller pays the commission. You get professional representation for free.
 
-The implication worth thinking through: because a consultant gets paid only when a deal closes, a bad one has an incentive to get you to the close regardless of whether the fit is good. A good one knows that a bad placement will cost them referrals and reputation, so they have a longer-term incentive to get the fit right.
+The implication worth thinking through: because a consultant gets paid only when a deal closes, a bad one has an incentive to get you to the close regardless of fit. A good one knows that a bad placement will cost them referrals and reputation, so they have a longer-term incentive to get the fit right.
 
 ---
 
@@ -65,9 +65,9 @@ There are two consultant archetypes that are genuinely bad for buyers.
 
 The problem is obvious: you don't need someone selling you on franchise ownership. You need someone helping you evaluate specific options honestly. If you feel like your consultant is trying to convince you of something, they're a closer, not an advisor. Walk.
 
-**The bait-and-switcher.** This one is less obvious. You find a business listing that looks too good to be true. The numbers are impressive. You call and find out it's actually a franchise opportunity being pitched by a consultant who posted misleading listings to generate leads.
+**The bait-and-switcher.** You find a business listing that looks compelling. The numbers appear impressive. You call and find out it's a franchise opportunity being pitched by a consultant who posted misleading listings to generate leads.
 
-A consultant worth working with doesn't need to generate interest through misrepresentation. They build a pipeline through reputation, referrals, and content. The best ones are the ones who are honest enough to actively discourage candidates who aren't ready.
+A consultant worth working with doesn't need to generate interest through misrepresentation. They build a pipeline through reputation, referrals, and content. The best ones are the ones honest enough to actively discourage candidates who aren't ready.
 
 The test: does this person feel like a teacher or a salesperson? A teacher gives you information and helps you think through a decision. A salesperson is moving you toward a close. If it ever feels like the latter, stop.
 
@@ -75,11 +75,11 @@ The test: does this person feel like a teacher or a salesperson? A teacher gives
 
 ## What to Look for in a Good One
 
-Experience on both sides of the table. A consultant who has owned franchises themselves brings a different kind of context than one who has only worked in the industry on the advisory side. They know what the first year feels like. They know what support actually matters versus what sounds good in the pitch.
+**Experience on both sides of the table.** A consultant who has owned franchises themselves brings a different kind of context than one who has only worked on the advisory side. They know what the first year feels like. They know what support actually matters versus what sounds good in the pitch.
 
-A willingness to say no. The best franchise consultants in this industry will tell you if your profile doesn't fit what you're looking at, or if the timing isn't right, or if the concept you're excited about has red flags in its Item 20 data. If a consultant agrees with every instinct you have and never pushes back, they're not adding value.
+**A willingness to say no.** The best franchise consultants will tell you if your profile doesn't fit what you're looking at, if the timing isn't right, or if the concept you're excited about has red flags in its Item 20 data. If a consultant agrees with every instinct you have and never pushes back, they're not adding value.
 
-Honesty about what they don't know. The franchise industry is broad. No single consultant has deep knowledge of every vertical. A good one knows their area of expertise and is clear about where they're drawing on general knowledge versus specific experience.
+**Honesty about what they don't know.** The franchise industry is broad. No single consultant has deep knowledge of every vertical. A good one knows their area of expertise and is clear about where they're drawing on general knowledge versus specific experience.
 
 ---
 
@@ -87,7 +87,7 @@ Honesty about what they don't know. The franchise industry is broad. No single c
 
 You don't need a franchise consultant to buy a franchise. What you need is good information, a clear process, and honest evaluation of the concepts in front of you. A good consultant provides all three. A bad one adds noise, pressure, and sometimes steers you toward a deal that's right for them and wrong for you.
 
-If you're far enough along in your thinking that you know you want a franchise and you're starting to evaluate what fits, having someone who can filter the field with you and give you a direct read on what they're seeing is worth the conversation.
+If you're far enough along that you know you want a franchise and you're starting to evaluate what fits, having someone who can filter the field with you and give you a direct read on what they're seeing is worth the conversation.
 
 That's what I do. And if it turns out you're not ready, I'll tell you that too.
 
@@ -99,16 +99,16 @@ That's what I do. And if it turns out you're not ready, I'll tell you that too.
 
 Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant.
 
-**What does a franchise consultant actually do?**
+**What does a franchise consultant do?**
 
-A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that actually match your situation. They then present a shortlist of curated options, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson.
+A franchise consultant helps you understand your capital position, define the role you want to play in the business, and identify franchise concepts that match your situation. They present a shortlist of curated options, guide you through the FDD review process, and stay engaged through funding and the franchise agreement. A good consultant is a sounding board, not a salesperson.
 
 **How do you tell a good franchise consultant from a bad one?**
 
-Look for experience on both sides of the table — ideally someone who has owned franchises themselves — and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile does not fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value.
+Look for experience on both sides of the table, ideally someone who has owned franchises themselves, and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile does not fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value.
 
 **Do you need a consultant, or can you go directly to a franchise brand?**
 
 You do not need a consultant. You can go directly to brands through their development teams. The difference is that a brand's development team works for the franchisor. A consultant's job is to figure out which franchise is right for you across hundreds of options — and the service is free either way.
 
-[Book a call with Kelsey](/book)
+*[Book a call →](/book)*

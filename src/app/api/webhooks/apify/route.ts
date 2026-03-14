@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
+import { verifyBearer } from "@/app/lib/webhook-auth";
 
 // Accepts the Apify LinkedIn Scraper webhook payload
 // Defined in gemini.md Section 1: "The Ingestion Payload"
 export async function POST(req: Request) {
+    const authError = verifyBearer(req, process.env.APIFY_WEBHOOK_SECRET);
+    if (authError) return authError;
+
     try {
+
         const body = await req.json();
         const { leads } = body;
 

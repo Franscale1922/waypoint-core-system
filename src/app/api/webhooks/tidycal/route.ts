@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { verifyBearer } from "@/app/lib/webhook-auth";
 
 // Accepts the TidyCal booking webhook payload
 // Defined in gemini.md Section 4: "The Conversion Payload"
 export async function POST(req: Request) {
+    const authError = verifyBearer(req, process.env.TIDYCAL_WEBHOOK_SECRET);
+    if (authError) return authError;
+
     try {
+
         const body = await req.json();
         const { invitee, event_type, start_time, booking_id } = body;
 
