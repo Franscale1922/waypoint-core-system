@@ -24,26 +24,26 @@ This matters because any franchise evaluation that starts with "do people know t
 
 Beyond the brand recognition illusion, there are two structural risks in large legacy systems that most buyers don't think about until they're in one.
 
-**Legacy locations.** Wendy's announced the closure of 300 stores — about 5% of their entire system. The reason? Decades-old locations that can't be updated economically in markets that have changed. A franchise with 50 years of history has locations built under assumptions about where people lived and how they shopped that may no longer apply. Those legacy locations drag on system performance averages and on brand perception.
+**Legacy locations.** Wendy's announced the closure of 300 stores, about 5% of their entire system. The reason? Decades-old locations that can't be updated economically in markets that have changed. A franchise with 50 years of history has locations built under assumptions about where people lived and how they shopped that may no longer apply. Those legacy locations drag on system performance averages and on brand perception.
 
 When you buy into a large legacy system, you're not just buying the good locations. You're buying into an average that includes the struggling ones.
 
 **Consolidation.** In established franchise systems, the best territories and the best expansion opportunities tend to be held by professional multi-unit operators who've been rolling up units for decades. Flynn Group alone owns over 450 Applebee's, most of the Pizza Hut franchises in several states, and significant positions in Wendy's and Arby's.
 
-If your long-term goal is to build a franchise portfolio — buying, operating, and eventually selling a group of units — showing up late to a consolidated system means competing against operators who've been playing this game professionally for 20 years. In smaller, younger systems, you're not behind the curve on day one.
+If your long-term goal is to build a franchise portfolio by buying, operating, and eventually selling a group of units, showing up late to a consolidated system means competing against operators who've been playing this game professionally for 20 years. In smaller, younger systems, you're not behind the curve on day one.
 
 ## When Emerging Brands Are the Better Bet
 
 The case for emerging or mid-size brands is largely about the same thing the big brands sell: upside. The difference is where it comes from.
 
-In an early-to-mid system — one that's hit enough scale to prove out the model (roughly 30–150 units is often the sweet spot) but hasn't consolidated its best territories — the upside is in territory selection, multi-unit expansion, and the potential appreciation in franchise value as the brand grows.
+In an early-to-mid system, one that's hit enough scale to prove out the model (roughly 30–150 units is often the sweet spot) but hasn't consolidated its best territories, the upside is in territory selection, multi-unit expansion, and the potential appreciation in franchise value as the brand grows.
 
 The trade-offs are real:
 - Less brand recognition (which we've established is often overvalued anyway)
 - Less history of franchisee performance data to evaluate
 - More dependence on the franchisor's management team being competent
 
-That last one is the actual risk. A young brand's execution depends heavily on the leadership at HQ. This is why franchisee validation matters more in an emerging system than a mature one — you're not just validating the model, you're validating whether the team behind it is capable.
+That last one is the actual risk. A young brand's execution depends heavily on the leadership at HQ. This is why franchisee validation matters more in an emerging system than a mature one. You're not just validating the model; you're validating whether the team behind it is capable.
 
 ## The Right Question to Ask
 

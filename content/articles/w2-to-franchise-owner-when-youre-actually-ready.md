@@ -28,7 +28,7 @@ None of this is a reason to stay in a corporate job indefinitely. It's a reason 
 
 The reasons to make the leap are also real.
 
-**Uncapped income.** Your salary is bounded by what someone else decides you're worth. Your franchise income is bounded by how well you build and operate the business. The leverage comes from systems and people — once you have both working, cash flow can significantly exceed what any corporate comp package would pay.
+**Uncapped income.** Your salary is bounded by what someone else decides you're worth. Your franchise income is bounded by how well you build and operate the business. The leverage comes from systems and people. Once you have both working, cash flow can significantly exceed what any corporate comp package would pay.
 
 (Realistic note: Year one probably means more hours for less money than your current job. The leverage comes in years 3–5, not months 2–4.)
 

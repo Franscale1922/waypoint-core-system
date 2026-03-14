@@ -26,7 +26,7 @@ The safety net of your job can make the business less likely to succeed, not mor
 
 If the concern behind "I'll keep my job" is personal cash flow, there are better solutions than splitting your attention.
 
-**Pay yourself a salary from the business from day one.** Most franchise businesses can be modeled with an owner salary built into the projections — the same way you'd pay a general manager if you weren't running it. That salary will probably be less than your current income. But it's not zero, and it creates a different psychological relationship with the business. You're treating it as the primary thing, not the background thing.
+**Pay yourself a salary from the business from day one.** Most franchise businesses can be modeled with an owner salary built into the projections, the same way you'd pay a general manager if you weren't running it. That salary will probably be less than your current income. But it's not zero, and it creates a different psychological relationship with the business. You're treating it as the primary thing, not the background thing.
 
 The other benefit: when the salary is built into the model from the start, the business is designed to be viable at that cost level. You're not bootstrapping and hoping. You're building something that understands its own overhead.
 
