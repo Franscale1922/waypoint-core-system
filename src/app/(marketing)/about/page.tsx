@@ -25,8 +25,8 @@ export default function AboutPage() {
           style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 60%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
-        <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="max-w-sm">
+        <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="max-w-md">
             <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3 sm:mb-4">
               About
             </p>
