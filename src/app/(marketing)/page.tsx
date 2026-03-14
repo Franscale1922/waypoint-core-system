@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import FranchiseMap from "../components/FranchiseMap";
 import Testimonials from "../components/Testimonials";
@@ -219,12 +220,13 @@ export default function HomePage() {
           <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
-            <img
+            <Image
               src="/images/kelsey-process-conversation.jpg"
               alt="Kelsey Stuart leading the way down a forest trail"
-              loading="lazy"
+              width={1200}
+              height={380}
               className="w-full object-cover"
-              style={{ height: "380px", objectPosition: "center 30%" }}
+              style={{ objectPosition: "center 30%", height: "380px" }}
             />
           </div>
 

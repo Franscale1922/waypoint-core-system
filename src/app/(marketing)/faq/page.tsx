@@ -161,7 +161,8 @@ export default function FAQPage() {
           Still have a question?
         </p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">
-          The fastest way to get a real answer is a real conversation.
+          The fastest way to get a real answer is a real conversation.{" "}
+          Or <a href="/process" className="text-[#d4a55a] hover:underline">see exactly how the process works →</a>
         </p>
         <Link
           href="/book"

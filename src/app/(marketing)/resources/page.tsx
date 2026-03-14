@@ -20,7 +20,7 @@ export default function ResourcesPage() {
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/images/resources-hero-waterfall.png')", backgroundPosition: "center 40%" }} />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/45 to-[#0c1929]/25" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/55 via-[#0c1929]/35 to-[#0c1929]/15" />
         <div className="relative z-10 max-w-4xl mx-auto">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">Franchise Resources</p>
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">What you should know<br className="hidden sm:block" /> before you start looking.</h1>

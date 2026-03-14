@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart — Franchise Advisor, Whitefish MT",
@@ -108,12 +109,13 @@ export default function AboutPage() {
             </div>
             {/* Photo Zone B — trail overlook selfie */}
             <div className="w-full lg:w-64 lg:flex-shrink-0 overflow-hidden rounded-xl shadow-sm">
-              <img
+              <Image
                 src="/images/kelsey-trail-selfie.jpg"
                 alt="Kelsey Stuart on a Montana trail overlook"
-                loading="lazy"
+                width={800}
+                height={280}
                 className="w-full object-cover"
-                style={{ height: "280px", objectPosition: "center 20%" }}
+                style={{ objectPosition: "center 20%", height: "280px" }}
               />
             </div>
           </div>
@@ -142,6 +144,14 @@ export default function AboutPage() {
               30 minutes. No agenda. Just an honest back-and-forth about
               where you are and what makes sense from here.
             </p>
+            <div className="flex flex-wrap gap-4 mb-5">
+              <a href="/process" className="text-sm text-[#d4a55a] font-medium hover:underline">
+                See how I work →
+              </a>
+              <a href="/scorecard" className="text-sm text-[#d4a55a] font-medium hover:underline">
+                Take the readiness quiz →
+              </a>
+            </div>
             <a
               href="/book"
               className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"

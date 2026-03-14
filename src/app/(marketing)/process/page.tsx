@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 const howToSchema = {
@@ -194,14 +195,25 @@ export default function ProcessPage() {
         ))}
       </section>
 
+      {/* Internal link to resources */}
+      <div className="max-w-3xl mx-auto px-6 pb-8 text-center">
+        <p className="text-[#5a5a4a] text-sm">
+          Want to go deeper before the call?{" "}
+          <a href="/resources" className="text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
+            Browse franchise resources →
+          </a>
+        </p>
+      </div>
+
       {/* Process map image */}
       <div className="w-full overflow-hidden">
-        <img
+        <Image
           src="/images/kelsey-process-map.jpg"
           alt="Kelsey Stuart reviewing a topographic map at an outdoor table in Montana"
-          loading="lazy"
+          width={1200}
+          height={420}
           className="w-full object-cover"
-          style={{ height: '420px', objectPosition: 'center 45%' }}
+          style={{ objectPosition: 'center 45%', height: '420px' }}
         />
       </div>
 
