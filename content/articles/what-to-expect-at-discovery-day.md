@@ -8,13 +8,22 @@ slug: "what-to-expect-at-discovery-day"
 date: "2026-01-22"
 category: "Going Deeper"
 tier: 2
-excerpt: "Discovery day is not a sales pitch. By the time you get invited, both sides have already done the real work. What happens there is the final decision for both of you."
+excerpt: "Discovery day is not a sales pitch. By the time you get invited, both sides have already done the real work. This is where you make your final call — not where they make their case."
+faqs:
+  - q: "What is discovery day in franchising?"
+    a: "Discovery day is the final step in the franchise evaluation process, where the candidate travels to the franchisor's headquarters to spend one to two days with the executive team, see the operation, and get an unfiltered sense of the culture. By this point, the candidate should have read the FDD, completed franchisee validation calls, chosen their territory, and confirmed funding. Discovery day is where both sides make a final decision about whether to move forward together."
+  - q: "What should you do before going to franchise discovery day?"
+    a: "Four things should be locked down before registration: validation is complete (you have answered every significant question by speaking with franchisees directly), territory is confirmed, a franchise attorney has started reviewing your agreement, and funding is in position — either a pre-approved SBA loan, a structured ROBS, or accessible liquid capital. Showing up to discovery day with open questions about territory or legal review means making decisions under pressure after the visit."
+  - q: "What should you observe and ask at discovery day?"
+    a: "Watch how the executive team talks to each other and how they talk about their franchisees. Ask about franchisees who struggled, not just those who succeeded. Four questions consistently surface the most useful information: What does the first 90 days look like for a new franchisee? What do top performers do differently from average performers? What is the hardest year operationally, and how do you support franchisees through it? What do you wish more franchisees understood before they signed?"
+  - q: "What happens after discovery day if you are awarded a franchise?"
+    a: "If the franchisor awards you a franchise following discovery day, the next step is signing the franchise agreement and paying the franchise fee. From there, the franchisor walks you through onboarding and training. Timeline between signing and opening varies by concept: service-based franchises with no physical buildout can launch in 60 days; brick-and-mortar locations with construction requirements can take 6 to 12 months. Confirm the expected timeline before signing and get it in writing."
 ---
 Discovery day is not a sales pitch. By the time you get invited, both sides have already done the real work. What happens there is the final decision for both of you.
 
-If you're approaching discovery day unprepared, or expecting to walk in and be convinced, you're showing up with the wrong frame. This is where you make your final call, not where they make their case.
+If you're approaching discovery day unprepared, or expecting to walk in and be convinced, you're showing up with the wrong frame. This is where you make your final call — not where they make their case.
 
-## What Discovery Day Actually Is
+## What Discovery Day Is
 
 Every franchise system calls it something slightly different: "confirmation day," "meet the team day," or "validation day." But the format is largely the same. You travel to the franchisor's headquarters, spend one to two days with the executive team and operations staff, see the facility, and get an unfiltered sense of the culture.
 
@@ -30,19 +39,19 @@ Both sides are evaluating each other. The franchisor is deciding whether you're 
 
 ## Four Things to Have in Place Before You Register
 
-Showing up to discovery day with open questions about territory, funding, or legal review is a mistake. You'll come back excited and want to move fast, and if you haven't done the boring prep work, you'll be making decisions under the wrong kind of pressure.
+Showing up to discovery day with open questions about territory, funding, or legal review is a mistake. You'll come back excited and want to move fast — and if you haven't done the prep work, you'll be making decisions under the wrong kind of pressure.
 
 These four things should be locked down before you register:
 
-**1. Validation is complete.** You've talked to enough franchisees that the questions you had when you started are answered. Not suppressed, answered. The standard here is simple: could you get on a call tonight with a franchisee and not have any important questions left to ask?
+**1. Validation is complete.** You've talked to enough franchisees that the questions you had when you started are answered — not suppressed, answered. The standard here is simple: could you get on a call tonight with a franchisee and not have any important questions left to ask?
 
 **2. Territory is confirmed.** You know exactly which territories you're pursuing and how many units are in the agreement. This is decided before discovery day, not during it.
 
 **3. A franchise attorney is reviewing your agreement.** Retain a franchise attorney before discovery day. Give them the draft franchise agreement. Let them start the review while you're traveling. When you come back ready to sign, the review is done. Waiting until after discovery day to start this process eats weeks.
 
-**4. Funding is in position.** If you're using an SBA loan, you should have a pre-approval or a conditional commitment. If you're using ROBS, the structure should be set up. If you're paying cash, the funds should be liquid and accessible. You'll pay the franchise fee when you sign the agreement, which is usually the next step after discovery day if it goes well.
+**4. Funding is in position.** If you're using an SBA loan, you should have a pre-approval or conditional commitment. If you're using ROBS, the structure should be set up. If you're paying cash, the funds should be liquid and accessible. You'll pay the franchise fee when you sign the agreement, which is usually the next step after discovery day if it goes well.
 
-## What to Actually Focus on When You're There
+## What to Focus on When You're There
 
 Discovery day is your best opportunity to read the room on things the FDD doesn't tell you.
 
