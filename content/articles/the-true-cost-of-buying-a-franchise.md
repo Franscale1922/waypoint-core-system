@@ -52,7 +52,7 @@ This is where a lot of first-time buyers cut corners and pay for it later. Some 
 
 Working capital is the money that keeps the business running until it's cash-flow positive. Most buyers underestimate how long that takes and how much buffer they actually need.
 
-A safe rule: whatever you think you'll need, add more. Not because franchises are risky businesses, but because your timeline to profitability will almost never be exactly what you projected. If you're undercapitalized and you hit a slow month, you start making bad decisions fast. You cut marketing. You delay hires. You patch problems instead of fixing them. That is a harder hole to get out of than simply having had six more months of runway from the start.
+A safe rule: whatever you think you'll need, add more. Not because franchises are risky businesses, but because your timeline to positive cash flow will almost never be exactly what you projected. If you're undercapitalized and you hit a slow month, you start making bad decisions fast. You cut marketing. You delay hires. You patch problems instead of fixing them. That is a harder hole to get out of than simply having had six more months of runway from the start.
 
 ---
 

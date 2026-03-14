@@ -34,7 +34,7 @@ Think parking lots, driveways, commercial properties. This isn't a guy-with-a-pa
 The catch: crew management and night work. Most jobs happen overnight or on weekends when lots are empty. If you want a 9-to-5 business, this is not it.
 
 **Holiday lighting (seasonal residential and commercial)**
-This one has an interesting origin. The holiday lighting franchise category grew partly out of operators who ran multi-service home franchises — window cleaning, pressure washing, gutters — and discovered that one service stood apart from the rest in margin, repeatability, and customer enthusiasm. That service was holiday lighting. It now exists as a standalone franchise category.
+This one has an interesting origin. The holiday lighting franchise category grew partly out of operators who ran multi-service home franchises — window cleaning, pressure washing, gutters — and discovered that one service stood apart from the rest in consistency, repeatability, and customer enthusiasm. That service was holiday lighting. It now exists as a standalone franchise category.
 
 The model works because the competition is almost entirely local operators with no systems, no recurring client follow-up, and no ability to scale. A franchised approach adds centralized marketing, structured hiring, and the option to add permanent outdoor lighting as a year-round revenue stream. Launch cost is low. No storefront required.
 
@@ -66,7 +66,7 @@ Ranges vary considerably by model:
 
 - **Initial investment:** $60,000–$200,000 depending on equipment requirements and territory size
 - **Revenue by year two (strong performers):** $400K–$1M+ for B2B-focused models with commercial accounts
-- **Margins:** Higher than most consumer-facing service businesses, often 40–55% gross
+- **Revenue structure:** Stronger revenue-to-investment ratios than most consumer-facing service businesses
 - **Staffing:** Typically 2–10 crew members depending on model and scale
 
 The pavement maintenance niche specifically has documented strong performers clearing $750K+ by year three. For a franchise with under $150K to get started, that's a return profile worth paying attention to.

@@ -20,15 +20,15 @@ Franchisors collect a royalty as a percentage of your gross revenue, typically 5
 
 You make money on unit-level cash flow: what's left after royalties, rent, labor, supplies, and everything else.
 
-You can see the potential conflict. A franchisor who pushes you toward high volume, discounted pricing, or aggressive promotions might be optimizing for their royalty check rather than your margin. The two aren't always the same thing.
+You can see the potential conflict. A franchisor who pushes you toward high volume, discounted pricing, or aggressive promotions might be optimizing for their royalty check rather than your financial health. The two aren't always the same thing.
 
-The Subway $5 footlong is the canonical example. It drove enormous volume and gross revenue. It also destroyed franchisee margins at scale. Many operators couldn't price-adjust because of brand-wide pricing pressure, and a significant number went under. Corporate was collecting royalties on revenue that wasn't profitable for the people generating it.
+The Subway $5 footlong is the canonical example. It drove enormous volume and gross revenue. It also destroyed franchisee economics at scale. Many operators couldn't price-adjust because of brand-wide pricing pressure, and a significant number went under. Corporate was collecting royalties on revenue that wasn't financially viable for the people generating it.
 
 This doesn't mean every franchisor is misaligned. Most aren't. But the incentive structure means you shouldn't assume alignment. You should confirm it.
 
 ## Signs of Misalignment
 
-**Price controls without cost controls.** When a franchisor dictates what you can charge but doesn't cushion you when your input costs rise, you absorb the margin compression. Ask franchisees: "Has corporate pricing ever hurt your profitability? What happened?"
+**Price controls without cost controls.** When a franchisor dictates what you can charge but doesn't cushion you when your input costs rise, you absorb the financial hit. Ask franchisees: "Has corporate pricing ever hurt your unit's financial performance? What happened?"
 
 **Cannibalization.** If locations are opening too close together, or corporate-owned locations are popping up near franchisee territories, that's a signal the system prioritizes unit count over franchisee performance.
 
@@ -38,7 +38,7 @@ This doesn't mean every franchisor is misaligned. Most aren't. But the incentive
 
 ## Signs of Alignment
 
-**Market-sensitive pricing.** A good franchisor allows pricing flexibility by market. A unit in Manhattan prices differently than one in rural Tennessee. When the system accommodates local economics, it's because the franchisor understands that their success depends on franchisee profitability.
+**Market-sensitive pricing.** A good franchisor allows pricing flexibility by market. A unit in Manhattan prices differently than one in rural Tennessee. When the system accommodates local economics, it's because the franchisor understands that their success depends on franchisee financial performance.
 
 **Territory protection backed by data.** Top franchisors use demographic data to determine where new locations go. They're not just eyeballing a map and approving territory applications. They're protecting existing operators from cannibalization because they know that's what sustains the system.
 
@@ -52,7 +52,7 @@ Validation calls, meaning conversations with current franchisees, are where you 
 
 Specific questions that surface alignment:
 - "If you had a bad month and needed to talk to someone at corporate, what happened?"
-- "Has corporate ever made a decision that hurt your location's margins? How did they handle it?"
+- "Has corporate ever made a decision that hurt your location's revenue or unit economics? How did they handle it?"
 - "Would you buy this franchise again, knowing what you know now? What would change?"
 - "What do you wish you had asked before you signed?"
 
@@ -60,7 +60,7 @@ One franchise attorney told me that the answers to those four questions tell you
 
 ## The Bottom Line
 
-Franchisor alignment isn't something you can tell from a sales conversation or a corporate visit. It shows up in the hard moments: when your numbers are soft, when corporate makes a decision that affects profitability, when something goes wrong in the system.
+Franchisor alignment isn't something you can tell from a sales conversation or a corporate visit. It shows up in the hard moments: when your numbers are soft, when corporate makes a decision that affects your unit's financial performance, when something goes wrong in the system.
 
 You find out before signing by talking to the franchisees who've already been through it.
 

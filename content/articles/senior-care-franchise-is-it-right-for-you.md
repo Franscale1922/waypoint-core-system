@@ -14,7 +14,7 @@ excerpt: "Most people lump 'senior care' into one bucket. That's a mistake. Ther
 
 Most people lump "senior care" into one bucket. That's a mistake. There are three meaningfully different ways to operate in this space, and picking the wrong model for your personality and skill set is how good candidates end up miserable.
 
-**1. Traditional non-medical home care agencies** hire caregivers directly, send them into clients' homes, and manage scheduling, compliance, and payroll in-house. Margins are tighter (typically 30–40% gross), but the model is familiar, scalable, and has strong brand recognition.
+**1. Traditional non-medical home care agencies** hire caregivers directly, send them into clients' homes, and manage scheduling, compliance, and payroll in-house. The staffing model carries real overhead, but the concept is familiar, scalable, and has strong brand recognition.
 
 **2. Full-spectrum or skilled care models** layer in Medicare/Medicaid reimbursement and clinical services: nurses, physical therapists, post-hospital recovery. Billing rates are higher, demand is insurance-backed rather than out-of-pocket, and hospital referral pipelines open up. The trade-off: heavier licensing, more compliance, and you need clinical staff from day one. Top-performing territories in this model average over $1.6M in revenue by year three. That's above industry norms. But it's not a passive business.
 
@@ -28,7 +28,7 @@ Before you choose a model, you need to know what you're buying into financially.
 
 - **Initial investment range:** $80,000–$180,000 depending on model and territory size (non-medical agency); $150,000–$300,000+ for skilled care models
 - **Revenue by year three (strong performers):** $500K–$800K for non-medical; up to $1.6M+ for full-spectrum skilled models
-- **Gross margins:** 30–40% for traditional staffing-model agencies; higher on skilled/insurance-reimbursed services
+- **Revenue structure:** Staffing-model agencies carry meaningful overhead tied to caregiver payroll; skilled care and insurance-reimbursed models typically see stronger revenue-to-cost ratios
 - **Staffing requirement at launch:** Most non-medical models require 5–15 caregivers in the first year; skilled care requires licensed clinical staff before you see your first patient
 - **Demand surge:** The senior population is projected to nearly double by 2060. Current supply of care slots is already constrained in most markets
 

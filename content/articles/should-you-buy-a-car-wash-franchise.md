@@ -65,7 +65,7 @@ Also ask about the membership penetration rate across the system. What percentag
 
 Car wash franchises are real businesses with documented returns. The membership model has strengthened the economics of the category materially. But the capital requirement is significant, location is everything, and the return timeline is longer than most service franchises.
 
-This is not the right franchise for someone looking for a lower-cost entry or a quick ramp to profitability. It's worth serious consideration for buyers with $500K–$3M+ in accessible capital who want a real-estate-backed business with recurring revenue and long-term appreciation potential.
+This is not the right franchise for someone looking for a lower-cost entry or a quick ramp to cash-flow-positive operations. It's worth serious consideration for buyers with $500K to $3M+ in accessible capital who want a real-estate-backed business with recurring revenue and long-term appreciation potential.
 
 If you're seriously looking at this category, the conversation should start with what your capital looks like and what markets you're considering. Both determine whether this actually pencils for you.
 

@@ -50,7 +50,7 @@ Because of the tight group model, the membership cap is intentionally low, aroun
 
 Staffing is minimal: 3–4 people, including a general manager. This is a significant operational advantage. You're not managing 15 instructors with unpredictable availability and constant replacement cycles. The low headcount model reduces one of the primary management burdens in fitness franchise ownership.
 
-The honest limitation: this is not a high-ceiling business in terms of total revenue. It's a high-margin, high-retention, relatively simple operation. If you want to build something to $2M+ in revenue, this isn't it in a single location. If you want a well-run business that doesn't consume forty hours a week after year two, the math works.
+The honest limitation: this is not a high-ceiling business in terms of total revenue. It is a high-retention, relatively simple operation with strong revenue per member. If you want to build something to $2M+ in revenue, this isn't it in a single location. If you want a well-run business that doesn't consume forty hours a week after year two, the math works.
 
 **Best for:** Someone who wants operational simplicity and can build a local community around a premium product. Not the right fit for candidates who expect massive scale from a single location.
 

@@ -67,10 +67,9 @@ The operators who do well share a few characteristics:
 
 - **Initial investment:** $150,000–$400,000 for full-service restoration; $80,000–$200,000 for niche models depending on location requirements
 - **Revenue potential (year three, strong performers):** $1M–$3M+ for full-service; $500K–$1.5M for specialty niche models
-- **Gross margins:** 40–60% on restoration services; somewhat higher on specialty niche work with lower overhead
 - **Revenue from insurance:** 40–100% depending on model
 
-Restoration has produced some of the most documented high-revenue franchise stories in any category. Some operators in well-established restoration systems have reported profit figures approaching $500K per year. For reference, that's the profit number, not revenue.
+Restoration has produced some of the most documented high-revenue franchise stories in any category. Operators in well-established restoration systems have reached revenue figures that, even after operating costs, leave significant annual income. That combination of durable demand and strong revenue potential is what keeps this category on serious buyers' shortlists.
 
 ---
 

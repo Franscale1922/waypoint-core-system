@@ -90,7 +90,7 @@ Get the definition in writing and understand how enforcement works. Protected te
 
 This is what everyone wants to jump to, and it's also the section most people misread.
 
-Item 19 is where franchisors can voluntarily disclose financial performance data. Some provide detailed unit economics with revenue, cost of goods, and EBITDA ranges. Some provide partial data. Some provide nothing at all, which tells you something.
+Item 19 is where franchisors can voluntarily disclose financial performance data. Some provide detailed unit economics with revenue, cost of goods, and earnings breakdowns. Some provide partial data. Some provide nothing at all, which tells you something.
 
 A few things to understand about whatever numbers you see:
 

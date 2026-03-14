@@ -54,13 +54,13 @@ The trade-off in B2B: it is not a model for hands-off ownership. The owner's rel
 
 When you map these two axes together, four quadrants emerge. Here is an honest read on each.
 
-**B2C, non-brick-and-mortar:** This is where a lot of the best opportunities are right now. Home services has been growing since 2020 and is still producing strong returns in most markets. Pet services are performing well, particularly concepts that operate without retail space, since they outcompete on margin against competitors who carry brick-and-mortar overhead. Senior in-home care is growing consistently driven by demographics, and the demand is not going to slow down.
+**B2C, non-brick-and-mortar:** This is where a lot of the best opportunities are right now. Home services has been growing since 2020 and is still producing strong returns in most markets. Pet services are performing well, particularly concepts that operate without retail space, since they carry a cost advantage over competitors who pay for brick-and-mortar overhead. Senior in-home care is growing consistently driven by demographics, and the demand is not going to slow down.
 
 Watch for saturation in specific categories. When a vertical gets hot, franchisors multiply and marketing costs go up as more units compete for the same leads. Do your territory research.
 
 **B2B, non-brick-and-mortar:** Consistently strong fundamentals. Waste management, commercial restoration, parking lot and asphalt services, B2B cost-reduction consulting. These businesses tend to have recurring or contract-based revenue, which produces more predictable cash flow than project-by-project B2C work. The right buyer here has relationship skills and industry credibility.
 
-**B2C, brick-and-mortar:** Best choice if your actual goal is to eventually step back and run this through a manager. Once a physical location is operating smoothly, the four-wall model lends itself to a management structure where you're not the one in the building every day. Wellness, boutique fitness with genuine community (not just a gym), and youth enrichment are the categories worth looking at here. Avoid food franchises in almost all cases. The margins are punishing, the competition is brutal, and the failure rate reflects both.
+**B2C, brick-and-mortar:** Best choice if your actual goal is to eventually step back and run this through a manager. Once a physical location is operating smoothly, the four-wall model lends itself to a management structure where you're not the one in the building every day. Wellness, boutique fitness with genuine community (not just a gym), and youth enrichment are the categories worth looking at here. Avoid food franchises in almost all cases. The fee structure is punishing, the competition is brutal, and the failure rate reflects both.
 
 **B2B, brick-and-mortar:** This quadrant does not have many strong options right now. If a concept in this category catches your interest, look hard at the unit economics before you go further.
 

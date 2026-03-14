@@ -67,7 +67,7 @@ If those things are solid, the agreement signing is confirmation, not discovery.
 
 ## The Bottom Line
 
-Franchise agreements are standardized for operational reasons, not to disadvantage you. They're meant to protect the system, and by extension, every other franchisee in it, including you. The negotiating you'll do is at the margins: territory, timelines, some fee items.
+Franchise agreements are standardized for operational reasons, not to disadvantage you. They're meant to protect the system, and by extension, every other franchisee in it, including you. The negotiating you'll do is around the edges: territory, timelines, some fee items.
 
 The work that actually protects you happens before the agreement, in your due diligence.
 

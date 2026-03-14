@@ -40,7 +40,7 @@ The two most visible brands in franchised junk removal are 1-800-GOT-JUNK? and C
 **College H.U.N.K.S. Hauling Junk & Moving**
 - Total initial investment: $203,000–$355,000
 - Average gross revenue (all franchises, 2024): $1.45M
-- Top 25%: $3.09M gross revenue, $309,000 average EBITDA
+- Top 25%: approximately $3.09M gross revenue
 - Royalty: 7% of gross sales
 - Payback period: estimated 2.3–4.3 years
 

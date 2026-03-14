@@ -48,11 +48,11 @@ Read Items 6 and 9 of the FDD carefully for any restrictions on growth, staffing
 
 ## 3. Franchises Where the Economics Don't Work at Scale
 
-A franchise can look profitable at the unit level and still be a bad investment.
+A franchise can look financially viable at the unit level and still be a bad investment.
 
 Two tests to run:
 
-**The manager test.** If your goal is to eventually step out of daily operations, you need enough margin to pay a qualified manager and still generate a return. Some franchise models are priced and royalty-structured in a way that makes that math impossible. The moment you try to hire yourself out of the job, the business breaks even at best. That is not a business. That is a position.
+**The manager test.** If your goal is to eventually step out of daily operations, you need enough room in the fee and cost structure to pay a qualified manager and still generate a return. Some franchise models are priced and royalty-structured in a way that makes that math impossible. The moment you try to hire yourself out of the job, the business breaks even at best. That is not a business. That is a position.
 
 **The exit test.** When you eventually sell, the business will be valued at a multiple of earnings. If the earnings are too thin to produce a meaningful valuation, you won't get your investment back, let alone a return. Run the exit math before you buy, not after. Item 19 of the FDD gives you financial performance data to work with. If they don't disclose anything in Item 19, that alone raises the question of why.
 
@@ -74,15 +74,15 @@ If you can't get a clear, specific answer to that question in your first few con
 
 ---
 
-## 5. Franchisors Who Are More Passionate About the Product Than Your Profitability
+## 5. Franchisors Who Are More Passionate About the Product Than Franchisee Success
 
 Passion-driven founders are common in franchising, and they're not always a problem. But when the franchisor's primary mission is the product, the service, or the cause rather than the financial success of franchisees, the incentives are misaligned.
 
-A franchisor has one job: build a business model that enables franchisees to make money and grow. That's it. They have a fiduciary interest in your profitability because their enterprise value depends on franchisee performance. If they lose sight of that in favor of a mission that's something other than franchisee success, you will feel that friction at every decision point.
+A franchisor has one job: build a business model that enables franchisees to make money and grow. That's it. They have a structural interest in franchisee financial success because their enterprise value depends on franchisee performance. If they lose sight of that in favor of a mission that's something other than franchisee success, you will feel that friction at every decision point.
 
 This shows up most often in smaller, founder-owned brands that want to scale through franchising without fully committing to the obligations that come with it. The product may be excellent. The culture may be great. But if the franchisor hasn't structurally committed to franchisee financial performance as the primary objective, that misalignment will surface.
 
-Look at how they talk about their franchisees versus how they talk about their brand. Listen for whether Item 2 leadership has franchise operations experience or just product/industry experience. Talk to existing franchisees about how corporate makes decisions when franchisee profitability conflicts with brand preferences.
+Look at how they talk about their franchisees versus how they talk about their brand. Listen for whether Item 2 leadership has franchise operations experience or just product/industry experience. Talk to existing franchisees about how corporate makes decisions when franchisee financial outcomes conflict with brand preferences.
 
 ---
 

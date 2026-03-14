@@ -42,7 +42,7 @@ The business itself is lean. No office required. No staff until you scale. Acces
 
 The executive coaching franchise category tends to attract people who came from corporate leadership and want to continue contributing without going back to a corporate role. The better concepts in this space are built on recognizable methodologies with decades of documented results, not proprietary fluff invented last year.
 
-The financial structure in some of these models is notably different: a flat monthly royalty instead of a percentage of revenue. For strong performers, that means cleaner margins as revenue grows. A consultant billing $30K per month has a very different margin profile under a flat fee than under a standard 6–8% royalty.
+The financial structure in some of these models is notably different: a flat monthly royalty instead of a percentage of revenue. For strong performers, that means the royalty cost stays fixed while revenue grows. A consultant billing $30K per month retains a meaningfully different share of that revenue under a flat fee than under a standard 6–8% royalty structure.
 
 The right buyer: someone with real business credibility. You are the product in this model. Clients are paying to work with someone they believe has seen what they're dealing with. If you can't sell your own expertise, the business doesn't work.
 
@@ -56,7 +56,7 @@ B2B franchises are not passive investments. The relationship-driven sales proces
 
 They're also not quick ramp businesses. A consumer franchise can hit meaningful revenue in three to six months if the marketing engine works. A B2B consultancy might spend six months building relationships before recognizing significant revenue. The ceiling is higher, but the on-ramp is longer.
 
-If you need cash flow in the first ninety days, look elsewhere. If you have financial runway and existing professional networks, B2B franchises can be exceptionally profitable.
+If you need cash flow in the first ninety days, look elsewhere. If you have financial runway and existing professional networks, B2B franchises can produce strong, compounding returns.
 
 ---
 

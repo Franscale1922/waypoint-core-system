@@ -22,7 +22,7 @@ The problem is what you give up.
 
 First: territory. In franchise systems with healthy demand, the best territories get claimed. If you take one and another buyer takes the surrounding areas, you've capped your growth geographically before you've even opened.
 
-Second: exit value. When you sell a franchise business (and at some point, most owners do), you're selling the size and stability of the operation. A single unit is harder to exit profitably than a multi-unit operation. Buyers, including private equity firms that acquire franchise portfolios, prefer scale.
+Second: exit value. When you sell a franchise business (and at some point, most owners do), you're selling the size and stability of the operation. A single unit is harder to exit on strong terms than a multi-unit operation. Buyers, including private equity firms that acquire franchise portfolios, prefer scale.
 
 Third: economics. Most franchise businesses need to hit a certain revenue threshold before they justify stepping back from daily operations. A single unit in many systems doesn't get you there. You end up owning yourself a job instead of building an asset.
 
@@ -44,7 +44,7 @@ Before you decide on unit count, two questions drive everything:
 
 1. **What are your long-term goals with this investment?** Are you building something to run, or something to sell? Buying to build equity for a sale in 7–10 years leads to a different unit strategy than buying to generate income starting in year 2.
 
-2. **What does the franchise model's unit economics say?** Some concepts are genuinely built for multi-unit operators, with margin structures that only make sense at scale. Others work perfectly well as single-unit businesses. This isn't a guess; the FDD's Item 19 shows you the financials. An advisor can pull the relevant comparisons from the system's existing operators.
+2. **What does the franchise model's unit economics say?** Some concepts are genuinely built for multi-unit operators, with fee and cost structures that only make sense at scale. Others work perfectly well as single-unit businesses. This isn't a guess; the FDD's Item 19 shows you the financials. An advisor can pull the relevant comparisons from the system's existing operators.
 
 The cap on multi-unit only really kicks in at true scale, when you're adding supervision layers and administrative overhead that erodes profit. 2–5 units for a first-time buyer is well below that ceiling in almost every franchise category.
 
