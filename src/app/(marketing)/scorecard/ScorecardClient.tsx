@@ -125,22 +125,40 @@ export default function ScorecardClient() {
             Your Readiness Score: {score}/100
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-            {score >= 70
-              ? "You are in a really strong position. Honestly, this is the kind of profile where a 30-minute conversation could save you months of guessing. Let me help you narrow it down."
+            {score >= 80
+              ? "You look like a strong candidate. This is the profile I see move quickly and confidently. A 30-minute conversation would tell us both a lot."
+              : score >= 60
+              ? "Promising fit — you have a solid foundation. There are a few things worth talking through before you start looking at brands."
               : score >= 40
-              ? "You have a solid foundation, and there are some things worth talking through. A quick call would help me understand your situation and see if there are franchise concepts that actually fit."
-              : "Franchise ownership might not be right this second, and that is completely fine. If you want to talk through your options and timing, I am happy to do that. No pressure either way."}
+              ? "Worth exploring, with some real questions to work through first. I would rather have an honest conversation now than watch you struggle later."
+              : "Honest answer: right now may not be the right time. That is not a bad thing — it just means the timing or foundation needs work first. Here are some resources that might help."}
           </p>
-          <a
-            href="/book"
-            onClick={() => trackBookCallClicked("scorecard_results")}
-            className="mt-6 sm:mt-8 inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
-          >
-            Book a Free Call With Me
-          </a>
-          <p className="mt-4 text-xs text-slate-400">
-            This call is free. Franchise brands pay the referral fee, not you.
-          </p>
+          {score >= 40 ? (
+            <>
+              <a
+                href="/book"
+                onClick={() => trackBookCallClicked("scorecard_results")}
+                className="mt-6 sm:mt-8 inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
+              >
+                Book a Free Call With Me
+              </a>
+              <p className="mt-4 text-xs text-slate-400">
+                This call is free. Franchise brands pay the referral fee, not you.
+              </p>
+            </>
+          ) : (
+            <div className="mt-6 sm:mt-8 space-y-3">
+              <a
+                href="/resources"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
+              >
+                Browse Franchise Resources
+              </a>
+              <p className="text-xs text-slate-400 mt-2">
+                Or <a href="/book" className="underline hover:text-slate-600" onClick={() => trackBookCallClicked("scorecard_results_low")}>book a call anyway</a> — sometimes the honest conversation is the most useful one.
+              </p>
+            </div>
+          )}
         </div>
       </section>
     );

@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Franchise Insights | Waypoint Franchise Advisors",
+  title: "Franchise Resources | Waypoint Franchise Advisors",
   description:
     "Practical writing on franchising, business ownership, and the questions first-time buyers should be asking. No sales pitch. Just honest perspective.",
   openGraph: {
-    title: "Franchise Insights by Kelsey Stuart",
-    description: "Honest writing on franchising from someone who has been a franchisor, a franchisee, and an advisor.",
-    url: "https://waypointfranchise.com/blog",
+    title: "Franchise Resources | Waypoint Franchise Advisors",
+    description: "Guides, articles, and tools for anyone seriously exploring franchise ownership. No pitch, no agenda — just honest perspective from someone who has been a franchisor, franchisee, and advisor.",
+    url: "https://waypointfranchise.com/resources",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Insights" }],
   },
-  alternates: { canonical: "https://waypointfranchise.com/blog" },
+  alternates: { canonical: "https://waypointfranchise.com/resources" },
 };
 
 // This will be replaced by a CMS or MDX fetch
@@ -23,7 +23,7 @@ const posts: {
   excerpt: string;
 }[] = [];
 
-export default function BlogPage() {
+export default function ResourcesPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
 
@@ -36,7 +36,7 @@ export default function BlogPage() {
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/45 to-[#0c1929]/25" />
         <div className="relative z-10 max-w-4xl mx-auto">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
-            Franchise Insights
+            Franchise Resources
           </p>
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
             What you should know<br className="hidden sm:block" /> before you start looking.
@@ -72,7 +72,7 @@ export default function BlogPage() {
                 key={post.slug}
                 className="bg-white border border-[#e8e0d0] rounded-lg overflow-hidden hover:shadow-md transition-shadow"
               >
-                <Link href={`/blog/${post.slug}`} className="block p-8">
+                <Link href={`/resources/${post.slug}`} className="block p-8">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-[10px] tracking-[0.2em] uppercase text-[#d4a55a] font-medium">
                       {post.category}

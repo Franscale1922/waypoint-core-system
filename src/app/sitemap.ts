@@ -41,7 +41,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
-      url: `${SITE_URL}/blog`,
+      url: `${SITE_URL}/resources`,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.6,
