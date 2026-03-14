@@ -14,7 +14,24 @@ Use this workflow any time the intent is to add a new resource article to the si
 
 ---
 
-## Step 1 — Read the content standards
+## ⚠️ MANDATORY — Read Before Writing Anything
+
+**Before drafting a single word, read the full content standards:**
+
+```
+cat "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/content/CONTENT-STANDARDS.md"
+```
+
+This document defines four hard requirements that apply to every article without exception:
+1. **Profitability Restriction** — specific prohibited language list. Non-negotiable.
+2. **No Brand Names** — industry and category only, never specific franchise brand names. Non-negotiable.
+3. **Reader-First Writing** — WIIFM mindset, tone, and structure rules.
+4. **SEO and AEO Optimization** — keyword, structure, and answer-engine requirements.
+5. **Related Article Library** — `relatedSlugs` requirements and pool maintenance.
+
+No article is complete until it passes the pre-publication checklist at the bottom of that document. Run the checklist explicitly before declaring the article done.
+
+
 
 Before drafting, read the voice and tone guidelines so the article matches the existing body of work:
 
