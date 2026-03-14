@@ -137,7 +137,7 @@ export default function InvestmentPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
             Investment Guide
           </p>
-          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl text-[#0c1929] leading-tight mb-6 max-w-3xl">
+          <h1 className="font-playfair text-4xl sm:text-5xl md:text-6xl text-[#0c1929] leading-tight mb-6">
             How much does a franchise actually cost?
           </h1>
           <p className="text-base sm:text-lg text-[#4a4a3e] leading-relaxed max-w-2xl mb-6">
@@ -151,7 +151,7 @@ export default function InvestmentPage() {
 
       {/* Quick answer summary bar */}
       <section className="border-b border-[#e8e0d0] bg-[#f0ede8]">
-        <div className="max-w-4xl mx-auto px-6 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div className="max-w-4xl mx-auto px-10 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {[
             { stat: "$20K–$60K", label: "Initial franchise fee" },
             { stat: "4%–8%", label: "Typical royalty rate" },
@@ -167,7 +167,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Cost components table */}
-      <section className="max-w-4xl mx-auto px-6 py-14 sm:py-20">
+      <section className="max-w-4xl mx-auto px-10 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
           Cost Breakdown
         </p>
@@ -182,17 +182,17 @@ export default function InvestmentPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b-2 border-[#c08b3e]">
-                <th className="text-left py-3 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Cost component</th>
-                <th className="text-left py-3 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Typical range</th>
-                <th className="text-left py-3 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Notes</th>
+                <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Cost component</th>
+                <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Typical range</th>
+                <th className="text-left py-3 pl-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs">Notes</th>
               </tr>
             </thead>
             <tbody>
               {costComponents.map((row, i) => (
                 <tr key={row.component} className={`border-b border-[#e8e0d0] ${i % 2 === 0 ? "bg-white" : "bg-[#faf8f4]"}`}>
-                  <td className="py-4 pr-6 font-medium text-[#0c1929]">{row.component}</td>
-                  <td className="py-4 pr-6 text-[#1b3a5f] font-semibold whitespace-nowrap">{row.typical}</td>
-                  <td className="py-4 text-[#5a5a4a] leading-relaxed">{row.notes}</td>
+                  <td className="py-4 pl-4 pr-6 font-medium text-[#0c1929]">{row.component}</td>
+                  <td className="py-4 pl-4 pr-6 text-[#1b3a5f] font-semibold whitespace-nowrap">{row.typical}</td>
+                  <td className="py-4 pl-4 text-[#5a5a4a] leading-relaxed">{row.notes}</td>
                 </tr>
               ))}
             </tbody>
@@ -206,7 +206,7 @@ export default function InvestmentPage() {
 
       {/* Investment tiers */}
       <section className="bg-[#0c1929] py-14 sm:py-20 px-6">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d4a55a] mb-4">
             Investment Tiers
           </p>
@@ -238,7 +238,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Capital and financing */}
-      <section className="max-w-4xl mx-auto px-6 py-14 sm:py-20">
+      <section className="max-w-4xl mx-auto px-10 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
           Liquid Capital &amp; Financing
         </p>
@@ -279,24 +279,24 @@ export default function InvestmentPage() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
             Common Questions
           </p>
-          <h2 className="font-playfair text-2xl sm:text-3xl mb-10">Franchise investment FAQ</h2>
+          <h2 className="font-playfair text-2xl sm:text-3xl mb-10">Franchise Investment FAQ</h2>
           <div className="space-y-6">
             {[
               {
                 q: "Is the franchise fee negotiable?",
-                a: "Rarely. The initial franchise fee is usually fixed across the system — if a franchisor negotiated it selectively, they would have equity and legal exposure with existing franchisees. What is occasionally negotiable: multi-unit discounts on the fee for buying multiple territories at once, and timing on when the fee is due.",
+                a: "Rarely. The initial franchise fee is usually fixed across the system. If a franchisor negotiated it selectively, they would face equity and legal exposure with existing franchisees. What is occasionally negotiable: multi-unit discounts for buying multiple territories at once, and the timing of when the fee is due.",
               },
               {
                 q: "What does Item 7 of the FDD tell me?",
-                a: "Item 7 is the franchisor's own estimated total investment range to open one unit of their franchise. It breaks out each cost category — build-out, equipment, initial inventory, working capital, and pre-opening costs — and shows low-to-high ranges. It is not a guarantee, and most experienced advisors recommend planning for the top of that range.",
+                a: "Item 7 is the franchisor's own estimated total investment range to open one unit of their franchise. It breaks out each cost category, including build-out, equipment, initial inventory, working capital, and pre-opening costs, and shows low-to-high ranges. It is not a guarantee, and most experienced advisors recommend planning for the top of that range.",
               },
               {
                 q: "Should I plan beyond the FDD Item 7 estimate?",
-                a: "Yes. Item 7 reflects the franchisor's experience across their system. Your specific market may have higher real estate costs, labor costs, or regulatory requirements. A common rule of thumb: add 10%–20% buffer above the top of the Item 7 range for first-time buyers.",
+                a: "Yes. Item 7 reflects the franchisor's experience across their system. Your specific market may have higher real estate costs, labor costs, or regulatory requirements. A common rule of thumb is to add a 10% to 20% buffer above the top of the Item 7 range for first-time buyers.",
               },
               {
                 q: "Does the cost of a franchise affect what I pay when I sell it?",
-                a: "Indirectly. Franchises are typically sold as businesses, and the purchase price often reflects a multiple of revenue or EBITDA — not the original franchise fee. Your franchise agreement will also govern who approves the transfer and what fees apply. This is worth understanding early, especially if you plan to build toward an eventual exit.",
+                a: "Indirectly. Franchises are typically sold as businesses, and the purchase price often reflects a multiple of revenue or EBITDA rather than the original franchise fee. Your franchise agreement will also govern who approves the transfer and what fees apply. This is worth understanding early, especially if you plan to build toward an eventual exit.",
               },
             ].map(({ q, a }) => (
               <div key={q} className="bg-white rounded-xl p-6 border border-[#e8e0d0]">
@@ -309,7 +309,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Internal links */}
-      <section className="max-w-4xl mx-auto px-6 py-10 border-t border-[#e8e0d0]">
+      <section className="max-w-4xl mx-auto px-10 py-10 border-t border-[#e8e0d0]">
         <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Related resources</p>
         <div className="flex flex-wrap gap-4">
           <Link href="/resources/the-true-cost-of-buying-a-franchise" className="text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors">
