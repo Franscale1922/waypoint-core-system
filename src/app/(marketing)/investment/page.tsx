@@ -263,7 +263,7 @@ export default function InvestmentPage() {
                 { method: "Home equity / HELOC", detail: "Used as equity injection or to fund working capital. Lowers overall borrowing need. Depends on available equity." },
                 { method: "Franchisor financing", detail: "Some brands offer in-house financing for the franchise fee. Usually limited in scope. Ask about it during the FDD review." },
               ].map(({ method, detail }) => (
-                <li key={method} className="border-l-2 border-[#c08b3e] pl-4">
+                <li key={method} className="border-l-2 border-[#c08b3e] pl-6">
                   <p className="text-sm font-semibold text-[#0c1929]">{method}</p>
                   <p className="text-xs text-[#5a5a4a] leading-relaxed mt-1">{detail}</p>
                 </li>
