@@ -70,4 +70,4 @@ Your franchisor's system works. That's why you bought it. The first 90 days are 
 
 If you're preparing to open and want to talk through what the first quarter looks like for a specific concept, that's a useful conversation to have now.
 
-[Ready to take the next step? Let's talk. →]
+*Ready to take the next step? Let's talk. [Book a call →](/book)*

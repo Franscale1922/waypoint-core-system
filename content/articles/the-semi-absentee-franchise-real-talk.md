@@ -57,4 +57,4 @@ Semi-absentee ownership is a real model in the right franchise concepts with the
 
 Build the business fully. Pay yourself. Step back later once there's something to step back from.
 
-[Not sure which model fits your situation? That's a 30-minute conversation. Schedule one. →]
+*Not sure which model fits your situation? That's a 30-minute conversation. [Schedule one →](/book)*

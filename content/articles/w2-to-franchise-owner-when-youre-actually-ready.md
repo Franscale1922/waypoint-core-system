@@ -72,4 +72,4 @@ Corporate life has real advantages worth acknowledging before you leave. Franchi
 
 The readiness question is about hunger, not just capital.
 
-[Not sure if the timing is right? That's a 30-minute conversation. →]
+*Not sure if the timing is right? That's a 30-minute conversation. [Book a call →](/book)*

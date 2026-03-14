@@ -67,4 +67,4 @@ Franchise agreements are standardized for operational reasons, not to disadvanta
 
 The work that actually protects you happens before the agreement, in your due diligence.
 
-[Have questions about the agreement stage? That's a good time for a second opinion. →]
+*Have questions about the agreement stage? That's a good time for a second opinion. [Book a call →](/book)*

@@ -60,4 +60,4 @@ Franchisor alignment isn't something you can tell from a sales conversation or a
 
 You find out before signing by talking to the franchisees who've already been through it.
 
-[Not sure what to ask during validation? We walk every candidate through this. →]
+*Not sure what to ask during validation? We walk every candidate through this. [Book a call →](/book)*

@@ -54,4 +54,4 @@ Fast growth is a signal that the model is working well enough that buyers and th
 
 Neither extreme tells the whole story. The attrition rate tells you more than the growth rate. But defaulting to slow-growth brands because it "feels safer" is one of the more common mistakes in franchise evaluation.
 
-[Questions about evaluating a specific brand's growth trajectory? That's worth talking through before you decide. →]
+*Questions about evaluating a specific brand's growth trajectory? That's worth talking through before you decide. [Book a call →](/book)*

@@ -61,4 +61,4 @@ Brand recognition is not the primary ROI in franchising for 99% of concepts. Leg
 
 The brand choice follows the goals, not the other way around.
 
-[Not sure which type fits your situation? Let's work backwards from your goals. →]
+*Not sure which type fits your situation? Let's work backwards from your goals. [Book a call →](/book)*

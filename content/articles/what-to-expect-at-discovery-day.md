@@ -68,4 +68,4 @@ Discovery day is the last step in a process that should have most decisions made
 
 If those things aren't done, push your discovery day registration. The franchise will still be there.
 
-[Have questions about where you are in the process? Let's get on a call. →]
+*Have questions about where you are in the process? Let's get on a call. [Book a call →](/book)*

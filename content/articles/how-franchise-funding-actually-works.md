@@ -75,4 +75,4 @@ Two main paths. SBA if you want to preserve liquidity and spread the investment 
 
 If you want to talk through what fits your numbers, that's a conversation we have with every candidate before they go anywhere near a franchise agreement.
 
-[Schedule 30 minutes →]
+*[Schedule 30 minutes →](/book)*

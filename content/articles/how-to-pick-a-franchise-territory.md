@@ -62,4 +62,4 @@ Good territory selection is a research project, not a gut call. The market data 
 
 If you're getting close to a franchise decision and haven't done this work yet, do it before discovery day, not after.
 
-[Want help evaluating territory options for a specific concept? That's exactly what we do. →]
+*Want help evaluating territory options for a specific concept? That's exactly what we do. [Book a call →](/book)*

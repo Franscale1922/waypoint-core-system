@@ -50,4 +50,4 @@ One unit feels safe. It's also the choice most likely to leave you with a capped
 
 That number depends on the specific concept, your capital picture, and what you actually want this business to accomplish over the next decade.
 
-[Want to run the unit calculus on a specific franchise? Let's talk. →]
+*Want to run the unit calculus on a specific franchise? Let's talk. [Book a call →](/book)*

@@ -62,4 +62,4 @@ Franchise ROI isn't a simple calculation. It includes the return on capital, the
 
 Understand those numbers before you commit.
 
-[Want to model out the ROI on a specific concept you're evaluating? That's a conversation worth having. →]
+*Want to model out the ROI on a specific concept you're evaluating? That's a conversation worth having. [Book a call →](/book)*

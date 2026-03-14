@@ -75,4 +75,4 @@ That data exists. It is in the FDD, in franchisee conversations, and in public r
 When I evaluate a concept with a candidate, this is part of the conversation early. Not as a reason to pass, but as a way to make sure what you're buying actually matches what you think you're buying.
 
 
-[Evaluating a concept for recession resilience? That's part of every conversation we have. →](/book)
+*Evaluating a concept for recession resilience? That's part of every conversation we have. [Book a call →](/book)*
