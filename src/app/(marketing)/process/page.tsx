@@ -62,7 +62,7 @@ const steps = [
     label: "The Discovery Call",
     headline: "Two hours before you see a single brand.",
     body: [
-      "Most franchise consultants send you a list within 48 hours of your first conversation. That list tells you almost nothing about whether any of those businesses are actually right for you.",
+      "When I was on the franchisor side, I watched people get matched to brands that had nothing to do with their strengths, their lifestyle, or what they actually wanted to build. The match was fast. The regret was slow.",
       "The first thing we do is talk. Not about franchises. About you. Your career, your goals, your family, what fills you up and what drains you, how you handle risk, what you want out of the next chapter.",
       "I guide the conversation with a structured set of topics, but the goal is simple: I want to understand your strengths well enough to match them to a business model, not just a brand name.",
       "By the end of that call, I usually have a clear picture. You will too.",
@@ -124,7 +124,7 @@ export default function ProcessPage() {
       <section
         className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6"
         style={{
-          backgroundImage: "url('/images/hero-mountains.png')",
+          backgroundImage: "url('/images/process-hero-mountain-pass.png')",
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
         }}
@@ -138,7 +138,7 @@ export default function ProcessPage() {
             Two hours before<br className="hidden sm:block" /> you see a single brand.
           </h1>
           <p className="text-white/80 text-lg sm:text-xl max-w-xl leading-relaxed">
-            Most consultants send you a list in 48 hours. That list tells you almost nothing about whether any of those businesses are right for you.
+            Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
           </p>
         </div>
       </section>
