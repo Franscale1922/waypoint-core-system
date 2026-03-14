@@ -194,6 +194,16 @@ export default function ProcessPage() {
         ))}
       </section>
 
+      {/* Process map image */}
+      <div className="w-full overflow-hidden">
+        <img
+          src="/images/kelsey-process-map.png"
+          alt="Kelsey Stuart reviewing a topographic map at an outdoor table in Montana"
+          className="w-full object-cover"
+          style={{ height: '420px', objectPosition: 'center 30%' }}
+        />
+      </div>
+
       {/* ── Divider quote ─────────────────────────────── */}
       <section className="bg-[#0c1929] py-20 px-6 text-center">
         <p className="font-playfair text-2xl sm:text-3xl text-white max-w-2xl mx-auto leading-relaxed italic">
