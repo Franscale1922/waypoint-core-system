@@ -131,7 +131,7 @@ export default function FAQPage() {
             Common Questions
           </p>
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
-            Honest answers.
+            Honest answers
           </h1>
           <p className="text-white/80 text-lg max-w-xl mx-auto leading-relaxed">
             If something is not covered here, just ask. There are no questions that are too basic.

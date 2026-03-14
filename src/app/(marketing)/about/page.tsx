@@ -29,7 +29,7 @@ export default function AboutPage() {
             About
           </p>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
-            I am Kelsey Stuart.
+            I am Kelsey Stuart
           </h1>
           <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
             Franchise consultant, former Bloomin&apos; Blinds franchisor, and the

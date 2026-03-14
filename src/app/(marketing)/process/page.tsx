@@ -135,7 +135,7 @@ export default function ProcessPage() {
             How It Works
           </p>
           <h1 className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6">
-            Two hours before<br className="hidden sm:block" /> you see a single brand.
+            Two hours before<br className="hidden sm:block" /> you see a single brand
           </h1>
           <p className="text-white/80 text-lg sm:text-xl max-w-xl leading-relaxed">
             Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
@@ -269,7 +269,7 @@ export default function ProcessPage() {
             Ready to Start
           </p>
           <h2 className="font-playfair text-3xl sm:text-5xl text-white mb-6">
-            The first conversation costs you nothing.
+            The first conversation costs you nothing
           </h2>
           <p className="text-white/75 text-lg mb-10">
             No pitch. No obligation. Just a real conversation about whether this path makes sense for you.

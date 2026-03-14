@@ -39,7 +39,7 @@ export default function ResourcesPage() {
             Franchise Resources
           </p>
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
-            What you should know<br className="hidden sm:block" /> before you start looking.
+            What you should know<br className="hidden sm:block" /> before you start looking
           </h1>
           <p className="text-white/80 text-lg max-w-xl leading-relaxed">
             Practical writing from someone who has been a franchisor, a franchisee, and now an advisor. No pitch, no agenda.
