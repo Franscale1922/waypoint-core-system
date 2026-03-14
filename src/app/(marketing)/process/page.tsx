@@ -149,7 +149,7 @@ export default function ProcessPage() {
         <div className="max-w-4xl mx-auto px-6 py-10 sm:py-14 grid sm:grid-cols-3 gap-8 text-center">
           {[
             { stat: "250+", label: "Franchise concepts in our inventory" },
-            { stat: "3-4", label: "Brands presented per candidate, maximum" },
+            { stat: "3–4", label: "Brands presented per candidate, maximum" },
             { stat: "~30%", label: "Of candidates end up buying a franchise. That is okay." },
           ].map(({ stat, label }) => (
             <div key={stat}>

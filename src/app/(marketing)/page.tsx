@@ -279,7 +279,7 @@ export default function HomePage() {
                 <span className="text-xs font-semibold text-[#c08b3e] tracking-widest">02</span>
                 <h3 className="text-lg sm:text-xl font-bold text-[#1a1a1a] mt-3 mb-3 sm:mb-4">I Match</h3>
                 <p className="text-sm text-[#4a4a4a] leading-relaxed">
-                  Based on everything you tell me, I curate 3–5 franchise
+                  Based on everything you tell me, I curate 3–4 franchise
                   concepts that fit. Not hundreds. A short list of validated
                   businesses that align with your money, skills, and life goals.
                 </p>
@@ -368,10 +368,10 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 text-center">
             {[
-              { stat: "$40M+", label: "system revenue built" },
-              { stat: "200+", label: "franchise locations" },
-              { stat: "3–5", label: "concepts per client" },
-              { stat: "$0", label: "cost to candidates" },
+              { stat: "$40M+", label: "Franchise system built" },
+              { stat: "200+", label: "Locations as franchisor" },
+              { stat: "3–4", label: "Brands presented, maximum" },
+              { stat: "$0", label: "Cost to candidates" },
             ].map((item) => (
               <div key={item.label} className="reveal">
                 <p className="text-2xl sm:text-3xl md:text-4xl font-black text-[#1b3a5f] tracking-tight">
