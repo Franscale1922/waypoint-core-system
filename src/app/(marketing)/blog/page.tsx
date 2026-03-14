@@ -31,7 +31,7 @@ export default function BlogPage() {
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/blog-hero.png')", backgroundPosition: "center 35%" }}
+          style={{ backgroundImage: "url('/images/blog-hero.jpg')", backgroundPosition: "center 35%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/45 to-[#0c1929]/25" />
         <div className="relative z-10 max-w-4xl mx-auto">

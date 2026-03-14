@@ -50,7 +50,7 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero-mountains.png')" }}
+          style={{ backgroundImage: "url('/images/hero-mountains.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 via-[#0c1929]/25 to-transparent" />
 
@@ -219,7 +219,7 @@ export default function HomePage() {
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
             <img
-              src="/images/kelsey-process-conversation.png"
+              src="/images/kelsey-process-conversation.jpg"
               alt="Kelsey Stuart leading the way down a forest trail"
               className="w-full object-cover"
               style={{ height: "380px", objectPosition: "center 30%" }}
@@ -284,7 +284,7 @@ export default function HomePage() {
           <div
             className="relative min-h-[250px] sm:min-h-[350px] lg:min-h-full bg-cover"
             style={{
-              backgroundImage: "url('/images/kelsey-fly-fishing-river.png')",
+              backgroundImage: "url('/images/kelsey-fly-fishing-river.jpg')",
               backgroundPosition: "center 30%",
             }}
           />
@@ -360,7 +360,7 @@ export default function HomePage() {
       <section className="relative py-20 sm:py-28 md:py-36 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
+          style={{ backgroundImage: "url('/images/mountain-lake.jpg')" }}
         />
         <div className="absolute inset-0 bg-[#0c1929]/40" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">

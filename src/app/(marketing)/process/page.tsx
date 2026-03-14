@@ -59,11 +59,11 @@ export const metadata: Metadata = {
 const steps = [
   {
     number: "01",
-    label: "The Discovery Call",
-    headline: "Two hours before you see a single brand.",
+    label: "The Intro Call",
+    headline: "Thirty minutes to see if this makes sense.",
     body: [
       "When I was on the franchisor side, I watched people get matched to brands that had nothing to do with their strengths, their lifestyle, or what they actually wanted to build. The match was fast. The regret was slow.",
-      "The first thing we do is talk. Not about franchises. About you. Your career, your goals, your family, what fills you up and what drains you, how you handle risk, what you want out of the next chapter.",
+      "The first thing we do is a short call — usually 20 to 30 minutes. No pitch, no intake form. I want to understand where you are in the process and whether it makes sense to go deeper. If it does, we schedule the two-hour discovery.",
       "I guide the conversation with a structured set of topics, but the goal is simple: I want to understand your strengths well enough to match them to a business model, not just a brand name.",
       "By the end of that call, I usually have a clear picture. You will too.",
     ],
@@ -122,14 +122,14 @@ export default function ProcessPage() {
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section
-        className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6"
+        className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6 overflow-hidden bg-[#0c1929]"
         style={{
-          backgroundImage: "url('/images/process-hero-highline.png')",
+          backgroundImage: "url('/images/process-hero-highline.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/55 via-[#0c1929]/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/60 via-[#0c1929]/15 to-[#0c1929]/30" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
             How It Works
@@ -197,10 +197,10 @@ export default function ProcessPage() {
       {/* Process map image */}
       <div className="w-full overflow-hidden">
         <img
-          src="/images/kelsey-process-map.png"
+          src="/images/kelsey-process-map.jpg"
           alt="Kelsey Stuart reviewing a topographic map at an outdoor table in Montana"
           className="w-full object-cover"
-          style={{ height: '420px', objectPosition: 'center 30%' }}
+          style={{ height: '420px', objectPosition: 'center 45%' }}
         />
       </div>
 
@@ -257,7 +257,7 @@ export default function ProcessPage() {
       <section
         className="relative py-24 px-6 text-center overflow-hidden"
         style={{
-          backgroundImage: "url('/images/mountain-lake.png')",
+          backgroundImage: "url('/images/mountain-lake.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

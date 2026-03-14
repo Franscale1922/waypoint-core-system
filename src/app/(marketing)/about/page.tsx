@@ -20,8 +20,8 @@ export default function AboutPage() {
       {/* Hero */}
       <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/fly-fishing-about.png')" }}
+          className="absolute inset-0 bg-cover"
+          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 35%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6">
@@ -64,7 +64,7 @@ export default function AboutPage() {
           {/* Photo Zone A — After "The Short Version" — community/life context */}
           <div className="mb-10 sm:mb-12 overflow-hidden rounded-xl sm:rounded-2xl">
             <img
-              src="/images/kelsey-campfire-group.png"
+              src="/images/kelsey-campfire-group.jpg"
               alt="Kelsey Stuart with family and friends in Montana"
               className="w-full object-cover"
               style={{ height: "420px", objectPosition: "center 40%" }}

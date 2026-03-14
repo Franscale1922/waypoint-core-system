@@ -23,7 +23,7 @@ export default function BookPage() {
       <section className="relative py-14 sm:py-20 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/mountain-lake.png')" }}
+          style={{ backgroundImage: "url('/images/mountain-lake.jpg')" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/45 to-[#0c1929]/25" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -56,7 +56,7 @@ export default function BookPage() {
             {/* Photo */}
             <div
               className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-cover bg-center bg-[#0c1929]"
-              style={{ backgroundImage: "url('/images/kelsey-coffee-outdoors.png')", backgroundPosition: "center 35%" }}
+              style={{ backgroundImage: "url('/images/kelsey-coffee-outdoors.jpg')", backgroundPosition: "center 35%" }}
             />
 
             {/* Name + title */}
