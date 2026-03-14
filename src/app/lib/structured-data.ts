@@ -41,8 +41,13 @@ export const localBusinessSchema = {
   ],
   priceRange: "Free",
   sameAs: [
-    "https://www.linkedin.com/in/kelseystuart/",
+    "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
+    "https://www.facebook.com/kelsey.stuart.94",
+    "https://www.instagram.com/franchise_match_maker/",
+    "https://x.com/__Waypoint",
+    "https://www.youtube.com/@Waypoint-Franchise",
+    "https://www.tiktok.com/@waypoint007",
   ],
 };
 
@@ -64,8 +69,13 @@ export const personSchema = {
   },
   worksFor: { "@id": `${SITE_URL}/#business` },
   sameAs: [
-    "https://www.linkedin.com/in/kelseystuart/",
+    "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
+    "https://www.facebook.com/kelsey.stuart.94",
+    "https://www.instagram.com/franchise_match_maker/",
+    "https://x.com/__Waypoint",
+    "https://www.youtube.com/@Waypoint-Franchise",
+    "https://www.tiktok.com/@waypoint007",
   ],
   knowsAbout: [
     "franchise consulting",

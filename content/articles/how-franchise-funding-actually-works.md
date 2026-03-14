@@ -9,12 +9,32 @@ date: "2025-11-14"
 category: "Going Deeper"
 tier: 2
 excerpt: "Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works."
+faqs:
+  - q: "What is the most common way to finance a franchise?"
+    a: "SBA 7(a) loans are the most common financing path for franchise buyers. The Small Business Administration guarantees up to 75% of the loan, which lowers the bank's lending risk. As of 2026, buyers typically put in 15–20% as a down payment, with repayment over 10 years. ROBS (Rollover for Business Startups) is the second most common approach for buyers who have significant retirement savings and want to avoid debt."
+  - q: "What is a ROBS and how does it work for franchise financing?"
+    a: "A ROBS (Rollover for Business Startups) lets you invest funds from a 401(k) or traditional IRA into your franchise without triggering early withdrawal penalties or a taxable event. A ROBS provider sets up a C-Corp, which sells stock to your retirement account. The proceeds go into the business. The result is no loan, no debt service, and no monthly payment — but your retirement savings are the investment and carry the risk."
+  - q: "Can you use a 401(k) to buy a franchise?"
+    a: "Yes, through a ROBS structure. A ROBS lets you roll 401(k) or IRA funds into a C-Corp that then buys your franchise. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. ROBS closes in days rather than months and requires no credit score qualification. The trade-off is that your retirement savings are directly at risk if the business underperforms."
+  - q: "What credit score do you need for an SBA franchise loan?"
+    a: "As of 2026, most SBA lenders require a minimum credit score around 680, though stronger scores (700+) will get better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion typically equal to 10% of the loan amount held in unencumbered cash or equivalent."
 ---
 Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works.
 
 Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase, you're probably overcomplicating it. Most buyers use one of these two tools. Everything else is a footnote.
 
 ## The Two Paths That Actually Matter
+
+| | SBA 7(a) Loan | ROBS |
+|---|---|---|
+| **How you're funded** | Bank loan with SBA guarantee | Retirement funds invested into a C-Corp |
+| **Capital access** | Up to $5.5M (as of 2026) | Limited to your retirement account balance |
+| **Out-of-pocket cost** | 15–20% down payment (as of 2026) | No down payment — full purchase from retirement funds |
+| **Time to close** | 60–90 days, sometimes longer | Days, not months |
+| **Credit requirement** | 680+ score, collateral, personal guarantee | None |
+| **Monthly debt obligation** | Fixed payments for 10 years | None |
+| **Retirement savings at risk** | No | Yes — directly |
+| **Best for** | Buyers who want to preserve liquidity and spread cost over time | Buyers with $100K+ in retirement savings who want to avoid debt |
 
 **SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
 

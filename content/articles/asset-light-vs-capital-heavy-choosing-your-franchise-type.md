@@ -9,6 +9,15 @@ date: "2025-08-21"
 category: "Getting Started"
 tier: 1
 excerpt: "Most people start their franchise search by thinking about industries they like. That's the wrong starting point."
+faqs:
+  - q: "What is the difference between an asset-light and a capital-heavy franchise?"
+    a: "An asset-light franchise operates without a permanent physical location — home services, B2B operators, mobile businesses, senior care. These typically require $150,000 to $350,000 total investment. A capital-heavy or brick-and-mortar franchise requires a physical retail space — fitness studios, food service, wellness centers, child enrichment. These typically run $300,000 to $800,000+ due to real estate, build-out, and equipment costs."
+  - q: "Which type of franchise is easier to run: B2B or B2C?"
+    a: "It depends on your background. B2C franchises rely heavily on marketing systems to generate consumer leads — they suit operators who are analytical and comfortable reading marketing data. B2B franchises rely on relationship-driven sales with longer cycles and larger contracts — they suit operators with sales experience or deep industry credibility. Neither is universally easier; both suit different operator profiles."
+  - q: "What is the most profitable type of franchise to buy?"
+    a: "Profitability varies significantly by market, operator, and execution. Asset-light B2B franchises with contract-based recurring revenue have historically produced strong returns relative to invested capital because overhead is lower. Non-brick-and-mortar home services have shown strong performance since 2020. The more important question is which model fits your skills and market — a well-matched operator in any category will outperform a mismatched one."
+  - q: "What does semi-absentee mean in franchise ownership?"
+    a: "Semi-absentee ownership means the day-to-day operation is managed by a hired operator or manager so you do not need to work in the business full-time. It is most practical in brick-and-mortar models with a fixed location and defined staff roles, but some non-brick-and-mortar models also support it. Semi-absentee requires more upfront working capital because you are funding a manager's salary from day one rather than covering the role yourself."
 ---
 Most people start their franchise search by thinking about industries they like. That's the wrong starting point.
 
@@ -52,7 +61,14 @@ The trade-off in B2B: it is not a model for hands-off ownership. The owner's rel
 
 ## Where the Strong Opportunities Are Right Now
 
-When you map these two axes together, four quadrants emerge. Here is an honest read on each.
+When you map these two axes together, four quadrants emerge:
+
+| Quadrant | Model | Typical investment | Operator fit | Current strength |
+|---|---|---|---|---|
+| **B2C, non-brick-and-mortar** | Home services, pet, senior care | $150K–$350K | Systems-driven, marketing-focused | Strong. Home services has grown consistently since 2020 |
+| **B2B, non-brick-and-mortar** | Commercial services, B2B consulting, restoration | $150K–$350K | Relationship-driven, prior industry experience | Very strong. Recurring contracts, lower consumer risk |
+| **B2C, brick-and-mortar** | Fitness, wellness, child enrichment | $300K–$800K+ | Manager-operator, community builder | Solid in the right category. Best path to semi-absentee |
+| **B2B, brick-and-mortar** | Limited options | Varies | Specialist | Few strong options. Scrutinize unit economics carefully |
 
 **B2C, non-brick-and-mortar:** This is where a lot of the best opportunities are right now. Home services has been growing since 2020 and is still producing strong returns in most markets. Pet services are performing well, particularly concepts that operate without retail space, since they carry a cost advantage over competitors who pay for brick-and-mortar overhead. Senior in-home care is growing consistently driven by demographics, and the demand is not going to slow down.
 

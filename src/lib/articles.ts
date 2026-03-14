@@ -75,3 +75,7 @@ export function getArticlesByCategory(): Record<string, Article[]> {
   }
   return grouped;
 }
+
+export function getArticlesByCategoryName(category: string): Article[] {
+  return getAllArticles().filter((a) => a.category === category);
+}

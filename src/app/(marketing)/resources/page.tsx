@@ -28,6 +28,26 @@ export default function ResourcesPage() {
         </div>
       </section>
       <section className="max-w-5xl mx-auto px-6 py-16 sm:py-24 space-y-20">
+        {/* Category hub links */}
+        <div>
+          <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Browse by category</p>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { label: "Getting Started", href: "/resources/getting-started" },
+              { label: "Going Deeper", href: "/resources/going-deeper" },
+              { label: "Industry Spotlights", href: "/resources/industry-spotlights" },
+            ].map(({ label, href }) => (
+              <Link
+                key={href}
+                href={href}
+                className="text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border border-[#d4a55a] text-[#c08b3e] hover:bg-[#d4a55a] hover:text-white transition-all rounded"
+              >
+                {label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
         {Object.entries(grouped).map(([category, articles]) => (
           <div key={category}>
             <div className="flex items-center gap-4 mb-8">
