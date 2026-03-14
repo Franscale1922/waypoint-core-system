@@ -207,13 +207,23 @@ export default function HomePage() {
           ============================================ */}
       <section className="py-16 sm:py-24 md:py-32">
         <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="reveal text-center mb-12 sm:mb-20">
+          <div className="reveal text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c08b3e] mb-4 sm:mb-6">
               The Process
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a1a1a] tracking-tight">
               No pitch deck. No hard close.
             </h2>
+          </div>
+          <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
+          {/* Process hero image — full width */}
+          <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
+            <img
+              src="/images/kelsey-process-conversation.png"
+              alt="Kelsey Stuart leading the way down a forest trail"
+              className="w-full object-cover"
+              style={{ height: "380px", objectPosition: "center 30%" }}
+            />
           </div>
 
           <div className="space-y-10 sm:space-y-16 md:space-y-0 md:grid md:grid-cols-12 md:gap-8">
