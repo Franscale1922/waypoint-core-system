@@ -91,18 +91,29 @@ export default function AboutPage() {
             </p>
           </div>
 
-          {/* Why I Do This from Montana */}
-          <div className="mb-10 sm:mb-12">
-            <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
-              Why I Do This from Montana
-            </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              I could live anywhere and do this job. I chose Whitefish because
-              it fits the life I have always been trying to build: one where you
-              are accountable to your own decisions, not someone else&apos;s
-              calendar. My entire adult career has been self-employed. Every
-              chapter has been my own business, my own risk, my own call.
-            </p>
+          {/* Why I Do This from Montana — editorial split with Zone B photo */}
+          <div className="mb-10 sm:mb-12 flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
+            <div className="flex-1">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
+                Why I Do This from Montana
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                I could live anywhere and do this job. I chose Whitefish because
+                it fits the life I have always been trying to build: one where you
+                are accountable to your own decisions, not someone else&apos;s
+                calendar. My entire adult career has been self-employed. Every
+                chapter has been my own business, my own risk, my own call.
+              </p>
+            </div>
+            {/* Photo Zone B — trail overlook selfie */}
+            <div className="w-full lg:w-64 lg:flex-shrink-0 overflow-hidden rounded-xl shadow-sm">
+              <img
+                src="/images/kelsey-trail-selfie.jpg"
+                alt="Kelsey Stuart on a Montana trail overlook"
+                className="w-full object-cover"
+                style={{ height: "280px", objectPosition: "center 20%" }}
+              />
+            </div>
           </div>
 
           {/* What I Am Not */}
