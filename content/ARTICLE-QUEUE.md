@@ -62,6 +62,9 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | `[ ]` | Commercial Testing and Environmental Services Franchises | Industry Spotlights | B2B, regulatory-driven demand, recurring inspection contracts. |
 | `[ ]` | Expanded B2B Services: Categories Worth Watching | Industry Spotlights | Catch-all for emerging B2B models not yet in standalone articles. |
 | `[ ]` | Turf Installation and Exterior Residential Franchises | Industry Spotlights | Artificial turf, landscaping enhancement — project-based, high ticket, referral-driven. |
+| `[ ]` | Music Education Franchises: The Recurring Revenue Behind the Recital | Industry Spotlights | Lesson-based model, recurring enrollment, studio vs. in-home vs. school partnership formats. |
+| `[ ]` | Golf Simulator and Instruction Franchises: Year-Round Revenue in an Indoor Format | Industry Spotlights | Technology-forward, membership and lesson hybrid, premium demographic, lower real estate dependency than traditional golf. |
+| `[~]` | Med Spa Franchises: What the Licensing Reality Looks Like | Industry Spotlights | Medical-adjacent, regulated by state — requires careful framing. Needs Kelsey's input on investor suitability and staffing model before drafting. |
 
 ---
 
