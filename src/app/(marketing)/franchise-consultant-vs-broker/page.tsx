@@ -124,18 +124,18 @@ export default function FranchiseConsultantVsBrokerPage() {
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b-2 border-[#c08b3e]">
-                <th className="text-left py-3 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[30%]">Dimension</th>
-                <th className="text-left py-3 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Consultant</th>
-                <th className="text-left py-3 pr-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Broker</th>
-                <th className="text-left py-3 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[6%]"></th>
+                <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[30%]">Dimension</th>
+                <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Consultant</th>
+                <th className="text-left py-3 pl-4 pr-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Broker</th>
+                <th className="text-left py-3 pl-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[6%]"></th>
               </tr>
             </thead>
             <tbody>
               {comparisonRows.map((row, i) => (
                 <tr key={row.dimension} className={`border-b border-[#e8e0d0] ${i % 2 === 0 ? "bg-white" : "bg-[#faf8f4]"}`}>
-                  <td className="py-4 pr-6 font-medium text-[#0c1929] align-top">{row.dimension}</td>
-                  <td className="py-4 pr-6 text-[#3a3a2e] leading-relaxed align-top">{row.consultant}</td>
-                  <td className="py-4 pr-4 text-[#3a3a2e] leading-relaxed align-top">{row.broker}</td>
+                  <td className="py-4 pl-4 pr-6 font-medium text-[#0c1929] align-top">{row.dimension}</td>
+                  <td className="py-4 pl-4 pr-6 text-[#3a3a2e] leading-relaxed align-top">{row.consultant}</td>
+                  <td className="py-4 pl-4 pr-4 text-[#3a3a2e] leading-relaxed align-top">{row.broker}</td>
                   <td className="py-4 align-top">
                     <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${
                       row.note === "Same" ? "bg-[#e8f0eb] text-[#3a6a4a]" :

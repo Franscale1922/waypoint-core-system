@@ -253,7 +253,7 @@ export default function GlossaryPage() {
             </div>
             <div className="space-y-8">
               {entries.map(({ term, definition, related, relatedLabel }) => (
-                <div key={term} className="grid sm:grid-cols-[200px_1fr] gap-4 sm:gap-8">
+                <div key={term} className="grid sm:grid-cols-[200px_1fr] gap-4 sm:gap-8 pl-4">
                   <div>
                     <h2 className="font-playfair text-lg text-[#0c1929] leading-snug">{term}</h2>
                   </div>
