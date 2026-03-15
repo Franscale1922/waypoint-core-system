@@ -108,7 +108,7 @@ export default async function ArticlePage({ params }: Props) {
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
           <div className="flex-1">
             <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-1">Not Sure Which Category Fits You?</p>
-            <p className="font-playfair text-xl text-[#0c1929] mb-1">Find your franchise archetype.</p>
+            <p className="font-playfair text-xl text-[#0c1929] mb-1">Find your owner type.</p>
             <p className="text-sm text-[#5a5a4a] leading-relaxed">8 questions. Tells you which industry categories match your working style — and which to avoid.</p>
           </div>
           <Link

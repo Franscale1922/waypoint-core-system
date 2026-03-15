@@ -82,7 +82,7 @@ export default function HomePage() {
               id="hero-cta-archetype"
               className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
             >
-              Find Your Archetype
+              Find Your Owner Type
             </Link>
             <Link
               href="/book"
@@ -245,7 +245,7 @@ export default function HomePage() {
               href="/archetype"
               className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
             >
-              Find Your Archetype
+              Find Your Owner Type
             </Link>
           </div>
         </div>
@@ -440,7 +440,7 @@ export default function HomePage() {
                 id="cta-bottom-archetype"
                 className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
               >
-                Find Your Archetype
+                Find Your Owner Type
               </Link>
               <Link
                 href="/book"

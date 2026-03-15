@@ -158,7 +158,7 @@ export default function ScorecardClient() {
               <p className="mt-5 text-sm text-slate-500">
                 Want to know what kind of franchise owner you are?{" "}
                 <a href="/archetype" className="text-[#c08b3e] underline hover:text-[#1b3a5f]">
-                  Take the Archetype Quiz →
+                  Find Your Owner Type →
                 </a>
               </p>
             </>

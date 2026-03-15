@@ -185,7 +185,7 @@ export default function AboutPage() {
                 href="/archetype"
                 className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
               >
-                Archetype Quiz
+                Ownership Style Quiz
               </a>
               <a
                 href="sms:+12149951062"

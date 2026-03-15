@@ -123,7 +123,7 @@ export default function GoingDeeperPage() {
         <p className="mt-6 text-xs text-white/40">
           Not sure which categories fit your profile?{" "}
           <Link href="/archetype" className="text-white/60 underline hover:text-white/80 transition-colors">
-            Take the Archetype Quiz first →
+            Find your owner type first →
           </Link>
         </p>
       </section>

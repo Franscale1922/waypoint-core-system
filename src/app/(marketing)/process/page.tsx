@@ -303,7 +303,7 @@ export default function ProcessPage() {
               href="/archetype"
               className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
             >
-              Find Your Archetype
+              Find Your Owner Type
             </Link>
             <a
               href="sms:+12149951062"

@@ -53,7 +53,7 @@ export default function MarketingLayout({
               href="/archetype"
               className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
-              Archetype
+              Owner Type Quiz
             </Link>
             <Link
               href="/scorecard"
@@ -107,7 +107,7 @@ export default function MarketingLayout({
                 </li>
                 <li>
                   <Link href="/archetype" className="hover:text-white transition-colors inline-block py-1">
-                    Archetype Quiz
+                    Owner Type Quiz
                   </Link>
                 </li>
                 <li>

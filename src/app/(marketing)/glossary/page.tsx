@@ -6,7 +6,7 @@ const glossarySchema = {
   "@type": "DefinedTermSet",
   name: "Franchise Glossary — Waypoint Franchise Advisors",
   description:
-    "Plain-language definitions of franchise industry terms for prospective franchise buyers, including FDD, royalty, territory, Item 19, discovery day, and more.",
+    "Plain-language definitions of franchise industry terms for prospective franchise buyers, including FDD items, royalty, territory, discovery day, ROBS, unit economics, semi-absentee, SBA loans, and more.",
   url: "https://waypointfranchise.com/glossary",
   publisher: {
     "@type": "Organization",
@@ -16,14 +16,14 @@ const glossarySchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Franchise Glossary: Key Terms Explained | Waypoint Franchise Advisors",
+  title: "Franchise Glossary: 60+ Key Terms Explained | Waypoint Franchise Advisors",
   description:
-    "Plain-language definitions of franchise terms every buyer should know: FDD, franchise fee, royalty, territory, Item 19, discovery day, validation calls, ROBS, and more.",
+    "The most complete plain-language franchise glossary for buyers: FDD items 5–21, royalty, territory, Item 19, discovery day, ROBS, SBA loans, unit economics, semi-absentee, non-compete, transfer fee, and more.",
   alternates: { canonical: "https://waypointfranchise.com/glossary" },
   openGraph: {
     title: "Franchise Glossary | Waypoint Franchise Advisors",
     description:
-      "Every term a franchise buyer needs to understand, explained in plain language. No jargon.",
+      "Every term a franchise buyer needs to understand, explained in plain language. 60+ definitions from FDD to unit economics.",
     url: "https://waypointfranchise.com/glossary",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Glossary" }],
   },
@@ -31,8 +31,86 @@ export const metadata: Metadata = {
 
 const terms = [
   {
+    letter: "A",
+    entries: [
+      {
+        term: "Absentee Ownership",
+        definition:
+          "A franchise ownership model where the franchisee is a pure investor with no day-to-day involvement in operations. True absentee ownership is rare in franchising — most models marketed as absentee still require an engaged owner who reviews financials, makes hiring decisions, and handles strategic problems. When a franchise brand claims absentee-friendliness, the right question is whether Item 19 of the FDD supports the revenue needed to carry a full management layer without owner oversight.",
+        related: "/resources/the-semi-absentee-franchise-real-talk",
+        relatedLabel: "The semi-absentee franchise: real talk",
+      },
+      {
+        term: "Area Development Agreement",
+        definition:
+          "A contract that gives a franchisee the right — and the obligation — to open a specified number of units within a defined region over an agreed timeline. Unlike a single-unit franchise agreement, an area development agreement commits you to a development schedule. Missing milestones can put the entire agreement at risk. The upside: locking in territory before competitors can claim it, often at a lower per-unit fee than buying units one at a time.",
+        related: "/resources/one-unit-or-multi-unit-what-first-timers-get-wrong",
+        relatedLabel: "One unit or multi-unit: what first-timers get wrong",
+      },
+      {
+        term: "Asset-Light Franchise",
+        definition:
+          "A franchise model requiring minimal physical infrastructure — no storefront, no expensive equipment, no inventory. Home-based, mobile, and van-based service businesses are typically asset-light. Lower startup costs and faster break-even timelines are the upside. The trade-off is that asset-light businesses often face lower barriers to competition and may have less defensible territory. Examples include window cleaning, pet waste removal, and business coaching franchises.",
+        related: "/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type",
+        relatedLabel: "Asset-light vs. capital-heavy: choosing your type",
+      },
+    ],
+  },
+  {
+    letter: "B",
+    entries: [
+      {
+        term: "B2B Franchise",
+        definition:
+          "A franchise where the primary customers are businesses rather than individual consumers. Examples include commercial cleaning, cost-reduction consulting, staffing, IT managed services, and signage. B2B franchises typically have longer sales cycles, higher average transaction values, and stronger contract-based recurring revenue than B2C models. They also have less foot-traffic dependency — location matters less than the owner's ability to prospect and manage commercial relationships.",
+        related: "/resources/b2b-franchise-opportunities-lower-risk-steadier-cash",
+        relatedLabel: "B2B franchise opportunities: lower risk, steadier cash",
+      },
+      {
+        term: "Brick-and-Mortar Franchise",
+        definition:
+          "A franchise that operates from a fixed physical location — a storefront, studio, restaurant, or clinic. Brick-and-mortar franchises carry higher build-out costs, longer ramp-up timelines, and more complex real estate negotiations than home-based or mobile models. They benefit from walk-in traffic, brand visibility, and stronger customer loyalty from regular in-person visits. Fitness studios, med spas, and QSR brands are typical examples.",
+        related: "/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type",
+        relatedLabel: "Asset-light vs. capital-heavy: choosing your type",
+      },
+      {
+        term: "Build-Out",
+        definition:
+          "The construction, renovation, and fit-out work required to prepare a physical location for franchise operations — installing equipment, signage, fixtures, and brand-required design elements. Build-out costs are one of the largest line items in FDD Item 7 for brick-and-mortar concepts and vary significantly depending on whether the space is raw or already partially improved. Most franchisors have approved vendor relationships and design standards that dictate what the build-out must include.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+    ],
+  },
+  {
+    letter: "C",
+    entries: [
+      {
+        term: "C-Corporation",
+        definition:
+          "A standard corporate structure that is a separate legal entity from its owners. In franchising, a C-Corp is a required component of a ROBS (Rollover for Business Startups) structure — the retirement plan invests in the C-Corp, which uses the funds to purchase the franchise. Beyond ROBS, some franchisors require or prefer franchisees to form a C-Corp or LLC for liability and operational reasons. A franchise attorney or business attorney should advise on entity structure before signing any agreement.",
+        related: "/resources/how-franchise-funding-actually-works",
+        relatedLabel: "How franchise funding actually works",
+      },
+      {
+        term: "Conversion Franchise",
+        definition:
+          "A model where an existing independent business converts to a franchise brand — adopting its systems, branding, and support infrastructure in exchange for fees and royalties. Common in home services, real estate, and cleaning. Conversion franchises allow the franchisor to grow quickly with owners who already have operational experience; they give independent business owners access to brand recognition and systems they would otherwise build themselves.",
+        related: null,
+        relatedLabel: null,
+      },
+    ],
+  },
+  {
     letter: "D",
     entries: [
+      {
+        term: "Development Schedule",
+        definition:
+          "The timeline attached to an area development agreement specifying when each unit must be opened. An agreement to open five locations might require the first to open within 12 months, two more within 24 months, and so on. Missing a development schedule milestone is a material breach of most area development agreements and can result in the loss of future territory rights. Franchisors use development schedules to ensure territory is being built out, not just held.",
+        related: "/resources/one-unit-or-multi-unit-what-first-timers-get-wrong",
+        relatedLabel: "One unit or multi-unit: what first-timers get wrong",
+      },
       {
         term: "Discovery Day",
         definition:
@@ -47,22 +125,97 @@ const terms = [
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
       },
+      {
+        term: "Due Diligence",
+        definition:
+          "The structured investigation a prospective franchisee conducts before signing any agreement — reading the FDD, calling existing franchisees from Item 20, reviewing Item 19 financial data, confirming territory availability, retaining a franchise attorney, and lining up financing. Thorough due diligence is the primary difference between franchise buyers who go in with realistic expectations and those who discover problems after they have signed. The process typically takes four to eight weeks when done properly.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+    ],
+  },
+  {
+    letter: "E",
+    entries: [
+      {
+        term: "Equity Injection",
+        definition:
+          "The portion of a franchise investment contributed from personal funds rather than borrowed capital. SBA lenders typically require a 10%–20% equity injection of the total project cost. A $400,000 total investment would require $40,000–$80,000 in equity from the borrower. Equity injection demonstrates financial commitment to the lender and reduces the loan amount needed. It can come from liquid savings, a ROBS structure using retirement funds, or a family gift (with proper documentation).",
+        related: "/resources/how-franchise-funding-actually-works",
+        relatedLabel: "How franchise funding actually works",
+      },
+      {
+        term: "Executive Model",
+        definition:
+          "A franchise ownership structure where the franchisee hires and manages an operational team rather than performing the service work themselves. The franchisee acts as the business owner — handling financials, growth strategy, hiring, and culture — while trained employees deliver the service. Executive model franchises differ from semi-absentee in that the owner is often working full-time in the business, just not in a technical or labor capacity. Common in senior care, commercial cleaning, and staffing categories.",
+        related: "/resources/the-semi-absentee-franchise-real-talk",
+        relatedLabel: "The semi-absentee franchise: real talk",
+      },
     ],
   },
   {
     letter: "F",
     entries: [
       {
+        term: "FDD Item 5",
+        definition:
+          "The section of the Franchise Disclosure Document that lists all initial fees paid to the franchisor — primarily the franchise fee. Item 5 also discloses whether fees are uniform across all buyers or whether they vary, and under what conditions. Some brands offer reduced franchise fees for veterans, multi-unit buyers, or early-signing incentives — those conditions are documented here.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+      {
+        term: "FDD Item 6",
+        definition:
+          "The section that lists all ongoing fees paid to the franchisor — royalties, marketing fund contributions, technology fees, training fees, and any other recurring obligations. Item 6 is where the true ongoing cost of brand affiliation becomes visible. A brand with a 6% royalty and a 2% marketing fund costs 8% of gross revenue before any local operating expenses. Reading Item 6 alongside Item 19 tells you whether the business model actually works at those fee levels.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+      {
+        term: "FDD Item 7",
+        definition:
+          "The section disclosing the estimated initial investment range — total capital required to open one franchise unit. Item 7 must include every pre-opening cost: franchise fee, real estate, build-out, equipment, inventory, training travel, working capital, and opening marketing. Ranges are estimates — actual costs depend on your market, your real estate deal, and your contractor. Treat the low end as optimistic and the high end as your planning number.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+      {
+        term: "FDD Item 12",
+        definition:
+          "The section defining your territory rights — what geographic area you control, what protections you have against competing units opening nearby, and any carveouts or exceptions. Item 12 is where vague territory protection language becomes legally binding. Some franchisors offer robust exclusivity; others reserve rights to sell through alternate channels (online, kiosks) even within your territory. Review this section closely with a franchise attorney.",
+        related: "/resources/how-to-pick-a-franchise-territory",
+        relatedLabel: "How to pick a franchise territory",
+      },
+      {
+        term: "FDD Item 19",
+        definition:
+          "The optional section where franchisors may disclose financial performance data — revenue, expenses, and sometimes earnings — for existing units. Item 19 disclosure is not required, but its absence is itself informative. When data exists, it requires careful reading: averages across large systems can mask wide variation between top and bottom performers. The most valuable Item 19s show unit-level cost structures, not just top-line revenue.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+      {
+        term: "FDD Item 20",
+        definition:
+          "The section listing every current franchisee in the system — by name, location, and contact information. This is the most underused tool in franchise due diligence. Calling franchisees directly from Item 20 (not just the ones the franchisor refers you to) is one of the most reliable ways to understand what it is actually like to operate that business.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+      {
+        term: "FDD Item 21",
+        definition:
+          "The section containing the franchisor's audited financial statements — typically three years of balance sheets and income statements. Item 21 tells you whether the franchisor itself is financially stable. A franchisor with weak financials, declining cash reserves, or significant debt is a system-level risk: if the parent company struggles, support quality suffers and the brand's long-term viability comes into question.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
+      {
         term: "Franchise Agreement",
         definition:
-          "The legal contract between a franchisor and franchisee that governs the operating relationship for the term of the franchise (typically 10 years with renewal options). It covers territory rights, royalty obligations, operating standards, transfer rules, and termination conditions. Unlike the FDD, the franchise agreement is the binding document — what is in it governs, not what was said in conversation.",
+          "The legal contract between a franchisor and franchisee governing the operating relationship for the term of the franchise (typically 10 years with renewal options). It covers territory rights, royalty obligations, operating standards, transfer rules, and termination conditions. Unlike the FDD, the franchise agreement is the binding document — what is in it governs, not what was said in conversation.",
         related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
         relatedLabel: "What you can and can't negotiate",
       },
       {
         term: "Franchise Disclosure Document (FDD)",
         definition:
-          "A federally mandated document, typically 200–400 pages, that every franchisor must provide to prospective buyers before any agreement or payment. Organized into 23 items, it covers the franchisor's history, leadership team, litigation history, fees, investment requirements, territory rights, franchisee obligations, financial performance data (optional, Item 19), and a contact list of all current franchisees. Reading the FDD — especially Items 5, 6, 7, 19, and 20 — is one of the most important steps in franchise due diligence.",
+          "A federally mandated document, typically 200–400 pages, that every franchisor must provide to prospective buyers before any agreement or payment. Organized into 23 items, it covers the franchisor's history, leadership, litigation history, fees, investment requirements, territory rights, franchisee obligations, financial performance data (Item 19), and a contact list of all current franchisees (Item 20). Reading the FDD — especially Items 5, 6, 7, 19, and 20 — is one of the most important steps in franchise due diligence.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
       },
@@ -72,6 +225,13 @@ const terms = [
           "A one-time upfront payment to the franchisor, typically $20,000–$60,000, made at the time of signing the franchise agreement. It grants the franchisee the right to operate under the brand's system, intellectual property, and territory. The franchise fee does not cover build-out, equipment, working capital, or ongoing royalties. It is defined in FDD Item 5.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+      },
+      {
+        term: "Franchise Registry (SBA)",
+        definition:
+          "A list maintained by the Small Business Administration identifying franchise brands whose agreements have been pre-reviewed for SBA loan eligibility. When a brand is on the SBA Franchise Registry, the loan approval process is significantly faster because the SBA has already determined the structure is eligible. Brands not on the registry are not ineligible — but the process takes longer. Confirming SBA Registry status is a practical step if you plan to use SBA financing.",
+        related: "/resources/how-franchise-funding-actually-works",
+        relatedLabel: "How franchise funding actually works",
       },
       {
         term: "Franchisee",
@@ -97,26 +257,83 @@ const terms = [
     ],
   },
   {
+    letter: "G",
+    entries: [
+      {
+        term: "General Manager",
+        definition:
+          "In a franchise context, the hired professional responsible for day-to-day operations of a franchise unit — typically in a semi-absentee or executive model structure. A qualified general manager allows the owner to step back from daily operations while the business continues to run. The cost of a general manager (salary, benefits, performance incentives) must be accounted for in the financial model. If Item 19 revenue figures do not support that cost, the semi-absentee claim is a marketing label, not an operational reality.",
+        related: "/resources/the-semi-absentee-franchise-real-talk",
+        relatedLabel: "The semi-absentee franchise: real talk",
+      },
+      {
+        term: "Grand Opening Fee",
+        definition:
+          "A one-time fee paid to the franchisor to fund local marketing and promotional activities around a new unit's launch — advertising, direct mail, event support, and brand awareness spending in your market. Grand opening fees are disclosed in FDD Item 6 or Item 7 and typically range from $5,000–$25,000 depending on the brand. Some franchisors provide significant hands-on support during opening; others provide a playbook.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+    ],
+  },
+  {
+    letter: "H",
+    entries: [
+      {
+        term: "HELOC (Home Equity Line of Credit)",
+        definition:
+          "A revolving credit line borrowed against the equity in your home, sometimes used to fund part of a franchise purchase. HELOCs offer flexible access to capital at lower interest rates than unsecured loans, but they put your home at risk if the business underperforms. When used as an equity injection alongside an SBA loan, a HELOC can be an effective piece of a franchise financing stack — but it requires careful cash flow modeling to ensure both the business and the line can be serviced simultaneously.",
+        related: "/resources/how-franchise-funding-actually-works",
+        relatedLabel: "How franchise funding actually works",
+      },
+      {
+        term: "Home-Based Franchise",
+        definition:
+          "A franchise that can be operated from the franchisee's residence without a commercial storefront. Home-based franchises eliminate lease costs and significantly reduce initial investment. They include business coaching, cost-reduction consulting, pet waste removal, senior placement, and many home service sales businesses. The trade-off is the discipline to treat a home office as a professional work environment — and, in some categories, the perception challenge of operating without a physical address.",
+        related: "/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type",
+        relatedLabel: "Asset-light vs. capital-heavy: choosing your type",
+      },
+    ],
+  },
+  {
     letter: "I",
     entries: [
       {
+        term: "Initial Investment",
+        definition:
+          "The total estimated cost to open and begin operating a franchise unit, as disclosed in FDD Item 7. It includes the franchise fee, build-out, equipment, initial inventory, working capital, training costs, and pre-opening expenses. Ranges vary widely by category — from under $100,000 for home-based service concepts to $500,000+ for full brick-and-mortar locations.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+      {
         term: "Item 19",
         definition:
-          "The section of the FDD where franchisors may voluntarily disclose financial performance data — revenue, expenses, and in some cases earnings — for existing units in their system. Item 19 disclosure is not required, but its absence is itself informative: franchisors who do not disclose financial data in Item 19 are worth questioning about why. When Item 19 data exists, it requires careful reading — averages across large systems can mask significant variation between top and bottom performers.",
+          "See FDD Item 19. The optional financial performance disclosure section of the Franchise Disclosure Document. One of the most critical sections for evaluating franchise investment viability.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
       },
       {
         term: "Item 20",
         definition:
-          "The section of the FDD that lists every current franchisee in the system — by name, location, and contact information. This is the most underused tool in franchise due diligence. Calling franchisees directly (not just the ones the franchisor refers you to) is one of the most reliable ways to understand what it is actually like to operate that business.",
+          "See FDD Item 20. The section listing all current and former franchisees with contact information — the foundation of productive validation calls.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
       },
+    ],
+  },
+  {
+    letter: "L",
+    entries: [
       {
-        term: "Initial Investment",
+        term: "Liquid Capital",
         definition:
-          "The total estimated cost to open and begin operating a franchise unit, as disclosed in FDD Item 7. It includes the franchise fee, build-out, equipment, initial inventory, working capital, training costs, and pre-opening expenses. Ranges vary widely by category — from under $100,000 for home-based service concepts to $500,000+ for full brick-and-mortar locations.",
+          "Cash or near-cash assets that can be accessed immediately without selling long-term investments or taking on debt — typically checking and savings accounts, money market funds, and short-term CDs. When a franchisor states a minimum liquid capital requirement, they are asking how much you can put to work today without liquidating retirement accounts or real estate. Most brands require $50,000–$150,000 in liquid capital depending on the model. This is distinct from net worth, which includes illiquid assets.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+      {
+        term: "Liquid Net Worth",
+        definition:
+          "The portion of your total net worth that is readily accessible — liquid assets minus short-term liabilities. Lenders and franchisors use liquid net worth to assess whether a buyer has the financial cushion to sustain the business through its ramp-up period. A buyer with a $2M net worth tied entirely to real estate and retirement accounts may have a lower liquid net worth than the brand's minimum requirement.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
       },
@@ -133,17 +350,130 @@ const terms = [
         relatedLabel: "Full cost breakdown",
       },
       {
+        term: "Master Franchise",
+        definition:
+          "An arrangement where a franchisee (the master franchisee) purchases the rights to develop and sub-franchise a brand within a large region — often a state, country, or major metropolitan area. The master franchisee recruits, trains, and supports individual unit franchisees within their region and earns a portion of the fees and royalties those franchisees pay. Master franchise agreements are capital-intensive and operationally complex but represent a significant business-building opportunity.",
+        related: null,
+        relatedLabel: null,
+      },
+      {
+        term: "Mobile Franchise",
+        definition:
+          "A franchise where the service is delivered via a vehicle — van, truck, or trailer — rather than from a fixed location. Mobile franchises include pet grooming, window cleaning, pressure washing, lawn care, and similar delivered services. They have low real estate costs, can serve large geographic areas, and scale by adding vehicles and technicians as revenue grows. Success depends on scheduling discipline and keeping utilization high across multiple vehicles.",
+        related: "/resources/home-services-franchises-most-overlooked-category",
+        relatedLabel: "Home services franchises: most overlooked category",
+      },
+      {
         term: "Multi-Unit Franchise",
         definition:
-          "An ownership structure where a franchisee operates two or more units under the same brand, either within a single territory or across multiple territories. Multi-unit agreements sometimes include development schedules (a timeline by which additional units must be opened) and often involve discounted fees.",
+          "An ownership structure where a franchisee operates two or more units under the same brand, either within a single territory or across multiple territories. Multi-unit agreements sometimes include development schedules and often involve discounted fees. A multi-unit development agreement does not mean writing multiple checks today — it means committing to a build-out timeline where the first unit generates cash flow that helps fund subsequent openings.",
         related: "/resources/one-unit-or-multi-unit-what-first-timers-get-wrong",
         relatedLabel: "One unit or multi-unit: what first-timers get wrong",
       },
     ],
   },
   {
+    letter: "N",
+    entries: [
+      {
+        term: "Net Worth Requirement",
+        definition:
+          "A minimum total asset threshold (assets minus liabilities) that a franchisor requires of prospective franchisees, disclosed in FDD Item 5. A $500,000 net worth requirement does not mean $500,000 in cash — it means the total value of what you own (home equity, retirement accounts, investments, business interests) minus what you owe must reach that threshold. Net worth requirements ensure franchisees have enough financial depth to weather slow periods.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+      {
+        term: "Non-Compete Clause",
+        definition:
+          "A legal provision in the franchise agreement prohibiting the franchisee from operating a competing business during the term and, in many cases, for a defined period after the agreement ends — typically one to two years within a defined radius. Non-competes are standard in franchise agreements. Their scope and enforceability vary by state. A franchise attorney will flag unusually broad post-term non-competes that could restrict your ability to work in your own industry after the franchise relationship ends.",
+        related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
+        relatedLabel: "What you can and can't negotiate",
+      },
+      {
+        term: "Non-Disclosure Agreement (NDA)",
+        definition:
+          "A confidentiality agreement sometimes signed before a franchisor shares detailed proprietary information — trade secrets, operations manuals, supplier pricing — with a prospective franchisee. NDAs in the early stages of franchise exploration are routine. However, franchisors are not permitted to require an NDA before providing the FDD, and any attempt to do so would violate FTC franchise disclosure rules.",
+        related: null,
+        relatedLabel: null,
+      },
+    ],
+  },
+  {
+    letter: "O",
+    entries: [
+      {
+        term: "Operations Manual",
+        definition:
+          "The franchisee's proprietary operating guide — a detailed document (often hundreds of pages) covering every aspect of how the business is run: staffing, customer service, vendor relationships, marketing, compliance, and brand standards. The operations manual is the franchisor's system made tangible. It is typically provided after the franchise agreement is signed, not before. During validation calls, existing franchisees will give you a candid sense of whether the manual is genuinely useful or a binder that sits on a shelf.",
+        related: null,
+        relatedLabel: null,
+      },
+      {
+        term: "Owner-Operator",
+        definition:
+          "A franchisee who is actively involved in the day-to-day running of their business — either performing the service work themselves or managing staff directly on-site. Owner-operator models have lower initial capital requirements (no management layer to fund from day one) and faster break-even timelines. They suit people who want hands-on experience and a close relationship with their customer base. The trade-off is time — owner-operators are working in the business, not just on it.",
+        related: null,
+        relatedLabel: null,
+      },
+    ],
+  },
+  {
+    letter: "P",
+    entries: [
+      {
+        term: "Personal Guarantee",
+        definition:
+          "A legal commitment in which the franchisee — and often their spouse — pledges personal assets as collateral for a business obligation, most commonly an SBA loan or commercial lease. Personal guarantees are standard in franchising and effectively remove the liability shield of the business entity on the specific obligation guaranteed. Understanding exactly what is personally guaranteed in your franchise deal is an important part of legal review before signing.",
+        related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
+        relatedLabel: "What you can and can't negotiate",
+      },
+      {
+        term: "Pre-Opening Costs",
+        definition:
+          "Expenses incurred before the franchise opens for business: training travel and lodging, initial marketing and grand opening spending, pre-opening wages for hired staff, deposits, and professional fees. Pre-opening costs are itemized in FDD Item 7 and should be funded from the initial investment, not from operating cash flow. Underestimating pre-opening costs is one of the most common ways new franchisees arrive at opening day with less runway than they planned.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
+      },
+      {
+        term: "Protected Territory",
+        definition:
+          "A geographic area in which the franchisor agrees not to open competing franchise units or sell competing products through other channels. \"Protected\" does not mean unconditionally exclusive in all systems — franchisors may retain rights to sell through non-traditional venues (airports, stadiums, online) even within a protected territory. The specific protection language is in FDD Item 12. True exclusivity is a contractual promise, not a sales conversation.",
+        related: "/resources/how-to-pick-a-franchise-territory",
+        relatedLabel: "How to pick a franchise territory",
+      },
+    ],
+  },
+  {
     letter: "R",
     entries: [
+      {
+        term: "Recurring Revenue Model",
+        definition:
+          "A business structure where customers pay on a scheduled, repeat basis — monthly memberships, weekly service routes, annual contracts — rather than through one-time transactions. Recurring revenue creates predictable cash flow, reduces customer acquisition cost, and improves a business's exit valuation. Pet waste removal, mosquito control, pool maintenance, fitness memberships, and many senior care models operate this way. The ratio of recurring to transactional revenue is one of the most important indicators of franchise stability.",
+        related: "/resources/recession-proof-franchise-categories",
+        relatedLabel: "Recession-proof franchise categories",
+      },
+      {
+        term: "Renewal Term",
+        definition:
+          "The option to extend the franchise agreement after the initial term expires, typically for an additional 5 or 10 years. Renewal is not automatic — it usually requires signing the then-current franchise agreement (which may have updated terms), demonstrating good standing, and in some cases paying a renewal fee. Buyers should understand what \"then-current terms\" means: the agreement you renew into may be materially different from the one you originally signed.",
+        related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
+        relatedLabel: "What you can and can't negotiate",
+      },
+      {
+        term: "Resale (Franchise Resale)",
+        definition:
+          "The sale of an existing franchise unit from one franchisee to a new owner. A resale differs from buying a new unit: the business has a track record — revenue history, existing customers, existing staff — but the purchase price reflects that established value rather than the startup investment in Item 7. Resales require franchisor approval and buyer qualification. They can be an efficient way to acquire a running business — or an expensive way to inherit someone else's problems. Validate the seller's claims with customers, staff, and the brand independently.",
+        related: null,
+        relatedLabel: null,
+      },
+      {
+        term: "Right of First Refusal",
+        definition:
+          "A contractual right giving the franchisor — or in some cases a current franchisee — the option to purchase a unit before the owner can sell it to a third party. If a franchisee wants to sell, they must first offer the unit to the right-holder under the same terms as the outside buyer. Rights of first refusal are common in franchise agreements and affect exit planning. Understand exactly how yours is structured before signing.",
+        related: null,
+        relatedLabel: null,
+      },
       {
         term: "ROBS (Rollover for Business Startups)",
         definition:
@@ -154,7 +484,7 @@ const terms = [
       {
         term: "Royalty",
         definition:
-          "An ongoing fee paid by the franchisee to the franchisor — typically 4%–8% of gross revenue, paid weekly or monthly — in exchange for continued use of the brand, systems, and support infrastructure. Royalties are defined in FDD Item 6 and continue for the full term of the franchise agreement. The royalty rate, combined with the marketing fund, represents the franchisee's total ongoing cost of brand affiliation.",
+          "An ongoing fee paid by the franchisee to the franchisor — typically 4%–8% of gross revenue, paid weekly or monthly — in exchange for continued use of the brand, systems, and support infrastructure. Royalties are defined in FDD Item 6 and continue for the full term of the franchise agreement. The royalty rate, combined with the marketing fund contribution, represents the franchisee's total ongoing cost of brand affiliation.",
         related: "/investment",
         relatedLabel: "Full franchise cost breakdown",
       },
@@ -164,9 +494,23 @@ const terms = [
     letter: "S",
     entries: [
       {
+        term: "Salon Suite / Booth Rental Model",
+        definition:
+          "A franchise model in which the franchisee operates as a real estate landlord for independent beauty professionals — stylists, estheticians, nail technicians — who rent private suite space within the franchisee's facility. The franchisee does not operate a salon; they operate a building full of individual micro-salons. Revenue comes from suite rental income. Brands like IMAGE Studios, Sola Salons, and MY SALON Suite operate this model. It is a semi-passive, recurring revenue business with a fundamentally different operational profile from a traditional beauty service franchise.",
+        related: null,
+        relatedLabel: null,
+      },
+      {
         term: "SBA Loan (Small Business Administration)",
         definition:
           "A federally backed loan program commonly used to finance franchise purchases. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost with lower down payments and longer repayment terms than conventional business loans. Approval depends on the borrower's credit, equity injection, and in some cases whether the franchise brand is already on the SBA's pre-approved Franchise Registry.",
+        related: "/resources/how-franchise-funding-actually-works",
+        relatedLabel: "How franchise funding actually works",
+      },
+      {
+        term: "SBLOC (Securities-Backed Line of Credit)",
+        definition:
+          "A revolving credit line secured by an investment portfolio — stocks, bonds, ETFs — without requiring the assets to be sold. SBLOCs offer access to capital at relatively low interest rates and can be a faster, less disruptive alternative to liquidating investments. As a franchise funding tool, they are most useful as an equity injection or working capital supplement for buyers with a significant investment portfolio who want to avoid triggering capital gains taxes by selling.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },
@@ -177,17 +521,57 @@ const terms = [
         related: "/resources/the-semi-absentee-franchise-real-talk",
         relatedLabel: "The semi-absentee franchise: real talk",
       },
+      {
+        term: "System-Wide Sales",
+        definition:
+          "The total gross revenue generated across all franchise units in a system, often cited by franchisors in marketing materials as a measure of scale. System-wide sales figures can be impressive but require context — a high number across 500 locations tells you less than understanding what the average individual unit generates. When evaluating a brand's financial health, unit-level economics from Item 19 matter far more than system-wide totals.",
+        related: "/resources/fdd-decoded-what-actually-matters",
+        relatedLabel: "FDD decoded: what actually matters",
+      },
     ],
   },
   {
     letter: "T",
     entries: [
       {
+        term: "Term (Franchise Term)",
+        definition:
+          "The initial length of a franchise agreement — most commonly 10 years, though some brands use 5-year or 20-year terms. After the initial term, the franchisee typically has the option to renew if they are in good standing. The term clock starts at signing, not at the unit's opening date. A 10-year term on a business that takes 18 months to ramp up means roughly 8.5 years of productive operating time before renewal or exit decisions arise.",
+        related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
+        relatedLabel: "What you can and can't negotiate",
+      },
+      {
         term: "Territory",
         definition:
           "A defined geographic region — usually by zip codes, population thresholds, or county lines — within which a franchisee holds exclusive rights to operate under the brand. Territory definitions and enforcement vary significantly by brand. Some franchisors offer protected territories (competitors of the same brand cannot open nearby); some do not. Territory rights are defined in FDD Item 12.",
         related: "/resources/how-to-pick-a-franchise-territory",
         relatedLabel: "How to pick a franchise territory",
+      },
+      {
+        term: "Transfer Fee",
+        definition:
+          "A fee paid to the franchisor when a franchise unit is sold from one owner to another. Transfer fees cover the franchisor's cost of processing the new franchisee application, providing training, and updating agreements. They typically range from $5,000–$25,000 and are disclosed in FDD Item 6. Understanding transfer fees is part of exit planning — they directly affect the net proceeds a seller receives.",
+        related: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate",
+        relatedLabel: "What you can and can't negotiate",
+      },
+      {
+        term: "Triple-A Brand",
+        definition:
+          "A term used at Waypoint to describe franchise brands that occupy the optimal position for first-time buyers: mature enough to have proven systems, real support infrastructure, and a track record worth trusting — but not so oversaturated that the best territories are gone. Major-league brands (household names) offer name recognition but limited open territory. Triple-A brands offer open territory, growing demand, and the operational depth of an established system. Finding a Triple-A brand in the right category for the right buyer is the core of the matching process.",
+        related: "/resources/big-name-vs-emerging-which-franchise-to-buy",
+        relatedLabel: "Big name vs. emerging: which franchise to buy",
+      },
+    ],
+  },
+  {
+    letter: "U",
+    entries: [
+      {
+        term: "Unit Economics",
+        definition:
+          "The financial performance of a single franchise unit — revenue, cost of goods, labor, royalties, rent, and other operating expenses — expressed as a model showing whether the business is profitable at the unit level and by how much. Strong unit economics are the foundation of any sound franchise investment decision. They are best understood by analyzing Item 19 of the FDD alongside direct conversations with existing franchisees. A brand with great marketing but weak unit economics will always produce struggling franchisees.",
+        related: "/resources/what-is-your-time-worth-the-roi-math-of-franchise-ownership",
+        relatedLabel: "The ROI math of franchise ownership",
       },
     ],
   },
@@ -200,6 +584,25 @@ const terms = [
           "A conversation between a prospective franchisee and one or more existing franchise owners in the system, conducted without the franchisor present. Validation calls are typically arranged through the franchisor's development team, but serious candidates should also pick names directly from the Item 20 franchisee contact list. This is one of the most important steps in due diligence — existing owners have no incentive to oversell the opportunity and often share candid information about support quality, what the first year is really like, and where the brand falls short.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: Item 20 explained",
+      },
+      {
+        term: "Van-Based Franchise",
+        definition:
+          "A mobile franchise model where the primary delivery vehicle is a branded van or truck. Van-based franchises — mobile pet grooming, window cleaning, pressure washing, handyman services — offer the flexibility of a home-based business with capacity for consistent route-based revenue. They scale by adding vehicles and technicians. Success depends on scheduling efficiency, vehicle maintenance, and service quality consistency across a growing fleet.",
+        related: "/resources/home-services-franchises-most-overlooked-category",
+        relatedLabel: "Home services franchises: most overlooked category",
+      },
+    ],
+  },
+  {
+    letter: "W",
+    entries: [
+      {
+        term: "Working Capital",
+        definition:
+          "The cash reserved to fund day-to-day operations during the ramp-up period — before the business generates enough revenue to cover its own costs. Working capital is one of the most frequently underestimated line items in franchise budgets. FDD Item 7 discloses an estimated range, but the actual amount you need depends on how long your category typically takes to reach break-even, your local market, and how conservatively you want to operate. Most advisors recommend funding at least six months of projected operating expenses before opening.",
+        related: "/investment",
+        relatedLabel: "Full franchise investment guide",
       },
     ],
   },
@@ -223,7 +626,7 @@ export default function GlossaryPage() {
             Franchise terms, explained plainly
           </h1>
           <p className="text-base text-[#4a4a3e] leading-relaxed max-w-xl">
-            Every term you will encounter when evaluating a franchise — FDD, royalty, territory, Item 19, discovery day, ROBS, and more — defined in plain language without jargon. Last updated: March 2026.
+            Every term you will encounter when evaluating a franchise — FDD items, royalty, territory, discovery day, ROBS, unit economics, non-compete clauses, and more — defined in plain language without jargon. 60+ entries. Last updated: March 2026.
           </p>
         </div>
       </section>
