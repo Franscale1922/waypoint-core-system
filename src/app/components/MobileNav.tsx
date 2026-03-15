@@ -53,23 +53,25 @@ export default function MobileNav() {
 
       {/* Fullscreen overlay menu */}
       <div
-        className={`fixed inset-0 z-[100] transition-all duration-500 sm:hidden ${
+        className={`fixed inset-0 z-[200] transition-all duration-500 sm:hidden ${
           isOpen
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
         }`}
+        style={{ isolation: "isolate" }}
       >
-        {/* Backdrop */}
+        {/* Backdrop — fully opaque dark overlay */}
         <div
-          className="absolute inset-0 bg-[#0c1929]/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-[#0c1929]/80"
           onClick={() => setIsOpen(false)}
         />
 
-        {/* Menu panel - slides from right */}
+        {/* Menu panel - slides from right, fully opaque */}
         <div
-          className={`absolute top-0 right-0 h-full w-[280px] bg-[#FAF8F4] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`absolute top-0 right-0 h-full w-[280px] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
+          style={{ background: "#FAF8F4", backdropFilter: "none", WebkitBackdropFilter: "none" }}
         >
           {/* Close button */}
           <div className="flex justify-end p-5">
