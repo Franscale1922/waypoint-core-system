@@ -23,6 +23,11 @@ export default auth((req) => {
 });
 
 export const config = {
-  // Protect admin pages + sensitive API routes (NOT webhooks — those use shared secrets)
-  matcher: ["/admin/:path*", "/api/leads/:path*", "/api/settings/:path*"],
+  // Protect admin pages + sensitive API routes
+  // IMPORTANT: exclude /admin/login and /api/auth/* or they cause redirect loops
+  matcher: [
+    "/admin/((?!login$).*)", // all /admin/* EXCEPT /admin/login
+    "/api/leads/:path*",
+    "/api/settings/:path*",
+  ],
 };
