@@ -103,6 +103,22 @@ export default async function ArticlePage({ params }: Props) {
         <MDXRemote source={content} />
       </article>
       <RelatedArticles articles={related} />
+      {/* Archetype quiz callout */}
+      <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
+        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
+          <div className="flex-1">
+            <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-1">Not Sure Which Category Fits You?</p>
+            <p className="font-playfair text-xl text-[#0c1929] mb-1">Find your franchise archetype.</p>
+            <p className="text-sm text-[#5a5a4a] leading-relaxed">8 questions. Tells you which industry categories match your working style — and which to avoid.</p>
+          </div>
+          <Link
+            href="/archetype"
+            className="shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[44px] whitespace-nowrap"
+          >
+            Take the Quiz →
+          </Link>
+        </div>
+      </section>
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-xl sm:text-2xl text-white mb-4">Ready to talk through your situation?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">30 minutes. No pitch. Just an honest conversation about where you stand.</p>

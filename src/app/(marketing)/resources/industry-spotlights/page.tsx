@@ -99,6 +99,23 @@ export default function IndustrySpotlightsPage() {
         </div>
       </section>
 
+      {/* Quiz CTA banner */}
+      <section className="bg-[#f5ebd1] border-y border-[#e8d8b0] py-10 px-6">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-2">Before You Go Deeper on a Category</p>
+          <p className="font-playfair text-2xl text-[#0c1929] mb-3">Know your franchise archetype first.</p>
+          <p className="text-sm text-[#5a5a4a] leading-relaxed mb-6 max-w-lg mx-auto">
+            Which categories align with your personality depends on how you naturally work. 8 questions. Takes 3 minutes. Tells you which industries are built for someone like you.
+          </p>
+          <Link
+            href="/archetype"
+            className="inline-flex items-center justify-center px-8 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+          >
+            Take the Archetype Quiz →
+          </Link>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Want a read on a specific category?</p>

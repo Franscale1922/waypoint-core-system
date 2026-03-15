@@ -67,7 +67,14 @@ export default function GettingStartedPage() {
           <div className="w-8 h-[2px] bg-[#d4a55a]" />
           <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Once You Have the Basics</p>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <Link href="/archetype" className="group block bg-[#f5ebd1] border border-[#e8d8b0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/60 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Tool</p>
+            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Franchise Archetype Quiz</h3>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">8 questions that identify what type of franchise owner you are — and which categories fit your natural working style.</p>
+            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Take the Quiz →</p>
+          </Link>
           <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
             <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
             <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
@@ -98,6 +105,7 @@ export default function GettingStartedPage() {
           </Link>
         </div>
       </section>
+
 
       {/* CTA */}
       <section className="bg-[#0c1929] py-14 px-6 text-center">

@@ -120,6 +120,12 @@ export default function GoingDeeperPage() {
             Text Me
           </a>
         </div>
+        <p className="mt-6 text-xs text-white/40">
+          Not sure which categories fit your profile?{" "}
+          <Link href="/archetype" className="text-white/60 underline hover:text-white/80 transition-colors">
+            Take the Archetype Quiz first →
+          </Link>
+        </p>
       </section>
     </main>
   );
