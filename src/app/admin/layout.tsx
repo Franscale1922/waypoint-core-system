@@ -1,6 +1,5 @@
 import { Sidebar } from "@/components/Sidebar";
 import { auth, signOut } from "@/auth";
-import { redirect } from "next/navigation";
 import { LogOut } from "lucide-react";
 
 export default async function AdminLayout({
@@ -8,10 +7,15 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Get session for display purposes only.
+  // Auth enforcement is handled by middleware (src/middleware.ts),
+  // which redirects unauthenticated requests to /admin/login.
+  // We do NOT redirect here to avoid wrapping /admin/login in an auth loop.
   const session = await auth();
 
+  // Login page: no sidebar chrome, just render children
   if (!session?.user) {
-    redirect("/admin/login");
+    return <>{children}</>;
   }
 
   return (

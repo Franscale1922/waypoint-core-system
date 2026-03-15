@@ -8,42 +8,14 @@
 
 import { Article } from "./contentRefresh";
 
-// ─── Article Pool (for relatedSlugs validation) ───────────────────────────────
-
-const ARTICLE_POOL = [
-  "are-you-ready-to-own-a-franchise",
-  "asset-light-vs-capital-heavy-choosing-your-franchise-type",
-  "do-you-need-a-franchise-consultant",
-  "fdd-decoded-what-actually-matters",
-  "recession-proof-franchise-categories",
-  "red-flags-franchise-types-to-avoid",
-  "the-true-cost-of-buying-a-franchise",
-  "you-dont-need-to-love-your-franchise",
-  "big-name-vs-emerging-which-franchise-to-buy",
-  "fast-growing-franchise-brand-good-sign-or-red-flag",
-  "how-franchise-funding-actually-works",
-  "how-to-pick-a-franchise-territory",
-  "how-to-tell-if-a-franchisor-actually-cares",
-  "one-unit-or-multi-unit-what-first-timers-get-wrong",
-  "the-franchise-agreement-what-you-can-and-cant-negotiate",
-  "the-semi-absentee-franchise-real-talk",
-  "w2-to-franchise-owner-when-youre-actually-ready",
-  "what-is-your-time-worth-the-roi-math-of-franchise-ownership",
-  "what-to-expect-at-discovery-day",
-  "your-first-90-days-as-a-franchise-owner",
-  "b2b-franchise-opportunities-lower-risk-steadier-cash",
-  "fitness-franchise-comparison-what-the-numbers-say",
-  "health-wellness-franchises-fad-vs-durable-business",
-  "home-services-franchises-most-overlooked-category",
-  "junk-removal-franchise-economics-explained",
-  "restoration-franchises-the-disaster-proof-business",
-  "senior-care-franchise-is-it-right-for-you",
-  "should-you-buy-a-car-wash-franchise",
-];
-
 // ─── System Prompt ─────────────────────────────────────────────────────────────
 
-export function buildSystemPrompt(): string {
+/**
+ * @param liveSlugPool - All current article slugs read dynamically at runtime.
+ *   Passed in from the Inngest function so this file never needs updating
+ *   when articles are added or removed.
+ */
+export function buildSystemPrompt(liveSlugPool: string[]): string {
   const currentYear = new Date().getFullYear();
 
   return `You are the Waypoint Franchise Advisors content refresh agent.
@@ -141,7 +113,7 @@ Tone:
 Preserve the relatedSlugs exactly as they appear in the original frontmatter. Do not change them.
 
 Valid slug pool for reference:
-${ARTICLE_POOL.join("\n")}
+${liveSlugPool.join("\n")}
 
 ---
 

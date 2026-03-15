@@ -194,7 +194,62 @@ Items ordered by **impact × effort ratio** (highest first within each sprint).
 
 ---
 
+## Go-Live Checklist
+
+Run through all of these before pointing a domain at production. This list is written host-agnostically — it applies to Vercel, Netlify, Railway, or any other provider.
+
+### Hosting & Build
+
+- [ ] **Connect GitHub repo to host.** Authorize the host to access `github.com/Franscale1922/waypoint-core-system`.
+- [ ] **Set build command:** `prisma generate && prisma db push --accept-data-loss && next build`
+- [ ] **Set output directory:** `.next` (Next.js default — most hosts detect this automatically)
+- [ ] **⚠️ Enable auto-deploy on push to `main`.** This is required for the automated content refresh system. Every time the content refresh Inngest function rewrites articles, it commits them to GitHub. Your host must detect that push and rebuild — otherwise the refreshed articles never appear on the live site. On Vercel: Settings → Git → Production Branch = `main`, auto-deploy enabled. On Netlify: Site Settings → Build & Deploy → Auto publishing = on.
+
+### Environment Variables
+
+Copy all of the following from `.env` into your host's environment variable settings. **None of these are in the deployed code — they must be set in the host dashboard.**
+
+| Variable | Where to get it |
+|---|---|
+| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) |
+| `DATABASE_URL` | Your production DB connection string (not the local `file:./dev.db`) |
+| `AUTH_SECRET` | Copy from `.env` — already set |
+| `AUTH_GOOGLE_ID` | Google Cloud Console → OAuth credentials |
+| `AUTH_GOOGLE_SECRET` | Google Cloud Console → OAuth credentials |
+| `GITHUB_TOKEN` | Create at [github.com/settings/tokens](https://github.com/settings/tokens) — Fine-grained, Contents: Read and Write on this repo |
+| `GITHUB_REPO_OWNER` | `Franscale1922` |
+| `GITHUB_REPO_NAME` | `waypoint-core-system` |
+| `GITHUB_BRANCH` | `main` |
+| `TIDYCAL_WEBHOOK_SECRET` | TidyCal dashboard → Webhooks → signing secret |
+| `RESEND_WEBHOOK_SECRET` | Resend dashboard → Webhooks → signing secret |
+
+### Inngest (Production)
+
+- [ ] Create a production Inngest app at [app.inngest.com](https://app.inngest.com)
+- [ ] Add the production Inngest signing key (`INNGEST_SIGNING_KEY`) and event key (`INNGEST_EVENT_KEY`) to your host environment variables
+- [ ] Set the Inngest webhook URL in the Inngest dashboard to: `https://yourdomain.com/api/inngest`
+- [ ] Verify the `content-refresh` cron function appears active in the Inngest dashboard
+
+### Domain & DNS
+
+- [ ] Point domain DNS to host nameservers or add A/CNAME records as instructed
+- [ ] Confirm SSL certificate issues automatically (all major hosts do this)
+- [ ] Update `AUTH_GOOGLE_ID` OAuth redirect URI in Google Cloud Console to include the production domain
+
+### Post-Deploy Smoke Test
+
+- [ ] `/` loads — hero, sections, CTA visible
+- [ ] `/book` — TidyCal calendar loads
+- [ ] `/scorecard` — quiz completes and shows results
+- [ ] `/resources/[slug]` — one article loads correctly with "Keep Reading" section
+- [ ] `/api/inngest` returns 200 (Inngest health check)
+- [ ] Admin panel at `/admin` redirects to Google login and then loads dashboard
+
+---
+
 ## Guiding Principles for Future Agents
+
 
 1. **Write access restriction:** The agent sandbox cannot write directly to `/Desktop/`. Provide all file edits as `python3 << 'EOF' ... EOF` heredoc commands for Kelsey to paste into Terminal.
 

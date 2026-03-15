@@ -50,16 +50,10 @@ export default function MarketingLayout({
               Resources
             </Link>
             <Link
-              href="/archetype"
+              href="/quizzes"
               className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
-              Owner Type Quiz
-            </Link>
-            <Link
-              href="/scorecard"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
-            >
-              Scorecard
+              Quizzes
             </Link>
             <Link
               href="/book"
@@ -96,18 +90,13 @@ export default function MarketingLayout({
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
+                  <Link href="/about" className="hover:text-white transition-colors inline-block py-1">
+                    About Kelsey
+                  </Link>
+                </li>
+                <li>
                   <Link href="/process" className="hover:text-white transition-colors inline-block py-1">
                     How It Works
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/scorecard" className="hover:text-white transition-colors inline-block py-1">
-                    Readiness Quiz
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/archetype" className="hover:text-white transition-colors inline-block py-1">
-                    Owner Type Quiz
                   </Link>
                 </li>
                 <li>
@@ -121,13 +110,13 @@ export default function MarketingLayout({
                   </Link>
                 </li>
                 <li>
-                  <Link href="/book" className="hover:text-white transition-colors inline-block py-1">
-                    Book a Free Call
+                  <Link href="/quizzes" className="hover:text-white transition-colors inline-block py-1">
+                    Quizzes
                   </Link>
                 </li>
                 <li>
-                  <Link href="/about" className="hover:text-white transition-colors inline-block py-1">
-                    About Kelsey
+                  <Link href="/book" className="hover:text-white transition-colors inline-block py-1">
+                    Book a Free Call
                   </Link>
                 </li>
               </ul>
@@ -138,7 +127,7 @@ export default function MarketingLayout({
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
-                  <Link href="/tools" className="hover:text-white transition-colors inline-block py-1">
+                  <Link href="/quizzes" className="hover:text-white transition-colors inline-block py-1">
                     Free Quizzes
                   </Link>
                 </li>

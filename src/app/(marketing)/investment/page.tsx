@@ -141,7 +141,7 @@ export default function InvestmentPage() {
             How much does a franchise actually cost?
           </h1>
           <p className="text-base sm:text-lg text-[#4a4a3e] leading-relaxed max-w-2xl mb-6">
-            The total investment to buy a franchise typically ranges from <strong>$75,000 to $500,000+</strong>, depending on the business model. That number includes the initial franchise fee, setup costs, equipment, working capital, and pre-opening expenses — not just the fee on the cover page.
+            The total investment to buy a franchise typically ranges from <strong>$75,000 to $500,000+</strong>, depending on the business model. That number includes the initial franchise fee, setup costs, equipment, working capital, and pre-opening expenses. Not just the fee on the cover page.
           </p>
           <p className="text-sm text-[#6a6a5e] leading-relaxed max-w-2xl">
             This guide breaks down every cost component, explains how investment tiers work across business categories, and covers how financing fits in. Last updated: March 2026.
@@ -151,7 +151,7 @@ export default function InvestmentPage() {
 
       {/* Quick answer summary bar */}
       <section className="border-b border-[#e8e0d0] bg-[#f0ede8]">
-        <div className="max-w-4xl mx-auto px-10 py-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+        <div className="max-w-4xl mx-auto px-5 sm:px-10 py-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center">
           {[
             { stat: "$20K–$60K", label: "Initial franchise fee" },
             { stat: "4%–8%", label: "Typical royalty rate" },
@@ -167,7 +167,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Cost components table */}
-      <section className="max-w-4xl mx-auto px-10 py-14 sm:py-20">
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
           Cost Breakdown
         </p>
@@ -178,7 +178,19 @@ export default function InvestmentPage() {
           Most buyers focus on the franchise fee. That is the smallest line item. Here is the full picture of what it costs to get open and operational.
         </p>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: stacked cards */}
+        <div className="sm:hidden space-y-4">
+          {costComponents.map((row, i) => (
+            <div key={row.component} className={`rounded-xl p-4 border border-[#e8e0d0] ${i % 2 === 0 ? "bg-white" : "bg-[#faf8f4]"}`}>
+              <p className="font-semibold text-[#0c1929] text-sm mb-1">{row.component}</p>
+              <p className="text-[#1b3a5f] font-bold text-base mb-2">{row.typical}</p>
+              <p className="text-xs text-[#5a5a4a] leading-relaxed">{row.notes}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b-2 border-[#c08b3e]">
@@ -205,8 +217,8 @@ export default function InvestmentPage() {
       </section>
 
       {/* Investment tiers */}
-      <section className="bg-[#0c1929] py-14 sm:py-20 px-6">
-        <div className="max-w-4xl mx-auto px-10">
+      <section className="bg-[#0c1929] py-14 sm:py-20 px-5 sm:px-6">
+        <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d4a55a] mb-4">
             Investment Tiers
           </p>
@@ -238,7 +250,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Capital and financing */}
-      <section className="max-w-4xl mx-auto px-10 py-14 sm:py-20">
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
           Liquid Capital &amp; Financing
         </p>
@@ -309,7 +321,7 @@ export default function InvestmentPage() {
       </section>
 
       {/* Related resources — card format */}
-      <section className="max-w-4xl mx-auto px-10 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-8 h-[2px] bg-[#d4a55a]" />
           <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Related Resources</p>
@@ -388,15 +400,15 @@ export default function InvestmentPage() {
           </Link>
           <Link
             href="/scorecard"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
           >
             Take the Readiness Quiz
           </Link>
           <Link
             href="/archetype"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
           >
-            Find Your Archetype
+            Find Your Owner Type
           </Link>
           <a
             href="sms:+12149951062"

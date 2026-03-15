@@ -8,18 +8,18 @@ slug: "the-franchise-agreement-what-you-can-and-cant-negotiate"
 date: "2025-12-18"
 category: "Going Deeper"
 tier: 2
-excerpt: "Franchise agreements are not like most business contracts. They are largely standardized, and most core terms — royalties, brand standards, exit terms — are not up for meaningful negotiation. Here is what that means for you and what areas actually do have room to move."
+excerpt: "Franchise agreements are not like most business contracts. They are largely standardized, and most core terms, including royalties, brand standards, and exit terms, are not up for meaningful negotiation. Here is what that means for you and what areas actually do have room to move."
 faqs:
   - q: "Can you negotiate a franchise agreement?"
-    a: "Limited negotiation is possible, primarily around territory size, development timelines for multi-unit agreements, and in some cases initial franchise fees with emerging brands. Core terms — royalty rate, brand standards, term length, and exit provisions — are typically standardized across the system and not subject to negotiation. Attempting to renegotiate these terms usually signals to the franchisor that you don't understand how the system works, which can damage the relationship before you've started."
+    a: "Limited negotiation is possible, primarily around territory size, development timelines for multi-unit agreements, and in some cases initial franchise fees with emerging brands. Core terms, royalty rate, brand standards, term length, and exit provisions, are typically standardized across the system and not subject to negotiation. Attempting to renegotiate these terms usually signals to the franchisor that you don't understand how the system works, which can damage the relationship before you've started."
   - q: "What is a franchise attorney and why do you need one to review a franchise agreement?"
-    a: "A franchise attorney specializes in FTC disclosure requirements, state franchise registration laws, and the structure of standard franchise agreements. They are not reading the agreement to renegotiate it wholesale — they are looking for unusually aggressive termination language, territory protection provisions that are vaguely defined, non-compete clauses that extend beyond the agreement term, and inconsistencies between what you were told verbally and what the agreement actually says. Attorney review typically costs $1,500 to $3,500, which is not an area to cut corners on a $150,000 to $500,000 investment."
+    a: "A franchise attorney specializes in FTC disclosure requirements, state franchise registration laws, and the structure of standard franchise agreements. They are not reading the agreement to renegotiate it wholesale. They are looking for unusually aggressive termination language, territory protection provisions that are vaguely defined, non-compete clauses that extend beyond the agreement term, and inconsistencies between what you were told verbally and what the agreement actually says. Attorney review typically costs $1,500 to $3,500, which is not an area to cut corners on a $150,000 to $500,000 investment."
   - q: "What happens if a franchise agreement contains something different from what you were told?"
-    a: "If something you were told verbally during the sales process is not in the franchise agreement, it does not exist as an enforceable obligation. This is one of the primary reasons to have a franchise attorney review the agreement before signing — to catch any inconsistencies between verbal representations and the written terms. If you discover a material discrepancy at signing, you have not done enough due diligence earlier in the process."
+    a: "If something you were told verbally during the sales process is not in the franchise agreement, it does not exist as an enforceable obligation. This is one of the primary reasons to have a franchise attorney review the agreement before signing, to catch any inconsistencies between verbal representations and the written terms. If you discover a material discrepancy at signing, you have not done enough due diligence earlier in the process."
   - q: "What franchise agreement terms can sometimes be negotiated?"
-    a: "The areas most commonly open to some discussion are: territory size and boundaries (particularly for multi-unit buyers), development timelines for multi-unit build-out schedules, transfer and renewal fees (sometimes reduced for strong performers or pre-approved buyers), and initial franchise fees with newer brands looking to fill specific markets. These are relationship items — not standard terms — and require the right context and approach to discuss."
+    a: "The areas most commonly open to some discussion are: territory size and boundaries (particularly for multi-unit buyers), development timelines for multi-unit build-out schedules, transfer and renewal fees (sometimes reduced for strong performers or pre-approved buyers), and initial franchise fees with newer brands looking to fill specific markets. These are relationship items, not standard terms, and require the right context and approach to discuss."
 ---
-Franchise agreements are not like most business contracts. Most contracts have two parties negotiating toward a middle. Franchise agreements are largely standardized — the franchisor wrote them, they've used them across hundreds of locations, and the baseline terms are rarely up for meaningful negotiation.
+Franchise agreements are not like most business contracts. Most contracts have two parties negotiating toward a middle. Franchise agreements are largely standardized. The franchisor wrote them, they've used them across hundreds of locations, and the baseline terms are rarely up for meaningful negotiation.
 
 That's not inherently bad. But walking into the process expecting to negotiate a custom deal will frustrate you and signal to the franchisor that you don't understand how the system works.
 
@@ -30,7 +30,7 @@ Franchise agreements exist because the system is the product. The franchisor's e
 Key terms that are almost never negotiable:
 - **Royalty rate.** Typically 5–8% of gross revenue. This is how the franchisor funds training, support, R&D, and your franchise development manager. It's baked into the model.
 - **Brand standards.** What the customer sees and how the product is delivered. These are non-negotiable because one non-compliant operator damages every other operator in the system.
-- **Term length.** Most franchise agreements run 10 years, sometimes with renewal options. The term protects both parties — you get a window to build and recover your investment, they get a committed operator.
+- **Term length.** Most franchise agreements run 10 years, sometimes with renewal options. The term protects both parties. You get a window to build and recover your investment, and they get a committed operator.
 - **Exit terms.** You can't simply walk away and keep operating. Your options are to sell the business (subject to franchisor approval and sometimes right of first refusal), or terminate and shut it down. Most agreements specify what "terminate" means operationally and financially.
 
 The logic behind this is straightforward: the franchisor has spent the first 6–12 months training and onboarding you, often at a loss. They're not going to let you take their IP and systems and walk.
@@ -51,7 +51,7 @@ The realistic read: if you go into the franchise agreement process expecting to 
 
 ## The Right Way to Get Agreement Help
 
-Every franchise buyer should have a franchise attorney review the agreement before signing. Not a general business attorney — you need a franchise-specific attorney who understands FTC disclosure requirements, state franchise registration laws, and what the standard terms mean.
+Every franchise buyer should have a franchise attorney review the agreement before signing. Not a general business attorney. You need a franchise-specific attorney who understands FTC disclosure requirements, state franchise registration laws, and what the standard terms mean.
 
 A franchise attorney is not reading the agreement hoping to renegotiate it wholesale. They're looking for:
 - Unusually aggressive renewal or termination language
@@ -76,7 +76,7 @@ If those things are solid, the agreement signing is confirmation, not discovery.
 
 ## The Bottom Line
 
-Franchise agreements are standardized for operational reasons, not to disadvantage you. They protect the system, and by extension, every other franchisee in it — including you. The negotiating you'll do is around the edges: territory, timelines, some fee items.
+Franchise agreements are standardized for operational reasons, not to disadvantage you. They protect the system, and by extension, every other franchisee in it, including you. The negotiating you'll do is around the edges: territory, timelines, some fee items.
 
 The work that protects you happens before the agreement, in your due diligence.
 

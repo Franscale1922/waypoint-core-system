@@ -313,9 +313,9 @@ import {
     getAllArticles,
     isStale,
     passesComplianceCheck,
-    writeArticle,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
+import { commitRefreshedArticles, ArticleCommitPayload } from "@/lib/githubArticleCommit";
 
 const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 
@@ -353,6 +353,7 @@ export const contentRefreshFunction = inngest.createFunction(
 
         const refreshed: string[] = [];
         const failed: { slug: string; reason: string }[] = [];
+        const toCommit: ArticleCommitPayload[] = [];
 
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
@@ -368,7 +369,7 @@ export const contentRefreshFunction = inngest.createFunction(
 
                 const { text } = await generateText({
                     model: customOpenai("gpt-4o"),
-                    system: buildSystemPrompt(),
+                    system: buildSystemPrompt(articles.map((a) => a.slug)),
                     prompt: buildUserPrompt(article),
                 });
 
@@ -389,23 +390,34 @@ export const contentRefreshFunction = inngest.createFunction(
                     return {
                         success: false as const,
                         reason: `Compliance violations found: ${violations.join(", ")}`,
+                        frontmatter: null,
+                        body: null,
                     };
                 }
 
-                // Write back to disk
-                writeArticle(article.filePath, newFrontmatter, newBody);
-
-                return { success: true as const, reason: undefined };
+                return { success: true as const, reason: undefined as string | undefined, frontmatter: newFrontmatter, body: newBody };
             });
 
-            if (result.success) {
+            if (result.success && result.frontmatter && result.body) {
                 refreshed.push(article.slug);
+                toCommit.push({
+                    slug: article.slug,
+                    frontmatter: result.frontmatter,
+                    body: result.body,
+                });
             } else {
                 failed.push({ slug: article.slug, reason: result.reason ?? "Unknown error" });
             }
         }
 
-        // ── Step 4: Send summary email via Resend ─────────────────────────────
+        // ── Step 4: Commit all refreshed articles to GitHub (single atomic commit) ──
+        if (toCommit.length > 0) {
+            await step.run("commit-to-github", async () => {
+                await commitRefreshedArticles(toCommit);
+            });
+        }
+
+        // ── Step 5: Send summary email via Resend ─────────────────────────────
         await step.run("send-refresh-summary", async () => {
             const settings = await prisma.systemSettings.findUnique({
                 where: { id: "singleton" }

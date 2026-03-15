@@ -8,24 +8,24 @@ slug: "fdd-decoded-what-actually-matters"
 date: "2025-09-11"
 category: "Getting Started"
 tier: 1
-excerpt: "The FDD — Franchise Disclosure Document — is the legally mandated document every franchise candidate receives and almost nobody reads correctly. Here is what to focus on and why most buyers get it wrong."
+excerpt: "The FDD, or Franchise Disclosure Document, is the legally mandated document every franchise candidate receives and almost nobody reads correctly. Here is what to focus on and why most buyers get it wrong."
 faqs:
   - q: "What is an FDD (Franchise Disclosure Document)?"
     a: "The Franchise Disclosure Document is a legally mandated document that every franchisor must provide to prospective franchisees at least 14 calendar days before any agreement is signed or money changes hands. It is organized into 23 items covering the franchisor's history, leadership team, litigation history, fee structure, investment requirements, territory definitions, financial performance data (Item 19, if disclosed), and a contact list of all current franchisees (Item 20). It typically runs 200 to 400 pages."
   - q: "How long do you have to review the franchise disclosure document?"
     a: "Federal law requires a minimum 14-day waiting period between when you receive the FDD and when you can sign any binding agreement or make any payment. This is a mandatory cooling-off period, not a deadline. Most buyers take four to eight weeks to review the document, consult a franchise attorney, and complete validation calls with existing franchisees before signing."
   - q: "What is Item 19 of the FDD?"
-    a: "Item 19 is the section where franchisors may voluntarily disclose financial performance data for existing units in their system — including revenue, costs, and sometimes earnings. Item 19 disclosure is not required by law. Franchisors who choose not to disclose are not required to explain why. When Item 19 data exists, averages across the full system can mask significant variation between top and bottom performers — always ask how the data is segmented."
+    a: "Item 19 is the section where franchisors may voluntarily disclose financial performance data for existing units in their system, including revenue, costs, and sometimes earnings. Item 19 disclosure is not required by law. Franchisors who choose not to disclose are not required to explain why. When Item 19 data exists, averages across the full system can mask significant variation between top and bottom performers. Always ask how the data is segmented."
   - q: "Where can you get a copy of a franchise's FDD?"
     a: "Franchisors are required to provide the FDD before you sign or pay anything. Most FDDs are also publicly available through state franchise registries. The Wisconsin Department of Financial Institutions maintains one of the most complete public databases and allows searches by brand name. You can pull and review a document before ever raising your hand with the franchisor."
 ---
-The FDD — or Franchise Disclosure Document — is a legally mandated document that every franchise candidate receives and almost nobody reads correctly.
+The FDD, or Franchise Disclosure Document, is a legally mandated document that every franchise candidate receives and almost nobody reads correctly.
 
 It runs 200 to 400 pages depending on the brand. It's written in legal language. It covers 23 separate items. Most buyers either skip straight to the financial section or hand it to a lawyer and wait.
 
 Both are mistakes.
 
-You don't have to read all 400 pages. You do have to understand what the important items are actually telling you. The candidates who get this right don't just avoid bad deals — they go into Discovery Day with better questions and come out with better answers.
+You don't have to read all 400 pages. You do have to understand what the important items are actually telling you. The candidates who get this right don't just avoid bad deals. They go into Discovery Day with better questions and come out with better answers.
 
 Here are the items that matter.
 
@@ -41,7 +41,7 @@ This matters because it gives you the ability to do your own preliminary read be
 
 ## Item 1: Is This Business What It Says It Is?
 
-Item 1 is the franchisor's biography — corporate history, parent companies, ownership structure, affiliates.
+Item 1 is the franchisor's biography, including corporate history, parent companies, ownership structure, and affiliates.
 
 Most of the time it's straightforward and you move on. But if Item 1 gives you a headache, pay attention to that. Multiple ownership transfers, a complicated web of parent companies, or a history of rebrandings are worth understanding before you go further. Simple is good. Complicated warrants questions.
 
@@ -89,7 +89,7 @@ Also worth checking: does the purchasing power of the network get passed down to
 
 This is your protected market. How it's defined varies by brand. Some mark territory by geography. Some use population thresholds. Some use a combination of both.
 
-The question to ask yourself: is this market large enough to support the business at the scale you're planning? If you want to own multiple units, do the math on whether the territory structure allows that — or whether a second unit would land right next to your first.
+The question to ask yourself: is this market large enough to support the business at the scale you're planning? If you want to own multiple units, do the math on whether the territory structure allows that, or whether a second unit would land right next to your first.
 
 Get the definition in writing and understand how enforcement works. Protected territory only protects you if it's actually enforced.
 
@@ -119,7 +119,7 @@ Item 20 has two components. The first is a system-wide count: how many franchise
 
 The closure numbers matter. Franchisors can keep a low closure rate by buying out struggling owners before they formally terminate. The raw number of closures understates what's happening at the bottom of the system. What you want to understand is retention: how many people who bought in are still operating three years later, and what happened to the ones who aren't.
 
-The franchisee contact list is the most valuable thing in the entire document. Call those people — not the ones the franchisor puts you in touch with. Pick names from the list yourself, especially people who opened in markets similar to yours, and especially people who are two to three years in and past the honeymoon period.
+The franchisee contact list is the most valuable thing in the entire document. Call those people, not the ones the franchisor puts you in touch with. Pick names from the list yourself, especially people who opened in markets similar to yours, and especially people who are two to three years in and past the honeymoon period.
 
 Ask them about their first year. Ask what they know now that they didn't know going in. Ask whether they'd do it again.
 
@@ -149,7 +149,7 @@ Federal law requires a minimum 14-day waiting period between receiving the FDD a
 
 **What is Item 19 of the FDD?**
 
-Item 19 is where franchisors may voluntarily disclose financial performance data for existing units — including revenue, costs, and sometimes earnings. Disclosure is not required. When data exists, be careful with system-wide averages: they can mask significant variation between top and bottom performers. Always ask how the data is segmented.
+Item 19 is where franchisors may voluntarily disclose financial performance data for existing units, including revenue, costs, and sometimes earnings. Disclosure is not required. When data exists, be careful with system-wide averages: they can mask significant variation between top and bottom performers. Always ask how the data is segmented.
 
 **Where can you get a copy of a franchise's FDD?**
 

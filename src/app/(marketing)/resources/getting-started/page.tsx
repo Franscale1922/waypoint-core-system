@@ -72,7 +72,7 @@ export default function GettingStartedPage() {
             <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Tool</p>
             <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Owner Type Quiz</h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">8 questions that identify what type of franchise owner you are — and which categories fit your natural working style.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">8 questions that identify what type of franchise owner you are and which categories fit your natural working style.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Take the Quiz →</p>
           </Link>
           <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">

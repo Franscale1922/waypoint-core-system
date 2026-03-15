@@ -8,7 +8,7 @@ slug: "recession-proof-franchise-categories"
 date: "2025-09-23"
 category: "Getting Started"
 tier: 1
-excerpt: "No franchise is truly recession-proof. The more useful question is which businesses serve customers who keep spending when the economy slows — and how to verify that before you sign."
+excerpt: "No franchise is truly recession-proof. The more useful question is which businesses serve customers who keep spending when the economy slows, and how to verify that before you sign."
 faqs:
   - q: "What makes a franchise recession-proof?"
     a: "No franchise is truly recession-proof. The more useful question is whether the business serves a customer who keeps spending when the economy slows. The most durable franchises tend to sell to customers with strong financial cushions (higher-income households, businesses with long-term contracts) or provide services people cannot defer (essential home repairs, senior care, non-optional B2B services). Category labels matter less than customer profile and local market composition."
@@ -17,7 +17,7 @@ faqs:
   - q: "How do I verify if a franchise survived the last recession?"
     a: "Look at Item 20 of the Franchise Disclosure Document. Item 20 includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or were transferred during those periods. Ask the franchisor directly for franchisee retention rates from those years. Then call franchisees from Item 20's contact list who opened before 2008 or 2019 and are still operating. Their experience is the real data."
   - q: "Are home services franchises recession-resistant?"
-    a: "Essential home services — specifically restoration (water damage, fire damage), plumbing, and electrical — have shown strong recession resistance because they are triggered by necessity rather than consumer choice. Discretionary home services (landscaping, decorative upgrades, non-urgent improvements) are more exposed to consumer confidence. The key is distinguishing between services customers choose and services they have no choice but to address."
+    a: "Essential home services, specifically restoration (water damage, fire damage), plumbing, and electrical, have shown strong recession resistance because they are triggered by necessity rather than consumer choice. Discretionary home services (landscaping, decorative upgrades, non-urgent improvements) are more exposed to consumer confidence. The key is distinguishing between services customers choose and services they have no choice but to address."
 ---
 "Recession-proof" is one of the most misused terms in franchising. Franchisors use it as a selling point. Brokers use it to move deals. And buyers repeat it without checking whether it's true for the specific opportunity in front of them.
 
@@ -29,7 +29,7 @@ That question will tell you more than any industry category label ever will.
 
 ## Why Industry Labels Are Not Enough
 
-People assume certain categories are inherently safe — home services in general, waste management, essential B2B. The logic seems sound: people always need their trash hauled, their pipes fixed, their properties maintained.
+People assume certain categories are inherently safe, including home services in general, waste management, and essential B2B. The logic seems sound: people always need their trash hauled, their pipes fixed, their properties maintained.
 
 But industry-level assumptions miss the most important variable: who specifically is buying from this franchise in your market.
 
@@ -43,7 +43,7 @@ Before you accept a "recession-resistant" label at face value, look under it. Wh
 
 The most durable businesses in a recession share one underlying characteristic. They sell to customers who have the financial cushion to keep buying.
 
-In a bifurcated economy, high-income households behave differently from middle-income households during a contraction. Discretionary spending tightens across the board, but it tightens much less sharply at the top of the income distribution. That is not a moral observation — it's a practical one when you're evaluating where to deploy capital.
+In a bifurcated economy, high-income households behave differently from middle-income households during a contraction. Discretionary spending tightens across the board, but it tightens much less sharply at the top of the income distribution. That is not a moral observation. It's a practical one when you're evaluating where to deploy capital.
 
 This is one of the reasons premium home services in affluent suburban markets held up so well through 2008 and through 2020. The customer base kept spending. The businesses kept operating. The franchisees who had positioned themselves in markets with the right household income profile had a materially different experience from those who hadn't.
 
@@ -53,11 +53,11 @@ Territory selection and target customer profile matter more than the category na
 
 ## Categories With Genuine Durability
 
-These are the franchise categories where the combination of customer need, customer profile, and business model produce real resilience — not theoretical resilience, but the kind that holds up when conditions get hard.
+These are the franchise categories where the combination of customer need, customer profile, and business model produce real resilience, not theoretical resilience, but the kind that holds up when conditions get hard.
 
 **Senior care.** Demographics drive this one independent of economic conditions. The number of Americans needing in-home care increases every year. Family members who need care do not stop needing it because the stock market dropped. And the customer base is often funded through a combination of personal savings, long-term care insurance, and coverage rather than disposable discretionary income. In-home non-medical care and care coordination models are both worth looking at here.
 
-**Essential home services.** Roof damage, water damage, electrical issues, plumbing failures — these are not optional repairs. When something breaks that has to be fixed, it gets fixed. Restoration franchises in particular tend to see consistent demand because the trigger event (storm, flood, fire, water intrusion) is not correlated with economic conditions. Homeowners fix these things when they happen, not when they feel financially comfortable.
+**Essential home services.** Roof damage, water damage, electrical issues, plumbing failures. These are not optional repairs. When something breaks that has to be fixed, it gets fixed. Restoration franchises in particular tend to see consistent demand because the trigger event (storm, flood, fire, water intrusion) is not correlated with economic conditions. Homeowners fix these things when they happen, not when they feel financially comfortable.
 
 **B2B services with contract revenue.** Businesses that lock in recurring contracts from other businesses produce steadier cash flow than transaction-by-transaction consumer models. Commercial cleaning, commercial waste and recycling, B2B cost-reduction consulting. The contracts don't disappear overnight. Churn is slower and more predictable than in a consumer-facing model.
 
@@ -85,6 +85,6 @@ Who is the specific customer, and what is their income level? What does Item 20 
 
 That data exists. It is in the FDD, in franchisee conversations, and in public records. The brands that survived both downturns with low unit turnover have a different story than brands telling you why their category is different this time.
 
-When I evaluate a concept with a candidate, this is part of the conversation early — not as a reason to pass, but as a way to make sure what you're buying matches what you think you're buying.
+When I evaluate a concept with a candidate, this is part of the conversation early, not as a reason to pass, but as a way to make sure what you're buying matches what you think you're buying.
 
 *Evaluating a concept for recession resilience? That's part of every conversation we have. [Book a call →](/book)*

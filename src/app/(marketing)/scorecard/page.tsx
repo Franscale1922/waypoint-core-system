@@ -3,7 +3,7 @@ import ScorecardClient from "./ScorecardClient";
 import { scorecardFaqSchema } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
-  title: "Franchise Readiness Quiz — Are You Ready to Own a Franchise?",
+  title: "Franchise Readiness Quiz | Are You Ready to Own a Franchise?",
   description:
     "Take the 2-minute franchise readiness quiz. Get a personalized score based on your capital, timeline, and motivation. Free, honest, no-pitch results from a former franchisor.",
   alternates: { canonical: "https://waypointfranchise.com/scorecard" },
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
         url: "/og_scorecard_1773343944094.png",
         width: 1200,
         height: 630,
-        alt: "Franchise Readiness Quiz — Waypoint Franchise Advisors",
+        alt: "Franchise Readiness Quiz | Waypoint Franchise Advisors",
       },
     ],
   },

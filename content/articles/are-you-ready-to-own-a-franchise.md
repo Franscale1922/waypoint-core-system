@@ -23,7 +23,7 @@ Most people who reach out have already been thinking about this for a while. The
 
 Before I answer any of that, I ask three questions. The answers tell me almost everything.
 
-Not because I'm gatekeeping anything. Because the biggest mistake I see isn't picking the wrong franchise — it's starting the search before you're ready to make a decision. That costs you time, gets you into sales processes you aren't prepared for, and usually ends with frustration and nothing to show for it.
+Not because I'm gatekeeping anything. Because the biggest mistake I see isn't picking the wrong franchise. It's starting the search before you're ready to make a decision. That costs you time, gets you into sales processes you aren't prepared for, and usually ends with frustration and nothing to show for it.
 
 Here are the three things you need to get clear on before you look at a single brand.
 
@@ -61,7 +61,7 @@ This is where a lot of people waste weeks they don't have to waste.
 
 You need two things nailed down before you start talking to franchisors.
 
-**Your total investment range.** How much are you comfortable putting into this? Not how much you technically have — how much you're willing to put in. Franchise costs vary enormously. Some concepts come in under $100,000 all-in. Others require $500,000 or more before you open the doors. You need to know your ceiling before you start looking, or you'll spend significant time on something that isn't financially viable for you.
+**Your total investment range.** How much are you comfortable putting into this? Not how much you technically have, but how much you're willing to put in. Franchise costs vary enormously. Some concepts come in under $100,000 all-in. Others require $500,000 or more before you open the doors. You need to know your ceiling before you start looking, or you'll spend significant time on something that isn't financially viable for you.
 
 **Your funding plan.** If you have the liquid capital, that's straightforward. But most buyers don't pay cash. The two most common paths are SBA loans (government-backed, typically requiring 15–20% down as of 2026) and ROBS (Rollover for Business Startups, which lets you invest retirement funds without early-withdrawal penalties or taxes). Both are real options. Both have implications you need to understand before you're in the middle of a discovery process.
 
@@ -79,7 +79,7 @@ The things that matter most:
 
 **Role.** What role do you want to play? Owner-operator: in the business running it. Semi-absentee: you hire a manager and check in consistently. Investor model: the systems handle most of the operation. Most franchises fit one of these categories more naturally than the others. Your answer has to match the model.
 
-**Revenue structure.** Recurring monthly revenue feels different from project-based high-ticket work. Neither is better — but your temperament needs to fit the model. If you dislike cold calling, don't buy a B2B franchise built on new-client sales. If you value predictability, recurring revenue might be exactly right.
+**Revenue structure.** Recurring monthly revenue feels different from project-based high-ticket work. Neither is better, but your temperament needs to fit the model. If you dislike cold calling, don't buy a B2B franchise built on new-client sales. If you value predictability, recurring revenue might be exactly right.
 
 **Territory.** Your market has to actually support the concept. A B2B services franchise that thrives in industrial areas will struggle in a suburban residential market. A premium home services brand needs the household income to back it up. Check territory availability early. If the territory you want is already taken, that's a short conversation.
 

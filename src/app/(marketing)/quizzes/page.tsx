@@ -2,27 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Free Franchise Tools | Waypoint Franchise Advisors",
+  title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
   description:
-    "Two free tools to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz tells you if your capital, mindset, and situation are aligned. The Archetype Quiz tells you which franchise categories fit the way you naturally work.",
-  alternates: { canonical: "https://waypointfranchise.com/tools" },
+    "Two free assessments to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz scores your capital, mindset, and timing. The Owner Type Quiz tells you which franchise categories fit the way you naturally work.",
+  alternates: { canonical: "https://waypointfranchise.com/quizzes" },
   openGraph: {
-    title: "Free Franchise Tools | Waypoint Franchise Advisors",
+    title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
     description:
-      "Two free assessments, franchise readiness and personality archetype, that tell you where you stand before committing to a conversation.",
-    url: "https://waypointfranchise.com/tools",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Free Franchise Tools" }],
+      "Two free assessments — franchise readiness and ownership archetype — that tell you where you stand before committing to a conversation.",
+    url: "https://waypointfranchise.com/quizzes",
+    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Free Franchise Quizzes" }],
   },
 };
 
-export default function ToolsPage() {
+export default function QuizzesPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
 
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-14 sm:pb-20 px-6 border-b border-[#e8e0d0]">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Free Tools</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Free Assessments</p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-[#0c1929] leading-tight mb-6 max-w-2xl">
             Figure out where you stand before talking to anyone.
           </h1>
@@ -64,8 +64,8 @@ export default function ToolsPage() {
               </div>
 
               <div className="border-t border-[#e8e0d0] pt-6 flex flex-wrap gap-4 text-xs text-[#7a7a7a]">
-                <span>⏱ About 4 minutes</span>
-                <span>· 12 questions</span>
+                <span>⏱ About 1 minute</span>
+                <span>· 5 questions</span>
                 <span>· Scored results</span>
               </div>
             </div>
@@ -73,7 +73,7 @@ export default function ToolsPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/scorecard"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
               >
                 Take the Readiness Quiz →
               </Link>
@@ -86,7 +86,7 @@ export default function ToolsPage() {
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Assessment 2 of 2</p>
               <div className="w-8 h-[2px] bg-[#d4a55a] mb-5" />
               <h2 className="font-playfair text-2xl sm:text-3xl text-[#0c1929] leading-snug mb-4">
-                Franchise Archetype Quiz
+                Owner Type Quiz
               </h2>
               <p className="text-sm text-[#4a4a3e] leading-relaxed mb-6">
                 Most people start a franchise search by asking "what's available?" The better question is "what kind of business fits the way I naturally work?" Your operating style, management preference, and how you add value all point toward certain franchise categories and away from others. This quiz identifies your archetype and maps it to the industries that typically align with it.
@@ -108,7 +108,7 @@ export default function ToolsPage() {
               </div>
 
               <div className="border-t border-[#e8e0d0] pt-6 flex flex-wrap gap-4 text-xs text-[#7a7a7a]">
-                <span>⏱ About 3 minutes</span>
+                <span>⏱ About 2 minutes</span>
                 <span>· 8 questions</span>
                 <span>· Archetype results</span>
               </div>
@@ -117,9 +117,9 @@ export default function ToolsPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/archetype"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
               >
-                Take the Archetype Quiz →
+                Find Your Owner Type →
               </Link>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function ToolsPage() {
         </div>
       </section>
 
-      {/* "After the quizzes" context */}
+      {/* After the quizzes */}
       <section className="border-t border-[#e8e0d0] bg-[#f0ede8] py-14 px-6">
         <div className="max-w-3xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">After the Quizzes</p>
@@ -140,7 +140,7 @@ export default function ToolsPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/book"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
             >
               Book a Free Call
             </Link>

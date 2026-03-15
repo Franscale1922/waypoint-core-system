@@ -11,13 +11,13 @@ tier: 1
 excerpt: "The number most people see first is the franchise fee. It is almost never the number that matters. Here is how to think about the four different costs of franchise ownership before you evaluate a single concept."
 faqs:
   - q: "How much does it cost to buy a franchise?"
-    a: "The total cost to buy a franchise as of 2026 typically ranges from $150,000 to $800,000 or more depending on the business model. Brick-and-mortar concepts (fitness studios, food service, retail) generally run $300,000 to $800,000 all-in. Non-brick-and-mortar concepts (home services, B2B, restoration, senior care) typically run $150,000 to $350,000. The initial franchise fee alone is typically $40,000 to $60,000 for an established brand — that is a fraction of the total investment."
+    a: "The total cost to buy a franchise as of 2026 typically ranges from $150,000 to $800,000 or more depending on the business model. Brick-and-mortar concepts (fitness studios, food service, retail) generally run $300,000 to $800,000 all-in. Non-brick-and-mortar concepts (home services, B2B, restoration, senior care) typically run $150,000 to $350,000. The initial franchise fee alone is typically $40,000 to $60,000 for an established brand, which is a fraction of the total investment."
   - q: "What is a franchise fee and is it the same as the total investment?"
-    a: "No. The franchise fee is a one-time payment to the franchisor — typically $40,000 to $60,000 — that grants you the right to operate under their brand in your territory. The total investment also includes build-out, equipment, working capital, marketing at launch, and pre-opening expenses. These additional costs are detailed in Item 7 of the Franchise Disclosure Document."
+    a: "No. The franchise fee is a one-time payment to the franchisor, typically $40,000 to $60,000, that grants you the right to operate under their brand in your territory. The total investment also includes build-out, equipment, working capital, marketing at launch, and pre-opening expenses. These additional costs are detailed in Item 7 of the Franchise Disclosure Document."
   - q: "Do you need all the money in cash to buy a franchise?"
     a: "No. Most franchise buyers use a combination of liquid capital and financing. The two most common paths are SBA 7(a) loans (which typically require 15 to 20 percent down as of 2026) and ROBS, which lets you invest 401(k) or IRA funds into the business without triggering early withdrawal penalties. Having $100,000 in liquid capital opens up most serious franchise options when combined with financing."
   - q: "What is working capital in a franchise context?"
-    a: "Working capital is the reserve you maintain to cover operating expenses until the business is cash-flow positive. Most franchise advisors recommend budgeting for at least three to six months of operating costs before revenue stabilizes. Underestimating working capital is one of the most common mistakes first-time franchise buyers make — it leads to cutting marketing spend or skipping hires at exactly the wrong moment."
+    a: "Working capital is the reserve you maintain to cover operating expenses until the business is cash-flow positive. Most franchise advisors recommend budgeting for at least three to six months of operating costs before revenue stabilizes. Underestimating working capital is one of the most common mistakes first-time franchise buyers make. It leads to cutting marketing spend or skipping hires at exactly the wrong moment."
 ---
 The number most people see first is the franchise fee. It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters.
 
@@ -47,7 +47,7 @@ Most people treat the cost of a franchise as a fixed number. It isn't. Four fact
 
 **1. How involved you plan to be**
 
-If you're running the business yourself full-time, your payroll costs start lower because you're covering a role. If your goal is to hire a manager and stay out of day-to-day operations from the start, you need more working capital budgeted for that person's salary from day one. That's not a bad structure — it's a more expensive starting point.
+If you're running the business yourself full-time, your payroll costs start lower because you're covering a role. If your goal is to hire a manager and stay out of day-to-day operations from the start, you need more working capital budgeted for that person's salary from day one. That's not a bad structure. It's a more expensive starting point.
 
 **2. How many territories you're buying**
 

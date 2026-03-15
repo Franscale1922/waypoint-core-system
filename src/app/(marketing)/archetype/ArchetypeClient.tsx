@@ -160,7 +160,7 @@ export default function ArchetypeClient() {
               onClick={() => trackBookCallClicked("archetype_result")}
               className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[52px]"
             >
-              Book a Free Call — Let&apos;s Match the Brands
+              Book a Free Call. Let&apos;s Match the Brands
             </a>
             <p className="mt-3 text-xs text-slate-400">
               This call is free. Franchise brands pay the advisory fee, not you.
@@ -168,7 +168,7 @@ export default function ArchetypeClient() {
             <p className="mt-6 text-sm text-slate-500 mb-3">Want to check your readiness too?</p>
             <a
               href="/scorecard"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#1b3a5f] border border-[#c08b3e]/50 hover:bg-[#f5ebd1] rounded-xl transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl transition-all press-effect min-h-[48px]"
             >
               Take the Readiness Quiz
             </a>
@@ -193,7 +193,7 @@ export default function ArchetypeClient() {
               Your archetype is ready.
             </h2>
             <p className="mt-3 text-base text-slate-500">
-              Drop your name and email and I&apos;ll show you exactly what type of franchise owner you are — and which categories to focus on.
+              Drop your name and email and I&apos;ll show you exactly what type of franchise owner you are, and which categories to focus on.
             </p>
           </div>
           <div className="space-y-3 sm:space-y-4">

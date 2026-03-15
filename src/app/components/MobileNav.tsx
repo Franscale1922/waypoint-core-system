@@ -91,9 +91,8 @@ export default function MobileNav() {
                 { href: "/about", label: "About" },
                 { href: "/process", label: "How It Works" },
                 { href: "/faq", label: "FAQ" },
-                { href: "/archetype", label: "Owner Type Quiz" },
-                { href: "/scorecard", label: "Readiness Quiz" },
                 { href: "/resources", label: "Resources" },
+                { href: "/quizzes", label: "Quizzes" },
                 { href: "/book", label: "Book a Call" },
               ].map((link) => (
                 <Link

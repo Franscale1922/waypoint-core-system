@@ -128,39 +128,41 @@ export default function ScorecardClient() {
             {score >= 80
               ? "You look like a strong candidate. This is the profile I see move quickly and confidently. A 30-minute conversation would tell us both a lot."
               : score >= 60
-              ? "Promising fit — you have a solid foundation. There are a few things worth talking through before you start looking at brands."
+              ? "Promising fit. You have a solid foundation. There are a few things worth talking through before you start looking at brands."
               : score >= 40
               ? "Worth exploring, with some real questions to work through first. I would rather have an honest conversation now than watch you struggle later."
-              : "Honest answer: right now may not be the right time. That is not a bad thing — it just means the timing or foundation needs work first. Here are some resources that might help."}
+              : "Honest answer: right now may not be the right time. That is not a bad thing. It just means the timing or foundation needs work first. Here are some resources that might help."}
           </p>
           {score >= 40 ? (
             <>
-              <a
-                href="/book"
-                onClick={() => trackBookCallClicked("scorecard_results")}
-                className="mt-6 sm:mt-8 inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
-              >
-                Book a Free Call With Me
-              </a>
-              <div className="mt-3 flex items-center justify-center gap-3">
-                <span className="text-xs text-slate-400">or</span>
+              <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <a
+                  href="/book"
+                  onClick={() => trackBookCallClicked("scorecard_results")}
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
+                >
+                  Book a Free Call
+                </a>
                 <a
                   href="sms:+12149951062"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#c08b3e] hover:text-[#d4a55a] transition-colors"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                  Text me instead
+                  <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 4V5z" clipRule="evenodd" />
+                  </svg>
+                  Text Me Instead
                 </a>
               </div>
               <p className="mt-3 text-xs text-slate-400">
                 This call is free. Franchise brands pay the referral fee, not you.
               </p>
-              <p className="mt-5 text-sm text-slate-500">
-                Want to know what kind of franchise owner you are?{" "}
-                <a href="/archetype" className="text-[#c08b3e] underline hover:text-[#1b3a5f]">
-                  Find Your Owner Type →
-                </a>
-              </p>
+              <p className="mt-6 text-sm text-slate-500 mb-3">Want to know what kind of franchise owner you are?</p>
+              <a
+                href="/archetype"
+                className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-white bg-[#1b3a5f] hover:bg-[#234e7e] rounded-xl transition-all press-effect min-h-[48px]"
+              >
+                Find Your Owner Type
+              </a>
             </>
           ) : (
             <div className="mt-6 sm:mt-8 space-y-3">
@@ -171,7 +173,7 @@ export default function ScorecardClient() {
                 Browse Franchise Resources
               </a>
               <p className="text-xs text-slate-400 mt-2">
-                Or <a href="/book" className="underline hover:text-slate-600" onClick={() => trackBookCallClicked("scorecard_results_low")}>book a call anyway</a> — sometimes the honest conversation is the most useful one.
+                Or <a href="/book" className="underline hover:text-slate-600" onClick={() => trackBookCallClicked("scorecard_results_low")}>book a call anyway</a>. Sometimes the honest conversation is the most useful one.
               </p>
             </div>
           )}

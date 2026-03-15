@@ -15,7 +15,7 @@ faqs:
   - q: "What is owner benefit (seller's discretionary earnings) in a franchise?"
     a: "Owner benefit, also called seller's discretionary earnings, is the metric a buyer of your business would evaluate when you eventually sell: franchise profit plus owner compensation plus any non-cash charges such as depreciation. This number represents what the business actually generates for the owner. Some franchisors provide this in Item 19 of the FDD. Many do not. A franchise advisor can help you build a projection model using comparable operators in the system."
   - q: "What is debt service on an SBA franchise loan and how does it affect ROI?"
-    a: "Debt service is the total monthly principal and interest payment on your loan. On a $250,000 SBA loan at rates comparable to those as of 2026, monthly debt service runs approximately $3,300 per month — roughly $40,000 per year before you pay yourself a dollar. This is a real operating cost that must be modeled into your ROI calculation. A franchise that looks profitable before debt service may look materially different after it."
+    a: "Debt service is the total monthly principal and interest payment on your loan. On a $250,000 SBA loan at rates comparable to those as of 2026, monthly debt service runs approximately $3,300 per month, roughly $40,000 per year before you pay yourself a dollar. This is a real operating cost that must be modeled into your ROI calculation. A franchise that looks profitable before debt service may look materially different after it."
   - q: "How does adding franchise units change the return on time?"
     a: "Adding a second or third unit using cash flow from unit one creates revenue growth that does not require proportional increases in your time. Management infrastructure, marketing spend, and vendor relationships are shared across units. The franchise buyer who built three units of a home services concept and is running $1.2M in combined revenue by year four, drawing $180,000 and working 20 hours per week, is getting dramatically better return on time than the buyer who owns one unit and is still working 50 hours a week for $80,000 at year three."
 ---
@@ -43,9 +43,9 @@ The case for franchise ownership isn't that it pays you well for your hours from
 
 That leverage comes from two sources:
 
-**Hiring and delegation.** Once the business is stable and the team is trained, an owner who built well in year one often works 15–20 hours per week by year three. The business continues generating the same or more revenue — the owner's time input decreases. When that happens, the cost-of-time component of the ROI improves dramatically.
+**Hiring and delegation.** Once the business is stable and the team is trained, an owner who built well in year one often works 15-20 hours per week by year three. The business continues generating the same or more revenue, and the owner's time input decreases. When that happens, the cost-of-time component of the ROI improves dramatically.
 
-**Scale through additional units.** Adding a second or third unit, using the cash flow from unit one to fund the build, creates revenue growth that doesn't require proportional increases in your time. Overhead across multiple units — management infrastructure, marketing spend, vendor relationships — is shared.
+**Scale through additional units.** Adding a second or third unit, using the cash flow from unit one to fund the build, creates revenue growth that doesn't require proportional increases in your time. Overhead across multiple units, including management infrastructure, marketing spend, and vendor relationships, is shared.
 
 The franchise buyer who built three units of a home services concept and is running $1.2M in combined revenue by year four, drawing $180,000 and working 20 hours a week, is getting dramatically better ROI than those surface numbers on the initial investment suggested. The buyer who bought one unit and is still working 50 hours a week for $80,000 in year three is not.
 
@@ -53,7 +53,7 @@ The franchise model creates the leverage. The strategy about how many units and 
 
 ## Three Numbers to Know Before You Invest
 
-**Item 19 median gross revenue.** This is what the average unit in the system generates. Median is more reliable than average, since a few high performers can inflate the average significantly. Gross revenue is not profit — know what it becomes after royalties, rent, and labor are applied.
+**Item 19 median gross revenue.** This is what the average unit in the system generates. Median is more reliable than average, since a few high performers can inflate the average significantly. Gross revenue is not profit. Know what it becomes after royalties, rent, and labor are applied.
 
 **Owner benefit (also called seller's discretionary earnings).** This is the number a buyer of the business would evaluate: profit plus owner compensation plus any non-cash charges. Some franchisors provide this number; many don't. Your advisor can help you build a projection model based on similar businesses in the system.
 
@@ -71,7 +71,7 @@ The franchise investment thesis: higher risk than passive investment, but higher
 
 ## The Bottom Line
 
-Franchise ROI isn't a simple calculation. It includes the return on capital, the return on your time, and the opportunity cost of both. The investors who do well in franchising typically chose a concept where the unit economics support paying for quality management — which is what unlocks the leverage.
+Franchise ROI isn't a simple calculation. It includes the return on capital, the return on your time, and the opportunity cost of both. The investors who do well in franchising typically chose a concept where the unit economics support paying for quality management, which is what unlocks the leverage.
 
 Understand those numbers before you commit.
 

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Industry Spotlights | Waypoint",
     description:
-      "Category-specific analysis covering home services, senior care, fitness, B2B, restoration, and more — with honest reads on the economics and operator fit for each.",
+      "Category-specific analysis covering home services, senior care, fitness, B2B, restoration, and more, with honest reads on the economics and operator fit for each.",
     url: "https://waypointfranchise.com/resources/industry-spotlights",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Industry Spotlights" }],
   },
@@ -36,7 +36,7 @@ export default function IndustrySpotlightsPage() {
             Specific categories. Honest reads.
           </h1>
           <p className="text-base sm:text-lg text-[#4a4a3e] leading-relaxed max-w-2xl">
-            These guides look at specific franchise verticals: what the economics look like, what kind of operator typically succeeds, and where the real risks are. Not marketing copy for the categories — an honest look at how each one actually works.
+            These guides look at specific franchise verticals: what the economics look like, what kind of operator typically succeeds, and where the real risks are. This is not marketing copy for the categories; it is an honest look at how each one actually works.
           </p>
         </div>
       </section>

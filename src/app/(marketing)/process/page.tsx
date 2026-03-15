@@ -14,7 +14,7 @@ const howToSchema = {
       "@type": "HowToStep",
       position: 1,
       name: "The Discovery Call",
-      text: "A two-hour conversation about you — your career, goals, finances, lifestyle, and what you want from the next chapter. Kelsey guides the conversation with a structured set of topics to understand your strengths well enough to match them to a business model.",
+      text: "A two-hour conversation about you: your career, goals, finances, lifestyle, and what you want from the next chapter. Kelsey guides the conversation with a structured set of topics to understand your strengths well enough to match them to a business model.",
     },
     {
       "@type": "HowToStep",
@@ -26,19 +26,19 @@ const howToSchema = {
       "@type": "HowToStep",
       position: 3,
       name: "The Curated List",
-      text: "Kelsey presents three or four franchise concepts — never more. Each one has been pre-screened for financial disclosures, territory availability in your area, and unit-level performance across the system.",
+      text: "Kelsey presents three or four franchise concepts, never more. Each one has been pre-screened for financial disclosures, territory availability in your area, and unit-level performance across the system.",
     },
     {
       "@type": "HowToStep",
       position: 4,
       name: "Validation Calls",
-      text: "You speak directly with existing franchise owners — without the franchisor present. These conversations cover what a hard week looks like, where the brand falls short, and what owners wish they had known before signing.",
+      text: "You speak directly with existing franchise owners, without the franchisor present. These conversations cover what a hard week looks like, where the brand falls short, and what owners wish they had known before signing.",
     },
     {
       "@type": "HowToStep",
       position: 5,
       name: "The Decision",
-      text: "You are always in control. Kelsey navigates and advises, but every decision is yours. If franchising is not the right move, he will tell you. About 30% of candidates end up buying a franchise — that number is not optimized upward.",
+      text: "You are always in control. Kelsey navigates and advises, but every decision is yours. If franchising is not the right move, he will tell you. About 30% of candidates end up buying a franchise. That number is not optimized upward.",
     },
   ],
 };
@@ -64,7 +64,7 @@ const steps = [
     headline: "Thirty minutes to see if this makes sense.",
     body: [
       "When I was on the franchisor side, I watched people get matched to brands that had nothing to do with their strengths, their lifestyle, or what they actually wanted to build. The match was fast. The regret was slow.",
-      "The first thing we do is a short call — usually 20 to 30 minutes. No pitch, no intake form. I want to understand where you are in the process and whether it makes sense to go deeper. If it does, we schedule the two-hour discovery.",
+      "The first thing we do is a short call, usually 20 to 30 minutes. No pitch, no intake form. I want to understand where you are in the process and whether it makes sense to go deeper. If it does, we schedule the two-hour discovery.",
       "I guide the conversation with a structured set of topics, but the goal is simple: I want to understand your strengths well enough to match them to a business model, not just a brand name.",
       "By the end of that call, I usually have a clear picture. You will too.",
     ],
@@ -223,7 +223,7 @@ export default function ProcessPage() {
           &ldquo;The worst outcome is making a $300,000 decision on incomplete information.&rdquo;
         </p>
         <p className="text-[#d4a55a] text-sm mt-6 tracking-widest uppercase">
-          Something Kelsey says in every first call
+          The Waypoint philosophy
         </p>
       </section>
 
@@ -286,33 +286,40 @@ export default function ProcessPage() {
           <p className="text-white/75 text-lg mb-10">
             No pitch. No obligation. Just a real conversation about whether this path makes sense for you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              href="/book"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
-            >
-              Book a Discovery Call
-            </Link>
-            <Link
-              href="/scorecard"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
-            >
-              Take the Readiness Quiz
-            </Link>
-            <Link
-              href="/archetype"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
-            >
-              Find Your Owner Type
-            </Link>
-            <a
-              href="sms:+12149951062"
-              className="inline-flex items-center justify-center gap-1.5 px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              Text Me
-            </a>
+          <div className="flex flex-col gap-3 justify-center items-center">
+            {/* Primary row — all three gold CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link
+                href="/book"
+                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
+              >
+                Book a Discovery Call
+              </Link>
+              <Link
+                href="/scorecard"
+                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
+              >
+                Take the Readiness Quiz
+              </Link>
+              <Link
+                href="/archetype"
+                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
+              >
+                Find Your Owner Type
+              </Link>
+            </div>
+            {/* Secondary row — quiet contact option */}
+            <div className="flex justify-center">
+              <a
+                href="sms:+12149951062"
+                className="inline-flex items-center justify-center gap-1.5 px-8 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all min-h-[44px]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Text Me
+              </a>
+            </div>
           </div>
+
         </div>
       </section>
 

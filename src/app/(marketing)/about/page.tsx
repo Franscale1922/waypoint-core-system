@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "About Kelsey Stuart — Franchise Advisor, Whitefish MT",
+  title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
   description:
     "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life. Honest, no-pitch consulting.",
   alternates: { canonical: "https://waypointfranchise.com/about" },
@@ -69,11 +69,11 @@ export default function AboutPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-5">Credentials &amp; Background</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
-                { label: "Role", value: "Franchise Advisor — Waypoint Franchise Advisors" },
+                { label: "Role", value: "Owner & Founder, Waypoint Franchise Advisors" },
                 { label: "Network", value: "FranChoice affiliate" },
                 { label: "Location", value: "Whitefish, Montana" },
                 { label: "Service area", value: "All 50 United States" },
-                { label: "Franchisor background", value: "Bloomin\u2019 Blinds — grew to $40M revenue and 200+ locations" },
+                { label: "Franchisor background", value: "Bloomin\u2019 Blinds: grew to $40M revenue and 200+ locations" },
                 { label: "Franchisee background", value: "Operated a franchise unit; experienced failure and financial loss" },
                 { label: "Concepts in inventory", value: "250+ franchise brands screened" },
                 { label: "Candidate conversion rate", value: "~30% of candidates become franchisees" },
@@ -177,19 +177,19 @@ export default function AboutPage() {
               </a>
               <a
                 href="/scorecard"
-                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Readiness Quiz
               </a>
               <a
                 href="/archetype"
-                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Ownership Style Quiz
               </a>
               <a
                 href="sms:+12149951062"
-                className="inline-flex items-center justify-center gap-1.5 px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center gap-1.5 px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                 Text Me

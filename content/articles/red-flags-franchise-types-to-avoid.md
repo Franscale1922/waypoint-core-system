@@ -8,14 +8,14 @@ slug: "red-flags-franchise-types-to-avoid"
 date: "2025-10-02"
 category: "Getting Started"
 tier: 1
-excerpt: "There are over 4,000 franchise brands in the United States. A significant number of them are not worth buying. Here are the five types I tell every candidate to walk away from — and what they all have in common."
+excerpt: "There are over 4,000 franchise brands in the United States. A significant number of them are not worth buying. Here are the five types I tell every candidate to walk away from, and what they all have in common."
 faqs:
   - q: "What are the biggest red flags in a franchise opportunity?"
     a: "The five most consistent red flags across franchise categories are: a franchisor whose primary business is elsewhere (you become an afterthought), franchise agreements that structure ownership as a job with no path to stepping back, unit economics that don't support a manager hire or produce a meaningful exit valuation, a franchisor who can't clearly articulate what the royalty is actually buying, and passion-driven founders whose primary mission is the product or cause rather than franchisee financial success."
   - q: "How do you know if a franchise will let you scale beyond one unit?"
     a: "Read Items 6 and 9 of the Franchise Disclosure Document. Item 6 covers ongoing fees and royalty structure. Item 9 discloses restrictions on what you can and cannot do as a franchisee. Look specifically for clauses that restrict hiring an operator to manage day-to-day operations, limit your ability to purchase additional units or territories, or require franchisor approval on routine operational decisions. A system that restricts these things is structurally limiting your upside regardless of performance."
   - q: "What should a franchise royalty pay for?"
-    a: "A franchise royalty should buy a specific, articulable advantage — a proprietary product or service, brand recognition in your market, active business development support, technology infrastructure, training systems, or a combination of these. If the franchisor cannot clearly describe what the royalty provides beyond 'the right to use our name,' that is a significant concern. The royalty should replace or shorten a capability gap you would otherwise spend years building yourself."
+    a: "A franchise royalty should buy a specific, articulable advantage, including a proprietary product or service, brand recognition in your market, active business development support, technology infrastructure, training systems, or a combination of these. If the franchisor cannot clearly describe what the royalty provides beyond 'the right to use our name,' that is a significant concern. The royalty should replace or shorten a capability gap you would otherwise spend years building yourself."
   - q: "How can I tell if a franchisor is aligned with franchisee success?"
     a: "Look at three things: how long franchisees stay in the system (Item 20 retention data), how the Item 2 leadership team talks about franchisees versus the brand or product, and what existing franchisees say when you ask directly whether corporate prioritizes their financial outcome. Then ask specifically: when the franchisor last made a system-wide decision that hurt individual franchisee unit economics, how did they handle it?"
 ---
@@ -43,7 +43,7 @@ Before you go deep on any concept, ask: is this the main thing they do, or is it
 
 ## 2. Franchises That Lock You Into a Job
 
-Some franchise agreements are structured in a way that looks like business ownership but functions like employment — except you carry all the risk.
+Some franchise agreements are structured in a way that looks like business ownership but functions like employment, except you carry all the risk.
 
 The tell is in how much the agreement restricts your ability to scale. Clauses that prevent you from hiring an operator. Restrictions on owning multiple units. Approval requirements on every operational decision. Royalty structures that make the math unworkable the moment you try to pay someone else to run the day-to-day.
 

@@ -10,7 +10,7 @@ const comparisonSchema = {
       name: "What is the difference between a franchise consultant and a franchise broker?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "In the franchise industry, the terms consultant and broker are often used interchangeably, and both are typically paid by franchise brands when a candidate becomes a franchisee. The meaningful difference is in how they work. A franchise broker tends to present a large catalog of options and let the buyer do the sorting. A franchise consultant invests time understanding the buyer's background, capital, lifestyle goals, and risk tolerance before presenting any options — and presents a small curated list rather than a large catalog.",
+        text: "In the franchise industry, the terms consultant and broker are often used interchangeably, and both are typically paid by franchise brands when a candidate becomes a franchisee. The meaningful difference is in how they work. A franchise broker tends to present a large catalog of options and let the buyer do the sorting. A franchise consultant invests time understanding the buyer's background, capital, lifestyle goals, and risk tolerance before presenting any options. The result is a small curated list rather than a large catalog.",
       },
     },
     {
@@ -18,7 +18,7 @@ const comparisonSchema = {
       name: "Do franchise consultants and brokers cost money?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "No. Franchise consulting and brokerage services are free to candidates. The franchise brand pays a referral fee when a candidate they were introduced to becomes a franchisee. That fee is paid by the brand — not added to what the buyer pays.",
+        text: "No. Franchise consulting and brokerage services are free to candidates. The franchise brand pays a referral fee when a candidate they were introduced to becomes a franchisee. That fee is paid by the brand, not added to what the buyer pays.",
       },
     },
     {
@@ -26,7 +26,7 @@ const comparisonSchema = {
       name: "Is a franchise consultant the same as a franchise broker?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Legally and structurally, yes — both are paid by the franchise brand and both help candidates evaluate franchise opportunities. The distinction is in the working style: how much time the advisor spends understanding the candidate before presenting options, how many brands they present, and how hands-on they are throughout the due diligence process.",
+        text: "Legally and structurally, yes. Both are paid by the franchise brand and both help candidates evaluate franchise opportunities. The distinction is in the working style: how much time the advisor spends understanding the candidate before presenting options, how many brands they present, and how hands-on they are throughout the due diligence process.",
       },
     },
   ],
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Consultant vs. Broker | Waypoint Franchise Advisors",
     description:
-      "Both are free to you. Both are paid by the brand. The difference is in how they work — and that difference matters a lot.",
+      "Both are free to you. Both are paid by the brand. The difference is in how they work. And that difference matters a lot.",
     url: "https://waypointfranchise.com/franchise-consultant-vs-broker",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Consultant vs Broker" }],
   },
@@ -61,7 +61,7 @@ const comparisonRows = [
   },
   {
     dimension: "Number of brands presented",
-    consultant: "Small curated list — typically 3–5 concepts matched to your specific situation.",
+    consultant: "Small curated list, typically 3 to 5 concepts matched to your specific situation.",
     broker: "Often a large catalog. May present 10–30 options for the candidate to sort.",
     note: "Different",
   },
@@ -106,7 +106,7 @@ export default function FranchiseConsultantVsBrokerPage() {
             In the franchise industry, the terms are often used interchangeably. Legally and structurally, they describe the same role: an independent advisor paid by franchise brands when a candidate they represent becomes a franchisee. The service is free to you either way.
           </p>
           <p className="text-base text-[#4a4a3e] leading-relaxed max-w-2xl">
-            The meaningful difference is not the title. It is the working style — how much time the advisor spends understanding you before showing you anything, how many brands they put in front of you, and how engaged they stay through the process. That difference has a real impact on the quality of the match you end up with.
+            The meaningful difference is not the title. It is the working style: how much time the advisor spends understanding you before showing you anything, how many brands they put in front of you, and how engaged they stay through the process. That difference has a real impact on the quality of the match you end up with.
           </p>
         </div>
       </section>
@@ -120,7 +120,36 @@ export default function FranchiseConsultantVsBrokerPage() {
           How they compare across dimensions that matter
         </h2>
 
-        <div className="overflow-x-auto">
+        {/* Mobile: stacked cards */}
+        <div className="sm:hidden space-y-4">
+          {comparisonRows.map((row, i) => (
+            <div key={row.dimension} className={`rounded-xl p-5 border border-[#e8e0d0] ${i % 2 === 0 ? "bg-white" : "bg-[#faf8f4]"}`}>
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <p className="font-semibold text-[#0c1929] text-sm">{row.dimension}</p>
+                <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-wider px-2 py-1 rounded ${
+                  row.note === "Same" ? "bg-[#e8f0eb] text-[#3a6a4a]" :
+                  row.note === "Different" ? "bg-[#f5ece0] text-[#8a4a20]" :
+                  "bg-[#f0ede8] text-[#6a5a4a]"
+                }`}>
+                  {row.note}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-3">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#1b3a5f] mb-1">Franchise Consultant</p>
+                  <p className="text-xs text-[#3a3a2e] leading-relaxed">{row.consultant}</p>
+                </div>
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#1b3a5f] mb-1">Franchise Broker</p>
+                  <p className="text-xs text-[#3a3a2e] leading-relaxed">{row.broker}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Desktop: table */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
               <tr className="border-b-2 border-[#c08b3e]">
@@ -171,7 +200,7 @@ export default function FranchiseConsultantVsBrokerPage() {
               How Waypoint approaches this
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-4">
-              Kelsey Stuart at Waypoint Franchise Advisors does not show a single brand until after a full discovery conversation — typically one to two hours — and a written profile of what he heard, reviewed and confirmed by the candidate.
+              Kelsey Stuart at Waypoint Franchise Advisors does not show a single brand until after a full discovery conversation, typically one to two hours, and a written profile of what he heard, reviewed and confirmed by the candidate.
             </p>
             <p className="text-white/70 text-sm leading-relaxed">
               The result is a short list: three to four concepts, never more. Each one has been pre-screened on financial disclosures (Item 19), territory availability, and unit-level performance. The goal is not volume. The goal is fit.

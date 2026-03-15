@@ -17,11 +17,11 @@ faqs:
   - q: "What is franchise consolidation and why does it matter?"
     a: "Consolidation refers to the concentration of franchise territories in the hands of a small number of professional multi-unit operators who have been acquiring and expanding for years. In mature systems, the best territories in entire regions may already be held by established operators. Entering a consolidated system late means competing against buyers who have 10 to 20 years of head start. Emerging systems tend to have more open territory and more room to grow."
   - q: "How many locations does a franchise need before it is considered proven?"
-    a: "There is no universal threshold, but the 30 to 150 unit range is often considered the inflection point — enough scale to prove the business model works in multiple markets, but not so large that the best territories are consolidated or the system has legacy underperformers dragging on average unit performance. Item 20 of the FDD shows franchisee tenure and exit data, which is often more useful than unit count alone."
+    a: "There is no universal threshold, but the 30 to 150 unit range is often considered the inflection point, enough scale to prove the business model works in multiple markets, but not so large that the best territories are consolidated or the system has legacy underperformers dragging on average unit performance. Item 20 of the FDD shows franchisee tenure and exit data, which is often more useful than unit count alone."
 ---
 Most buyers shopping for franchises anchor on name recognition. They want a household name, or at least something that feels established. The reasoning makes sense on the surface: a brand with hundreds of locations across dozens of states must have proven something.
 
-The actual comparison — established versus emerging franchise systems — is more nuanced than that, and the right answer follows from your goals, not the brand's recognition.
+The actual comparison, established versus emerging franchise systems, is more nuanced than that, and the right answer follows from your goals, not the brand's recognition.
 
 | Factor | Established brand | Emerging brand (30–150 units) |
 |---|---|---|
@@ -29,7 +29,7 @@ The actual comparison — established versus emerging franchise systems — is m
 | Territory availability | Limited; best territories often consolidated | More open territory available |
 | Franchisee performance data | Extensive Item 19 history | Limited history; validate carefully |
 | Multi-unit expansion opportunity | Harder in mature, consolidated systems | More room to grow early |
-| Dependence on HQ team quality | Lower — systems are proven | Higher — model relies on leadership |
+| Dependence on HQ team quality | Lower, systems are proven | Higher, model relies on leadership |
 | Validation depth | Many operators to call | Fewer; each call matters more |
 
 ---
@@ -38,9 +38,9 @@ The actual comparison — established versus emerging franchise systems — is m
 
 The idea that you're paying franchise fees for brand recognition has become one of the most persistent misconceptions in franchise buying. Royalties fund national marketing, R&D, vendor relationships, training infrastructure, and ongoing operational support. For most franchise concepts, people recognizing the name is a small fraction of the return on those fees.
 
-Consider a large home services franchise — the kind with hundreds of locations that most homeowners have never heard of. Operators don't wait for brand recognition to drive leads. They rely on the system's marketing tools, referral networks, and local lead generation, all of which the royalty funds.
+Consider a large home services franchise, the kind with hundreds of locations that most homeowners have never heard of. Operators don't wait for brand recognition to drive leads. They rely on the system's marketing tools, referral networks, and local lead generation, all of which the royalty funds.
 
-There are categories — quick-service food being the obvious one — where name recognition alone drives meaningful customer traffic. For everything else, what the royalty buys you is infrastructure, not a logo. The right question is not "do people know this brand?" It is: what does the royalty buy me, and is that worth the percentage of revenue it costs?
+There are categories, quick-service food being the obvious one, where name recognition alone drives meaningful customer traffic. For everything else, what the royalty buys you is infrastructure, not a logo. The right question is not "do people know this brand?" It is: what does the royalty buy me, and is that worth the percentage of revenue it costs?
 
 ---
 
@@ -48,7 +48,7 @@ There are categories — quick-service food being the obvious one — where name
 
 Large legacy systems carry two structural risks that most buyers don't think about until they're inside one.
 
-**Legacy locations.** Large systems regularly carry underperforming locations — units built under assumptions about where people lived and how they bought that no longer apply. A franchise with 50 years of history carries real estate decisions made decades ago. Those legacy locations drag on system performance averages and on brand perception.
+**Legacy locations.** Large systems regularly carry underperforming locations, units built under assumptions about where people lived and how they bought that no longer apply. A franchise with 50 years of history carries real estate decisions made decades ago. Those legacy locations drag on system performance averages and on brand perception.
 
 When you buy into a large legacy system, you're not just buying the good locations. You're buying into an average that includes the struggling ones.
 
@@ -62,14 +62,14 @@ If your long-term goal is to build a franchise portfolio, showing up late to a c
 
 The case for emerging or mid-size brands comes down to where the upside actually is.
 
-In an early-to-mid system — one that has hit enough scale to prove out the model but hasn't consolidated its best territories — the upside is in territory selection, multi-unit expansion, and the potential appreciation in franchise value as the brand grows. The 30 to 150 unit range is often the sweet spot: enough history to validate the model, not so large that the best opportunities are already taken.
+In an early-to-mid system, one that has hit enough scale to prove out the model but hasn't consolidated its best territories, the upside is in territory selection, multi-unit expansion, and the potential appreciation in franchise value as the brand grows. The 30 to 150 unit range is often the sweet spot: enough history to validate the model, not so large that the best opportunities are already taken.
 
 The trade-offs are real:
 - Less brand recognition (which is often overvalued anyway)
 - Less franchisee performance data in Item 19 to evaluate
 - More dependence on the franchisor's management team being competent
 
-That last point is the real risk. A young brand's execution depends heavily on the quality of leadership at HQ. This is why franchisee validation matters more in an emerging system than a mature one. You're not just validating the model — you're validating whether the people running it are capable.
+That last point is the real risk. A young brand's execution depends heavily on the quality of leadership at HQ. This is why franchisee validation matters more in an emerging system than a mature one. You're not just validating the model. You're validating whether the people running it are capable.
 
 ---
 
@@ -87,7 +87,7 @@ Most buyers don't think carefully about which of those they're actually building
 
 ## The Bottom Line
 
-Brand recognition is not the primary value driver in franchising for the vast majority of concepts. Legacy can mean stability — or it can mean outdated locations and consolidated territory. Emerging brands offer more upside with greater dependence on the franchisor's team.
+Brand recognition is not the primary value driver in franchising for the vast majority of concepts. Legacy can mean stability, or it can mean outdated locations and consolidated territory. Emerging brands offer more upside with greater dependence on the franchisor's team.
 
 The brand choice follows the goals, not the other way around.
 

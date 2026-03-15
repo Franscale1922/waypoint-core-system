@@ -72,14 +72,14 @@ export default function GoingDeeperPage() {
             <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
             <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Full investment guide</h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">The full capital picture — franchise fee, build-out, working capital, and ongoing fees explained.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">The full capital picture: franchise fee, build-out, working capital, and ongoing fees explained.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
           <Link href="/franchise-consultant-vs-broker" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
             <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Reference</p>
             <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Consultant vs. broker</h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">What distinguishes an independent franchise advisor from a broker — and why it matters for your search.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">What distinguishes an independent franchise advisor from a broker and why it matters for your search.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
           <Link href="/resources/getting-started" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
@@ -93,7 +93,7 @@ export default function GoingDeeperPage() {
             <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Industry Spotlights</p>
             <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Industry Spotlights</h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">Category-specific reads on home services, senior care, B2B, fitness, and more — with honest economics.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Category-specific reads on home services, senior care, B2B, fitness, and more, with honest economics.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Explore →</p>
           </Link>
         </div>

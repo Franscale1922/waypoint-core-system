@@ -56,9 +56,6 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 via-[#0c1929]/25 to-transparent" />
 
         <div className="relative w-full max-w-6xl mx-auto px-4 sm:px-6 pb-16 sm:pb-20 md:pb-28">
-          <p className="text-[#d4a55a] text-xs font-semibold uppercase tracking-[0.25em] mb-4 sm:mb-6 animate-fade-in-up">
-            Whitefish, Montana
-          </p>
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight max-w-3xl animate-fade-in-up stagger-1">
             Find the franchise that fits your life
             <br />
@@ -69,35 +66,41 @@ export default function HomePage() {
             professionals figure out if franchise ownership actually makes
             sense. It costs you absolutely nothing.
           </p>
-          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4 animate-fade-in-up stagger-3">
-            <Link
-              href="/scorecard"
-              id="hero-cta-quiz"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
-            >
-              Take the Readiness Quiz
-            </Link>
-            <Link
-              href="/archetype"
-              id="hero-cta-archetype"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
-            >
-              Find Your Owner Type
-            </Link>
-            <Link
-              href="/book"
-              id="hero-cta-book"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
-            >
-              Book a Free Call
-            </Link>
-            <a
-              href="sms:+12149951062"
-              className="inline-flex items-center justify-center gap-1.5 px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-              Text Me
-            </a>
+          <div className="mt-8 sm:mt-10 flex flex-col gap-3 animate-fade-in-up stagger-3">
+            {/* Primary row — both quizzes, equal gold weight */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/scorecard"
+                id="hero-cta-quiz"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Take the Readiness Quiz
+              </Link>
+              <Link
+                href="/archetype"
+                id="hero-cta-archetype"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Find Your Owner Type
+              </Link>
+            </div>
+            {/* Secondary row — contact options, quieter */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                href="/book"
+                id="hero-cta-book"
+                className="inline-flex items-center justify-center px-7 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all press-effect min-h-[44px]"
+              >
+                Book a Free Call
+              </Link>
+              <a
+                href="sms:+12149951062"
+                className="inline-flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all press-effect min-h-[44px]"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                Text Me
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -125,10 +128,10 @@ export default function HomePage() {
             About Waypoint
           </p>
           <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-4">
-            Waypoint Franchise Advisors is a free franchise consulting service founded by Kelsey Stuart, based in Whitefish, Montana. Kelsey is a former Bloomin&apos; Blinds franchisor who helped grow the system to $40 million in revenue and over 200 locations, and later became a franchisee himself — and lost money doing it. That combination of franchisor experience and franchisee failure is the foundation of his consulting practice.
+            Waypoint Franchise Advisors is a free franchise consulting service founded by Kelsey Stuart, based in Whitefish, Montana. Kelsey is a former Bloomin&apos; Blinds franchisor who helped grow the system to $40 million in revenue and over 200 locations, and later became a franchisee himself. He lost money doing it. That combination of franchisor experience and franchisee failure is the foundation of his consulting practice.
           </p>
           <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-6">
-            The service is 100% free to candidates. Franchise brands pay a referral fee when a candidate becomes a franchisee — the fee does not affect what a buyer pays to acquire the franchise. Kelsey works across all 50 states, maintains a curated inventory of 250+ franchise concepts, and presents each candidate with three to four options maximum. Approximately 30% of candidates end up buying a franchise. That number is not optimized upward.
+            The service is 100% free to candidates. Franchise brands pay a referral fee when a candidate becomes a franchisee. The fee does not affect what a buyer pays to acquire the franchise. Kelsey works across all 50 states, maintains a curated inventory of 250+ franchise concepts, and presents each candidate with three to four options maximum. Approximately 30% of candidates end up buying a franchise. That number is not optimized upward.
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center pt-2">
             {[
@@ -237,13 +240,13 @@ export default function HomePage() {
           <div className="reveal mt-8 sm:mt-12 text-center flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/scorecard"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
             >
               Take the Readiness Quiz
             </Link>
             <Link
               href="/archetype"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
             >
               Find Your Owner Type
             </Link>
@@ -438,7 +441,7 @@ export default function HomePage() {
               <Link
                 href="/archetype"
                 id="cta-bottom-archetype"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Find Your Owner Type
               </Link>
