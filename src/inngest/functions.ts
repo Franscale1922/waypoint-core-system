@@ -219,42 +219,55 @@ export const senderProcess = inngest.createFunction(
             return { status: "Skipped - Not Sequenced, Missing Draft, or Missing Target Email" };
         }
 
-        // Mock checking warmup caps / interval randomness
-        await step.sleep("random-interval-delay", `${Math.floor(Math.random() * 5) + 3}m`); // 3-8 minute random interval target
+        // ── Push lead into Instantly campaign ──────────────────────────────────
+        // Instantly handles warm-up rotation, sending windows, and deliverability.
+        // The personalized draft from GPT-4o is injected as a custom variable
+        // so the Instantly sequence template can use {{custom_email_body}}.
+        const sendResult = await step.run("push-to-instantly", async () => {
+            const apiKey = process.env.INSTANTLY_API_KEY;
+            const campaignId = process.env.INSTANTLY_CAMPAIGN_ID;
 
-        // Send via Resend
-        const sendResult = await step.run("send-via-resend", async () => {
-            try {
-                const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
-                const apiKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
-                if (!apiKey) throw new Error("Missing Resend API Key in Settings");
+            if (!apiKey) throw new Error("Missing INSTANTLY_API_KEY env var");
+            if (!campaignId) throw new Error("Missing INSTANTLY_CAMPAIGN_ID env var");
 
-                const client = new Resend(apiKey);
+            const payload = {
+                campaign_id: campaignId,
+                leads: [
+                    {
+                        email: lead.email,
+                        first_name: lead.name?.split(" ")[0] ?? "",
+                        last_name: lead.name?.split(" ").slice(1).join(" ") ?? "",
+                        company_name: lead.company ?? "",
+                        personalization: lead.draftEmail ?? "",   // Maps to {{personalization}} in Instantly template
+                        custom_variables: {
+                            title: lead.title ?? "",
+                            linkedin_url: lead.linkedinUrl ?? "",
+                            career_trigger: lead.careerTrigger ?? "",
+                        },
+                    },
+                ],
+                skip_if_in_workspace: true,   // Don't re-add existing contacts
+            };
 
-                const { data, error } = await client.emails.send({
-                    from: "Jake <jake@waypointfranchising.com>", // To be parameterized
-                    to: [lead.email!],
-                    subject: "Exploring franchise paths", // To be generated or A/B tested
-                    // @ts-ignore - draftEmail is added in the updated Prisma client but TS language server may be cached
-                    text: lead.draftEmail!,
-                    headers: {
-                        "List-Unsubscribe": "<mailto:unsubscribe@waypointfranchising.com>"
-                    }
-                });
+            const res = await fetch("https://api.instantly.ai/api/v2/leads/add", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${apiKey}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
 
-                if (error) throw new Error(error.message);
-                return { success: true, resendId: data?.id ?? null, error: null };
-            } catch (err: any) {
-                return { success: false, resendId: null, error: err.message };
+            if (!res.ok) {
+                const err = await res.text();
+                throw new Error(`Instantly API error ${res.status}: ${err}`);
             }
+
+            const data = await res.json();
+            return { success: true, response: data };
         });
 
-        if (!sendResult.success) {
-            // Handle failure scenario, possibly marking as SUPPRESSED or retrying
-            return { status: "Failed", error: sendResult.error };
-        }
-
-        // Update DB
+        // Update CRM status to SENT
         await step.run("mark-as-sent", async () => {
             await prisma.lead.update({
                 where: { id: lead.id },
@@ -262,7 +275,7 @@ export const senderProcess = inngest.createFunction(
             });
         });
 
-        return { status: "Sent", resendId: sendResult.resendId };
+        return { status: "Pushed to Instantly", leadId: lead.id, result: sendResult.response };
     }
 );
 
@@ -333,6 +346,59 @@ Output ONLY the category name.`;
         });
 
         return { status: "Processed", classification };
+    }
+);
+
+// ─── Daily Warm-up Scheduler ──────────────────────────────────────────────────
+// Runs each morning, picks top-scored SEQUENCED leads, pushes them to Instantly.
+// Volume is controlled by SystemSettings.maxSendsPerDay (admin-panel configurable).
+// Set to 15–20 during warm-up, scale to 50 after 4+ weeks of clean metrics.
+
+export const warmupScheduler = inngest.createFunction(
+    { id: "warmup-scheduler", retries: 1 },
+    { cron: "0 14 * * 1-5" }, // 8 AM Mountain Time (UTC-6), Mon–Fri only
+    async ({ step }) => {
+        // Load the daily send cap from SystemSettings
+        const settings = await step.run("load-settings", async () => {
+            return prisma.systemSettings.findUnique({ where: { id: "singleton" } });
+        });
+
+        const dailyCap = settings?.maxSendsPerDay ?? 15; // Default 15 during warm-up
+
+        // Pull top-scored SEQUENCED leads (best leads go first)
+        const leads = await step.run("load-sequenced-leads", async () => {
+            return prisma.lead.findMany({
+                where: { status: "SEQUENCED" },
+                orderBy: { score: "desc" },
+                take: dailyCap,
+                select: { id: true, score: true, name: true },
+            });
+        });
+
+        if (leads.length === 0) {
+            return { status: "No leads ready to send", cap: dailyCap };
+        }
+
+        // Fire send events with a 90-second stagger to avoid API bursts
+        for (let i = 0; i < leads.length; i++) {
+            const lead = leads[i];
+            await step.sendEvent(`queue-lead-${lead.id}`, {
+                name: "workflow/lead.send.start",
+                data: { leadId: lead.id },
+            });
+
+            // 90s stagger between dispatches — Instantly throttles internally too
+            if (i < leads.length - 1) {
+                await step.sleep(`stagger-${i}`, "90s");
+            }
+        }
+
+        return {
+            status: "Scheduled",
+            sent: leads.length,
+            cap: dailyCap,
+            leads: leads.map(l => ({ id: l.id, score: l.score, name: l.name })),
+        };
     }
 );
 
