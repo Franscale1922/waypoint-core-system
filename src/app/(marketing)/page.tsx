@@ -347,7 +347,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-0 lg:min-h-[600px]">
           {/* Photo side */}
           <div
-            className="relative min-h-[250px] sm:min-h-[350px] lg:min-h-full bg-cover"
+            className="relative min-h-[325px] sm:min-h-[350px] lg:min-h-full bg-cover"
             style={{
               backgroundImage: "url('/images/kelsey-fly-fishing-river.jpg')",
               backgroundPosition: "center 30%",
