@@ -50,7 +50,7 @@ export default async function ArticlePage({ params }: Props) {
             description: meta.excerpt,
             datePublished: meta.date,
             dateModified: meta.date,
-            image: "https://waypointfranchise.com/og_default_1773343895292.png",
+            image: "https://waypointfranchise.com/og/og-resources.png",
             author: {
               "@type": "Person",
               "@id": "https://waypointfranchise.com/about#kelsey",
@@ -132,6 +132,10 @@ export default async function ArticlePage({ params }: Props) {
             Text Me
           </a>
         </div>
+        <p className="mt-6 text-sm text-white/40">
+          Want to see how the process works first?{" "}
+          <Link href="/process" className="text-white/60 hover:text-white/80 underline transition-colors">See the full process →</Link>
+        </p>
       </section>
     </main>
   );

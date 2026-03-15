@@ -323,6 +323,14 @@ export default function HomePage() {
               </div>
             </div>
           </div>
+          <div className="reveal mt-10 sm:mt-14 text-center">
+            <Link
+              href="/process"
+              className="inline-flex items-center text-sm text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors tracking-wide"
+            >
+              See exactly how this works →
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -374,6 +382,12 @@ export default function HomePage() {
                 <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
+              </Link>
+              <Link
+                href="/faq"
+                className="inline-flex items-center text-sm text-white/50 hover:text-white/80 transition-colors tracking-wide min-h-[44px] mt-3"
+              >
+                Common questions →
               </Link>
             </div>
           </div>
