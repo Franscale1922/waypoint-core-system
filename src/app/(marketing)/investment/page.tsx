@@ -400,6 +400,12 @@ export default function InvestmentPage() {
             Text Me
           </a>
         </div>
+        <p className="mt-6 text-xs text-white/40">
+          Not sure which category fits your capital and personality?{" "}
+          <Link href="/archetype" className="text-white/60 underline hover:text-white/80 transition-colors">
+            Take the Archetype Quiz →
+          </Link>
+        </p>
       </section>
     </main>
   );

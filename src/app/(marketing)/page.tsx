@@ -92,6 +92,12 @@ export default function HomePage() {
               Text Me
             </a>
           </div>
+          <p className="mt-5 text-xs text-white/40 animate-fade-in-up stagger-3">
+            Not sure where you fit?{" "}
+            <Link href="/archetype" className="text-white/60 underline hover:text-white/80 transition-colors">
+              Find your franchise archetype →
+            </Link>
+          </p>
         </div>
       </section>
 
@@ -227,12 +233,22 @@ export default function HomePage() {
             ))}
           </div>
 
-          <div className="reveal mt-8 sm:mt-12 text-center">
+          <div className="reveal mt-8 sm:mt-12 text-center flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/scorecard"
               className="inline-flex items-center text-sm text-[#d4a55a] font-medium hover:text-[#e2be80] transition-colors tracking-wide min-h-[44px]"
             >
               Take the 2-Minute Readiness Quiz
+              <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </Link>
+            <span className="hidden sm:block text-white/30 text-xs">·</span>
+            <Link
+              href="/archetype"
+              className="inline-flex items-center text-sm text-[#d4a55a] font-medium hover:text-[#e2be80] transition-colors tracking-wide min-h-[44px]"
+            >
+              Find your franchise archetype
               <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -424,6 +440,13 @@ export default function HomePage() {
                 className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Take the Readiness Quiz
+              </Link>
+              <Link
+                href="/archetype"
+                id="cta-bottom-archetype"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Find Your Archetype
               </Link>
               <Link
                 href="/book"

@@ -299,6 +299,12 @@ export default function ProcessPage() {
             >
               Take the Readiness Quiz
             </Link>
+            <Link
+              href="/archetype"
+              className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+            >
+              Find Your Archetype
+            </Link>
             <a
               href="sms:+12149951062"
               className="inline-flex items-center justify-center gap-1.5 px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"

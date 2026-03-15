@@ -175,6 +175,9 @@ export default function AboutPage() {
               <a href="/scorecard" className="text-sm text-[#d4a55a] font-medium hover:underline">
                 Take the readiness quiz →
               </a>
+              <a href="/archetype" className="text-sm text-[#d4a55a] font-medium hover:underline">
+                Find your archetype →
+              </a>
             </div>
             <div className="flex flex-col sm:flex-row gap-3">
               <a
