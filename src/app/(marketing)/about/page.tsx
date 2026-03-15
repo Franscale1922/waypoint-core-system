@@ -19,10 +19,10 @@ export default function AboutPage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative py-16 sm:py-20 md:py-24 overflow-hidden">
+      <section className="relative pt-10 pb-36 sm:py-20 md:py-24 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover"
-          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 60%' }}
+          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 75%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
         <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6">
