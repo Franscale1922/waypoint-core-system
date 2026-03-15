@@ -138,6 +138,11 @@ export default function MarketingLayout({
               </h4>
               <ul className="space-y-3 text-sm">
                 <li>
+                  <Link href="/tools" className="hover:text-white transition-colors inline-block py-1">
+                    Free Quizzes
+                  </Link>
+                </li>
+                <li>
                   <Link href="/investment" className="hover:text-white transition-colors inline-block py-1">
                     Investment Guide
                   </Link>

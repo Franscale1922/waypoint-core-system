@@ -305,3 +305,151 @@ export const monitorProcess = inngest.createFunction(
         return { status: "Monitored", stats };
     }
 );
+
+// ─── Content Refresh Function ─────────────────────────────────────────────────
+
+import matter from "gray-matter";
+import {
+    getAllArticles,
+    isStale,
+    passesComplianceCheck,
+    writeArticle,
+} from "@/lib/contentRefresh";
+import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
+
+const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
+
+export const contentRefreshFunction = inngest.createFunction(
+    {
+        id: "content-refresh",
+        // Retry once on failure — prevents hammering OpenAI on partial failures
+        retries: 1,
+        // Allow up to 10 minutes for large article batches
+        timeouts: { finish: "10m" },
+    },
+    // Runs on the 1st of every month at 8 AM Mountain Time (14:00 UTC)
+    // To trigger manually: send event "content/refresh.run" with { force: true }
+    [
+        { cron: "0 14 1 * *" },
+        { event: "content/refresh.run" },
+    ],
+    async ({ event, step }) => {
+        // Support a manual force-run that bypasses the staleness check
+        const force = (event as any)?.data?.force === true;
+
+        // ── Step 1: Load all articles ─────────────────────────────────────────
+        const articles = await step.run("load-all-articles", async () => {
+            return getAllArticles();
+        });
+
+        // ── Step 2: Identify stale articles ───────────────────────────────────
+        const staleArticles = await step.run("identify-stale", async () => {
+            return articles.filter((a) => isStale(a, force));
+        });
+
+        if (staleArticles.length === 0) {
+            return { status: "No articles due for refresh", total: articles.length };
+        }
+
+        const refreshed: string[] = [];
+        const failed: { slug: string; reason: string }[] = [];
+
+        // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
+        for (const article of staleArticles) {
+            const result = await step.run(`refresh-${article.slug}`, async () => {
+                const settings = await prisma.systemSettings.findUnique({
+                    where: { id: "singleton" }
+                });
+                const apiKey = settings?.openAiApiKey || process.env.OPENAI_API_KEY;
+                if (!apiKey) throw new Error("Missing OpenAI API Key");
+
+                const { createOpenAI } = require("@ai-sdk/openai");
+                const customOpenai = createOpenAI({ apiKey });
+
+                const { text } = await generateText({
+                    model: customOpenai("gpt-4o"),
+                    system: buildSystemPrompt(),
+                    prompt: buildUserPrompt(article),
+                });
+
+                // Parse the AI response — it should be a complete .md file
+                const parsed = matter(text);
+                const newFrontmatter = parsed.data as typeof article.frontmatter;
+                const newBody = parsed.content;
+
+                // Safety guard: ensure relatedSlugs are preserved
+                newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
+                newFrontmatter.slug = article.frontmatter.slug;
+                newFrontmatter.category = article.frontmatter.category;
+                newFrontmatter.tier = article.frontmatter.tier;
+
+                // Compliance check before writing
+                const { passes, violations } = passesComplianceCheck(newBody);
+                if (!passes) {
+                    return {
+                        success: false as const,
+                        reason: `Compliance violations found: ${violations.join(", ")}`,
+                    };
+                }
+
+                // Write back to disk
+                writeArticle(article.filePath, newFrontmatter, newBody);
+
+                return { success: true as const, reason: undefined };
+            });
+
+            if (result.success) {
+                refreshed.push(article.slug);
+            } else {
+                failed.push({ slug: article.slug, reason: result.reason ?? "Unknown error" });
+            }
+        }
+
+        // ── Step 4: Send summary email via Resend ─────────────────────────────
+        await step.run("send-refresh-summary", async () => {
+            const settings = await prisma.systemSettings.findUnique({
+                where: { id: "singleton" }
+            });
+            const apiKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
+            if (!apiKey) {
+                console.warn("[content-refresh] No Resend API key — skipping summary email");
+                return;
+            }
+
+            const client = new Resend(apiKey);
+            const today = new Date().toLocaleDateString("en-US", {
+                month: "long", day: "numeric", year: "numeric"
+            });
+            const runType = force ? "Manual force-run" : "Scheduled monthly run";
+
+            const bodyLines = [
+                `Content Refresh Summary — ${today}`,
+                `Run type: ${runType}`,
+                "",
+                `✅ Refreshed (${refreshed.length}):`,
+                ...refreshed.map((s) => `  • ${s}`),
+                "",
+                failed.length > 0
+                    ? `❌ Failed (${failed.length}):\n${failed.map((f) => `  • ${f.slug}: ${f.reason}`).join("\n")}`
+                    : "No failures.",
+                "",
+                `⏭ Skipped (strategic/not due): ${articles.length - staleArticles.length} articles`,
+            ];
+
+            await client.emails.send({
+                from: "Waypoint System <hi@waypointfranchise.com>",
+                to: [NOTIFY_EMAIL],
+                subject: `Content Refresh: ${refreshed.length} articles updated — ${today}`,
+                text: bodyLines.join("\n"),
+            });
+        });
+
+        return {
+            status: "Complete",
+            refreshed: refreshed.length,
+            failed: failed.length,
+            skipped: articles.length - staleArticles.length,
+            slugs: refreshed,
+        };
+    }
+);

@@ -43,7 +43,7 @@ const faqs = [
     questions: [
       {
         q: "What happens after I book a call?",
-        a: "We start with a short intro call — usually 20 to 30 minutes — to understand where you are in the process and whether going deeper makes sense. If it does, we schedule the two-hour discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
+        a: "We start with a short intro call, usually 20 to 30 minutes, to understand where you are in the process and whether going deeper makes sense. If it does, we schedule the two-hour discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
       },
       {
         q: "How long does the whole process take?",
@@ -59,11 +59,11 @@ const faqs = [
       },
       {
         q: "What is discovery day, and when does it happen?",
-        a: "Discovery day is the final step in the evaluation process. You travel to the franchisor's headquarters, spend one to two days with the executive team, see the operation, and get an unfiltered read on the culture. By the time you get there, both sides have already done the real work — you have read the FDD, talked to existing franchisees, confirmed your territory, and lined up your funding. Discovery day is where you make your final call, not where they make their case.",
+        a: "Discovery day is the final step in the evaluation process. You travel to the franchisor's headquarters, spend one to two days with the executive team, walk through the operation, and see the culture for yourself. By the time you get there, the real work should be done. You have read the FDD, talked to existing franchisees, confirmed your territory, and lined up your funding. Discovery day is where you make your final call, not where they make their case.",
       },
       {
         q: "What should I have done before attending discovery day?",
-        a: "Four things should be locked down before you register: your franchisee validation calls are complete, your territory is confirmed, you have retained a franchise attorney to review the agreement, and your funding is in position — either a pre-approved SBA loan, a structured ROBS, or accessible liquid capital. Showing up to discovery day with open questions in any of those areas puts you in a position of making decisions under pressure right after the visit. That is avoidable.",
+        a: "Four things should be locked down before you register: your franchisee validation calls are complete, your territory is confirmed, you have retained a franchise attorney to review the agreement, and your funding is in position, whether that is a pre-approved SBA loan, a structured ROBS, or accessible liquid capital. Showing up to discovery day with open questions in any of those areas puts you in a position of making decisions under pressure right after the visit. That is avoidable.",
       },
     ],
   },
@@ -72,15 +72,15 @@ const faqs = [
     questions: [
       {
         q: "What are the most common ways to finance a franchise?",
-        a: "Two paths handle the majority of franchise purchases. SBA 7(a) loans are the most common: the Small Business Administration guarantees up to 75% of the loan, which lowers the bank's risk and makes it accessible for qualified buyers. You typically put in 15 to 20 percent as a down payment and repay over 10 years. ROBS — Rollover for Business Startups — is the second most common approach for buyers who have significant retirement savings and want to avoid debt entirely. There are also alternatives like HELOCs, securities-backed lines of credit, and cash, depending on your asset picture.",
+        a: "Two paths handle the majority of franchise purchases. SBA 7(a) loans are the most common: the Small Business Administration guarantees up to 75% of the loan, which lowers the bank's risk and makes it accessible for qualified buyers. You typically put in 15 to 20 percent as a down payment and repay over 10 years. ROBS (Rollover for Business Startups) is the second most common approach, for buyers who have significant retirement savings and want to avoid debt entirely. There are also alternatives worth knowing: HELOCs, securities-backed lines of credit, and cash, depending on your asset picture.",
       },
       {
         q: "Can I use my 401(k) or IRA to buy a franchise?",
-        a: "Yes, through a structure called a ROBS. A ROBS provider sets up a C-Corp, which sells stock to your retirement account. The proceeds fund your franchise purchase. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. The result: no loan, no interest, no fixed monthly payment. The trade-off is that your retirement savings are directly at risk if the business underperforms. ROBS closes in days rather than months and requires no credit score qualification.",
+        a: "Yes, through a structure called a ROBS. A ROBS provider sets up a C-Corp, which sells stock to your retirement account. The proceeds fund your franchise purchase. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. No loan, no interest, no fixed monthly payment. The catch is that your retirement savings are directly at risk if the business underperforms. ROBS closes in days rather than months and requires no credit score qualification.",
       },
       {
         q: "What credit score do I need to get an SBA loan for a franchise?",
-        a: "Most SBA lenders require a minimum score around 680, though 700 or higher will get you better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion — typically around 10% of the loan amount held in unencumbered cash. If your score is below 680, SBA is going to be harder and slower, and it is worth talking through whether ROBS or a different path makes more sense for your situation.",
+        a: "Most SBA lenders require a minimum score around 680, though 700 or higher will get you better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion, typically around 10% of the loan amount held in unencumbered cash. If your score is below 680, SBA is going to be harder and slower, and it is worth talking through whether ROBS or a different path makes more sense for your situation.",
       },
       {
         q: "Does the way I fund my franchise affect what I pay the franchisor?",
@@ -93,11 +93,11 @@ const faqs = [
     questions: [
       {
         q: "What is a franchise territory, and how is it defined?",
-        a: "A franchise territory is a defined geographic area — typically by zip code, radius, or population threshold — within which you have exclusive or protected rights to operate. The specific terms are defined in Item 12 of the Franchise Disclosure Document and in the franchise agreement itself. For home services and other territory-based models, the territory is as much of the investment as the franchise brand. Two owners in the same system with the same effort will produce very different results if one is operating in a dense, underserved market and the other is fighting over a saturated area.",
+        a: "A franchise territory is a defined geographic area (typically by zip code, radius, or population threshold) within which you have exclusive or protected rights to operate. The specific terms are defined in Item 12 of the Franchise Disclosure Document and in the franchise agreement itself. For home services and other territory-based models, the territory is as much of the investment as the franchise brand. Two owners in the same system with the same effort will produce very different results if one is operating in a dense, underserved market and the other is fighting over a saturated area.",
       },
       {
         q: "Should I start with one location or buy multiple territories?",
-        a: "Most buyers who work with advisors end up purchasing two to five units or territories, not one and not ten. Starting with a single unit limits your territory access, can cap your exit value, and can leave you owning a job rather than an asset. Buying more than you can realistically manage spreads resources too thin. The two to five unit range is typically where manageable risk and real growth potential align for first-time buyers. Importantly, a multi-unit development agreement does not mean writing multiple checks today — it means committing to a build-out timeline where the first unit generates cash flow that helps fund subsequent openings.",
+        a: "Most buyers who work with advisors end up purchasing two to five units or territories, not one and not ten. Starting with a single unit limits your territory access, can cap your exit value, and can leave you owning a job rather than an asset. Buying more than you can realistically manage spreads resources too thin. The two to five unit range is typically where manageable risk and real growth potential align for first-time buyers. One thing worth understanding: a multi-unit development agreement does not mean writing multiple checks today. It means committing to a build-out timeline where the first unit generates cash flow that helps fund the next openings.",
       },
       {
         q: "Can I change my territory after signing?",
@@ -139,15 +139,15 @@ const faqs = [
     questions: [
       {
         q: "Can I keep my job while the franchise gets started?",
-        a: "You can, but the approach most buyers take — keeping the job as a safety net while the franchise grows in the background — tends to stall businesses before they find traction. When the job is the primary income source and the franchise is the secondary project, the franchise rarely gets the urgency, attention, and decision-making speed it needs in the first 12 to 24 months. The safety net can actually make the business less likely to succeed, not more. A better approach is either building a salary into your business model from day one, or considering the spouse-run model where one partner keeps their income and the other runs the business full-time.",
+        a: "You can, but treating the job as a safety net while the franchise grows in the background tends to stall businesses before they find traction. When the job is the primary income source and the franchise is the secondary project, the franchise rarely gets the urgency, attention, and decision-making speed it needs in the first 12 to 24 months. The safety net can actually make the business less likely to succeed, not more. What tends to work better: build a salary into the business model from day one, or use the spouse-run model where one partner keeps their income and the other runs the franchise full-time.",
       },
       {
         q: "What does semi-absentee franchise ownership actually mean?",
-        a: "In franchise terminology, semi-absentee means the business is designed to be run by a general manager or team day-to-day, with the owner involved for a defined number of hours per week — often cited as 10 to 20 hours. For this to work, three things need to be true: there is enough capital to hire quality management from the start, the franchise system has proven training so the manager is not inventing the job, and there is enough revenue in the model to sustain that management layer. If the numbers in Item 19 of the FDD do not support the cost of a quality manager, the semi-absentee label is a marketing claim, not an operational reality.",
+        a: "In franchise terminology, semi-absentee means the business is designed to be run by a general manager or team day-to-day, with the owner involved for a defined number of hours per week, often 10 to 20. For this to work, three things need to be true: there is enough capital to hire quality management from the start, the franchise system has proven training so the manager is not inventing the job, and there is enough revenue in the model to sustain that management layer. If the numbers in Item 19 of the FDD do not support the cost of a quality manager, the semi-absentee label is a marketing claim, not an operational reality.",
       },
       {
         q: "Is semi-absentee the same as owning a passive investment?",
-        a: "No. A well-run semi-absentee franchise is an actively managed business where someone with real decision-making authority — often the owner — is still checking in regularly, reviewing numbers, and handling the decisions that a general manager cannot. A truly passive franchise investment — one where you set it and forget it — is rare, and most businesses positioned that way in the early years underperform. The candidates who succeed in this model are the ones who treat it as an asset to build, not a machine to ignore.",
+        a: "No. A well-run semi-absentee franchise is an actively managed business where someone with real decision-making authority, usually the owner, is still checking in regularly, reviewing numbers, and handling the decisions a general manager cannot. A truly passive franchise investment, one where you set it and forget it, is rare, and most businesses operated that way in the early years underperform. The candidates who succeed in this model treat it as an asset to build, not a machine to ignore.",
       },
     ],
   },
@@ -156,15 +156,15 @@ const faqs = [
     questions: [
       {
         q: "Can I negotiate a franchise agreement?",
-        a: "Limited negotiation is possible, primarily around territory size, development timelines for multi-unit agreements, and in some cases initial franchise fees with emerging brands. Core terms — royalty rate, brand standards, term length, and exit provisions — are typically standardized across the system and not subject to negotiation. Attempting to renegotiate these terms usually signals to the franchisor that you do not understand how the system works. The logic is straightforward: the franchisor built a system that depends on operational consistency across every location. Those core terms protect that consistency for every franchisee in the system, including you.",
+        a: "Limited negotiation is possible, primarily around territory size, development timelines for multi-unit agreements, and in some cases initial franchise fees with emerging brands. Core terms (royalty rate, brand standards, term length, and exit provisions) are typically standardized across the system and not subject to negotiation. Attempting to renegotiate those terms usually signals to the franchisor that you do not understand how the system works. The franchisor built a system that depends on operational consistency across every location, and those core terms protect that consistency for every franchisee in it, including you.",
       },
       {
         q: "Do I need a franchise attorney?",
-        a: "Yes. Every franchise buyer should have a franchise-specific attorney review the franchise agreement before signing — not a general business attorney. A franchise attorney understands FTC disclosure requirements, state franchise registration laws, and what standard terms actually mean. They are not reading the agreement hoping to renegotiate it wholesale. They are looking for unusually aggressive termination language, vaguely defined territory protections, non-compete clauses that follow you after the agreement ends, and any inconsistencies between what you were told in the sales process and what the agreement actually says. A review typically runs $1,500 to $3,500. On a $150,000 to $500,000 investment, this is not a place to save money.",
+        a: "Yes. Every franchise buyer should have a franchise-specific attorney review the agreement before signing. A general business attorney is not the right fit here. A franchise attorney understands FTC disclosure requirements, state franchise registration laws, and what standard terms actually mean. They are not reading the agreement hoping to renegotiate it wholesale. They are looking for unusually aggressive termination language, vaguely defined territory protections, non-compete clauses that follow you after the agreement ends, and any inconsistencies between what you were told in the sales process and what the agreement actually says. A review typically runs $1,500 to $3,500. On a $150,000 to $500,000 investment, this is not a place to save money.",
       },
       {
         q: "What if I was told something verbally that is not in the franchise agreement?",
-        a: "It does not exist as an enforceable obligation. If anything you were told during the sales process is not in the franchise agreement or the FDD, it holds no legal weight. This is one of the primary reasons to have a franchise attorney review the agreement before signing — to catch any inconsistencies between verbal representations and written terms. If you discover a material discrepancy at the signing stage, you are signing too early.",
+        a: "It does not exist as an enforceable obligation. If anything you were told during the sales process is not in the franchise agreement or the FDD, it holds no legal weight. This is one of the primary reasons to have a franchise attorney review the agreement before signing, specifically to catch any inconsistencies between verbal representations and written terms. If you discover a material discrepancy at the signing stage, you are signing too early.",
       },
     ],
   },
@@ -181,11 +181,11 @@ const faqs = [
       },
       {
         q: "What are the signs that it is the wrong time to buy a franchise?",
-        a: "A few situations genuinely disqualify the timing, even if the person is otherwise a strong candidate. If your liquid capital is under $75,000 to $100,000, most solid options are off the table. If you are in the middle of a major life transition — divorce, a health crisis, a recent job loss with no financial runway — the stress load of starting a business on top of that is a real risk. If you need the business to replace your income in the first six months, that is also a warning sign. Franchises take time to ramp up. The candidates who struggle most are the ones who needed the money to flow before they were positioned for it.",
+        a: "A few situations genuinely disqualify the timing, even if the person is otherwise a strong candidate. If your liquid capital is under $75,000 to $100,000, most solid options are off the table. If you are in the middle of a major life transition (divorce, a health crisis, a recent job loss with no financial runway), the stress load of starting a business on top of that is a real risk. If you need the business to replace your income in the first six months, that is also a warning sign. Franchises take time to ramp up. The candidates who struggle most are the ones who needed the money to flow before they were positioned for it.",
       },
       {
         q: "How do I know when I am actually ready to move forward?",
-        a: "A few signals usually line up at the same time: your liquid capital picture is clear and you know what you can deploy, you have a sense of what kind of work you want to be doing and what you want to step away from, and you have enough runway that the first 12 to 18 months of a new business building toward profitability is not a financial emergency. If those three things are in place, the remaining questions are about fit — which brand, which model, which territory. That is what the discovery process is designed to answer.",
+        a: "A few signals usually line up at the same time: your liquid capital picture is clear and you know what you can deploy, you have a sense of what kind of work you want to be doing and what you want to step away from, and you have enough runway that the first 12 to 18 months of a new business building toward profitability is not a financial emergency. If those three things are in place, the remaining questions are about fit: which brand, which model, which territory. That is what the discovery process is designed to answer.",
       },
     ],
   },
