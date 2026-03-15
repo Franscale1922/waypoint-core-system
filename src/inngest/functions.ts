@@ -16,17 +16,74 @@ export const leadHunterProcess = inngest.createFunction(
         }
 
         const { email, rawScore } = await step.run("enrich-and-score", async () => {
-            // Mocking the Third-party verification (ZeroBounce/Hunter)
-            // Score based on some of the extracted text length for the mock
-            let fakeScore = 60;
-            if (lead.careerTrigger) fakeScore += 20;
-            if (lead.title && lead.title.toLowerCase().includes('vp')) fakeScore += 20;
-            if (fakeScore > 100) fakeScore = 100;
+            // ── Hard suppression gates ─────────────────────────────────────────
+            // Non-serviceable markets (add more as needed)
+            const nonServiceableMarkets = ["India", "Philippines", "Pakistan", "Nigeria", "Bangladesh"];
+            if (lead.country && nonServiceableMarkets.some(m => lead.country!.includes(m))) {
+                return { email: null, rawScore: 0 };
+            }
 
-            return {
-                email: `${lead.name.replace(/\\s+/g, '.').toLowerCase()}@${lead.company?.toLowerCase().replace(/\\s+/g, '') || "fake.com"}`,
-                rawScore: fakeScore
-            };
+            // ── Base score ────────────────────────────────────────────────────
+            let score = 40;
+
+            // ── Title / Seniority (up to +25) ─────────────────────────────────
+            const title = (lead.title || "").toLowerCase();
+            if (/\b(ceo|coo|cfo|cto|cmo|chro|chief)\b/i.test(title)) {
+                score += 25;
+            } else if (/\bvp\b|vice president/i.test(title)) {
+                score += 20;
+            } else if (/\bdirector\b/i.test(title)) {
+                score += 15;
+            } else if (/\bsenior manager\b|\bprincipal\b/i.test(title)) {
+                score += 10;
+            } else if (/\bmanager\b/i.test(title)) {
+                score += 5;
+            }
+
+            // ── Career Trigger Signal (up to +20) ─────────────────────────────
+            const trigger = (lead.careerTrigger || "").toLowerCase();
+            if (trigger) {
+                if (/layoff|laid off|job loss|let go|shut down|what.s next|exploring next|between roles/i.test(trigger)) {
+                    score += 20;
+                } else if (/promotion|new role|just started|relocated|franchise|entrepreneurship|ownership/i.test(trigger)) {
+                    score += 15;
+                } else {
+                    score += 5; // trigger present but generic
+                }
+            }
+
+            // ── LinkedIn Post Content (up to +10) ─────────────────────────────
+            const post = (lead.recentPostSummary || "").toLowerCase();
+            if (post) {
+                if (/burnout|burned out|autonomy|ownership|side business|w-?2|golden handcuff|corporate grind|tired of|had enough|escape/i.test(post)) {
+                    score += 10;
+                } else {
+                    score += 3; // post present but generic
+                }
+            }
+
+            // ── Persona Fit Bonus (up to +5) ──────────────────────────────────
+            const company = (lead.company || "").toLowerCase();
+            if (company) {
+                // Fortune 500 / household name proxies (high W2, golden handcuffs likely)
+                const enterprise = ["microsoft", "amazon", "google", "meta", "apple", "salesforce", "oracle", "ibm", "deloitte", "accenture", "mckinsey", "jpmorgan", "chase", "bank of america", "wells fargo", "boeing", "ge ", "general electric", "att", "at&t", "verizon"];
+                const isFortune500 = enterprise.some(e => company.includes(e));
+                if (isFortune500) {
+                    score += 5;
+                } else if (company.length > 2) {
+                    score += 3; // any named company is better than unknown
+                }
+            }
+
+            // Cap at 100
+            if (score > 100) score = 100;
+
+            // ── Email discovery (TODO: replace with ZeroBounce/Hunter.io API) ──
+            // Placeholder: construct a likely email from name + company domain
+            const guessedEmail = lead.email ||
+                `${lead.name.replace(/\s+/g, '.').toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com`;
+
+            return { email: guessedEmail, rawScore: score };
         });
 
         if (rawScore < 70) {
