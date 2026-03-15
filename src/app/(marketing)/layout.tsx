@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import ScrollReveal from "../components/ScrollReveal";
 import MobileNav from "../components/MobileNav";
 
@@ -14,13 +15,15 @@ export default function MarketingLayout({
       {/* Navigation */}
       <header className="sticky top-0 z-50 glass border-b border-[#e2ddd2]/60">
         <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
-            <span className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
-              Waypoint
-            </span>
-            <span className="text-[10px] sm:text-xs font-medium text-[#c08b3e] uppercase tracking-[0.15em]">
-              Franchise Advisors
-            </span>
+          <Link href="/" className="flex items-center group">
+            <Image
+              src="/images/WP Transparent.png"
+              alt="Waypoint Franchise Advisors"
+              width={160}
+              height={160}
+              className="h-10 w-auto"
+              priority
+            />
           </Link>
 
           {/* Desktop nav links */}
@@ -76,9 +79,15 @@ export default function MarketingLayout({
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 sm:gap-10">
             <div>
-              <span className="text-white font-bold text-base tracking-tight block mb-3 sm:mb-4">
-                Waypoint Franchise Advisors
-              </span>
+              <Link href="/" className="inline-block mb-4">
+                <Image
+                  src="/images/White WP Transparent.png"
+                  alt="Waypoint Franchise Advisors"
+                  width={160}
+                  height={160}
+                  className="h-14 w-auto"
+                />
+              </Link>
               <p className="text-sm leading-relaxed text-[#555]">
                 Guidance from Whitefish, Montana. Helping people find the
                 franchise that fits their life. Not the other way around.

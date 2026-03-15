@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
@@ -99,15 +100,16 @@ export default function MobileNav() {
         }}>
           <Link
             href="/"
-            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}
+            style={{ display: "flex", alignItems: "center", textDecoration: "none" }}
             onClick={() => setIsOpen(false)}
           >
-            <span style={{ color: "#ffffff", fontWeight: 700, fontSize: 16, letterSpacing: "-0.01em" }}>
-              Waypoint
-            </span>
-            <span style={{ color: "#d4a55a", fontSize: 10, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-              Franchise Advisors
-            </span>
+            <Image
+              src="/images/White WP Transparent.png"
+              alt="Waypoint Franchise Advisors"
+              width={120}
+              height={120}
+              style={{ height: 40, width: "auto" }}
+            />
           </Link>
           <button
             onClick={() => setIsOpen(false)}
