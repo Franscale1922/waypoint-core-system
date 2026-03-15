@@ -141,7 +141,7 @@ export default function AboutPage() {
                 width={800}
                 height={280}
                 className="w-full object-cover"
-                style={{ objectPosition: "center 20%", height: "280px" }}
+                style={{ objectPosition: "center 70%", height: "280px" }}
               />
             </div>
           </div>
