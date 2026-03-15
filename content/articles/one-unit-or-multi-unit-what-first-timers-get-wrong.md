@@ -23,14 +23,56 @@ Most first-time franchise buyers come in with a strong instinct about how many u
 
 The number you should know before you decide: most buyers who work with advisors end up purchasing 2-5 units or territories, not one and not ten. That range isn't random. It's where the math and the risk align.
 
-| | Single unit | 2–5 units (contiguous) | 10+ units |
-|---|---|---|---|
-| Capital required | Lowest | Moderate | High |
-| Territory access | Limited, best markets may go to other buyers | Stronger, contiguous territory protects market share | Maximum |
-| Exit value | Harder, less appeal to scaled buyers | Stronger, preferred by portfolio buyers | Strongest, if operations are solid |
-| Operational complexity | Lowest | Manageable with the right hire | Requires full management layer |
-| Revenue ceiling | Capped at unit performance | Real growth potential | Significant, but management risk scales too |
-| First-timer fit | Often wrong choice | Sweet spot for most first-timers | Rarely appropriate for first-time buyers |
+<div className="overflow-x-auto my-8">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b-2 border-[#0c1929]">
+        <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]"></th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Single unit</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">2–5 units (contiguous)</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">10+ units</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Capital required</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Lowest</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Moderate</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">High</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Territory access</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Limited, best markets may go to other buyers</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Stronger, contiguous territory protects market share</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Maximum</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Exit value</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Harder, less appeal to scaled buyers</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Stronger, preferred by portfolio buyers</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Strongest, if operations are solid</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Operational complexity</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Lowest</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Manageable with the right hire</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Requires full management layer</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Revenue ceiling</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Capped at unit performance</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Real growth potential</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Significant, but management risk scales too</td>
+      </tr>
+      <tr>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">First-timer fit</td>
+        <td className="py-3 px-4 text-[#c08b3e] font-medium">Often wrong choice</td>
+        <td className="py-3 px-4 text-[#c08b3e] font-semibold">Sweet spot for most first-timers</td>
+        <td className="py-3 pl-4 text-[#c08b3e] font-medium">Rarely appropriate for first-time buyers</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 
