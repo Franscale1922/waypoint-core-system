@@ -59,7 +59,7 @@ export default function HomePage() {
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight max-w-3xl animate-fade-in-up stagger-1">
             Find the franchise that fits your life
             <br />
-            <span className="text-[#d4a55a]">Not the other way around</span>
+            <span className="text-[#d4a55a] [text-shadow:0_2px_12px_rgba(0,0,0,0.85),0_1px_4px_rgba(0,0,0,0.9)] sm:[text-shadow:none]">Not the other way around</span>
           </h1>
           <p className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 leading-relaxed max-w-xl animate-fade-in-up stagger-2">
             I&apos;m Kelsey Stuart. Former franchise owner. I help burned-out
