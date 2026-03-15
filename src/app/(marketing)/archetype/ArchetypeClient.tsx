@@ -165,12 +165,13 @@ export default function ArchetypeClient() {
             <p className="mt-3 text-xs text-slate-400">
               This call is free. Franchise brands pay the advisory fee, not you.
             </p>
-            <p className="mt-4 text-sm text-slate-500">
-              Want to check readiness too?{" "}
-              <a href="/scorecard" className="text-[#c08b3e] underline hover:text-[#1b3a5f]">
-                Take the Franchise Readiness Scorecard →
-              </a>
-            </p>
+            <p className="mt-6 text-sm text-slate-500 mb-3">Want to check your readiness too?</p>
+            <a
+              href="/scorecard"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#1b3a5f] border border-[#c08b3e]/50 hover:bg-[#f5ebd1] rounded-xl transition-all press-effect min-h-[48px]"
+            >
+              Take the Readiness Quiz
+            </a>
           </div>
         </div>
       </section>

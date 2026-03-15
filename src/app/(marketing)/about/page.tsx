@@ -168,23 +168,24 @@ export default function AboutPage() {
               30 minutes. No agenda. Just an honest back-and-forth about
               where you are and what makes sense from here.
             </p>
-            <div className="flex flex-wrap gap-4 mb-5">
-              <a href="/process" className="text-sm text-[#d4a55a] font-medium hover:underline">
-                See how I work →
-              </a>
-              <a href="/scorecard" className="text-sm text-[#d4a55a] font-medium hover:underline">
-                Take the readiness quiz →
-              </a>
-              <a href="/archetype" className="text-sm text-[#d4a55a] font-medium hover:underline">
-                Find your archetype →
-              </a>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3">
               <a
                 href="/book"
                 className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Book a Free Call
+              </a>
+              <a
+                href="/scorecard"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Readiness Quiz
+              </a>
+              <a
+                href="/archetype"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Archetype Quiz
               </a>
               <a
                 href="sms:+12149951062"
@@ -194,6 +195,10 @@ export default function AboutPage() {
                 Text Me
               </a>
             </div>
+            <p className="mt-5 text-xs text-white/40">
+              Want to see how I work first?{" "}
+              <a href="/process" className="text-white/60 underline hover:text-white/80 transition-colors">See the process →</a>
+            </p>
           </div>
 
         </div>

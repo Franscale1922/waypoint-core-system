@@ -379,7 +379,7 @@ export default function InvestmentPage() {
         <p className="text-white/70 mb-8 max-w-md mx-auto text-sm leading-relaxed">
           That is exactly what the discovery call is for. Thirty minutes, no pressure, no pitch. Just a real conversation about your capital, your goals, and what options actually make sense.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
           <Link
             href="/book"
             className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
@@ -392,6 +392,12 @@ export default function InvestmentPage() {
           >
             Take the Readiness Quiz
           </Link>
+          <Link
+            href="/archetype"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+          >
+            Find Your Archetype
+          </Link>
           <a
             href="sms:+12149951062"
             className="inline-flex items-center justify-center gap-1.5 px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
@@ -400,12 +406,6 @@ export default function InvestmentPage() {
             Text Me
           </a>
         </div>
-        <p className="mt-6 text-xs text-white/40">
-          Not sure which category fits your capital and personality?{" "}
-          <Link href="/archetype" className="text-white/60 underline hover:text-white/80 transition-colors">
-            Take the Archetype Quiz →
-          </Link>
-        </p>
       </section>
     </main>
   );
