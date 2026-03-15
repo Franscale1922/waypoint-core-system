@@ -123,20 +123,25 @@ export default function ProcessPage() {
 
       {/* ── Hero ─────────────────────────────────────────── */}
       <section
-        className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6 overflow-hidden bg-[#0c1929]"
+        className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6 overflow-hidden"
         style={{
           backgroundImage: "url('/images/process-hero-highline.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "30% 50%",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
-          <h1 className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6">
+          <h1
+            className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6"
+            style={{ textShadow: "0 2px 16px rgba(0,0,0,0.75), 0 1px 4px rgba(0,0,0,0.9)" }}
+          >
             Two hours before<br className="hidden sm:block" /> you see a single brand
           </h1>
-          <p className="text-white/80 text-lg sm:text-xl max-w-xl leading-relaxed">
+          <p
+            className="text-white/90 text-lg sm:text-xl max-w-xl leading-relaxed"
+            style={{ textShadow: "0 1px 8px rgba(0,0,0,0.8)" }}
+          >
             Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
           </p>
         </div>
