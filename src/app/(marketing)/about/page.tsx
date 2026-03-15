@@ -31,7 +31,7 @@ export default function AboutPage() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-tight tracking-tight">
               I am Kelsey Stuart
             </h1>
-            <p className="mt-4 sm:mt-6 text-base sm:text-lg text-slate-300 leading-relaxed">
+            <p className="hidden sm:block mt-4 sm:mt-6 text-base sm:text-lg text-slate-300 leading-relaxed">
               Franchise consultant, former Bloomin&apos; Blinds franchisor, and the
               guy who will be completely honest with you about whether franchise
               ownership is actually the right move for your life.
