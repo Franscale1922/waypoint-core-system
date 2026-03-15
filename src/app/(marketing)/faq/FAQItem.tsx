@@ -29,7 +29,7 @@ export function FAQItem({ q, a, link }: { q: string; a: string; link?: FAQLink }
                 {" "}
                 <Link
                   href={link.url}
-                  className="text-[#d4a55a] hover:underline whitespace-nowrap"
+                  className="text-[#d4a55a] hover:underline break-words"
                 >
                   {link.label} →
                 </Link>
