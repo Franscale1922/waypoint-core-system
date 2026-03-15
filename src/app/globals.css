@@ -195,6 +195,16 @@ button, input, label {
   border: 1px solid rgba(192, 139, 62, 0.08);
 }
 
+/* Safari fix: backdrop-filter on a parent clips position:fixed children.
+   Remove it on mobile so the full-screen nav overlay renders correctly. */
+@media (max-width: 639px) {
+  .glass {
+    background: rgba(250, 248, 244, 0.97);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
 /* ======================================
    INTERACTIVE ELEMENTS
    ====================================== */
