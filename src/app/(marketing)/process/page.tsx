@@ -127,7 +127,7 @@ export default function ProcessPage() {
         style={{
           backgroundImage: "url('/images/process-hero-highline.jpg')",
           backgroundSize: "cover",
-          backgroundPosition: "30% 50%",
+          backgroundPosition: "center 20%",
         }}
       >
         <div className="relative z-10 max-w-3xl mx-auto w-full">

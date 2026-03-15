@@ -15,15 +15,13 @@ export default function MarketingLayout({
       {/* Navigation */}
       <header className="sticky top-0 z-50 glass border-b border-[#e2ddd2]/60">
         <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center group">
-            <Image
-              src="/images/WP Transparent.png"
-              alt="Waypoint Franchise Advisors"
-              width={160}
-              height={160}
-              className="h-10 w-auto"
-              priority
-            />
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+            <span className="text-base sm:text-lg font-bold text-[#1a1a1a] tracking-tight">
+              Waypoint
+            </span>
+            <span className="text-[10px] sm:text-xs font-medium text-[#c08b3e] uppercase tracking-[0.15em]">
+              Franchise Advisors
+            </span>
           </Link>
 
           {/* Desktop nav links */}
