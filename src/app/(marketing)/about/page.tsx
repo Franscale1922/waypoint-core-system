@@ -88,9 +88,11 @@ export default function AboutPage() {
 
           {/* Photo Zone A — After "The Short Version" — community/life context */}
           <div className="mb-10 sm:mb-12 overflow-hidden rounded-xl sm:rounded-2xl">
-            <img
+            <Image
               src="/images/kelsey-campfire-group.jpg"
               alt="Kelsey Stuart with family and friends in Montana"
+              width={1200}
+              height={420}
               loading="lazy"
               className="w-full object-cover"
               style={{ height: "420px", objectPosition: "center 40%" }}

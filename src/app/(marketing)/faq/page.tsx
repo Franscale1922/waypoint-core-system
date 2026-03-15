@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description:
       "No jargon, no pitch. Straight answers about what franchise consulting costs, how the process works, and what it takes to get started.",
     url: "https://waypointfranchise.com/faq",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint FAQ" }],
+    images: [{ url: "/og/og-faq.png", width: 1200, height: 630, alt: "Waypoint FAQ — Honest Answers" }],
   },
 };
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
     url: "https://waypointfranchise.com",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors" }],
+    images: [{ url: "/og/og-home.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors — Find the Franchise That Fits Your Life" }],
   },
 };
 
@@ -167,12 +167,14 @@ export default function HomePage() {
             <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
             {/* Honest portrait — full width between headline and body text */}
             <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-12">
-              <img
+              <Image
                 src="/images/kelsey-honest-portrait.jpg"
                 alt="Kelsey Stuart, franchise advisor"
+                width={1200}
+                height={380}
                 loading="lazy"
                 className="w-full object-cover"
-                style={{ height: "380px", objectPosition: "center 25%" }}
+                style={{ objectPosition: "center 25%", height: "380px" }}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
