@@ -27,9 +27,7 @@ export default function BookPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/45 to-[#0c1929]/25" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-sm font-semibold text-[#d4a55a] uppercase tracking-[0.2em] mb-3">
-            Let&apos;s Talk
-          </p>
+
           <h1
             className="text-3xl sm:text-4xl md:text-5xl font-bold text-white tracking-tight"
             style={{ textShadow: "0 2px 12px rgba(12,25,41,0.5)" }}

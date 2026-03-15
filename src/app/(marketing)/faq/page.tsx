@@ -256,9 +256,7 @@ export default function FAQPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/60 via-[#0c1929]/35 to-[#0c1929]/15" />
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
-            Common Questions
-          </p>
+
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">
             Honest answers
           </h1>

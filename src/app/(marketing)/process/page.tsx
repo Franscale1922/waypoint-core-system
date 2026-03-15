@@ -132,9 +132,7 @@ export default function ProcessPage() {
       >
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/80 via-[#0c1929]/30 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
-          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">
-            How It Works
-          </p>
+
           <h1 className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6">
             Two hours before<br className="hidden sm:block" /> you see a single brand
           </h1>
