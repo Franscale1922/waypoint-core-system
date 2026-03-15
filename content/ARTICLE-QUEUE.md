@@ -16,6 +16,8 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | `[~]` | The Exploration Process Is a Practice Run | Getting Started | Following franchisor processes before you sign is a preview of franchise life. Trust in standards not created by you. Needs expansion. |
 | `[~]` | Franchise Ownership as a Total Reinvention | Getting Started | Not just leaving a desk — full mindset shift from corporate to entrepreneurial. Connects to candidate avatars. Needs avatar docs. |
 | `[~]` | Which Candidate Avatar Are You? (and What That Means for Your Search) | Getting Started | The different personas and how they align to industries. Needs avatar/persona docs from previous work. |
+| `[~]` | What the Franchise Process Actually Looks Like, Start to Finish | Getting Started | FAQ gap: covers what happens after booking a call, how long the process takes, and what each stage involves. Needs Kelsey's process detail. |
+| `[~]` | Bringing Your Spouse or Partner Into the Franchise Decision | Getting Started | FAQ gap: how to involve a partner early, what they should know, how to align before signing. Needs Kelsey's observations on partner dynamics in the process. |
 
 ---
 

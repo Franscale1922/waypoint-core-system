@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
-export function FAQItem({ q, a }: { q: string; a: string }) {
+type FAQLink = { url: string; label: string };
+
+export function FAQItem({ q, a, link }: { q: string; a: string; link?: FAQLink }) {
   const [open, setOpen] = useState(false);
   return (
     <div className="border-b border-[#e8e0d0]">
@@ -19,7 +22,20 @@ export function FAQItem({ q, a }: { q: string; a: string }) {
       </button>
       {open && (
         <div className="pb-6 pr-8">
-          <p className="text-[#5a5a4a] leading-relaxed">{a}</p>
+          <p className="text-[#5a5a4a] leading-relaxed">
+            {a}
+            {link && (
+              <>
+                {" "}
+                <Link
+                  href={link.url}
+                  className="text-[#d4a55a] hover:underline whitespace-nowrap"
+                >
+                  {link.label} →
+                </Link>
+              </>
+            )}
+          </p>
         </div>
       )}
     </div>
