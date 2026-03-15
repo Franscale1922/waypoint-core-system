@@ -78,12 +78,57 @@ export const leadHunterProcess = inngest.createFunction(
             // Cap at 100
             if (score > 100) score = 100;
 
-            // ── Email discovery (TODO: replace with ZeroBounce/Hunter.io API) ──
-            // Placeholder: construct a likely email from name + company domain
-            const guessedEmail = lead.email ||
-                `${lead.name.replace(/\s+/g, '.').toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '')}.com`;
+            // ── Email discovery via Hunter.io ──────────────────────────────────
+            // Uses the Email Finder endpoint: GET /v2/email-finder?domain=&first_name=&last_name=
+            let foundEmail: string | null = lead.email || null;
+            let emailConfidence = 100; // If email already known, treat as confident
 
-            return { email: guessedEmail, rawScore: score };
+            if (!foundEmail) {
+                const hunterKey = process.env.HUNTER_API_KEY;
+                if (hunterKey && lead.company) {
+                    try {
+                        const nameParts = lead.name.trim().split(/\s+/);
+                        const firstName = nameParts[0] ?? "";
+                        const lastName = nameParts.slice(1).join(" ") ?? "";
+
+                        // Derive domain from company name (Hunter also accepts company name)
+                        const companySlug = lead.company
+                            .toLowerCase()
+                            .replace(/\s+/g, "")
+                            .replace(/[^a-z0-9]/g, "");
+                        const domain = `${companySlug}.com`; // best-effort; Hunter normalizes
+
+                        const hunterUrl = new URL("https://api.hunter.io/v2/email-finder");
+                        hunterUrl.searchParams.set("domain", domain);
+                        hunterUrl.searchParams.set("first_name", firstName);
+                        hunterUrl.searchParams.set("last_name", lastName);
+                        hunterUrl.searchParams.set("api_key", hunterKey);
+
+                        const res = await fetch(hunterUrl.toString());
+                        if (res.ok) {
+                            const json = await res.json();
+                            if (json?.data?.email) {
+                                foundEmail = json.data.email;
+                                emailConfidence = json.data.confidence ?? 0;
+                            }
+                        }
+                    } catch (_err) {
+                        // Hunter failed — fall through to guess below
+                    }
+                }
+
+                // Hard suppression: if Hunter found nothing or confidence is too low, score = 0
+                if (!foundEmail || emailConfidence < 60) {
+                    if (!lead.email) {
+                        // Last resort guess — will be verified by Instantly's own validation
+                        const nameParts = lead.name.trim().split(/\s+/);
+                        foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
+                        score = Math.min(score, 60); // Cap at 60 if email is a guess — won't pass the 70 gate
+                    }
+                }
+            }
+
+            return { email: foundEmail, rawScore: score };
         });
 
         if (rawScore < 70) {
