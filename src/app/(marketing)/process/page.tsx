@@ -130,7 +130,7 @@ export default function ProcessPage() {
           backgroundPosition: "30% 50%",
         }}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/80 via-[#0c1929]/30 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
           <h1 className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6">
