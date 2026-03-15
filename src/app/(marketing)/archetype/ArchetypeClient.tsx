@@ -245,7 +245,7 @@ export default function ArchetypeClient() {
             What kind of franchise owner are you?
           </h1>
           <p className="mt-2 text-sm text-slate-500">
-            8 questions. No right answers. Honest results.
+            8 questions. No wrong answers. Honest results.
           </p>
         </div>
 
