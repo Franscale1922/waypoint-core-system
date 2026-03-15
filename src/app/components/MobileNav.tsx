@@ -4,129 +4,179 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const navLinks = [
+  { href: "/about", label: "About" },
+  { href: "/process", label: "How It Works" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/resources", label: "Resources" },
+  { href: "/quizzes", label: "Quizzes" },
+];
+
 export default function MobileNav() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
-  // Close menu on route change
   useEffect(() => {
     setIsOpen(false);
   }, [pathname]);
 
-  // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
+    document.body.style.overflow = isOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
   }, [isOpen]);
 
   return (
     <>
-      {/* Hamburger button - only visible on mobile */}
+      {/* Hamburger button — stays above overlay */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="sm:hidden flex flex-col justify-center items-center w-11 h-11 gap-1.5 -mr-2"
         aria-label={isOpen ? "Close menu" : "Open menu"}
         aria-expanded={isOpen}
+        className="sm:hidden"
+        style={{
+          position: "relative",
+          zIndex: 400,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          width: 44,
+          height: 44,
+          gap: 6,
+          marginRight: -8,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          padding: 0,
+        }}
       >
-        <span
-          className={`block w-5 h-[1.5px] bg-[#1a1a1a] transition-all duration-300 ${
-            isOpen ? "rotate-45 translate-y-[4.5px]" : ""
-          }`}
-        />
-        <span
-          className={`block w-5 h-[1.5px] bg-[#1a1a1a] transition-all duration-300 ${
-            isOpen ? "opacity-0" : ""
-          }`}
-        />
-        <span
-          className={`block w-5 h-[1.5px] bg-[#1a1a1a] transition-all duration-300 ${
-            isOpen ? "-rotate-45 -translate-y-[4.5px]" : ""
-          }`}
-        />
+        {[
+          isOpen ? "rotate(45deg) translateY(7.5px)" : "none",
+          "none",
+          isOpen ? "rotate(-45deg) translateY(-7.5px)" : "none",
+        ].map((transform, i) => (
+          <span
+            key={i}
+            style={{
+              display: "block",
+              width: 20,
+              height: 1.5,
+              background: isOpen ? "#ffffff" : "#1a1a1a",
+              transform,
+              opacity: i === 1 && isOpen ? 0 : 1,
+              transition: "transform 0.3s ease, opacity 0.3s ease, background 0.3s ease",
+            }}
+          />
+        ))}
       </button>
 
-      {/* Fullscreen overlay menu */}
+      {/* Full-screen overlay — uses ONLY inline styles to avoid all CSS inheritance */}
       <div
-        className={`fixed inset-0 z-[200] transition-all duration-500 sm:hidden ${
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-        style={{ isolation: "isolate" }}
+        className="sm:hidden"
+        style={{
+          position: "fixed",
+          inset: 0,
+          zIndex: 350,
+          background: "#0c1929",
+          display: "flex",
+          flexDirection: "column",
+          opacity: isOpen ? 1 : 0,
+          visibility: isOpen ? "visible" : "hidden",
+          pointerEvents: isOpen ? "auto" : "none",
+          transition: "opacity 0.3s ease, visibility 0.3s ease",
+          // Explicitly kill any inherited glass/blur effects
+          backdropFilter: "none",
+          WebkitBackdropFilter: "none",
+        }}
       >
-        {/* Backdrop — fully opaque dark overlay */}
-        <div
-          className="absolute inset-0 bg-[#0c1929]/80"
-          onClick={() => setIsOpen(false)}
-        />
+        {/* Top bar — logo + close */}
+        <div style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "14px 20px",
+          borderBottom: "1px solid rgba(255,255,255,0.08)",
+        }}>
+          <Link
+            href="/"
+            style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}
+            onClick={() => setIsOpen(false)}
+          >
+            <span style={{ color: "#ffffff", fontWeight: 700, fontSize: 16, letterSpacing: "-0.01em" }}>
+              Waypoint
+            </span>
+            <span style={{ color: "#d4a55a", fontSize: 10, fontWeight: 500, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+              Franchise Advisors
+            </span>
+          </Link>
+          <button
+            onClick={() => setIsOpen(false)}
+            aria-label="Close menu"
+            style={{
+              width: 44,
+              height: 44,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              padding: 0,
+            }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
 
-        {/* Menu panel - slides from right, fully opaque */}
-        <div
-          className={`absolute top-0 right-0 h-full w-[280px] shadow-2xl transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-            isOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-          style={{ background: "#FAF8F4", backdropFilter: "none", WebkitBackdropFilter: "none" }}
-        >
-          {/* Close button */}
-          <div className="flex justify-end p-5">
-            <button
-              onClick={() => setIsOpen(false)}
-              className="w-11 h-11 flex items-center justify-center"
-              aria-label="Close menu"
+        {/* Nav links */}
+        <nav style={{ flex: 1, padding: "24px 28px", overflowY: "auto" }}>
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              style={{
+                display: "block",
+                padding: "16px 0",
+                fontSize: 20,
+                fontWeight: 600,
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                color: pathname === link.href ? "#d4a55a" : "#ffffff",
+                textDecoration: "none",
+                letterSpacing: "-0.01em",
+              }}
             >
-              <svg className="w-5 h-5 text-[#1a1a1a]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              {link.label}
+            </Link>
+          ))}
+
+          {/* Single CTA */}
+          <div style={{ marginTop: 36 }}>
+            <Link
+              href="/book"
+              style={{
+                display: "block",
+                textAlign: "center",
+                padding: "15px 24px",
+                fontSize: 13,
+                fontWeight: 700,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "#0c1929",
+                background: "#d4a55a",
+                borderRadius: 8,
+                textDecoration: "none",
+              }}
+            >
+              Book a Free Call
+            </Link>
           </div>
 
-          {/* Nav links */}
-          <nav className="px-8 pt-4">
-            <div className="space-y-1">
-              {[
-                { href: "/about", label: "About" },
-                { href: "/process", label: "How It Works" },
-                { href: "/faq", label: "FAQ" },
-                { href: "/resources", label: "Resources" },
-                { href: "/quizzes", label: "Quizzes" },
-                { href: "/book", label: "Book a Call" },
-              ].map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`block py-4 text-base font-medium tracking-wide border-b border-[#e2ddd2]/60 transition-colors ${
-                    pathname === link.href
-                      ? "text-[#c08b3e]"
-                      : "text-[#1a1a1a] hover:text-[#c08b3e]"
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            {/* CTA button */}
-            <div className="mt-10">
-              <Link
-                href="/book"
-                className="block w-full text-center px-6 py-4 text-sm font-semibold tracking-wide uppercase text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect"
-              >
-                Book a Free Call
-              </Link>
-            </div>
-
-            {/* Location */}
-            <p className="mt-8 text-xs text-[#7a7a7a] tracking-wide">
-              Whitefish, Montana
-            </p>
-          </nav>
-        </div>
+          <p style={{ marginTop: 28, fontSize: 11, color: "rgba(255,255,255,0.25)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
+            Whitefish, Montana
+          </p>
+        </nav>
       </div>
     </>
   );
