@@ -57,12 +57,49 @@ The trade-off in B2B: it is not a model for hands-off ownership. The owner's rel
 
 ## Where the Four Models Compare
 
-| Quadrant | Model | Typical investment (as of 2026) | Operator fit | Current strength |
-|---|---|---|---|---|
-| **B2C, non-brick-and-mortar** | Home services, pet, senior care | $150K–$350K | Systems-driven, marketing-focused | Strong. Home services has grown consistently since 2020 |
-| **B2B, non-brick-and-mortar** | Commercial services, B2B consulting, restoration | $150K–$350K | Relationship-driven, prior industry experience | Very strong. Recurring contracts, lower consumer-side risk |
-| **B2C, brick-and-mortar** | Fitness, wellness, child enrichment | $300K–$800K+ | Manager-operator, community builder | Solid in the right category. Best path to semi-absentee ownership |
-| **B2B, brick-and-mortar** | Limited options | Varies | Specialist | Few strong options. Scrutinize unit economics carefully |
+<div className="overflow-x-auto my-8">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b-2 border-[#0c1929]">
+        <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]">Quadrant</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Model</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Typical investment (as of 2026)</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Operator fit</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">Current strength</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">B2C, non-brick-and-mortar</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Home services, pet, senior care</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">$150K–$350K</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Systems-driven, marketing-focused</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Strong. Home services has grown consistently since 2020</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">B2B, non-brick-and-mortar</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Commercial services, B2B consulting, restoration</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">$150K–$350K</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Relationship-driven, prior industry experience</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Very strong. Recurring contracts, lower consumer-side risk</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">B2C, brick-and-mortar</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Fitness, wellness, child enrichment</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">$300K–$800K+</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Manager-operator, community builder</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Solid in the right category. Best path to semi-absentee ownership</td>
+      </tr>
+      <tr>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">B2B, brick-and-mortar</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Limited options</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Varies</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Specialist</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Few strong options. Scrutinize unit economics carefully</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 **B2C, non-brick-and-mortar** is where a lot of the best opportunities are right now. Home services has been growing since 2020 and is performing well in most markets. Pet services are performing well, particularly concepts that operate without retail space. They carry a cost advantage over competitors paying for brick-and-mortar overhead. Senior in-home care is growing consistently driven by demographics, and that demand is not slowing down.
 

@@ -25,16 +25,59 @@ Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one 
 
 ## The Two Paths That Matter
 
-| | SBA 7(a) Loan | ROBS |
-|---|---|---|
-| **How you're funded** | Bank loan with SBA guarantee | Retirement funds invested into a C-Corp |
-| **Capital access** | Up to $5.5M (as of 2026) | Limited to your retirement account balance |
-| **Out-of-pocket cost** | 15–20% down payment (as of 2026) | No down payment, full purchase from retirement funds |
-| **Time to close** | 60–90 days, sometimes longer | Days, not months |
-| **Credit requirement** | 680+ score, collateral, personal guarantee | None |
-| **Monthly debt obligation** | Fixed payments for 10 years | None |
-| **Retirement savings at risk** | No | Yes, directly |
-| **Best for** | Buyers who want to preserve liquidity and spread cost over time | Buyers with $100K+ in retirement savings who want to avoid debt |
+<div className="overflow-x-auto my-8">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b-2 border-[#0c1929]">
+        <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]"></th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">SBA 7(a) Loan</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">ROBS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">How you're funded</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Bank loan with SBA guarantee</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Retirement funds invested into a C-Corp</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Capital access</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Up to $5.5M (as of 2026)</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Limited to your retirement account balance</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Out-of-pocket cost</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">15–20% down payment (as of 2026)</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">No down payment, full purchase from retirement funds</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Time to close</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">60–90 days, sometimes longer</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Days, not months</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Credit requirement</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">680+ score, collateral, personal guarantee</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">None</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Monthly debt obligation</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Fixed payments for 10 years</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">None</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Retirement savings at risk</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">No</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Yes, directly</td>
+      </tr>
+      <tr>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Best for</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Buyers who want to preserve liquidity and spread cost over time</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Buyers with $100K+ in retirement savings who want to avoid debt</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 **SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
 

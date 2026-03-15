@@ -23,14 +23,49 @@ Most buyers shopping for franchises anchor on name recognition. They want a hous
 
 The actual comparison, established versus emerging franchise systems, is more nuanced than that, and the right answer follows from your goals, not the brand's recognition.
 
-| Factor | Established brand | Emerging brand (30–150 units) |
-|---|---|---|
-| Brand recognition value | High in a few categories (QSR), lower elsewhere | Generally low |
-| Territory availability | Limited; best territories often consolidated | More open territory available |
-| Franchisee performance data | Extensive Item 19 history | Limited history; validate carefully |
-| Multi-unit expansion opportunity | Harder in mature, consolidated systems | More room to grow early |
-| Dependence on HQ team quality | Lower, systems are proven | Higher, model relies on leadership |
-| Validation depth | Many operators to call | Fewer; each call matters more |
+<div className="overflow-x-auto my-8">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b-2 border-[#0c1929]">
+        <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]">Factor</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Established brand</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">Emerging brand (30–150 units)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Brand recognition value</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">High in a few categories (QSR), lower elsewhere</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Generally low</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Territory availability</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Limited; best territories often consolidated</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">More open territory available</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Franchisee performance data</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Extensive Item 19 history</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Limited history; validate carefully</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Multi-unit expansion opportunity</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Harder in mature, consolidated systems</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">More room to grow early</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Dependence on HQ team quality</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Lower, systems are proven</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Higher, model relies on leadership</td>
+      </tr>
+      <tr>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Validation depth</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Many operators to call</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Fewer; each call matters more</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 

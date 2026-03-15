@@ -23,14 +23,49 @@ When a franchise is opening 50 new locations per year, the first instinct for mo
 
 Most buyers treat slow growth as a signal of a responsible, stable system. It's often a signal that not enough qualified buyers want in.
 
-| Factor | Fast-growing system | Slow-growing system |
-|---|---|---|
-| Buyer demand | High, qualified buyers want in | Low, system isn't attracting enough candidates |
-| Brand compounding | More locations building regional awareness | Flat or retreating market footprint |
-| Franchisor resources | Higher royalty revenue to fund support infrastructure | Lower revenue pool for R&D, training, support |
-| Legacy unit risk | Fewer outdated locations | Higher concentration of older, underperforming units |
-| Portfolio opportunity | Growing inventory of future acquisition targets | Limited new-unit deal flow for multi-unit buyers |
-| Risk | Support can lag expansion in early stages | Stagnation is harder to reverse than growing pains |
+<div className="overflow-x-auto my-8">
+  <table className="w-full text-sm border-collapse">
+    <thead>
+      <tr className="border-b-2 border-[#0c1929]">
+        <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]">Factor</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Fast-growing system</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">Slow-growing system</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Buyer demand</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">High, qualified buyers want in</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Low, system isn't attracting enough candidates</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Brand compounding</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">More locations building regional awareness</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Flat or retreating market footprint</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Franchisor resources</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Higher royalty revenue to fund support infrastructure</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Lower revenue pool for R&D, training, support</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Legacy unit risk</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Fewer outdated locations</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Higher concentration of older, underperforming units</td>
+      </tr>
+      <tr className="border-b border-[#e8e0d0]">
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Portfolio opportunity</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Growing inventory of future acquisition targets</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Limited new-unit deal flow for multi-unit buyers</td>
+      </tr>
+      <tr>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Risk</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Support can lag expansion in early stages</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Stagnation is harder to reverse than growing pains</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
 ---
 
