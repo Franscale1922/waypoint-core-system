@@ -53,9 +53,9 @@ export default function AboutPage() {
             <div className="flex-shrink-0 w-1 sm:w-[3px] rounded-full bg-[#d4a55a] self-stretch" />
             <div>
               <p className="font-playfair text-xl sm:text-2xl md:text-3xl italic text-[#1a1a1a] leading-snug">
-                &ldquo;Kelsey told me not to buy. I needed to hear that.&rdquo;
+                &ldquo;He didn&apos;t show me a single franchise until he had spent two hours understanding what I actually wanted.&rdquo;
               </p>
-              <p className="mt-3 text-sm text-[#7a7a7a]">Carol M., Phoenix AZ</p>
+              <p className="mt-3 text-sm text-[#7a7a7a]">Marcus T., Denver CO</p>
             </div>
           </div>
         </div>
@@ -158,11 +158,11 @@ export default function AboutPage() {
           <div className="mb-10 sm:mb-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               {
-                quote: "Kelsey told me not to buy. He told me my situation wasn't right for the concept I wanted and walked me through why. Six months later I was ready, and we found something that fit. That conversation saved me from a bad decision.",
-                name: "Carol M.",
-                role: "Former healthcare executive, franchise owner since 2025",
-                location: "Phoenix, AZ",
-                score: "Readiness Score: 62",
+                quote: "I just wanted to understand my options. I was not in a hurry. Kelsey never pushed me toward anything. He helped me put together a plan so that by the time I leave corporate, the business will already be running.",
+                name: "James P.",
+                role: "Still employed, franchise opens Q3 2026",
+                location: "Chicago, IL",
+                score: "Readiness Score: 73",
               },
               {
                 quote: "I came in with a list of brands I'd already researched. Kelsey set the list aside and showed me something I'd never considered. Six months after that call I opened my doors. I would not have found it without him.",
