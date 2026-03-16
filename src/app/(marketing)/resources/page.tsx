@@ -30,9 +30,21 @@ export default function ResourcesPage() {
           style={{ objectPosition: "center 20%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/25 to-[#0c1929]/05" />
+        {/* Left scrim — covers the text zone over the bright sunset horizon */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
         <div className="relative z-10 max-w-4xl mx-auto">
-          <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">What you should know<br className="hidden sm:block" /> before you start looking</h1>
-          <p className="text-white/90 text-lg max-w-xl leading-relaxed">Practical writing from someone who has been a franchisor, a franchisee, and now an advisor. No pitch, no agenda.</p>
+          <h1
+            className="font-playfair text-4xl sm:text-6xl text-white mb-6"
+            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+          >
+            What you should know<br className="hidden sm:block" /> before you start looking
+          </h1>
+          <p
+            className="text-white text-lg max-w-xl leading-relaxed"
+            style={{ textShadow: "0 1px 10px rgba(0,0,0,0.9), 0 2px 20px rgba(0,0,0,0.7)" }}
+          >
+            Practical writing from someone who has been a franchisor, a franchisee, and now an advisor. No pitch, no agenda.
+          </p>
         </div>
       </section>
       <section className="max-w-5xl mx-auto px-6 py-16 sm:py-24 space-y-20">
