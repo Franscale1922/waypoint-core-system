@@ -126,27 +126,27 @@ export default function ProcessPage() {
         className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6 overflow-hidden"
       >
         <Image
-          src="/images/process-hero-highline.jpg"
-          alt="Mountain highline trail"
+          src="/images/process-hero-river-canyon.png"
+          alt="Montana river canyon at twilight"
           fill
           priority
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: "center 20%" }}
+          style={{ objectPosition: "center 35%" }}
         />
-        {/* Subtle left scrim only — preserves image brightness on right side */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
+        {/* Bottom-to-top gradient — works for centered mobile text + left-aligned desktop */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
           <h1
             className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6"
-            style={{ textShadow: "0 2px 12px rgba(0,0,0,0.6)" }}
+            style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
           >
             Two hours before<br className="hidden sm:block" /> you see a single brand
           </h1>
           <p
             className="text-white/95 text-lg sm:text-xl max-w-xl leading-relaxed"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.7)" }}
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
           >
             Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
           </p>
