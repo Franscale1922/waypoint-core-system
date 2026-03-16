@@ -17,6 +17,8 @@ export function ImportLeadForm() {
         careerTrigger: "",
         recentPostSummary: "",
         pulledQuoteFromPost: "",
+        specificProjectOrMetric: "",
+        placeOrPersonalDetail: "",
         franchiseAngle: ""
     });
 
@@ -31,7 +33,7 @@ export function ImportLeadForm() {
             });
             if (res.ok) {
                 setIsOpen(false);
-                setFormData({ name: "", linkedinUrl: "", title: "", company: "", careerTrigger: "", recentPostSummary: "", pulledQuoteFromPost: "", franchiseAngle: "" });
+                setFormData({ name: "", linkedinUrl: "", title: "", company: "", careerTrigger: "", recentPostSummary: "", pulledQuoteFromPost: "", specificProjectOrMetric: "", placeOrPersonalDetail: "", franchiseAngle: "" });
                 router.refresh();
             } else {
                 alert("Failed to import lead.");
@@ -99,6 +101,16 @@ export function ImportLeadForm() {
                             <div>
                                 <label className="block text-sm font-medium text-slate-700 mb-1">Pulled Quote from Post</label>
                                 <input placeholder="e.g. 'I realized the ladder leads nowhere'" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.pulledQuoteFromPost} onChange={e => setFormData({ ...formData, pulledQuoteFromPost: e.target.value })} />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Specific Project or Metric</label>
+                                <input placeholder="e.g. Led $12M supply chain transformation" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.specificProjectOrMetric} onChange={e => setFormData({ ...formData, specificProjectOrMetric: e.target.value })} />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Place or Personal Detail</label>
+                                <input placeholder="e.g. Based in Denver, coaches youth soccer" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.placeOrPersonalDetail} onChange={e => setFormData({ ...formData, placeOrPersonalDetail: e.target.value })} />
                             </div>
 
                             <div>

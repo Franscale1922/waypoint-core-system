@@ -86,19 +86,33 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → REPLIED status
 - At 20 leads/day × 22 working days = ~440 lookups/mo → ~630 credits needed (70% hit rate)
 - Growth Credits (1,500) provides comfortable buffer
 
-**When enrichment tool is live — update `functions.ts` line 121:**
+**⚠️ Important — SuperSearch has no public API:**  
+SuperSearch is a **dashboard-only** tool inside Instantly. There is no API endpoint to call it programmatically. This means the enrichment flow works as follows:
+
+1. After CSV import, leads are in the DB with `RAW` status and a guess-format email
+2. **Manual step:** Go to Instantly dashboard → SuperSearch → bulk-enrich by name + company → export verified emails
+3. Re-import verified emails into the Lead table (or update via admin panel)
+4. Only then does `leadHunterProcess` promote leads through the score gate
+
+**Current code behavior (as of March 2026):**  
+The `leadHunterProcess` in `functions.ts` still calls **Hunter.io** (`HUNTER_API_KEY`) as its programmatic email-finding fallback. Since `HUNTER_API_KEY` is not set in Vercel, this block is always skipped — meaning email enrichment is effectively manual-only right now. The code then falls through to a best-guess email format and caps the score at 60 (blocked at the 70-gate).
+
+**To do after purchasing SuperSearch credits:**
+- [ ] Buy Growth Credits tier ($47/mo) in Instantly dashboard
+- [ ] Enrich leads via SuperSearch UI before importing to DB via admin panel
+- [ ] Update `functions.ts` line 121:
 ```typescript
 // Change from:
 if (!foundEmail || emailConfidence < 60) {
 // Change to:
 if (!foundEmail || emailConfidence < 90) {  // ← raise gate from 60 to 90
 ```
-**Also update line 126:**
+- [ ] Update line 126:
 ```typescript
 score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email cannot clear 70-point gate)
 ```
 
-**Env var:** None needed — SuperSearch is used via the Instantly.ai dashboard UI, not API.
+**Env var:** `HUNTER_API_KEY` — ❌ Not set (Hunter replaced by SuperSearch UI). The Hunter code block in `functions.ts` is inert until key is set.
 
 ---
 
@@ -124,9 +138,15 @@ score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email ca
 - SPF, DKIM, DMARC confirmed on both sending domains
 
 **Required Instantly campaign settings (verify before first send):**
-- [ ] Open tracking: **DISABLED**
-- [ ] Click tracking: **DISABLED**
-- [ ] Email format: **Plain text only** (no HTML, no images, no tracking pixels)
+
+> These must be checked manually in the Instantly dashboard: **Campaigns → [your campaign] → Settings → Tracking**
+
+- [ ] Open tracking: **DISABLED** — open tracking injects an invisible pixel that breaks plain-text deliverability
+- [ ] Click tracking: **DISABLED** — click tracking rewrites URLs through a redirect domain, which triggers spam filters
+- [ ] Email format: **Plain text only** — no HTML, no images, no tracked links (set in campaign → Sequence → Email Body)
+- [ ] Sending time window: **8 AM – 5 PM** recipient local time (set in campaign → Schedule)
+- [ ] Daily send limit per inbox: **30 max** (Instantly default; our 20/day across 6 inboxes = ~3.3/inbox — well within limit)
+- [ ] Reply tracking: confirm replies route back to the same sending inbox (not a redirect address)
 
 **Env vars:**
 ```
@@ -154,9 +174,13 @@ INSTANTLY_CAMPAIGN_ID=e969de1c-e244-488a-8b29-6278f1ea39a2  ✅ set in Vercel
 
 **B — Reply classification** (`replyGuardianProcess`):
 - Input: prospect's reply text
-- Output: one of: `Interested`, `Curious`, `Not Now`, `Unsubscribe`, `Wrong Person`, `Bounce`, `Neutral`
-- Interested/Curious → triggers HITL alert to Kelsey via Resend
-- Unsubscribe → adds to SuppressionList
+- Output: one of: `Interested`, `Curious`, `Not now`, `Not a fit`, `Unsubscribe`, `Out of office`, `Ambiguous`
+- Triggered by event: `workflow/lead.reply.received` (injected by the inbound reply webhook)
+- Interested/Curious/Ambiguous → triggers HITL alert to Kelsey
+- Unsubscribe / Not a fit → sets lead status to `SUPPRESSED`
+
+**⚠️ HITL alert is not yet wired to Resend** (as of March 2026):  
+The `notify-human` step in `replyGuardianProcess` currently only runs `console.log` — it does not send a Resend email. Before going live, implement the Resend HITL email in that step (see §6 Resend for format spec).
 
 **Env var:**
 ```
@@ -172,11 +196,12 @@ OPENAI_API_KEY=    ✅ set in Vercel (waypoint-core-system)
 **Setup status:** ✅ API key set in Vercel
 
 **Use cases:**
-1. **HITL (Human-in-the-Loop) hot reply alerts** — when a lead replies as `Interested` or `Curious`, Resend sends Kelsey an email with:
+1. **HITL (Human-in-the-Loop) hot reply alerts** — when a lead replies as `Interested`, `Curious`, or `Ambiguous`, Resend should send Kelsey an email with:
    - Lead name + LinkedIn URL
    - Their reply text
    - An AI-drafted response for review (Kelsey edits and sends manually within 15 min)
-2. **Content refresh summaries** — monthly report of article rewrites
+   - **Status: ⏳ Not yet implemented** — `notify-human` step in `replyGuardianProcess` is a `console.log` stub. Must wire up Resend before going live.
+2. **Content refresh summaries** — ✅ Implemented — monthly report of article rewrites sent via Resend
 3. **System error alerts** — (future)
 
 **IMPORTANT:** The `functions.ts` codebase was briefly switched to Gmail SMTP for the GitHub Actions Lighthouse audit workflow. Resend is still the correct tool for Inngest system emails — do not change this.
@@ -260,16 +285,16 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 **Setup status:** ✅ Fully configured
 
 **Functions registered (`src/app/api/inngest/route.ts`):**
-| Function | Trigger | Purpose |
-|---|---|---|
-| `leadHunterProcess` | event: `workflow/lead.hunter.start` | Enriches + scores a RAW lead |
-| `personalizerProcess` | event: `workflow/lead.personalize.start` | GPT-4o writes email for scored lead |
-| `senderProcess` | event: `workflow/lead.send.start` | Adds lead to Instantly campaign |
-| `replyGuardianProcess` | event: `workflow/reply.received` | Classifies reply, triggers HITL if hot |
-| `monitorProcess` | event: `workflow/monitor.check` | Pipeline health checks |
-| `warmupScheduler` | cron: `0 14 * * 1-5` (8 AM MT) | Fires daily send events up to dailyCap |
-| `contentRefreshFunction` | cron: monthly + manual | Rewrites stale articles via GPT-4o |
-| `tidycalBookingSync` | cron: `0 16 * * 1-5` (10 AM MT) | Polls TidyCal API, syncs bookings to leads |
+| Function | Trigger | Status | Purpose |
+|---|---|---|---|
+| `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Enriches + scores a RAW lead (Hunter code inert — no key set) |
+| `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
+| `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
+| `replyGuardianProcess` | event: `workflow/lead.reply.received` | ⏳ Partial | Classifies reply; HITL alert is console.log stub only |
+| `monitorProcess` | cron: `0 9 * * *` | ⏳ Mock | Pipeline health checks — bounce/complaint data is mocked random values |
+| `warmupScheduler` | cron: `0 14 * * 1-5` (8 AM MT) | ✅ Live | Fires daily send events up to dailyCap |
+| `contentRefreshFunction` | cron: `0 14 1 * *` + event: `content/refresh.run` | ✅ Live | Rewrites stale articles via GPT-4o |
+| `tidycalBookingSync` | cron: `0 16 * * 1-5` (10 AM MT) | ✅ Live | Polls TidyCal API, syncs bookings to leads |
 
 **Env vars:**
 ```
@@ -334,6 +359,28 @@ INNGEST_SIGNING_KEY=  ✅ set in Vercel
 
 ---
 
+## Pre-Launch Checklist
+
+Complete every item below before sending the first cold email. These are the open gaps identified as of March 2026.
+
+**Instantly Setup**
+- [ ] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard
+- [ ] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only (see §4)
+- [ ] Confirm reply routing: replies land in the same sending inbox (not a redirect)
+
+**Code**
+- [ ] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` (currently `console.log` stub)
+- [ ] After SuperSearch workflow is proven: remove the dead Hunter.io code block from `leadHunterProcess` (lines 86–129 of `functions.ts`)
+
+**Google Postmaster Tools**
+- [ ] Contact Instantly support to add TXT verification records for both sending domains (see §11)
+
+**Compliance**
+- [ ] Add physical mailing address to email template footer (CAN-SPAM required)
+- [ ] Add explicit opt-out line to email template: "Reply 'unsubscribe' to opt out"
+
+---
+
 ## Compliance Checklist
 
 Every cold email must include:
@@ -382,7 +429,7 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 |---|---|---|
 | **Bombora** | ❌ Skip permanently | $30K–$100K/yr; account-level SaaS intent only; wrong buyer type |
 | **Apify** | ❌ Skip permanently | Never purchased; ToS risk; native CSV export is safer |
-| **Hunter.io** | ❌ Replaced by SuperSearch | Already have SuperSearch in Instantly plan |
+| **Hunter.io** | ⏳ Inert in codebase | `HUNTER_API_KEY` not set — code block exists in `leadHunterProcess` but never executes. Replaced by SuperSearch UI for manual enrichment. Remove the code block once SuperSearch workflow is proven. |
 | **HubSpot CRM** | ❌ Skip | Prisma DB is the CRM; duplicate data problem |
 | **EmailBison** | ❌ Skip | Grok-only recommendation, no consensus from other models |
 | **lemlist** | ❌ Skip | Already have Instantly for multi-channel; no second platform |

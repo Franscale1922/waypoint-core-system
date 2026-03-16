@@ -37,7 +37,6 @@ export default function MobileNav() {
         style={{
           position: "relative",
           zIndex: 400,
-          display: "flex",
           flexDirection: "column",
           justifyContent: "center",
           alignItems: "center",
