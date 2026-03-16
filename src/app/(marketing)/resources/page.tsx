@@ -21,18 +21,18 @@ export default function ResourcesPage() {
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
         <Image
-          src="/images/resources-hero-waterfall.jpg"
-          alt="Montana waterfall"
+          src="/images/resources-hero-canoe-lake.png"
+          alt="Empty canoe on a pristine Montana mountain lake at sunrise"
           fill
           priority
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: "center 40%" }}
+          style={{ objectPosition: "center 30%" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/55 via-[#0c1929]/35 to-[#0c1929]/15" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/25 to-[#0c1929]/05" />
         <div className="relative z-10 max-w-4xl mx-auto">
           <h1 className="font-playfair text-4xl sm:text-6xl text-white mb-6">What you should know<br className="hidden sm:block" /> before you start looking</h1>
-          <p className="text-white/80 text-lg max-w-xl leading-relaxed">Practical writing from someone who has been a franchisor, a franchisee, and now an advisor. No pitch, no agenda.</p>
+          <p className="text-white/90 text-lg max-w-xl leading-relaxed">Practical writing from someone who has been a franchisor, a franchisee, and now an advisor. No pitch, no agenda.</p>
         </div>
       </section>
       <section className="max-w-5xl mx-auto px-6 py-16 sm:py-24 space-y-20">
