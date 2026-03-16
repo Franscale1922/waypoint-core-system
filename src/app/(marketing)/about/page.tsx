@@ -20,9 +20,14 @@ export default function AboutPage() {
     <>
       {/* Hero */}
       <section className="relative pt-10 pb-36 sm:py-20 md:py-24 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover"
-          style={{ backgroundImage: "url('/images/fly-fishing-about.jpg')", backgroundPosition: 'center 75%' }}
+        <Image
+          src="/images/fly-fishing-about.jpg"
+          alt="Fly fishing on a Montana river"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: 'center 75%' }}
         />
         <div className="absolute inset-0 bg-gradient-to-r from-[#0c1929]/55 via-[#0c1929]/15 to-transparent" />
         <div className="relative w-full max-w-4xl mx-auto px-4 sm:px-6">
@@ -91,7 +96,8 @@ export default function AboutPage() {
               alt="Kelsey Stuart with family and friends in Montana"
               width={1200}
               height={420}
-              loading="lazy"
+              priority
+              sizes="(max-width: 1024px) 100vw, 896px"
               className="w-full object-cover"
               style={{ height: "420px", objectPosition: "center 40%" }}
             />
@@ -138,6 +144,7 @@ export default function AboutPage() {
                 alt="Kelsey Stuart on a Montana trail overlook"
                 width={800}
                 height={280}
+                sizes="(max-width: 1024px) 100vw, 256px"
                 className="w-full object-cover"
                 style={{ objectPosition: "center 70%", height: "280px" }}
               />

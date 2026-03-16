@@ -124,12 +124,16 @@ export default function ProcessPage() {
       {/* ── Hero ─────────────────────────────────────────── */}
       <section
         className="relative min-h-[55vh] flex items-end pb-16 sm:pb-24 px-6 overflow-hidden"
-        style={{
-          backgroundImage: "url('/images/process-hero-mountain-road.png')",
-          backgroundSize: "cover",
-          backgroundPosition: "center 40%",
-        }}
       >
+        <Image
+          src="/images/process-hero-highline.jpg"
+          alt="Mountain highline trail"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: "center 20%" }}
+        />
         {/* Subtle left scrim only — preserves image brightness on right side */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
@@ -217,6 +221,7 @@ export default function ProcessPage() {
           alt="Kelsey Stuart reviewing a topographic map at an outdoor table in Montana"
           width={1200}
           height={420}
+          sizes="(max-width: 1024px) 100vw, 1024px"
           className="w-full object-cover"
           style={{ objectPosition: 'center 45%', height: '420px' }}
         />
@@ -274,12 +279,14 @@ export default function ProcessPage() {
       {/* ── CTA ───────────────────────────────────────── */}
       <section
         className="relative py-24 px-6 text-center overflow-hidden"
-        style={{
-          backgroundImage: "url('/images/mountain-lake.jpg')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
       >
+        <Image
+          src="/images/mountain-lake.jpg"
+          alt="Mountain lake in Montana"
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
+        />
         <div className="absolute inset-0 bg-[#0c1929]/50" />
         <div className="relative z-10 max-w-2xl mx-auto">
           <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4">

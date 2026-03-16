@@ -5,11 +5,12 @@ import "./globals.css";
 import { localBusinessSchema, personSchema } from "./lib/structured-data";
 import { GA_ID } from "./lib/analytics";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const playfair = Playfair_Display({
   subsets: ["latin"],
   weight: ["700", "800", "900"],
   variable: "--font-playfair",
+  display: "swap",
 });
 
 const SITE_URL = "https://waypointfranchise.com";

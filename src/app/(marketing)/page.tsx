@@ -49,9 +49,13 @@ export default function HomePage() {
           Inspired by: Eleven Experience, Under Canvas
           ============================================ */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: "url('/images/hero-mountains.jpg')" }}
+        <Image
+          src="/images/hero-mountains-dark-lake.png"
+          alt="Montana mountain landscape"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0c1929]/75 via-[#0c1929]/25 to-transparent" />
 
@@ -172,7 +176,8 @@ export default function HomePage() {
                 alt="Kelsey Stuart, franchise advisor"
                 width={1200}
                 height={380}
-                loading="lazy"
+                priority
+                sizes="(max-width: 768px) 100vw, 896px"
                 className="w-full object-cover"
                 style={{ objectPosition: "center 25%", height: "380px" }}
               />
@@ -278,6 +283,7 @@ export default function HomePage() {
               alt="Kelsey Stuart leading the way down a forest trail"
               width={1200}
               height={380}
+              sizes="(max-width: 1024px) 100vw, 1024px"
               className="w-full object-cover"
               style={{ objectPosition: "center 30%", height: "380px" }}
             />
@@ -346,13 +352,16 @@ export default function HomePage() {
       <section className="relative overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 min-h-0 lg:min-h-[600px]">
           {/* Photo side */}
-          <div
-            className="relative min-h-[325px] sm:min-h-[350px] lg:min-h-full bg-cover"
-            style={{
-              backgroundImage: "url('/images/kelsey-fly-fishing-river.jpg')",
-              backgroundPosition: "center 30%",
-            }}
-          />
+          <div className="relative min-h-[325px] sm:min-h-[350px] lg:min-h-full overflow-hidden">
+            <Image
+              src="/images/kelsey-fly-fishing-river.jpg"
+              alt="Kelsey Stuart fly fishing on a Montana river"
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover"
+              style={{ objectPosition: "center 30%" }}
+            />
+          </div>
           {/* Text side */}
           <div className="bg-[#0c1929] px-5 sm:px-8 md:px-16 py-12 sm:py-16 md:py-24 flex items-center">
             <div className="reveal max-w-lg">
@@ -429,9 +438,12 @@ export default function HomePage() {
           Inspired by: Under Canvas location pages
           ============================================ */}
       <section className="relative py-20 sm:py-28 md:py-36 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/mountain-lake.jpg')" }}
+        <Image
+          src="/images/mountain-lake.jpg"
+          alt="Mountain lake in Montana"
+          fill
+          sizes="100vw"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-[#0c1929]/40" />
         <div className="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
