@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { verifyBearer } from "@/app/lib/webhook-auth";
+import { verifyQuerySecret } from "@/app/lib/webhook-auth";
 
 // Accepts the TidyCal booking webhook payload
-// Defined in gemini.md Section 4: "The Conversion Payload"
+// TidyCal doesn't support custom auth headers on outbound webhooks,
+// so we verify via ?secret= query parameter instead.
+// Webhook URL: https://www.waypointfranchise.com/api/webhooks/tidycal?secret=TIDYCAL_WEBHOOK_SECRET
 export async function POST(req: Request) {
-    const authError = verifyBearer(req, process.env.TIDYCAL_WEBHOOK_SECRET);
+    const authError = verifyQuerySecret(req, process.env.TIDYCAL_WEBHOOK_SECRET);
     if (authError) return authError;
 
     try {
