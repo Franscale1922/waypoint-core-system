@@ -14,7 +14,7 @@ Use this workflow any time the intent is to add a new resource article to the si
 
 ---
 
-## ⚠️ MANDATORY — Read Before Writing Anything
+## Step 1 — Read Before Writing Anything
 
 **Before drafting a single word, read the full content standards:**
 
@@ -22,7 +22,7 @@ Use this workflow any time the intent is to add a new resource article to the si
 cat "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/content/CONTENT-STANDARDS.md"
 ```
 
-This document defines four hard requirements that apply to every article without exception:
+This document defines hard requirements that apply to every article without exception:
 1. **Profitability Restriction** — specific prohibited language list. Non-negotiable.
 2. **No Brand Names** — industry and category only, never specific franchise brand names. Non-negotiable.
 3. **Reader-First Writing** — WIIFM mindset, tone, and structure rules.
@@ -31,15 +31,13 @@ This document defines four hard requirements that apply to every article without
 
 No article is complete until it passes the pre-publication checklist at the bottom of that document. Run the checklist explicitly before declaring the article done.
 
-
-
-Before drafting, read the voice and tone guidelines so the article matches the existing body of work:
+Also read the article pool checklist and briefly review 1–2 existing articles to calibrate voice:
 
 ```
 cat "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/content/new-article-checklist.md"
 ```
 
-Also briefly review 1–2 existing articles in `content/articles/` to calibrate voice. The writing is direct, first-person where appropriate, avoids hype, and treats the reader as a capable adult making a real business decision.
+The writing is direct, first-person where appropriate, avoids hype, and treats the reader as a capable adult making a real business decision.
 
 ---
 
@@ -56,6 +54,8 @@ Before writing, establish:
 - **Tier** — matches category: 1 = Getting Started, 2 = Going Deeper, 3 = Industry Spotlights
 - **Date** — today's date in `YYYY-MM-DD` format
 - **Excerpt** — 1–2 sentence teaser, written in the same voice as the article body. This appears on the resources index page and in related article cards.
+
+**Also check `content/keyword-map.md`** to understand what keyword this article should target before writing the title and opening paragraph.
 
 ---
 
@@ -86,6 +86,13 @@ relatedSlugs:
   - "related-slug-one"
   - "related-slug-two"
   - "related-slug-three"
+faqs:
+  - q: "Question one?"
+    a: "Answer one — write as a complete, standalone answer. This is used verbatim in FAQPage JSON-LD schema for AEO (AI citation)."
+  - q: "Question two?"
+    a: "Answer two."
+  - q: "Question three?"
+    a: "Answer three."
 ---
 Opening paragraph — no heading, drops the reader straight into the substance.
 
@@ -103,15 +110,31 @@ Body content...
 
 ---
 
+## Common Questions
+
+**Question one?**
+
+Answer one.
+
+**Question two?**
+
+Answer two.
+
+**Question three?**
+
+Answer three.
+
 [CTA link text](/book)
 ```
 
 Writing guidelines:
 - Open without restating the title. Drop straight into the substance.
-- Use `---` horizontal rules between major sections (this matches the site's prose styling)
+- **First paragraph must directly answer the title question** in 2–3 sentences. This is what AI models (ChatGPT, Perplexity, Gemini) quote verbatim — the AEO citation hook.
+- Use `---` horizontal rules between major sections
 - End with a contextual CTA linking to `/book` — phrased naturally, not as a button label
-- Aim for 800–1,200 words
-- No filler, no hedging phrases like "it's important to note that"
+- Aim for 800–1,200 words. No filler, no hedging phrases like "it's important to note that"
+- **Always include a `faqs` frontmatter block.** These render as both a visible "Common Questions" section AND as `FAQPage` JSON-LD schema automatically. Write answers as complete, standalone sentences.
+- **Primary keyword must appear in the title AND within the first 100 words.**
 
 ---
 
@@ -130,26 +153,59 @@ For each match:
 
 ## Step 6 — Update the checklist pool table
 
-Open `content/new-article-checklist.md` and add the new article to the pool table at the bottom of the file:
+Open `content/new-article-checklist.md` and add the new article to the pool table:
 
 ```markdown
 | your-new-article-slug | Category Name |
 ```
 
-This keeps the checklist current for the next agent who runs this workflow.
+---
+
+## Step 7 — Update the keyword map
+
+Open `content/keyword-map.md` and add the new article to the appropriate table section:
+
+```markdown
+| `your-new-article-slug` | Article Title | "primary keyword" | I or C | Low/Medium/High | ✅ or ⚠️ note |
+```
+
+- **Primary keyword:** the most natural query someone would type to find this article
+- **Intent:** I = Informational, C = Commercial
+- **Volume tier:** Low (<200/mo), Medium (200–2,000/mo), High (2,000+/mo) — estimate from topic specificity
+- **Title tag:** ✅ if keyword appears naturally in title, ⚠️ + note if adjustment needed
 
 ---
 
-## Step 7 — Verify
+## Step 8 — Generate social share drafts
 
-Start the dev server if it's not already running:
+Append social drafts for the new article to `content/social/social-drafts-part-1.md` (or start `social-drafts-part-3.md` if the file is getting long).
+
+**Twitter/X thread:**
+- 6–9 tweets
+- First tweet = sharpest hook (counterintuitive claim, stat, or direct challenge to conventional wisdom)
+- Each subsequent tweet = one key insight or section of the article
+- Final tweet = 1 sentence summary + `Full piece: [link]`
+- Voice: Kelsey's — direct, no hedging. 🧵 emoji at start of thread only.
+
+**LinkedIn post:**
+- 200–300 words
+- Opens with the article's strongest insight or most surprising claim — not "I wrote an article about X"
+- Link at end: `Full breakdown: [link]`
+- Replace `[link]` with the article URL when posting
+
+---
+
+## Step 9 — Verify
+
+Start the dev server if not already running:
 
 ```bash
 cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system" && npm run dev
 ```
 
 Visit `http://localhost:3000/resources/{slug}` and confirm:
-- Article renders correctly
-- "Keep Reading" section appears above the footer CTA with 3 cards
-- All 3 card links resolve (no 404s)
-- The article appears correctly on `http://localhost:3000/resources` under the right category
+- [ ] Article renders correctly
+- [ ] "Keep Reading" section appears above the footer CTA with 3 cards
+- [ ] All 3 card links resolve (no 404s)
+- [ ] Article appears on `http://localhost:3000/resources` under the right category
+- [ ] View page source → confirm 3 `<script type="application/ld+json">` blocks: `Article`, `FAQPage`, `BreadcrumbList`
