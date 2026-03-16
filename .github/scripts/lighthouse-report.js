@@ -15,13 +15,8 @@ const PAGES = [
 ];
 
 const REPORT_PATH = "/tmp/lh-report.json";
+const EMAIL_PATH = "/tmp/lh-email.html";
 const CHROMIUM = process.env.CHROMIUM_PATH || "chromium-browser";
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-
-if (!RESEND_API_KEY) {
-  console.error("❌ RESEND_API_KEY secret is not set. Add it in repo Settings → Secrets.");
-  process.exit(1);
-}
 
 // ─── Run Lighthouse on each page ───────────────────────────────────────────
 
@@ -160,45 +155,16 @@ function buildEmail(results, date) {
 </html>`;
 }
 
-// ─── Send via Resend ────────────────────────────────────────────────────────
+// ─── Write report to disk (emailed by the workflow via Gmail SMTP) ─────────
 
-function sendEmail(html, date) {
-  return new Promise((resolve, reject) => {
-    const payload = JSON.stringify({
-      from: "Waypoint Performance Bot <noreply@waypointfranchise.com>",
-      to: ["kelsey@waypointfranchise.com"],
-      subject: `PageSpeed Quarterly Report — ${date}`,
-      html,
-    });
+function writeReport(html, date) {
+  fs.writeFileSync(EMAIL_PATH, html, "utf8");
+  console.log(`  ✅ Report written to ${EMAIL_PATH}`);
 
-    const req = https.request(
-      "https://api.resend.com/emails",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-          "Content-Length": Buffer.byteLength(payload),
-        },
-      },
-      (res) => {
-        let body = "";
-        res.on("data", (chunk) => (body += chunk));
-        res.on("end", () => {
-          if (res.statusCode >= 200 && res.statusCode < 300) {
-            console.log("✅ Email sent to kelsey@waypointfranchise.com");
-            resolve();
-          } else {
-            reject(new Error(`Resend API error ${res.statusCode}: ${body}`));
-          }
-        });
-      }
-    );
-
-    req.on("error", reject);
-    req.write(payload);
-    req.end();
-  });
+  // Export date to GitHub env so the workflow can use it in the email subject
+  if (process.env.GITHUB_ENV) {
+    fs.appendFileSync(process.env.GITHUB_ENV, `AUDIT_DATE=${date}\n`);
+  }
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────
@@ -226,14 +192,15 @@ async function main() {
     }
   });
 
-  console.log("\n📧 Sending email report...");
+  console.log("\n📝 Writing HTML report...");
   const html = buildEmail(results, date);
-  await sendEmail(html, date);
+  writeReport(html, date);
 
-  console.log("\n✅ Quarterly audit complete.\n");
+  console.log("\n✅ Audit complete — email will be sent by workflow.\n");
 }
 
 main().catch((err) => {
   console.error("❌ Audit failed:", err.message);
   process.exit(1);
 });
+

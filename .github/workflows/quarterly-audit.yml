@@ -29,8 +29,20 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y chromium-browser
 
-      - name: Run audits and send email report
+      - name: Run audits and generate report
         env:
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
           CHROMIUM_PATH: /usr/bin/chromium-browser
         run: node .github/scripts/lighthouse-report.js
+
+      - name: Send email report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: PageSpeed Quarterly Report — ${{ env.AUDIT_DATE }}
+          to: kelsey@waypointfranchise.com
+          from: Waypoint Performance Bot <${{ secrets.GMAIL_USER }}>
+          html_body: file:///tmp/lh-email.html
+
