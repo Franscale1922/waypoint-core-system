@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { FAQItem } from "./FAQItem";
 
@@ -250,9 +251,14 @@ export default function FAQPage() {
 
       {/* Hero */}
       <section className="relative pt-24 pb-16 px-6 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/faq-hero.jpg')", backgroundPosition: "center 40%" }}
+        <Image
+          src="/images/faq-hero.jpg"
+          alt="Montana highland scenery"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: "center 40%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/60 via-[#0c1929]/35 to-[#0c1929]/15" />
         <div className="relative z-10 max-w-4xl mx-auto text-center">

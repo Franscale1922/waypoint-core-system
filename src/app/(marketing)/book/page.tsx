@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import TidyCalEmbed from "./TidyCalEmbed";
 
 export const metadata: Metadata = {
@@ -21,9 +22,13 @@ export default function BookPage() {
 
       {/* Hero — compact, letting the content below breathe */}
       <section className="relative py-14 sm:py-20 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: "url('/images/mountain-lake.jpg')" }}
+        <Image
+          src="/images/mountain-lake.jpg"
+          alt="Mountain lake in Montana"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/45 to-[#0c1929]/25" />
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
@@ -52,10 +57,16 @@ export default function BookPage() {
           <div className="lg:sticky lg:top-24 space-y-6">
 
             {/* Photo */}
-            <div
-              className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-cover bg-center bg-[#0c1929]"
-              style={{ backgroundImage: "url('/images/kelsey-coffee-outdoors.jpg')", backgroundPosition: "center 35%" }}
-            />
+            <div className="w-full aspect-[4/3] rounded-xl overflow-hidden bg-[#0c1929] relative">
+              <Image
+                src="/images/kelsey-coffee-outdoors.jpg"
+                alt="Kelsey Stuart with coffee outdoors in Montana"
+                fill
+                sizes="(max-width: 1024px) 100vw, 340px"
+                className="object-cover"
+                style={{ objectPosition: "center 35%" }}
+              />
+            </div>
 
             {/* Name + title */}
             <div className="border-t-2 border-[#d4a55a] pt-5">

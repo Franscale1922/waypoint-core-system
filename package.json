@@ -37,5 +37,11 @@
     "prisma": "^6.19.2",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "browserslist": [
+    "chrome >= 107",
+    "firefox >= 104",
+    "safari >= 15.6",
+    "edge >= 107"
+  ]
 }
