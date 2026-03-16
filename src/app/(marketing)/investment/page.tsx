@@ -267,23 +267,64 @@ export default function InvestmentPage() {
             </p>
           </div>
           <div>
-            <h3 className="font-playfair text-lg text-[#0c1929] mb-4">Common financing paths</h3>
-            <ul className="space-y-3">
+            <h3 className="font-playfair text-lg text-[#0c1929] mb-6">Common financing paths</h3>
+            <div className="grid gap-4">
               {[
-                { method: "SBA 7(a) loan", detail: "Most common franchise financing vehicle. Covers up to 90% of total project cost for qualified borrowers. Requires ~10% down and good credit." },
-                { method: "ROBS (401k rollover)", detail: "Roll retirement funds into a C-Corp that purchases the franchise. No loan, no early withdrawal penalty. Requires proper legal structure." },
-                { method: "Home equity / HELOC", detail: "Used as equity injection or to fund working capital. Lowers overall borrowing need. Depends on available equity." },
-                { method: "Franchisor financing", detail: "Some brands offer in-house financing for the franchise fee. Usually limited in scope. Ask about it during the FDD review." },
-              ].map(({ method, detail }) => (
-                <li key={method} className="border-l-2 border-[#c08b3e] pl-6">
-                  <p className="text-sm font-semibold text-[#0c1929]">{method}</p>
-                  <p className="text-xs text-[#5a5a4a] leading-relaxed mt-1">{detail}</p>
-                </li>
+                {
+                  title: "SBA 7(a) Loan",
+                  oneliner: "The most widely used vehicle for franchise financing.",
+                  range: "Up to 90% of total project cost",
+                  bestFor: "First-time buyers with good credit who want to keep cash reserves intact.",
+                  watchOut: "Personal guarantee required. Approval timelines can run 60\u201390 days \u2014 start early.",
+                },
+                {
+                  title: "ROBS (Rollover for Business Startups)",
+                  oneliner: "Use your 401(k) or IRA to fund the business \u2014 no loan, no early withdrawal penalty.",
+                  range: "Any qualified retirement balance; typically $50K+",
+                  bestFor: "Candidates with significant retirement savings who want to avoid debt entirely.",
+                  watchOut: "Requires a C-Corp and strict IRS compliance. Use a ROBS specialist \u2014 not a generalist accountant.",
+                },
+                {
+                  title: "Home Equity / HELOC",
+                  oneliner: "Draw against existing home equity to fund working capital or an equity injection.",
+                  range: "Depends on equity; typically $50K\u2013$250K",
+                  bestFor: "Supplementing an SBA loan or covering the down payment without liquidating investments.",
+                  watchOut: "Your home is on the line. Model both the business and the HELOC repayment before signing.",
+                },
+              ].map(({ title, oneliner, range, bestFor, watchOut }) => (
+                <div key={title} className="bg-white border border-[#e2ddd2] rounded-lg p-5">
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#d4a55a] mt-2 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold text-[#0c1929]">{title}</p>
+                      <p className="text-xs text-[#5a5a4a] mt-0.5 leading-relaxed">{oneliner}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pl-4">
+                    <div>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-[#aaa] mb-1">Typical range</p>
+                      <p className="text-xs text-[#3a3a2e]">{range}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-[#aaa] mb-1">Best for</p>
+                      <p className="text-xs text-[#3a3a2e]">{bestFor}</p>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-semibold uppercase tracking-widest text-[#c08b3e] mb-1">Watch out for</p>
+                      <p className="text-xs text-[#3a3a2e]">{watchOut}</p>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+              <p className="text-xs text-[#7a7a7a] leading-relaxed pl-1">
+                <strong className="text-[#0c1929]">Franchisor financing:</strong>{" "}
+                Some brands offer in-house financing for the franchise fee. Usually limited in scope \u2014 ask about it during your FDD review.
+              </p>
+            </div>
           </div>
         </div>
       </section>
+
 
       {/* FAQ */}
       <section className="bg-[#f0ede8] py-14 sm:py-20 px-6">
