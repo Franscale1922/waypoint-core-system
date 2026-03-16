@@ -13,8 +13,8 @@ const howToSchema = {
     {
       "@type": "HowToStep",
       position: 1,
-      name: "The Discovery Call",
-      text: "A two-hour conversation about you: your career, goals, finances, lifestyle, and what you want from the next chapter. Kelsey guides the conversation with a structured set of topics to understand your strengths well enough to match them to a business model.",
+      name: "The Intro Call",
+      text: "A short call, usually 20 to 30 minutes. No pitch, no intake form. Kelsey wants to understand where you are in the process and whether it makes sense to go deeper. If it does, a two-hour discovery conversation is scheduled from there.",
     },
     {
       "@type": "HowToStep",

@@ -43,7 +43,7 @@ export default async function ArticlePage({ params }: Props) {
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "BlogPosting",
+            "@type": "Article",
             "@id": `https://waypointfranchise.com/resources/${slug}`,
             url: `https://waypointfranchise.com/resources/${slug}`,
             headline: meta.title,
@@ -86,6 +86,35 @@ export default async function ArticlePage({ params }: Props) {
           }}
         />
       )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://waypointfranchise.com",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Resources",
+                item: "https://waypointfranchise.com/resources",
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: meta.title,
+                item: `https://waypointfranchise.com/resources/${slug}`,
+              },
+            ],
+          }),
+        }}
+      />
       <section className="max-w-3xl mx-auto px-6 pt-16 sm:pt-24 pb-10">
         <Link href="/resources" className="inline-flex items-center text-xs text-[#c08b3e] tracking-wide uppercase font-medium hover:text-[#d4a55a] transition-colors mb-8">
           ← Resources
