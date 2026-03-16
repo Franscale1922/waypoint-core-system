@@ -296,7 +296,7 @@ INNGEST_SIGNING_KEY=  ✅ set in Vercel
 **What:** Free weekly data sources for identifying executives at companies undergoing mass layoffs.  
 **Why:** WARN Act filings give a 60-day advance notice window — targets are still employed, severance is incoming, capital is available, and transition mindset is active. Best franchise buyer archetype (FranChoice documented).  
 **Cost:** $0  
-**Setup status:** ⏳ Not yet — sign up and bookmark all three
+**Setup status:** ✅ Following WARNTracker and Layoffs.fyi on Twitter and LinkedIn — newsletters to subscribe next
 
 **Sources:**
 | Source | URL | What it gives | Signal quality |
@@ -330,13 +330,31 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 ## Tools to Add Later (Stage 2)
 
 | Tool | Trigger to buy | Purpose | Cost |
-|---|---|---|---|
+|---|---|---|
 | Evaboot | Sends > 50/day | Automated Sales Nav export + email finding bundled | $9–49/mo |
 | Apollo.io | Need enrichment scale | Enrichment + sequences in one tool | $49/mo |
 | Clay.com | Sends > 50/day + 1,100+ leads/mo | Waterfall enrichment, intent signals, automation | Variable |
 | LeadIQ | After WARN workflow established | Job change alerts for executives 30–45 days post-WARN | Paid |
 | Google Postmaster Tools | Now (free) | Domain reputation monitoring for Gmail deliverability | Free |
 | GlockApps | Sends > 50/day | Inbox placement testing across all major providers | $80/mo |
+
+### Stage 2 Project: Social Comment Lead Mining
+**Idea:** Monitor WARNTracker and Layoffs.fyi Twitter/LinkedIn post replies for employees at newly-announced layoff companies who comment on those posts.
+
+**Why this is high-value:** Employees who publicly comment on a layoff announcement about their own company are self-identifying as affected. These are significantly warmer leads than a cold WARN filing lookup — they've already surfaced their situation publicly and are in an active transition mindset.
+
+**How it would work:**
+1. WARNTracker / Layoffs.fyi posts a layoff announcement on Twitter
+2. Monitor replies to that tweet for commenters mentioning their company
+3. Cross-reference commenter's LinkedIn profile against Sales Navigator (name + company match)
+4. If VP/Director/CXO title confirmed → import as lead with `careerTrigger` pre-populated
+
+**Automation options when ready:**
+- Zapier + Twitter → filter replies containing company name → push to Inngest
+- n8n workflow (self-hosted, no per-task pricing)
+- Clay workflow (scrapes replies, enriches with LinkedIn data)
+
+**Trigger to build:** After 4 weeks of consistent pipeline volume at 20/day and first bookings confirmed.
 
 ## Tools Evaluated and Rejected
 
