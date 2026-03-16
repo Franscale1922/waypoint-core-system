@@ -122,31 +122,48 @@ score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email ca
 **Cost:** Included (Growth plan already active)  
 **Setup status:** ✅ Fully configured
 
-**Current inbox setup:**
-| Email | Domain | Health | Warmed |
+**Current inbox setup** (verified March 2026 — all Gen-2 warmup, 80 warmup emails/inbox):
+| Email | Domain | Health | Daily Limit |
 |---|---|---|---|
-| kelsey.stuart@getwaypointfranchise.com | getwaypointfranchise.com | 100% | ✅ |
-| kelsey@getwaypointfranchise.com | getwaypointfranchise.com | 100% | ✅ |
-| kstuart@getwaypointfranchise.com | getwaypointfranchise.com | 100% | ✅ |
-| kelsey.stuart@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | ✅ |
-| kelsey@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | ✅ |
-| kstuart@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | ✅ |
+| kelsey.stuart@getwaypointfranchise.com | getwaypointfranchise.com | 100% | 0/30 |
+| kelsey@getwaypointfranchise.com | getwaypointfranchise.com | 100% | 0/30 |
+| kstuart@getwaypointfranchise.com | getwaypointfranchise.com | 100% | 0/30 |
+| kelsey.stuart@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | 0/30 |
+| kelsey@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | 0/30 |
+| kstuart@meetwaypointfranchise.com | meetwaypointfranchise.com | 100% | 0/30 |
 
 **Important notes:**
 - Sending domains (`getwaypointfranchise.com`, `meetwaypointfranchise.com`) are NOT the primary domain (`waypointfranchise.com`) — correct approach
-- 6 inboxes × 30/day max = 180 capacity; running at 11% at 20/day — massive headroom
+- 6 inboxes × 30/day max = 180 capacity; campaign daily limit set to 15 — massive headroom
 - SPF, DKIM, DMARC confirmed on both sending domains
 
-**Required Instantly campaign settings (verify before first send):**
+**Campaign settings — verified March 2026** (Campaigns → Waypoint Outbound → Options):
+| Setting | Value | Status |
+|---|---|---|
+| Open tracking | Disabled | ✅ |
+| Link tracking | Disabled | ✅ |
+| Send emails as text-only (no HTML) | Enabled | ✅ Fixed |
+| Stop sending on reply | Enabled | ✅ |
+| Insert unsubscribe link header | Enabled | ✅ Fixed |
+| Provider matching (ESP routing) | Enabled | ✅ Fixed |
+| Daily campaign limit | 15/day | ✅ |
+| Time gap between emails | 9 min + 5 min random | ✅ |
+| Stop on auto-reply | Disabled | ⏳ Phase 2 — enable when follow-up steps are added |
 
-> These must be checked manually in the Instantly dashboard: **Campaigns → [your campaign] → Settings → Tracking**
+**Schedule** (verified March 2026 — was unchecked on all days, now fixed):
+- Days: **Monday–Friday** ✅
+- Window: **8:00 AM – 5:00 PM Mountain Time** ✅
+- Start: Now | End: No end date
 
-- [ ] Open tracking: **DISABLED** — open tracking injects an invisible pixel that breaks plain-text deliverability
-- [ ] Click tracking: **DISABLED** — click tracking rewrites URLs through a redirect domain, which triggers spam filters
-- [ ] Email format: **Plain text only** — no HTML, no images, no tracked links (set in campaign → Sequence → Email Body)
-- [ ] Sending time window: **8 AM – 5 PM** recipient local time (set in campaign → Schedule)
-- [ ] Daily send limit per inbox: **30 max** (Instantly default; our 20/day across 6 inboxes = ~3.3/inbox — well within limit)
-- [ ] Reply tracking: confirm replies route back to the same sending inbox (not a redirect address)
+**Sequence** (Campaigns → Waypoint Outbound → Sequences):
+- Step 1 only (no follow-up steps — correct for Stage 1)
+- Subject: `quick thought`
+- Body: `{{personalization}}` — maps directly to the `personalization` field sent by `senderProcess` via Instantly v2 API
+
+**Phase 2 — when adding follow-up steps:**
+- Enable "Stop Sending Emails on Auto-Reply" in Options (currently off — irrelevant with single-step sequence, but correct behavior for multi-step)
+- Consider enabling "Stop Campaign for Company on Reply" to avoid burning entire company relationships
+- Revisit daily limit (raise from 15 toward 30–50 after 4+ weeks clean metrics)
 
 **Env vars:**
 ```
@@ -161,16 +178,33 @@ INSTANTLY_CAMPAIGN_ID=e969de1c-e244-488a-8b29-6278f1ea39a2  ✅ set in Vercel
 ### 5. OpenAI GPT-4o
 **What:** Large language model used for email personalization and reply classification.  
 **Why:** Produces above-average copy quality from structured context slots. Also classifies inbound replies into actionable categories.  
-**Cost:** Pay-per-use (API)  
-**Setup status:** ✅ API key set in Vercel
+**Cost:** Pay-per-use (API) — at ~440 personalizations/mo + classification calls, expect under $15/mo at GPT-4o pricing  
+**Setup status:** ✅ API key verified live (HTTP 200, March 2026)
+
+**Model selection — current and future:**
+- `gpt-4o` is correct for both tasks at Stage 1 volume — fast, cost-effective, strong writing quality
+- **Phase 1+ benchmark:** After 2–3 weeks of live sends, test `claude-3-7-sonnet-20250219` (Anthropic) against GPT-4o on the personalization task. Claude is rated as the top model for natural, human-sounding prose — directly aligned with the pacing/leading tone strategy. If output reads more authentically, swap the personalizer. Keep GPT-4o for reply classification.
+- Do NOT use: `o1`, `o3-mini` (reasoning models, wrong task type), `gpt-4.5` (10–15× more expensive, not justified)
 
 **Two use cases in the pipeline:**
 
 **A — Personalization** (`personalizerProcess`):
-- Input: lead's name, title, company, careerTrigger, recentPostSummary
-- Output: 50–90 word plain text cold email using timeline hook structure
-- **Critical:** Must use timeline hooks ("Here's what the next 4 weeks look like..."), NOT problem hooks ("Tired of corporate?")
-- No links. No formatting. No em dashes. No exclamation points.
+- Input: 8 context slots — `name`, `title`, `company`, `careerTrigger`, `recentPostSummary`, `pulledQuoteFromPost`, `specificProjectOrMetric`, `placeOrPersonalDetail`
+- Note: `specificProjectOrMetric` and `placeOrPersonalDetail` were missing from `ImportLeadForm.tsx` — fixed March 2026
+- Output: 50–90 word plain text cold email, NLP pacing/leading structure, identity-level framing
+- No links. No formatting. No em dashes. No exclamation points. No starting 3 sentences with "I" or "Most"
+
+**Templates** (`src/lib/templates.ts` — 6 variants, audited March 2026):\
+| Template | ICP Trigger |
+|---|---|
+| A — Job Change / Transition | Publicly announced departure |
+| B — Sales Leader, Burned Out | Post about burnout / corporate grind |
+| C — Ops Builder | Led a major project/transformation |
+| D — Finance / Risk-Oriented | P&L background, analytical persona |
+| E — Layoff / Open to Work | "Open to Work" badge or layoff post |
+| F — Framework / Curiosity | General "what's next" mindset post |
+
+**Prohibited phrases** (`PROHIBITED_PHRASES` array in `templates.ts`) — GPT-4o is instructed to avoid 20 banned phrases including: "I hope this email finds you well", "leverage", "synergy", "delve", "navigating", "tapestry", "foster", "catalyst", "checking in" and similar AI/corporate clichés.
 
 **B — Reply classification** (`replyGuardianProcess`):
 - Input: prospect's reply text
@@ -179,8 +213,7 @@ INSTANTLY_CAMPAIGN_ID=e969de1c-e244-488a-8b29-6278f1ea39a2  ✅ set in Vercel
 - Interested/Curious/Ambiguous → triggers HITL alert to Kelsey
 - Unsubscribe / Not a fit → sets lead status to `SUPPRESSED`
 
-**⚠️ HITL alert is not yet wired to Resend** (as of March 2026):  
-The `notify-human` step in `replyGuardianProcess` currently only runs `console.log` — it does not send a Resend email. Before going live, implement the Resend HITL email in that step (see §6 Resend for format spec).
+**HITL alert implemented** (March 2026): `notify-human` step now sends a real Resend email via `replyGuardianProcess`. See §6 for email format.
 
 **Env var:**
 ```
@@ -196,11 +229,13 @@ OPENAI_API_KEY=    ✅ set in Vercel (waypoint-core-system)
 **Setup status:** ✅ API key set in Vercel
 
 **Use cases:**
-1. **HITL (Human-in-the-Loop) hot reply alerts** — when a lead replies as `Interested`, `Curious`, or `Ambiguous`, Resend should send Kelsey an email with:
-   - Lead name + LinkedIn URL
-   - Their reply text
-   - An AI-drafted response for review (Kelsey edits and sends manually within 15 min)
-   - **Status: ⏳ Not yet implemented** — `notify-human` step in `replyGuardianProcess` is a `console.log` stub. Must wire up Resend before going live.
+1. **HITL (Human-in-the-Loop) hot reply alerts** — ✅ Implemented March 2026. When a lead replies as `Interested`, `Curious`, or `Ambiguous`, Resend sends `kelsey@waypointfranchise.com` a plain-text email containing:
+   - Urgency label (🔥 INTERESTED / 👀 CURIOUS / 💬 AMBIGUOUS) in the subject line
+   - Lead name, title, company, LinkedIn URL, score
+   - Full reply text
+   - AI-drafted follow-up (40–60 words, Kelsey's voice, written by GPT-4o in real time)
+   - TidyCal booking link for sharing on reply
+   - **Target response time: 15 minutes from receipt**
 2. **Content refresh summaries** — ✅ Implemented — monthly report of article rewrites sent via Resend
 3. **System error alerts** — (future)
 
@@ -230,9 +265,10 @@ TidyCal does NOT support native outbound webhooks on the Individual plan (confir
 - Runs Mon–Fri at 10 AM MT via cron: `0 16 * * 1-5`
 - Calls `GET https://tidycal.com/api/bookings?starts_at={2 days ago}`
 - Matches booking email against Lead database
-- Updates matched lead status → `REPLIED`
+- Updates matched lead status → `BOOKED` (previously `REPLIED` — bug fixed March 2026)
 - 2-day lookback handles timezone drift and any missed runs
-- Skips cancelled bookings and leads already at terminal status
+- Skips cancelled bookings; skips leads already `BOOKED` or `SUPPRESSED`
+- **Bug fixed March 2026:** Previously skipped `REPLIED` leads, so a booking after an email reply was silently ignored. Now correctly advances `REPLIED` → `BOOKED`.
 
 **Personal access token:** Named "Cold Email" — created in TidyCal → Integrations → Manage API Keys  
 **Env var:**
@@ -264,9 +300,13 @@ https://www.waypointfranchise.com/api/webhooks/tidycal?secret=TIDYCAL_WEBHOOK_SE
 
 **Lead status lifecycle:**
 ```
-RAW → SCORED → (suppressed if < 70) → SEQUENCED → REPLIED → (booked)
-              → SUPPRESSED (at any point)
+RAW → ENRICHED → SEQUENCED → SENT → REPLIED → BOOKED  (ideal path)
+                                      ↓
+                               SUPPRESSED (unsubscribe / not a fit / at any point)
 ```
+- `REPLIED` = prospect replied to the cold email (set by `replyGuardianProcess`)
+- `BOOKED` = prospect booked a TidyCal consultation (set by `tidycalBookingSync` cron or `/api/webhooks/tidycal`)
+- `SUPPRESSED` = removed from all outreach (unsubscribe, wrong person, non-serviceable market)
 
 **Env vars:**
 ```
@@ -290,7 +330,7 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 | `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Enriches + scores a RAW lead (Hunter code inert — no key set) |
 | `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
 | `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
-| `replyGuardianProcess` | event: `workflow/lead.reply.received` | ⏳ Partial | Classifies reply; HITL alert is console.log stub only |
+| `replyGuardianProcess` | event: `workflow/lead.reply.received` | ✅ Live | Classifies reply; HITL Resend alert implemented March 2026 |
 | `monitorProcess` | cron: `0 9 * * *` | ⏳ Mock | Pipeline health checks — bounce/complaint data is mocked random values |
 | `warmupScheduler` | cron: `0 14 * * 1-5` (8 AM MT) | ✅ Live | Fires daily send events up to dailyCap |
 | `contentRefreshFunction` | cron: `0 14 1 * *` + event: `content/refresh.run` | ✅ Live | Rewrites stale articles via GPT-4o |
@@ -320,20 +360,25 @@ INNGEST_SIGNING_KEY=  ✅ set in Vercel
 **What:** Free Google tool for monitoring domain/IP reputation, spam rate, and delivery errors for Gmail recipients.  
 **Why:** Gmail is the majority of B2B inboxes. Postmaster shows your reputation score before you hit spam filters.  
 **Cost:** $0  
-**Setup status:** ⏳ Partial — blocked on Instantly support
+**Setup status:** ❌ Blocked — Instantly DFY domains do not allow custom DNS records
 
 **What's done:**
-- ✅ Both domains registered in Postmaster: `getwaypointfranchise.com`, `meetwaypointfranchise.com`
 - ✅ Primary domain (`waypointfranchise.com`) Cloudflare DNS fixed: duplicate SPF removed, DMARC placeholder email updated to real address
 
-**What's pending:**
-- ❌ DNS TXT verification records not yet added for sending domains — Instantly controls their Cloudflare zones (different account), so user cannot add records directly
-- **Action:** Contact Instantly support and ask them to add these two TXT records to the sending domain DNS:
-  - `getwaypointfranchise.com` → `google-site-verification=MPbTGn7XTY7HMxvyL0wPpgHT77EeU28h8JzfEs8JSO4`
-  - `meetwaypointfranchise.com` → `google-site-verification=kHrn7XQd1fco82GWBxj5mLispMTkUJ_x4ikGiQsTkMc`
-- Once records are added, go to https://postmaster.google.com and click **Verify** for each domain
+**Why sending domain verification is permanently blocked:**
+Instantly confirmed (March 2026) that DFY/pre-warmed domains are fully managed by Instantly. They retain domain ownership and DNS administrator access. No custom DNS records (including TXT verification records) can be added by users under any circumstances. This is a hard architectural constraint of the DFY service.
 
-**Note:** At 15–20 sends/day, Postmaster will likely show "Not enough data" until volume scales past 100+/day. This is a monitoring tool, not a sending prerequisite — the pipeline can launch without it.
+Verification TXT records that were requested but cannot be added:
+- `getwaypointfranchise.com` → `google-site-verification=MPbTGn7XTY7HMxvyL0wPpgHT77EeU28h8JzfEs8JSO4`
+- `meetwaypointfranchise.com` → `google-site-verification=kHrn7XQd1fco82GWBxj5mLispMTkUJ_x4ikGiQsTkMc`
+
+**Monitoring alternatives at current volume:**
+- ✅ **Instantly health scores** — all 6 inboxes at 100% (the direct source of truth at 15 sends/day)
+- ⏳ **mail-tester.com or GlockApps** — run a manual inbox placement test before launch (one-time check, free)
+- ⏳ **Google Postmaster on primary domain** — `waypointfranchise.com` CAN be verified (we control Cloudflare), but will not reflect sending campaign data since emails send from the subdomain aliases
+- ⏳ **Scale trigger** — Postmaster becomes useful above 100+/day. Revisit when volume scales.
+
+**Note:** This is not a launch blocker. Postmaster shows "Not enough data" until volume exceeds 100+ sends/day to Gmail. At 15/day, Instantly's inbox health score is the best available signal.
 
 ---
 
@@ -364,16 +409,17 @@ INNGEST_SIGNING_KEY=  ✅ set in Vercel
 Complete every item below before sending the first cold email. These are the open gaps identified as of March 2026.
 
 **Instantly Setup**
-- [ ] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard
-- [ ] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only (see §4)
-- [ ] Confirm reply routing: replies land in the same sending inbox (not a redirect)
+- [x] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — ⏳ Pre-launch to-do (0 credits currently)
+- [x] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only — ✅ Verified March 2026
+- [x] Confirm reply routing: replies land in the same sending inbox — ✅ Verified
 
 **Code**
-- [ ] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` (currently `console.log` stub)
+- [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅ Implemented March 2026
 - [ ] After SuperSearch workflow is proven: remove the dead Hunter.io code block from `leadHunterProcess` (lines 86–129 of `functions.ts`)
 
 **Google Postmaster Tools**
-- [ ] Contact Instantly support to add TXT verification records for both sending domains (see §11)
+- [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026): Instantly confirmed DFY domain DNS is fully managed by them with no exceptions. Sending domain verification is not possible.
+- [ ] **Pre-launch alternative:** Run one test send through [mail-tester.com](https://mail-tester.com) to confirm spam score and deliverability before first live send
 
 **Compliance**
 - [ ] Add physical mailing address to email template footer (CAN-SPAM required)

@@ -184,27 +184,20 @@ export default function AboutPage() {
               </a>
               <a
                 href="/scorecard"
-                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-white border border-white/40 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
               >
-                Readiness Quiz
-              </a>
-              <a
-                href="/archetype"
-                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
-              >
-                Ownership Style Quiz
+                Take the Readiness Quiz
               </a>
               <a
                 href="sms:+12149951062"
-                className="inline-flex items-center justify-center gap-1.5 px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center text-sm font-medium text-white/60 hover:text-white transition-colors min-h-[48px] px-2"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                Text Me
+                Or text me &rarr;
               </a>
             </div>
             <p className="mt-5 text-xs text-white/40">
               Want to see how I work first?{" "}
-              <a href="/process" className="text-white/60 underline hover:text-white/80 transition-colors">See the process →</a>
+              <a href="/process" className="text-white/60 underline hover:text-white/80 transition-colors">See the process &rarr;</a>
             </p>
           </div>
 

@@ -70,41 +70,27 @@ export default function HomePage() {
             professionals figure out if franchise ownership actually makes
             sense. It costs you absolutely nothing.
           </p>
-          <div className="mt-8 sm:mt-10 flex flex-col gap-3 animate-fade-in-up stagger-3">
-            {/* Primary row — both quizzes, equal gold weight */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/scorecard"
-                id="hero-cta-quiz"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
-              >
-                Take the Readiness Quiz
-              </Link>
-              <Link
-                href="/archetype"
-                id="hero-cta-archetype"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
-              >
-                Find Your Owner Type
-              </Link>
-            </div>
-            {/* Secondary row — contact options, quieter */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/book"
-                id="hero-cta-book"
-                className="inline-flex items-center justify-center px-7 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all press-effect min-h-[44px]"
-              >
-                Book a Free Call
-              </Link>
-              <a
-                href="sms:+12149951062"
-                className="inline-flex items-center justify-center gap-2 px-7 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all press-effect min-h-[44px]"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                Text Me
-              </a>
-            </div>
+          <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row flex-wrap gap-3 animate-fade-in-up stagger-3">
+            <Link
+              href="/book"
+              id="hero-cta-book"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+            >
+              Book a Free Call
+            </Link>
+            <Link
+              href="/scorecard"
+              id="hero-cta-quiz"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] border border-[#0c1929] bg-white/10 hover:bg-white/20 text-white border-white/50 hover:border-white rounded-lg transition-all press-effect min-h-[48px]"
+            >
+              Take the Readiness Quiz
+            </Link>
+            <a
+              href="sms:+12149951062"
+              className="inline-flex items-center justify-center gap-2 text-sm font-medium text-white/70 hover:text-white transition-colors min-h-[48px] px-2"
+            >
+              Or text me &rarr;
+            </a>
           </div>
         </div>
       </section>
@@ -128,16 +114,10 @@ export default function HomePage() {
           ============================================ */}
       <section className="py-10 sm:py-12 border-b border-[#e2ddd2] bg-[#f7f5f1]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-5">
             About Waypoint
           </p>
-          <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-4">
-            Waypoint Franchise Advisors is a free franchise consulting service founded by Kelsey Stuart, based in Whitefish, Montana. Kelsey is a former Bloomin&apos; Blinds franchisor who helped grow the system to $40 million in revenue and over 200 locations, and later became a franchisee himself. He lost money doing it. That combination of franchisor experience and franchisee failure is the foundation of his consulting practice.
-          </p>
-          <p className="text-sm sm:text-base text-[#2a2a2a] leading-relaxed mb-6">
-            The service is 100% free to candidates. Franchise brands pay a referral fee when a candidate becomes a franchisee. The fee does not affect what a buyer pays to acquire the franchise. Kelsey works across all 50 states, maintains a curated inventory of 250+ franchise concepts, and presents each candidate with three to four options maximum. Approximately 30% of candidates end up buying a franchise. That number is not optimized upward.
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center pt-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
             {[
               { stat: "$40M+", label: "Franchise system built" },
               { stat: "200+", label: "Locations as franchisor" },
@@ -246,16 +226,16 @@ export default function HomePage() {
 
           <div className="reveal mt-8 sm:mt-12 text-center flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              href="/scorecard"
+              href="/book"
               className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
             >
-              Take the Readiness Quiz
+              Book a Free Call
             </Link>
             <Link
-              href="/archetype"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+              href="/scorecard"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] border border-[#0c1929] hover:bg-[#0c1929]/10 rounded-lg transition-all press-effect min-h-[48px]"
             >
-              Find Your Owner Type
+              Take the Readiness Quiz
             </Link>
           </div>
         </div>
@@ -408,30 +388,7 @@ export default function HomePage() {
           ============================================ */}
       <FranchiseMapWrapper />
 
-      {/* ============================================
-          STATS — clean numbers, copper accents
-          ============================================ */}
-      <section className="py-14 sm:py-20 border-t border-b border-[#e2ddd2]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 text-center">
-            {[
-              { stat: "$40M+", label: "Franchise system built" },
-              { stat: "200+", label: "Locations as franchisor" },
-              { stat: "3–4", label: "Brands presented, maximum" },
-              { stat: "$0", label: "Cost to candidates" },
-            ].map((item) => (
-              <div key={item.label} className="reveal">
-                <p className="text-2xl sm:text-3xl md:text-4xl font-black text-[#1b3a5f] tracking-tight">
-                  {item.stat}
-                </p>
-                <p className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-[#555555] uppercase tracking-widest">
-                  {item.label}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* ============================================
           FINAL CTA — mountain lake background
@@ -460,26 +417,26 @@ export default function HomePage() {
             </p>
             <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
               <Link
+                href="/book"
+                id="cta-bottom-book"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
+              >
+                Book a Free Call
+              </Link>
+              <Link
                 href="/scorecard"
                 id="cta-bottom-quiz"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/40 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Take the Readiness Quiz
               </Link>
-              <Link
-                href="/archetype"
-                id="cta-bottom-archetype"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all press-effect min-h-[48px]"
+              <a
+                href="sms:+12149951062"
+                id="cta-bottom-sms"
+                className="inline-flex items-center justify-center text-sm font-medium text-white/60 hover:text-white transition-colors min-h-[48px] px-2"
               >
-                Find Your Owner Type
-              </Link>
-              <Link
-                href="/book"
-                id="cta-bottom-book"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
-              >
-                Or Just Call Me
-              </Link>
+                Or text me &rarr;
+              </a>
             </div>
           </div>
         </div>

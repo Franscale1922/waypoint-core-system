@@ -45,7 +45,8 @@ export async function POST(req: Request) {
         await prisma.lead.update({
             where: { id: lead.id },
             data: {
-                status: "REPLIED", // Meeting booked is the highest-intent signal
+                // @ts-ignore — BOOKED added to schema; migration runs on next Vercel deploy
+                status: "BOOKED" as any, // Meeting booked is a higher-intent terminal state than REPLIED
             },
         });
 

@@ -164,7 +164,7 @@ export const leadHunterProcess = inngest.createFunction(
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-import { PROHIBITED_PHRASES, EMAIL_TEMPLATES } from "@/lib/templates";
+import { PROHIBITED_PHRASES, EMAIL_TEMPLATES, VOICE_RULES } from "@/lib/templates";
 
 export const personalizerProcess = inngest.createFunction(
     { id: "personalizer-process" },
@@ -186,27 +186,19 @@ export const personalizerProcess = inngest.createFunction(
 
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
-            // System prompt mimicking the exact requirements
             const systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
 Your goal is to write a highly personalized, human-feeling cold email to a corporate professional.
 
-CORE RULES:
-1. Email length: 50-90 words. Shorter is always better.
-2. Context slots: You must fill at least TWO context slots based on the provided lead data.
-3. Tone & EQ Strategy (MANDATORY): Use NLP "Pacing and Leading" (validate their exact emotional or career state right now before introducing any new idea). Focus on "Identity-level framing" ("people who build things" instead of "you should buy a business"). Demonstrate deep empathy without pity. Peer-to-peer respect, colloquial, slightly informal. Talk like a busy executive typing from a phone.
-4. Structure:
-   - Empathetic opener validating their specific trigger/post directly (no pleasantries).
-   - Pacing & Leading: Name the unspoken reality or frustration of their current corporate path.
-   - Identity shift: Introduce the transition to ownership as a viable option for "people like them" (autonomy, equity).
-   - Soft, zero-pressure exit ("bookmark this for later", "no pitch").
+${VOICE_RULES}
 
-PROHIBITED PHRASES:
-\${PROHIBITED_PHRASES.join(", ")}
+PROHIBITED PHRASES (never use any of these):
+${PROHIBITED_PHRASES.join(", ")}
 AND NO em dashes (—). NO exclamation points (!). AND NO starting three sentences in a row with "I" or "Most".
-Avoid sounding overly enthusiastic. Keep punctuation minimal and professional.
 
-Choose the closest template to start with, and modify heavily for the user:
+TEMPLATE REFERENCE — choose the closest template and modify heavily for this specific person:
 ${EMAIL_TEMPLATES}
+
+FINAL CHECK before outputting: confirm email is 70–140 words, no forbidden phrases, opens without flattery, one call to action, closes with low pressure, reads like a real person wrote it.
 `;
 
             // Pass the scraped details to the model
@@ -382,12 +374,76 @@ Output ONLY the category name.`;
             });
         });
 
-        // Slack/Gmail integration mock
+        // HITL alert — send Kelsey an email for hot replies so she can respond within 15 min
         await step.run("notify-human", async () => {
-            if (["Interested", "Curious", "Ambiguous"].includes(classification)) {
-                // e.g. await fetch("slack-webhook-url", { ... })
-                console.log(`[ALERT] High intent reply from ${replyData.lead?.name}! Classification: ${classification}`);
+            const hotReplyClassifications = ["Interested", "Curious", "Ambiguous"];
+            if (!hotReplyClassifications.includes(classification)) return;
+
+            const lead = replyData.lead!;
+            const reply = replyData.reply!;
+
+            // Generate a short AI draft reply for Kelsey to edit and send
+            const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
+            const openAiKey = settings?.openAiApiKey || process.env.OPENAI_API_KEY;
+            const resendKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
+
+            if (!resendKey) {
+                console.error("[HITL] No Resend API key — skipping HITL alert");
+                return;
             }
+
+            let draftReply = "(Draft generation failed — reply manually)";
+            if (openAiKey) {
+                try {
+                    const { createOpenAI } = require('@ai-sdk/openai');
+                    const customOpenai = createOpenAI({ apiKey: openAiKey });
+                    const { text } = await generateText({
+                        model: customOpenai("gpt-4o"),
+                        system: `You are writing a short reply on behalf of Kelsey Stuart, franchise advisor.
+The prospect has replied to a cold email. Write a 40–60 word follow-up reply in Kelsey's voice:
+calm, direct, no pressure, peer-to-peer tone. Suggest a short call or offer to send times.
+No em dashes. No exclamation points. No marketing language. Sign off as "Kelsey".`,
+                        prompt: `Prospect name: ${lead.name}
+Their reply: ${reply.content}
+Classification: ${classification}
+Write Kelsey's follow-up reply.`
+                    });
+                    draftReply = text.trim();
+                } catch (err) {
+                    console.error("[HITL] Draft generation failed:", err);
+                }
+            }
+
+            const urgencyLabel = classification === "Interested" ? "🔥 INTERESTED" : classification === "Curious" ? "👀 CURIOUS" : "💬 AMBIGUOUS";
+
+            await resend.emails.send({
+                from: "Waypoint System <hi@waypointfranchise.com>",
+                to: ["kelsey@waypointfranchise.com"],
+                subject: `${urgencyLabel} reply from ${lead.name} — respond within 15 min`,
+                text: [
+                    `HOT REPLY ALERT — ${classification.toUpperCase()}`,
+                    ``,
+                    `Lead: ${lead.name}`,
+                    `Title: ${lead.title || "N/A"}`,
+                    `Company: ${lead.company || "N/A"}`,
+                    `LinkedIn: ${lead.linkedinUrl || "N/A"}`,
+                    `Score: ${lead.score}`,
+                    ``,
+                    `─────────────────────────`,
+                    `THEIR REPLY:`,
+                    reply.content,
+                    `─────────────────────────`,
+                    ``,
+                    `AI DRAFT (edit and send from your inbox):`,
+                    draftReply,
+                    `─────────────────────────`,
+                    ``,
+                    `After you reply, send them your TidyCal link:`,
+                    `https://tidycal.com/m7v2jox/franchise-consultation`,
+                ].join("\n"),
+            });
+
+            console.log(`[HITL] Alert sent to Kelsey for ${lead.name} (${classification})`);
         });
 
         return { status: "Processed", classification };
@@ -709,14 +765,15 @@ export const tidycalBookingSync = inngest.createFunction(
                         return { matched: false, email, reason: "no matching lead" };
                     }
 
-                    // Don't overwrite terminal statuses
-                    if (["REPLIED", "SUPPRESSED"].includes(lead.status)) {
+                    // Don't overwrite already-booked or suppressed leads
+                    if (["BOOKED", "SUPPRESSED"].includes(lead.status)) {
                         return { matched: false, email, reason: `already ${lead.status}` };
                     }
 
                     await prisma.lead.update({
                         where: { id: lead.id },
-                        data: { status: "REPLIED" },
+                        // @ts-ignore — BOOKED added to schema; migration runs on next Vercel deploy
+                        data: { status: "BOOKED" as any },
                     });
 
                     console.log(`[tidycal-sync] ✅ Booking synced: ${lead.name} (${email})`);

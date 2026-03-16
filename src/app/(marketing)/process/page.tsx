@@ -172,35 +172,52 @@ export default function ProcessPage() {
       {/* ── Steps ─────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
         {steps.map((step, i) => (
-          <div
-            key={step.number}
-            className={`flex flex-col ${i % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"} gap-10 sm:gap-16 items-start`}
-          >
-            {/* Number + label */}
-            <div className="flex-shrink-0 sm:w-40 text-center sm:text-right">
-              <span className="block font-playfair text-6xl sm:text-7xl text-[#d4a55a]/30 leading-none">
-                {step.number}
-              </span>
-              <span className="block text-xs tracking-[0.18em] uppercase text-[#d4a55a] mt-2 font-medium">
-                {step.label}
-              </span>
-            </div>
+          <>
+            <div
+              key={step.number}
+              className={`flex flex-col ${i % 2 === 0 ? "sm:flex-row" : "sm:flex-row-reverse"} gap-10 sm:gap-16 items-start`}
+            >
+              {/* Number + label */}
+              <div className="flex-shrink-0 sm:w-40 text-center sm:text-right">
+                <span className="block font-playfair text-6xl sm:text-7xl text-[#d4a55a]/30 leading-none">
+                  {step.number}
+                </span>
+                <span className="block text-xs tracking-[0.18em] uppercase text-[#d4a55a] mt-2 font-medium">
+                  {step.label}
+                </span>
+              </div>
 
-            {/* Content */}
-            <div className="flex-1 pt-2">
-              <div className="w-12 h-[2px] bg-[#d4a55a] mb-6" />
-              <h2 className="font-playfair text-2xl sm:text-3xl leading-snug mb-6">
-                {step.headline}
-              </h2>
-              <div className="space-y-4">
-                {step.body.map((para, j) => (
-                  <p key={j} className="text-[#3a3a2e] leading-relaxed">
-                    {para}
-                  </p>
-                ))}
+              {/* Content */}
+              <div className="flex-1 pt-2">
+                <div className="w-12 h-[2px] bg-[#d4a55a] mb-6" />
+                <h2 className="font-playfair text-2xl sm:text-3xl leading-snug mb-6">
+                  {step.headline}
+                </h2>
+                <div className="space-y-4">
+                  {step.body.map((para, j) => (
+                    <p key={j} className="text-[#3a3a2e] leading-relaxed">
+                      {para}
+                    </p>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+            {/* Mid-page CTA — inserted after Step 04 (Validation Calls) */}
+            {step.number === "04" && (
+              <div className="bg-[#0c1929] rounded-xl p-8 sm:p-10 text-center">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d4a55a] mb-3">Sound like the right approach?</p>
+                <h3 className="font-playfair text-2xl sm:text-3xl text-white mb-6 leading-snug">
+                  Book a 30-minute intro call.
+                </h3>
+                <Link
+                  href="/book"
+                  className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+                >
+                  Book a Free Call
+                </Link>
+              </div>
+            )}
+          </>
         ))}
       </section>
 
@@ -298,38 +315,27 @@ export default function ProcessPage() {
           <p className="text-white/75 text-lg mb-10">
             No pitch. No obligation. Just a real conversation about whether this path makes sense for you.
           </p>
-          <div className="flex flex-col gap-3 justify-center items-center">
-            {/* Primary row — all three gold CTAs */}
+          <div className="flex flex-col gap-4 justify-center items-center">
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/book"
                 className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
               >
-                Book a Discovery Call
+                Book a Free Call
               </Link>
               <Link
                 href="/scorecard"
-                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/40 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
               >
                 Take the Readiness Quiz
               </Link>
-              <Link
-                href="/archetype"
-                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-lg transition-all min-h-[48px]"
-              >
-                Find Your Owner Type
-              </Link>
             </div>
-            {/* Secondary row — quiet contact option */}
-            <div className="flex justify-center">
-              <a
-                href="sms:+12149951062"
-                className="inline-flex items-center justify-center gap-1.5 px-8 py-3 text-xs font-semibold tracking-wider uppercase text-white/70 border border-white/20 hover:border-white/40 hover:text-white rounded-lg transition-all min-h-[44px]"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-                Text Me
-              </a>
-            </div>
+            <a
+              href="sms:+12149951062"
+              className="inline-flex items-center justify-center text-sm font-medium text-white/60 hover:text-white transition-colors min-h-[48px] px-2"
+            >
+              Or text me &rarr;
+            </a>
           </div>
 
         </div>
