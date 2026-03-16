@@ -21,13 +21,13 @@ export default function ResourcesPage() {
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
         <Image
-          src="/images/resources-hero-canoe-lake.png"
-          alt="Empty canoe on a pristine Montana mountain lake at sunrise"
+          src="/images/resources-hero-dock-sunset.png"
+          alt="Wooden dock on a Montana lake at sunset"
           fill
           priority
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: "center 30%" }}
+          style={{ objectPosition: "center 20%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/25 to-[#0c1929]/05" />
         <div className="relative z-10 max-w-4xl mx-auto">
