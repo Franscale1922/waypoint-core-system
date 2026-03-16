@@ -109,7 +109,7 @@ const costComponents = [
   {
     component: "Equipment",
     typical: "$10,000 – $150,000",
-    notes: "Included in Item 7 of the Franchise Disclosure Document (FDD) — the section that details your total estimated investment before opening day. Often purchased from approved vendors.",
+    notes: "Included in Item 7 of the Franchise Disclosure Document (FDD), the section that details your total estimated investment before opening day. Often purchased from approved vendors.",
   },
   {
     component: "Working capital",
@@ -272,17 +272,17 @@ export default function InvestmentPage() {
               {[
                 {
                   title: "SBA 7(a) Loan",
-                  oneliner: "The most widely used vehicle for franchise financing.",
+                  oneliner: "The most common financing path for franchise buyers.",
                   range: "Up to 90% of total project cost",
                   bestFor: "First-time buyers with good credit who want to keep cash reserves intact.",
-                  watchOut: "Personal guarantee required. Approval timelines can run 60\u201390 days \u2014 start early.",
+                  watchOut: "Personal guarantee required. Approval can take 60 to 90 days. Start the process early.",
                 },
                 {
                   title: "ROBS (Rollover for Business Startups)",
-                  oneliner: "Use your 401(k) or IRA to fund the business \u2014 no loan, no early withdrawal penalty.",
+                  oneliner: "Use your 401(k) or IRA to fund the business. No loan, no early withdrawal penalty.",
                   range: "Any qualified retirement balance; typically $50K+",
-                  bestFor: "Candidates with significant retirement savings who want to avoid debt entirely.",
-                  watchOut: "Requires a C-Corp and strict IRS compliance. Use a ROBS specialist \u2014 not a generalist accountant.",
+                  bestFor: "Buyers with meaningful retirement savings who want to avoid taking on debt.",
+                  watchOut: "Requires a C-Corp and strict IRS compliance. Use a ROBS specialist, not a generalist accountant.",
                 },
                 {
                   title: "Home Equity / HELOC",
@@ -318,7 +318,7 @@ export default function InvestmentPage() {
               ))}
               <p className="text-xs text-[#7a7a7a] leading-relaxed pl-1">
                 <strong className="text-[#0c1929]">Franchisor financing:</strong>{" "}
-                Some brands offer in-house financing for the franchise fee. Usually limited in scope \u2014 ask about it during your FDD review.
+                Some brands offer financing for the franchise fee. Usually limited in scope. Ask about it during your FDD review.
               </p>
             </div>
           </div>

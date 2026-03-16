@@ -62,7 +62,7 @@ const steps = [
     number: "01",
     label: "The Intro Call",
     headline: "Thirty minutes to see if this makes sense.",
-    outcome: "A clear picture of where you are in the process — and whether it makes sense to go deeper.",
+    outcome: "A clear picture of where you are and whether it makes sense to go deeper.",
     body: [
       "When I was on the franchisor side, I watched people get matched to brands that had nothing to do with their strengths, their lifestyle, or what they actually wanted to build. The match was fast. The regret was slow.",
       "The first thing we do is a short call, usually 20 to 30 minutes. No pitch, no intake form. I want to understand where you are in the process and whether it makes sense to go deeper. If it does, we schedule the two-hour discovery.",
@@ -74,7 +74,7 @@ const steps = [
     number: "02",
     label: "The Model",
     headline: "Your unemotional baseline, in writing.",
-    outcome: "A written profile that captures your capital range, working style, lifestyle requirements, and the red flags that would make the wrong franchise obvious.",
+    outcome: "A written profile covering your capital range, working style, lifestyle requirements, and what would make the wrong franchise obvious from the start.",
     body: [
       "After every discovery call, I write what I call a model. It is roughly four paragraphs that reflect back what I heard: the role you want to play in a business, the financial profile that makes sense, the lifestyle you are protecting, and the things that would make the wrong franchise feel obvious in hindsight.",
       "I send it to you and ask you to tell me if I got it right. More often than not, I do. If something is off, we adjust.",
@@ -85,7 +85,7 @@ const steps = [
     number: "03",
     label: "The Curated List",
     headline: "Three or four brands. Never more.",
-    outcome: "A curated shortlist of 3 to 4 validated brands built specifically around your profile — each pre-screened on financials, territory availability, and system-wide performance.",
+    outcome: "A shortlist of 3 to 4 brands built around your profile. Each one pre-screened on financials, territory availability, and how the system is performing.",
     body: [
       "I work with roughly 250 franchise concepts across dozens of industries. Before I present anything, I have already reviewed the financial disclosures, checked territory availability in your area, and screened how units are performing across the system.",
       "What I will not bring you is a brand that does not report its financials, a brand where locations are closing faster than they are opening, or a brand that has no available territory near you.",
@@ -97,7 +97,7 @@ const steps = [
     number: "04",
     label: "Validation Calls",
     headline: "Talking to real owners, without the franchisor in the room.",
-    outcome: "Real, unfiltered conversations with existing owners — covering what a hard week looks like, where the brand falls short, and what they wish they had known before signing.",
+    outcome: "Direct conversations with owners who have no reason to sell you anything. You ask what a bad week looks like, where the brand falls short, and what they wish they had known before they signed.",
     body: [
       "After your first couple of conversations with each brand, they will invite you to a group call with existing owners. The franchisor is not on that call. Nobody is watching what gets said.",
       "This is where you ask the questions that actually matter. What does a bad week look like? What does the support actually do? What do you wish you had known before you signed? Where does the brand fall short?",
@@ -108,7 +108,7 @@ const steps = [
     number: "05",
     label: "The Decision",
     headline: "You are always in control.",
-    outcome: "A confident yes or no — backed by complete data, a reviewed legal agreement, and a clear picture of what the business actually requires from you.",
+    outcome: "A yes or no backed by complete data, a reviewed legal agreement, and a clear picture of what the business actually requires from you.",
     body: [
       "I use an analogy I made up on a call once and have never stopped using: I am the chauffeur. You own the car. You tell me where you want to go, and I drive and navigate and point out things worth noticing. But if you want to turn left, or slow down, or stop entirely, you tell me and we do that.",
       "At every step of this process, you are the one making decisions. My job is to make sure those decisions are informed ones.",
@@ -159,7 +159,7 @@ export default function ProcessPage() {
             className="text-[#d4a55a] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
             style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
           >
-            Because most consultants skip this part — and that&apos;s why people end up in the wrong franchise.
+            Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
           </p>
         </div>
       </section>

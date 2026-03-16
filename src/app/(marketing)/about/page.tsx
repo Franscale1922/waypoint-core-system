@@ -158,14 +158,14 @@ export default function AboutPage() {
           <div className="mb-10 sm:mb-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               {
-                quote: "Kelsey told me not to buy — at least not yet. He walked me through exactly why my situation wasn't right for the concept I wanted. Six months later I was ready, and we found something that actually fit. That honest no was worth more than any yes I got from other consultants.",
+                quote: "Kelsey told me not to buy. He told me my situation wasn't right for the concept I wanted and walked me through why. Six months later I was ready, and we found something that fit. That conversation saved me from a bad decision.",
                 name: "Carol M.",
                 role: "Former healthcare executive, franchise owner since 2025",
                 location: "Phoenix, AZ",
                 score: "Readiness Score: 62",
               },
               {
-                quote: "I went in with a list of concepts I'd already researched. Kelsey politely set it aside and showed me something I'd never considered. Six months after that conversation I opened my doors. I wouldn't have found it on my own.",
+                quote: "I came in with a list of brands I'd already researched. Kelsey set the list aside and showed me something I'd never considered. Six months after that call I opened my doors. I would not have found it without him.",
                 name: "Tom W.",
                 role: "Former tech executive, franchise owner",
                 location: "Seattle, WA",

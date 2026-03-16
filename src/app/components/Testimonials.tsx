@@ -27,7 +27,7 @@ const testimonials = [
   },
   {
     quote:
-      "Kelsey told me not to buy — at least not yet. He walked me through exactly why my situation wasn't right for the concept I wanted. Six months later I was ready, and we found something that actually fit. That honest no was worth more than any yes I got from other consultants.",
+      "Kelsey told me not to buy. He told me my situation wasn't right for the concept I wanted and walked me through why. Six months later I was ready, and we found something that fit. That conversation saved me from a bad decision.",
     name: "Carol M.",
     role: "Former healthcare executive, franchise owner since 2025",
     location: "Phoenix, AZ",
@@ -35,7 +35,7 @@ const testimonials = [
   },
   {
     quote:
-      "I wasn't planning to move fast. I just wanted to understand my options. Kelsey didn't pressure me to commit to anything — he helped me build a real plan so that when I'm ready to leave corporate, the business is already running.",
+      "I just wanted to understand my options. I was not in a hurry. Kelsey never pushed me toward anything. He helped me put together a plan so that by the time I leave corporate, the business will already be running.",
     name: "James P.",
     role: "Still employed, franchise opens Q3 2026",
     location: "Chicago, IL",
@@ -43,7 +43,7 @@ const testimonials = [
   },
   {
     quote:
-      "My husband thought this was another sales call. Within ten minutes of talking to Kelsey, he was asking more questions than I was. The transparency about how Kelsey gets paid is what changed his mind.",
+      "My husband assumed this was another sales pitch. Ten minutes into the call he was asking more questions than I was. Once Kelsey explained how he gets paid, my husband was the one pushing us to move forward.",
     name: "Rachel S.",
     role: "Teacher turned franchise co-owner",
     location: "Raleigh, NC",
@@ -51,7 +51,7 @@ const testimonials = [
   },
   {
     quote:
-      "I went in with a list of concepts I'd already researched. Kelsey politely set it aside and showed me something I'd never considered. Six months after that conversation I opened my doors. I wouldn't have found it on my own.",
+      "I came in with a list of brands I'd already researched. Kelsey set the list aside and showed me something I'd never considered. Six months after that call I opened my doors. I would not have found it without him.",
     name: "Tom W.",
     role: "Former tech executive, franchise owner",
     location: "Seattle, WA",
@@ -59,7 +59,7 @@ const testimonials = [
   },
   {
     quote:
-      "I needed something that didn't require me to be there 60 hours a week. Kelsey understood that immediately and never pushed anything that didn't fit that requirement. The concept we landed on was exactly what I described.",
+      "I needed something that didn't require me on-site 60 hours a week. Kelsey never brought me a brand that didn't fit that. What we found matched what I described from the first conversation.",
     name: "Lisa H.",
     role: "Trailing spouse, semi-absentee owner",
     location: "Scottsdale, AZ",
