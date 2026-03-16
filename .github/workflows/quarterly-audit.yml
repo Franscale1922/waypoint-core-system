@@ -1,0 +1,36 @@
+name: Quarterly PageSpeed Audit
+
+on:
+  schedule:
+    # Runs at 3:00 PM UTC on the 15th of Mar, Jun, Sep, Dec
+    - cron: '0 15 15 3,6,9,12 *'
+  # Also allow manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  lighthouse-audit:
+    name: Run Lighthouse & Email Report
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Lighthouse CLI
+        run: npm install -g lighthouse
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y chromium-browser
+
+      - name: Run audits and send email report
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          CHROMIUM_PATH: /usr/bin/chromium-browser
+        run: node .github/scripts/lighthouse-report.js
