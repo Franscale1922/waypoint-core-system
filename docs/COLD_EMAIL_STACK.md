@@ -291,12 +291,33 @@ INNGEST_SIGNING_KEY=  ✅ set in Vercel
 
 ---
 
+### 11. Google Postmaster Tools
+**What:** Free Google tool for monitoring domain/IP reputation, spam rate, and delivery errors for Gmail recipients.  
+**Why:** Gmail is the majority of B2B inboxes. Postmaster shows your reputation score before you hit spam filters.  
+**Cost:** $0  
+**Setup status:** ⏳ Partial — blocked on Instantly support
+
+**What's done:**
+- ✅ Both domains registered in Postmaster: `getwaypointfranchise.com`, `meetwaypointfranchise.com`
+- ✅ Primary domain (`waypointfranchise.com`) Cloudflare DNS fixed: duplicate SPF removed, DMARC placeholder email updated to real address
+
+**What's pending:**
+- ❌ DNS TXT verification records not yet added for sending domains — Instantly controls their Cloudflare zones (different account), so user cannot add records directly
+- **Action:** Contact Instantly support and ask them to add these two TXT records to the sending domain DNS:
+  - `getwaypointfranchise.com` → `google-site-verification=MPbTGn7XTY7HMxvyL0wPpgHT77EeU28h8JzfEs8JSO4`
+  - `meetwaypointfranchise.com` → `google-site-verification=kHrn7XQd1fco82GWBxj5mLispMTkUJ_x4ikGiQsTkMc`
+- Once records are added, go to https://postmaster.google.com and click **Verify** for each domain
+
+**Note:** At 15–20 sends/day, Postmaster will likely show "Not enough data" until volume scales past 100+/day. This is a monitoring tool, not a sending prerequisite — the pipeline can launch without it.
+
+---
+
 ## Lead Sourcing: WARN Act + Layoff Trackers
 
 **What:** Free weekly data sources for identifying executives at companies undergoing mass layoffs.  
 **Why:** WARN Act filings give a 60-day advance notice window — targets are still employed, severance is incoming, capital is available, and transition mindset is active. Best franchise buyer archetype (FranChoice documented).  
 **Cost:** $0  
-**Setup status:** ✅ Following WARNTracker and Layoffs.fyi on Twitter and LinkedIn — newsletters to subscribe next
+**Setup status:** ✅ Following on Twitter and LinkedIn. Subscribed to WARNTracker Substack + Layoffs.fyi newsletter. TheLayoff.com bookmarked.
 
 **Sources:**
 | Source | URL | What it gives | Signal quality |
@@ -335,7 +356,6 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | Apollo.io | Need enrichment scale | Enrichment + sequences in one tool | $49/mo |
 | Clay.com | Sends > 50/day + 1,100+ leads/mo | Waterfall enrichment, intent signals, automation | Variable |
 | LeadIQ | After WARN workflow established | Job change alerts for executives 30–45 days post-WARN | Paid |
-| Google Postmaster Tools | Now (free) | Domain reputation monitoring for Gmail deliverability | Free |
 | GlockApps | Sends > 50/day | Inbox placement testing across all major providers | $80/mo |
 
 ### Stage 2 Project: Social Comment Lead Mining
