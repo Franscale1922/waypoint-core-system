@@ -18,9 +18,19 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { createRequire } from "module";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
+
+// Load .env from repo root
+const require = createRequire(import.meta.url);
+try {
+  const dotenv = require("dotenv");
+  dotenv.config({ path: path.join(ROOT, ".env") });
+} catch {
+  // dotenv not available — env vars must be set externally
+}
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 

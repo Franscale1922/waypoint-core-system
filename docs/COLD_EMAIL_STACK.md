@@ -95,7 +95,7 @@ SuperSearch is a **dashboard-only** tool inside Instantly. There is no API endpo
 4. Only then does `leadHunterProcess` promote leads through the score gate
 
 **Current code behavior (as of March 2026):**  
-The `leadHunterProcess` in `functions.ts` still calls **Hunter.io** (`HUNTER_API_KEY`) as its programmatic email-finding fallback. Since `HUNTER_API_KEY` is not set in Vercel, this block is always skipped — meaning email enrichment is effectively manual-only right now. The code then falls through to a best-guess email format and caps the score at 60 (blocked at the 70-gate).
+The `leadHunterProcess` in `functions.ts` calls **Hunter.io** (`HUNTER_API_KEY`) as its programmatic email-finding step. **Key is now set in Vercel (March 2026)** — the enrichment block is active. Hunter.io takes first name + last name + company domain → returns a verified email confidence score. Leads with verified emails pass the 70-point gate; unverified leads are capped at 60 and suppressed.
 
 **To do after purchasing SuperSearch credits:**
 - [ ] Buy Growth Credits tier ($47/mo) in Instantly dashboard
@@ -112,7 +112,7 @@ if (!foundEmail || emailConfidence < 90) {  // ← raise gate from 60 to 90
 score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email cannot clear 70-point gate)
 ```
 
-**Env var:** `HUNTER_API_KEY` — ❌ Not set (Hunter replaced by SuperSearch UI). The Hunter code block in `functions.ts` is inert until key is set.
+**Env var:** `HUNTER_API_KEY` — ✅ Set in Vercel (March 2026, free tier). Upgrade to Starter ($49/mo, 500/mo) before first production run at 440 leads/month.
 
 ---
 
@@ -327,7 +327,7 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 **Functions registered (`src/app/api/inngest/route.ts`):**
 | Function | Trigger | Status | Purpose |
 |---|---|---|---|
-| `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Enriches + scores a RAW lead (Hunter code inert — no key set) |
+| `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Enriches + scores a RAW lead via Hunter.io (key now set — March 2026) |
 | `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
 | `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
 | `replyGuardianProcess` | event: `workflow/lead.reply.received` | ✅ Live | Classifies reply; HITL Resend alert implemented March 2026 |
@@ -415,7 +415,7 @@ Complete every item below before sending the first cold email. These are the ope
 
 **Code**
 - [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅ Implemented March 2026
-- [ ] After SuperSearch workflow is proven: remove the dead Hunter.io code block from `leadHunterProcess` (lines 86–129 of `functions.ts`)
+- [x] ~~Remove the dead Hunter.io code block~~ — Hunter.io is now active (key set March 2026). SuperSearch remains the manual fallback for misses.
 
 **Google Postmaster Tools**
 - [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026): Instantly confirmed DFY domain DNS is fully managed by them with no exceptions. Sending domain verification is not possible.
@@ -475,7 +475,7 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 |---|---|---|
 | **Bombora** | ❌ Skip permanently | $30K–$100K/yr; account-level SaaS intent only; wrong buyer type |
 | **Apify** | ❌ Skip permanently | Never purchased; ToS risk; native CSV export is safer |
-| **Hunter.io** | ⏳ Inert in codebase | `HUNTER_API_KEY` not set — code block exists in `leadHunterProcess` but never executes. Replaced by SuperSearch UI for manual enrichment. Remove the code block once SuperSearch workflow is proven. |
+| **Hunter.io** | ✅ Active (free tier) | Key set in Vercel March 2026. Free: 25/mo — upgrade to Starter ($49/mo, 500/mo) before production run. SuperSearch remains manual fallback for misses. |
 | **HubSpot CRM** | ❌ Skip | Prisma DB is the CRM; duplicate data problem |
 | **EmailBison** | ❌ Skip | Grok-only recommendation, no consensus from other models |
 | **lemlist** | ❌ Skip | Already have Instantly for multi-channel; no second platform |
@@ -539,4 +539,4 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | Webhook auth (query param) |
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
-| `HUNTER_API_KEY` | ❌ Not set | Not needed — replaced by Instantly SuperSearch |
+| `HUNTER_API_KEY` | ✅ Set in Vercel | Free tier (25/mo) — upgrade to Starter ($49/mo) before first production run |

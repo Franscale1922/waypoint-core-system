@@ -7,7 +7,10 @@
     "build": "prisma generate && prisma db push --accept-data-loss && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "gsc-report": "node scripts/gsc-report.mjs",
+    "ai-citation-check": "node scripts/ai-citation-check.mjs",
+    "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
@@ -34,6 +37,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
+    "googleapis": "^171.4.0",
     "prisma": "^6.19.2",
     "tailwindcss": "^4",
     "typescript": "^5"
