@@ -389,6 +389,35 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 
 ---
 
+## Phase 2 Opportunities
+
+Tools evaluated and deferred — good products, wrong timing or wrong fit for Stage 1.
+
+---
+
+### RepliQ — Personalized Video Outreach
+**What:** Record one video, upload a CSV of leads, auto-generate hundreds of unique personalized videos — each with the prospect's website, LinkedIn profile, or social page scrolling in the background. Generates personalized GIF thumbnails for email, plus AI-written icebreakers via GPT-4.  
+**AppSumo LTD pricing:** Tier 1 ~$49 (100 videos/mo), Tier 2 ~$129 (500/mo), Tier 3 ~$399 (1,500/mo). 60-day money-back guarantee.  
+**Reviewed:** March 2026  
+**Decision:** ⏳ Deferred to Phase 2
+
+**Why deferred:**
+- Stage 1 is plain-text-only cold email — RepliQ requires a clickable link in the email, which triggers spam filters and breaks deliverability rules during inbox warmup
+- RepliQ integrates with Smartlead, QuickMail, Mixmax, Salesflow, SalesBlink — **Instantly is not listed**
+- Primary use case in RepliQ docs is agencies pitching SMBs and local businesses — our ICP (VP/Director/CXO at 500+ person companies) may perceive scrolling-website personalization as a mass tactic rather than genuine outreach
+
+**When to revisit:**
+- After 4+ weeks of live pipeline with first bookings confirmed
+- If LinkedIn DM outreach becomes a secondary channel (RepliQ links work well in LinkedIn DMs — no deliverability concern)
+- If warm follow-up sequences (post-reply) are added — a short personalized video as a second touch after a `Curious` reply classification could be compelling
+
+**Alternatives at Phase 2:**
+- **Sendspark** ($39/mo) — better CRM integration (HubSpot, Salesforce, Outlook), stronger fit if pipeline scales and needs CRM sync
+- **SendPotion** — AI face + voice cloning per prospect, highest personalization tier, pricier
+
+
+---
+
 ## Environment Variables — Complete Reference
 
 All variables set in Vercel → `waypoint-core-system` → Settings → Environment Variables.
