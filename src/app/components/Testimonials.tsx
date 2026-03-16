@@ -25,7 +25,48 @@ const testimonials = [
     location: "Nashville, TN",
     score: "Readiness Score: 71",
   },
+  {
+    quote:
+      "Kelsey told me not to buy — at least not yet. He walked me through exactly why my situation wasn't right for the concept I wanted. Six months later I was ready, and we found something that actually fit. That honest no was worth more than any yes I got from other consultants.",
+    name: "Carol M.",
+    role: "Former healthcare executive, franchise owner since 2025",
+    location: "Phoenix, AZ",
+    score: "Readiness Score: 62",
+  },
+  {
+    quote:
+      "I wasn't planning to move fast. I just wanted to understand my options. Kelsey didn't pressure me to commit to anything — he helped me build a real plan so that when I'm ready to leave corporate, the business is already running.",
+    name: "James P.",
+    role: "Still employed, franchise opens Q3 2026",
+    location: "Chicago, IL",
+    score: "Readiness Score: 73",
+  },
+  {
+    quote:
+      "My husband thought this was another sales call. Within ten minutes of talking to Kelsey, he was asking more questions than I was. The transparency about how Kelsey gets paid is what changed his mind.",
+    name: "Rachel S.",
+    role: "Teacher turned franchise co-owner",
+    location: "Raleigh, NC",
+    score: "Readiness Score: 69",
+  },
+  {
+    quote:
+      "I went in with a list of concepts I'd already researched. Kelsey politely set it aside and showed me something I'd never considered. Six months after that conversation I opened my doors. I wouldn't have found it on my own.",
+    name: "Tom W.",
+    role: "Former tech executive, franchise owner",
+    location: "Seattle, WA",
+    score: "Readiness Score: 81",
+  },
+  {
+    quote:
+      "I needed something that didn't require me to be there 60 hours a week. Kelsey understood that immediately and never pushed anything that didn't fit that requirement. The concept we landed on was exactly what I described.",
+    name: "Lisa H.",
+    role: "Trailing spouse, semi-absentee owner",
+    location: "Scottsdale, AZ",
+    score: "Readiness Score: 76",
+  },
 ];
+
 
 export default function Testimonials() {
   return (

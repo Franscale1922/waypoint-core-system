@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
@@ -41,6 +42,21 @@ export default function AboutPage() {
               guy who will be completely honest with you about whether franchise
               ownership is actually the right move for your life.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Pull-quote — B.3 */}
+      <section className="bg-white border-b border-[#e2ddd2]">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+          <div className="flex gap-5 sm:gap-6 items-start">
+            <div className="flex-shrink-0 w-1 sm:w-[3px] rounded-full bg-[#d4a55a] self-stretch" />
+            <div>
+              <p className="font-playfair text-xl sm:text-2xl md:text-3xl italic text-[#1a1a1a] leading-snug">
+                &ldquo;Kelsey told me not to buy. I needed to hear that.&rdquo;
+              </p>
+              <p className="mt-3 text-sm text-[#7a7a7a]">Carol M., Phoenix AZ</p>
+            </div>
           </div>
         </div>
       </section>
@@ -121,6 +137,40 @@ export default function AboutPage() {
               a sales line. If I make bad matches, nobody buys, and I do not
               get paid.
             </p>
+          </div>
+
+          {/* 2-up Testimonials — B.4 */}
+          <div className="mb-10 sm:mb-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
+            {[
+              {
+                quote: "Kelsey told me not to buy — at least not yet. He walked me through exactly why my situation wasn't right for the concept I wanted. Six months later I was ready, and we found something that actually fit. That honest no was worth more than any yes I got from other consultants.",
+                name: "Carol M.",
+                role: "Former healthcare executive, franchise owner since 2025",
+                location: "Phoenix, AZ",
+                score: "Readiness Score: 62",
+              },
+              {
+                quote: "I went in with a list of concepts I'd already researched. Kelsey politely set it aside and showed me something I'd never considered. Six months after that conversation I opened my doors. I wouldn't have found it on my own.",
+                name: "Tom W.",
+                role: "Former tech executive, franchise owner",
+                location: "Seattle, WA",
+                score: "Readiness Score: 81",
+              },
+            ].map((t) => (
+              <div key={t.name} className="flex flex-col bg-white rounded-2xl p-6 sm:p-8 border border-[#e2ddd2] shadow-sm">
+                <div className="text-5xl font-serif text-[#d4a55a] leading-none mb-3 select-none" aria-hidden="true">&ldquo;</div>
+                <p className="text-sm text-[#3a3a3a] leading-relaxed flex-1">{t.quote}</p>
+                <div className="h-px bg-[#d4a55a]/30 my-5" />
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
+                    <p className="text-xs text-[#7a7a7a] mt-0.5">{t.role}</p>
+                    <p className="text-xs text-[#7a7a7a]">{t.location}</p>
+                  </div>
+                  <span className="shrink-0 text-[10px] font-medium text-[#c08b3e] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide">{t.score}</span>
+                </div>
+              </div>
+            ))}
           </div>
 
           {/* Why I Do This from Montana — editorial split with Zone B photo */}
