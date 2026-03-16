@@ -83,8 +83,8 @@ export default function AboutPage() {
               <strong className="text-[#1b3a5f] font-semibold">I was terrible at it. We made a lot of mistakes and we lost money.</strong>
             </p>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
-              <strong className="text-[#1b3a5f] font-semibold">That failure taught me more about what makes a franchise work for real people</strong>{" "}
-              than anything I learned on the franchisor side.
+              <strong className="text-[#1b3a5f] font-semibold">That combination is why I can look you in the eye</strong>{" "}
+              and tell you whether this is a good idea for you or not.
             </p>
           </div>
 
