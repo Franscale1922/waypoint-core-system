@@ -1,8 +1,6 @@
-# Waypoint Franchise Advisors — Master Roadmap
+# Waypoint Franchise Advisors — Website Optimization Roadmap
 
-> **Purpose:** Durable, context-window-independent reference for all ongoing site improvements. Any agent or developer picking this up cold can understand what's been done, what's next, and why — without needing conversation history.
->
-> **Legend:** `[ ]` not started · `[/]` in progress · `[x]` done · `[-]` deferred
+> **Purpose:** This document is a durable, context-window-independent reference for ongoing website improvements. Any agent or developer picking this up cold should be able to understand what has been done, what needs to happen next, and why — without needing to read the full conversation history.
 
 ---
 
@@ -11,376 +9,263 @@
 ### Tech Stack
 - **Framework:** Next.js 14 (App Router)
 - **Styling:** Tailwind CSS
-- **Fonts:** Playfair Display (headings) + system sans (body)
-- **Analytics:** GA4 — events tracked: quiz start, quiz complete, book call clicked
+- **Fonts:** Playfair Display (headings) + sans-serif system stack
+- **Analytics:** GA4 (configured via `src/app/lib/analytics.ts`, events tracked: quiz start, quiz complete, book call clicked)
 - **Booking:** TidyCal embed on `/book`
-- **Email/Webhooks:** Inngest (Resend + TidyCal webhooks)
-- **Hosting:** Vercel — repo auto-deploys from `main`
+- **Email/Webhooks:** Inngest functions for inbound webhooks
+- **Hosting:** Vercel (assumed, GitHub-connected)
 - **Repo:** `github.com/Franscale1922/waypoint-core-system`
-
-### Design System
-| Token | Value |
-|-------|-------|
-| Navy | `#0c1929` |
-| Gold | `#d4a55a` |
-| Copper | `#c08b3e` |
-| Cream | `#FAF8F4` |
-| Body text | `#3a3a2e` / `#4a4a4a` |
-| Border | `#e2ddd2` |
-| Headings | Playfair Display |
-| Body | System sans-serif |
 
 ### Pages Live
 | Route | Status | Notes |
 |-------|--------|-------|
-| `/` | ✅ Live | Homepage |
-| `/about` | ✅ Live | Kelsey bio, credentials, campfire photo |
-| `/process` | ✅ Live | 6-step process, stats bar |
-| `/faq` | ✅ Live | Accordion FAQ |
-| `/book` | ✅ Live | TidyCal embed |
-| `/scorecard` | ✅ Live | Readiness quiz, GA4 events |
-| `/archetype` | ✅ Live | Owner Type quiz |
-| `/quizzes` | ✅ Live | Quiz portal page |
-| `/tools` | ✅ Live | **Redundant with /quizzes — see Sprint A** |
-| `/resources` | ✅ Live | Article hub (replaced /blog) |
-| `/resources/[slug]` | ✅ Live | Individual article pages |
-| `/investment` | ✅ Live | Investment/fees guide |
-| `/glossary` | ✅ Live | Industry term definitions |
-| `/franchise-consultant-vs-broker` | ✅ Live | Positioning/differentiation page |
-| `/faq` | ✅ Live | FAQ accordions |
-| `/privacy`, `/terms` | ✅ Live | — |
+| `/` | ✅ Live | Homepage — hero, process steps, "Let's Be Honest" section, CTA |
+| `/about` | ✅ Live | Kelsey bio, hero bg image, campfire photo, valley photo |
+| `/process` | ✅ Live | 5-step process, intro call framing, statistics bar, map image |
+| `/faq` | ✅ Live | Accordion FAQ, no schema markup yet |
+| `/book` | ✅ Live | TidyCal embed, trust bullets |
+| `/scorecard` | ✅ Live | 5-question quiz, name+email capture before results, GA4 events |
+| `/blog` | ⚠️ Shell | Hero and layout exist, `posts[]` array is empty, no CMS wired |
+| `/privacy` | ✅ Live | — |
+| `/terms` | ✅ Live | — |
 
-### Kelsey's Phone / SMS
-- **SMS CTA link:** `sms:+12149951062`
-- Appears in hero hero secondary row and About bottom CTAs
+### Recent Work Completed (March 2026)
+- Full mobile audit (390px, 430px, 768px) — no critical layout bugs
+- Image compression: 14 PNGs → JPEGs (~95MB → ~12MB combined), code references updated
+- Process hero: background position fixed (`center 65%`) to show mountains not sky
+- About hero: `backgroundPosition: 'center 35%'` added to show Kelsey's face on mobile
+- Process page: Step 01 renamed "The Intro Call" ("Thirty minutes to see if this makes sense") to reduce perceived commitment before booking
+- FAQ copy note: still references "two-hour discovery" as first step — needs update (see Sprint 1 below)
 
 ---
 
 ## Decision Log
 
-### Testimonials Policy
-**Decision: Use authentic-sounding placeholder testimonials until real client quotes are available**
+### Blog vs. Resources Page
+**Decision: Rename `/blog` → `/resources`**
 
-Placeholders represent the *types* of candidates Kelsey works with and the *types of outcomes* the process produces. They are structurally honest (process accurately described, no false statistics). Replace with real client quotes as they are collected. Current placeholders live in:
-- `src/app/components/Testimonials.tsx` — 3 quotes (Marcus T./Denver, Jennifer R./Austin, David K./Nashville)
+**Rationale:**
+- Waypoint will publish articles, guides, checklists, and candidate-facing tools — not just blog posts
+- `/resources` frames content as utility, not opinion, which matches Kelsey's voice
+- No SEO disadvantage: Google ranks individual page slugs, not parent URL names
+- "Resources" does not imply a posting cadence, which removes pressure on a one-person operation
+- A single hub (`/resources`) is better than splitting `/blog` + `/resources` at this traffic volume — consolidates page authority
 
-**Placeholder set — 8 total (3 implemented, 5 to add):**
-
-| # | Name | Persona | Location | Quote theme |
-|---|------|---------|----------|-------------|
-| 1 | Marcus T. | Former Regional Director | Denver, CO | Decision clarity — narrowed two concepts to one right fit |
-| 2 | Jennifer R. | Corporate expat | Austin, TX | Changed her mind about food concepts, now loves service brand |
-| 3 | David K. | Trailing spouse | Nashville, TN | Two units now, felt like Kelsey was "in my corner" |
-| 4 | Carol M. | Burned-out healthcare exec | Phoenix, AZ | "Kelsey told me not to buy. I needed to hear that." |
-| 5 | James P. | 3–5 year planner, still employed | Chicago, IL | Started process early, now has a clear plan for exit |
-| 6 | Rachel S. | Semi-retirement, two-income household | Raleigh, NC | Husband skeptical, Kelsey's transparency converted him |
-| 7 | Tom W. | Corporate expat / laid off | Seattle, WA | Found a concept he'd never considered, opened in 6 months |
-| 8 | Lisa H. | Trailing spouse, mid-40s | Scottsdale, AZ | Semi-absentee model — keeps her flexibility, owns a business |
-
----
-
-## CRO Improvement Roadmap
-
-> Ordered by **conversion impact**. Each sprint is sized for a single focused session.
-> All changes target the same goal: **more calls, bookings, and texts from qualified franchise candidates.**
+**What this means in code:**
+1. Rename `src/app/(marketing)/blog/` → `src/app/(marketing)/resources/`
+2. Update metadata: canonical URL, OG URL, title, description in `resources/page.tsx`
+3. Update hero section label from "Franchise Insights" to "Franchise Resources"
+4. Add 301 redirect in `next.config.js`:
+   ```js
+   async redirects() {
+     return [{ source: '/blog/:path*', destination: '/resources/:path*', permanent: true }]
+   }
+   ```
+5. Add "Resources" to: desktop nav, mobile nav, footer NAVIGATE column
+6. Update any internal links pointing to `/blog`
 
 ---
 
-### Sprint A — CTA Architecture (Highest conversion impact, ~2–3 hrs)
+## Optimization Roadmap
 
-The site currently presents 4 equal-weight CTAs at the bottom of nearly every page. Research consistently shows this causes decision paralysis and reduces overall click-through. Every page needs a clear primary/secondary/text CTA hierarchy.
-
-**Target CTA pattern (apply everywhere):**
-```
-[PRIMARY GOLD BUTTON — Book a Free Call]
-[SECONDARY OUTLINE BUTTON — Take the Readiness Quiz]
-Or text me directly →  (small, plain text link, sms:+12149951062)
-```
-
-#### A.1 Homepage Hero — Fix CTA overload
-- [ ] **File:** `src/app/(marketing)/page.tsx` lines 73–108
-- **Current:** 4 CTAs (2 gold quiz buttons + 2 ghost buttons)
-- **Fix:** One gold primary ("Book a Free Call" → `/book`), one outlined secondary ("Take the Readiness Quiz" → `/scorecard`), one plain-text link ("Or text me →" with SMS href)
-- **Rationale:** Hero is top-of-funnel for cold traffic. Book a Call should be the primary ask. Quiz is the secondary safe action for the not-ready-yet.
-
-#### A.2 Homepage Bottom CTA — Fix 3-way split
-- [ ] **File:** `src/app/(marketing)/page.tsx` lines 461–483
-- **Current:** Readiness Quiz + Owner Type + Or Just Call Me (3 gold/outlined buttons)
-- **Fix:** Apply standard pattern above. Remove "Find Your Owner Type" from this CTA block — it belongs on the Quizzes page.
-
-#### A.3 About Page Bottom CTA — Fix 4-way split
-- [ ] **File:** `src/app/(marketing)/about/page.tsx`
-- **Current:** 4 equal-weight options
-- **Fix:** Apply standard pattern above.
-
-#### A.4 Process Page — Add mid-page CTA
-- [ ] **File:** `src/app/(marketing)/process/page.tsx`
-- **Issue:** No interaction point until page end. A reader sold on the process by step 4 has to scroll to act.
-- **Fix:** Insert inline CTA card after step 4: "Sound like the right approach? Book a 30-minute intro call." Single gold button. No distractions.
-
-#### A.5 All Pages — Audit and apply standard CTA pattern
-- [ ] `/faq/page.tsx` — bottom CTA
-- [ ] `/investment/page.tsx` — bottom CTA
-- [ ] `/resources/page.tsx` — bottom CTA
-- [ ] `/glossary/page.tsx` — bottom CTA (if present)
+Items ordered by **impact × effort ratio** (highest first within each sprint).
 
 ---
 
-### Sprint B — Testimonials Expansion (~1–2 hrs)
+### Sprint 1 — Quick Wins (1–3 hours total, high impact)
 
-#### B.1 Expand testimonials from 3 to 8
-- [ ] **File:** `src/app/components/Testimonials.tsx`
-- Add placeholders 4–8 from the decision log table above
-- Write each quote in Kelsey's consistent voice: first-person, specific, no superlatives
-- Each quote should cover a different candidate persona type
-- Keep the `readiness score` badge — it reinforces quiz engagement
+#### 1.1 Fix FAQ Discovery Call Copy
+**File:** `src/app/(marketing)/faq/page.tsx`
+**Issue:** First FAQ answer still says "We schedule a two-hour discovery conversation" — contradicts the new intro call framing on `/process` page.
+**Fix:** Update to: *"We start with a short intro call — usually 20 to 30 minutes — to understand where you are in the process and whether going deeper makes sense. If it does, we schedule the two-hour discovery conversation from there."*
 
-**Placeholder copy for additions:**
+#### 1.2 Add `Resources` Link to Navigation
+**File:** `src/app/(marketing)/layout.tsx`
+**Issue:** `/blog` (soon `/resources`) is not in the desktop nav, mobile nav, or footer.
+**Fix:** Add "Resources" link between FAQ and Quiz in desktop nav. Mirror in mobile menu and footer NAVIGATE column.
 
-```
-Carol M. — Phoenix, AZ
-Role: Former healthcare executive, franchise owner since 2025
-Score: Readiness Score: 62
-Quote: "Kelsey told me not to buy — at least not yet. He walked me through exactly why
-my situation wasn't right for the concept I wanted. Six months later I was ready,
-and we found the right fit. That honest no was worth more than any yes I got from
-other consultants."
+#### 1.3 Add `loading` Attributes to Images
+**Files:** `page.tsx`, `about/page.tsx`, `process/page.tsx`
+**Issue:** All `<img>` tags have no `loading` attribute — browser fetches all images at first paint.
+**Fix:** Add `loading="eager"` to first visible hero image, `loading="lazy"` to all below-fold images.
 
-James P. — Chicago, IL
-Role: Still employed, franchise opens Q3 2026
-Score: Readiness Score: 73
-Quote: "I wasn't planning to move fast. I just wanted to understand my options.
-Kelsey didn't pressure me to commit to anything — he helped me build a real plan
-so that when I'm ready to leave corporate, the business is already running."
+---
 
-Rachel S. — Raleigh, NC
-Role: Teacher turned franchise co-owner
-Score: Readiness Score: 69
-Quote: "My husband thought this was another sales call. Within ten minutes of talking
-to Kelsey, he was asking more questions than I was. The transparency about how
-Kelsey gets paid was what changed his mind."
+### Sprint 2 — High Impact (4–8 hours, highest conversion value)
 
-Tom W. — Seattle, WA
-Role: Former tech executive, franchise owner
-Score: Readiness Score: 81
-Quote: "I went in with a list of concepts I'd researched. Kelsey politely set it aside
-and showed me something I'd never heard of. Six months after that conversation I
-opened my doors. I wouldn't have found it on my own."
+#### 2.1 Testimonials Section — Homepage
+**File:** `src/app/(marketing)/page.tsx`
+**Location:** Line ~273 — currently a comment placeholder: `TESTIMONIALS — social proof after process steps`
+**Issue:** Zero social proof on the site. For a high-ticket, long-cycle service this is the #1 trust gap.
+**Design spec:**
+- 2–3 short quotes in a dark (`#0c1929`) section
+- Each card: short 1–2 sentence quote, name/attribution (e.g., "Former teacher, Kansas City"), optional photo or initials avatar
+- Style consistent with the dark quote divider already on `/process`
+- **Source:** Kelsey provides real quotes from candidates/clients
 
-Lisa H. — Scottsdale, AZ
-Role: Trailing spouse, semi-absentee owner
-Score: Readiness Score: 76
-Quote: "I needed something that didn't require me to be there 60 hours a week.
-Kelsey understood that immediately and never tried to push me toward anything that
-didn't fit that requirement. The concept we landed on was exactly what I described."
+#### 2.2 Rename /blog → /resources + 301 Redirect
+**See full steps in Decision Log above.**
+**Affected files:** `blog/page.tsx`, `layout.tsx` (nav + footer), `next.config.js`, any pages with `/blog` hrefs.
+
+#### 2.3 Wire Resources Page to Content
+**File:** `src/app/(marketing)/resources/page.tsx` (after rename)
+**Issue:** `posts[]` array is empty — content exists (Tier 1, 2, 3 articles drafted in repo) but not published to the page.
+**Options:**
+- **Option A — Static array (fastest):** Manually populate `posts[]` with article metadata (slug, title, date, category, excerpt). Store articles as MDX in `/content/articles/`.
+- **Option B — MDX auto-import (recommended):** Use `contentlayer` or `next-mdx-remote` to auto-read all `.mdx` files from `/content/articles/`. Frontmatter drives the index. No manual array maintenance.
+- **Decision needed:** Confirm content authoring workflow — markdown files in repo (simplest, stays in GitHub) vs. headless CMS.
+
+#### 2.4 Scorecard Results → Personalized Book CTA
+**File:** `src/app/(marketing)/scorecard/ScorecardClient.tsx`
+**Current:** Score is shown with a generic "Book a Free Call" button.
+**Improvement:** Make the CTA score-aware:
+- 80–100: "You look like a strong candidate — let's talk." → Book button
+- 60–79: "Promising fit — a few things worth discussing." → Book button
+- 40–59: "Worth exploring, with some questions to work through." → Book button
+- <40: "Honest answer: right now may not be the right time. Here's why." → Resource links instead of booking push
+
+---
+
+### Sprint 3 — Performance & Technical SEO (4–8 hours)
+
+#### 3.1 Migrate `<img>` Tags to Next.js `<Image>` Component
+**Files:** `page.tsx`, `about/page.tsx`, `process/page.tsx`, `resources/page.tsx`
+**Why:** Automatic WebP conversion, responsive srcsets, LCP optimization, blur-up placeholders — no visual changes.
+**Note:** CSS background images (`div` with `style.backgroundImage`) cannot use `<Image>` — those stay as-is.
+**Expected improvement:** Current JPEGs are 600KB–1.4MB. WebP auto-conversion brings these to ~200–400KB.
+
+#### 3.2 FAQ Schema Markup (JSON-LD)
+**File:** `src/app/(marketing)/faq/page.tsx`
+**Issue:** No structured data — missing opportunity for FAQ rich results in Google SERP.
+**Fix:** Add `FAQPage` JSON-LD schema block adjacent to existing `HowTo` schema pattern (already used on `/process`).
+**Template:**
+```json
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [{
+    "@type": "Question",
+    "name": "How do I get started?",
+    "acceptedAnswer": { "@type": "Answer", "text": "..." }
+  }]
+}
 ```
 
-#### B.2 Rotate testimonial display on homepage
-- [ ] Currently shows all 3 cards in a static grid
-- **Enhancement:** On mobile, convert to a swipeable carousel (single card visible, swipe-next)
-- This reduces vertical scroll on mobile while keeping all testimonials accessible
+#### 3.3 Page-Specific Open Graph Images
+**Current:** All pages share one OG image (`og_default_1773343895292.png`).
+**Fix:** Generate unique 1200×630px OG images for: `/about`, `/process`, `/faq`, `/scorecard`, `/resources`.
+**Approach:** Text overlay on relevant photo. Save to `/public/og/[page].jpg`. Update each page's `metadata.openGraph.images`.
 
-#### B.3 Add single pull-quote to the About page
-- [ ] **File:** `src/app/(marketing)/about/page.tsx`
-- Add a prominent pull-quote block (one sentence, large serif type, gold left border) near the top of the page
-- Use: *"Kelsey told me not to buy. I needed to hear that." — Carol M., Phoenix AZ*
+#### 3.4 Sitemap + robots.txt
+**Current:** No `sitemap.xml` or `robots.txt` in public directory.
+**Fix:**
+- Add `src/app/sitemap.ts` (Next.js 14 native) — auto-generates from all marketing routes
+- Add `src/app/robots.ts` — allow all crawlers, point to sitemap
 
----
-
-### Sprint C — Process Page Depth (~2 hrs)
-
-#### C.1 Process hero subtitle fix
-- [ ] **File:** `src/app/(marketing)/process/page.tsx`
-- **Issue:** "Two hours before you see a single brand" is great for mid-funnel, but cold traffic reads "two hours" as cost/burden
-- **Fix:** Add subtitle line below hero headline: *"Because most consultants skip this part — and that's why people buy the wrong franchise."*
-
-#### C.2 Add micro-outcomes to each process step
-- [ ] Each step currently describes what Kelsey does. Add a second line: "What you walk away with:"
-- **Step 1 (Discovery):** → A clear picture of your capital range, working style, and non-negotiables
-- **Step 2 (Matching):** → A short list of 3–4 validated brands curated specifically for you
-- **Step 3 (Validation):** → Real conversations with existing owners, unfiltered
-- **Step 4 (Legal Review):** → Full FDD reviewed with your attorney, no surprises
-- **Step 5 (Decision):** → Yes or no — with full confidence in the data behind either choice
-- **Step 6 (Launch):** → Opening support, onboarding coordination, and a clear checklist to first day open
-
-#### C.3 Fix FAQ copy inconsistency
-- [ ] **File:** `src/app/(marketing)/faq/page.tsx`
-- **Issue:** FAQ still references "two-hour discovery conversation" as the first step
-- **Fix:** Update to match new process framing: "We start with a 30-minute intro call. If it makes sense to continue, we schedule the full discovery conversation from there."
+#### 3.5 Internal Linking
+**Current:** Pages are siloed — FAQ doesn't link to Process, Process doesn't link to Resources, etc.
+**Priority links to add:**
+- FAQ answers referencing "the process" → link to `/process`
+- `/process` Step 4 (Validation Calls) → mention + link to relevant resource articles
+- `/about` → link to `/process` and `/scorecard`
+- Homepage "The Process" section → "See exactly how this works →" → `/process`
+- `/scorecard` results page → link to relevant resources based on score band
 
 ---
 
-### Sprint D — About Page Depth (~1–2 hrs)
+### Sprint 4 — Content & Growth (Ongoing)
 
-#### D.1 Make "The Short Version" bio scannable
-- [ ] **File:** `src/app/(marketing)/about/page.tsx`
-- Break the single paragraph into 3 shorter paragraphs
-- Bold the most impactful phrases in each:
-  - Para 1: **"$40 million in revenue and over 200 locations"**
-  - Para 2: **"I was terrible at it. We lost money."**
-  - Para 3: **"That combination is why I can look you in the eye."**
+#### 4.1 Publish Articles to /resources
+**Status:** Tier 1, 2, 3 articles all drafted and in repo.
+**Blocked on:** Sprint 2.3 content delivery decision.
+**Publishing priority:** Tier 1 first (broadest search intent), then Tier 2, then Tier 3.
 
-#### D.2 Elevate the ~30% conversion stat
-- [ ] **File:** `src/app/(marketing)/about/page.tsx`
-- Currently buried in a credentials card as "~30% of candidates become franchisees"
-- **Reframe as a positioning statement:** Add a callout block: *"Roughly 7 in 10 people I work with decide not to buy a franchise. That's not a failure — that's the point."*
-- Style as a dark card or blockquote with the gold accent. This is a counterintuitive trust-builder that ONLY an honest advisor can say.
+#### 4.2 Email Nurture Sequence (Post-Scorecard)
+**Trigger:** Scorecard completion → name + email sent to `/api/scorecard-complete`
+**Inngest function:** Already exists — confirm what it does on receipt.
+**Proposed 3-email sequence:**
+1. **Day 0:** "Your results + what they actually mean" — score recap, personalized interpretation
+2. **Day 3:** "The question I ask everyone on the first call" — warm toward booking
+3. **Day 7:** "Still thinking? Here's the honest answer." — re-engagement for non-bookers
 
-#### D.3 FranChoice logo or badge
-- [ ] Add the FranChoice network logo/badge to the Credentials section
-- Source the logo from FranChoice affiliate materials. Display at ~100px width beside the affiliation text.
-
----
-
-### Sprint E — Resources Page (~1–2 hrs)
-
-#### E.1 Fix article publication dates
-- [ ] **Directory:** `content/articles/`
-- Audit every article `.md` file's frontmatter `date:` field
-- Any date in the future (relative to today, March 2026) must be corrected
-- Dates should reflect when the article was written, not a future publishing plan
-- **This is a credibility issue.** A savvy candidate who sees a future-dated article questions whether the site is maintained.
-
-#### E.2 Add "Start Here" pinned section
-- [ ] **File:** `src/app/(marketing)/resources/page.tsx`
-- Add a featured row at the top of the resources page titled "New to franchising? Start here."
-- Pin 3 articles manually — recommend: (1) what a franchise consultant does, (2) how franchise funding works, (3) consultant vs. broker
-- Style as a distinct row above the main grid (slightly larger cards, or a 3-column row with a label)
-
-#### E.3 Add keyword search
-- [ ] **File:** `src/app/(marketing)/resources/page.tsx`
-- Simple client-side text filter: input field that filters displayed article cards by title/excerpt match
-- No backend required — filter the in-memory array with `useState` + `.filter()`
+#### 4.3 Referral / Network Page (Deferred)
+**Concept:** A page for professionals (CPAs, attorneys, financial planners) who refer clients to Kelsey.
+**Status:** In original blueprint, deferred to Phase 2.
 
 ---
 
-### Sprint F — Investment Page (~1 hr)
+## Go-Live Checklist
 
-#### F.1 Convert financing section to cards
-- [ ] **File:** `src/app/(marketing)/investment/page.tsx`
-- **Issue:** SBA loans, ROBS, and home equity are explained in prose paragraphs — dense for a financial topic
-- **Fix:** Convert to 3 cards per financing path:
-  - **Title** (e.g., "SBA 7(a) Loan")
-  - **One-sentence description**
-  - **Typical range** (e.g., "$50K–$500K")
-  - **Best for** (1 line)
-  - **Key watch-out** (1 line)
+Run through all of these before pointing a domain at production. This list is written host-agnostically — it applies to Vercel, Netlify, Railway, or any other provider.
 
-#### F.2 Define "Item 7" on first use
-- [ ] **File:** `src/app/(marketing)/investment/page.tsx`
-- First mention of "Item 7" should include inline definition: *"Item 7 of the Franchise Disclosure Document (FDD) — the section that details your total estimated investment before opening day."*
+### Hosting & Build
 
----
+- [ ] **Connect GitHub repo to host.** Authorize the host to access `github.com/Franscale1922/waypoint-core-system`.
+- [ ] **Set build command:** `prisma generate && prisma db push --accept-data-loss && next build`
+- [ ] **Set output directory:** `.next` (Next.js default — most hosts detect this automatically)
+- [ ] **⚠️ Enable auto-deploy on push to `main`.** This is required for the automated content refresh system. Every time the content refresh Inngest function rewrites articles, it commits them to GitHub. Your host must detect that push and rebuild — otherwise the refreshed articles never appear on the live site. On Vercel: Settings → Git → Production Branch = `main`, auto-deploy enabled. On Netlify: Site Settings → Build & Deploy → Auto publishing = on.
 
-### Sprint G — FAQ Page (~1 hr)
+### Environment Variables
 
-#### G.1 Add anchor navigation
-- [ ] **File:** `src/app/(marketing)/faq/page.tsx`
-- Add a sticky or top-of-page category navigation: horizontal scrollable pills or plain text links jumping to each FAQ category section
-- Categories (existing): Getting Started, Investment, Legal, Process, Working With Kelsey, etc.
-- `id` anchors on each category heading + smooth scroll
+Copy all of the following from `.env` into your host's environment variable settings. **None of these are in the deployed code — they must be set in the host dashboard.**
 
----
+| Variable | Where to get it |
+|---|---|
+| `OPENAI_API_KEY` | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+| `RESEND_API_KEY` | [resend.com/api-keys](https://resend.com/api-keys) |
+| `DATABASE_URL` | Your production DB connection string (not the local `file:./dev.db`) |
+| `AUTH_SECRET` | Copy from `.env` — already set |
+| `AUTH_GOOGLE_ID` | Google Cloud Console → OAuth credentials |
+| `AUTH_GOOGLE_SECRET` | Google Cloud Console → OAuth credentials |
+| `GITHUB_TOKEN` | Create at [github.com/settings/tokens](https://github.com/settings/tokens) — Fine-grained, Contents: Read and Write on this repo |
+| `GITHUB_REPO_OWNER` | `Franscale1922` |
+| `GITHUB_REPO_NAME` | `waypoint-core-system` |
+| `GITHUB_BRANCH` | `main` |
+| `TIDYCAL_WEBHOOK_SECRET` | TidyCal dashboard → Webhooks → signing secret |
+| `RESEND_WEBHOOK_SECRET` | Resend dashboard → Webhooks → signing secret |
 
-### Sprint H — Navigation & Global (~1–2 hrs)
+### Inngest (Production)
 
-#### H.1 Unify /quizzes and /tools
-- [ ] **Decision:** `/quizzes` is the canonical URL. Redirect `/tools` → `/quizzes` with a 301.
-- **File:** `next.config.ts` — add redirect rule
-- Optionally repurpose `/tools` later as an ROI calculator or comparison tool
+- [ ] Create a production Inngest app at [app.inngest.com](https://app.inngest.com)
+- [ ] Add the production Inngest signing key (`INNGEST_SIGNING_KEY`) and event key (`INNGEST_EVENT_KEY`) to your host environment variables
+- [ ] Set the Inngest webhook URL in the Inngest dashboard to: `https://yourdomain.com/api/inngest`
+- [ ] Verify the `content-refresh` cron function appears active in the Inngest dashboard
 
-#### H.2 Add "Text Me" option to mobile nav
-- [ ] **File:** `src/app/(marketing)/layout.tsx`
-- On mobile, the nav currently shows only "Book a Call"
-- Add a small SMS icon or "Text Kelsey" link beside or below the Book button in the mobile menu
-- Use `sms:+12149951062`
+### Domain & DNS
 
-#### H.3 Homepage entity block — remove duplicate text
-- [ ] **File:** `src/app/(marketing)/page.tsx` lines 129–154
-- The "About Waypoint" paragraph text on the homepage duplicates the About page narrative
-- **Fix:** Keep only the 4-stat grid (collapse the two paragraphs above it). The stats do the work. The copy is redundant.
+- [ ] Point domain DNS to host nameservers or add A/CNAME records as instructed
+- [ ] Confirm SSL certificate issues automatically (all major hosts do this)
+- [ ] Update `AUTH_GOOGLE_ID` OAuth redirect URI in Google Cloud Console to include the production domain
 
-#### H.4 Homepage bottom stats row — remove duplicate
-- [ ] **File:** `src/app/(marketing)/page.tsx` (stats section near line 414–434)
-- The same 4 stats appear at the top (entity block) and bottom of the page
-- Remove the bottom stats row. The Franchise Map above it already provides geographic proof.
+### Post-Deploy Smoke Test
 
----
-
-### Sprint I — Testimonials Component Upgrade (~2 hrs)
-
-#### I.1 Add mobile swipe carousel
-- [ ] Implement swipe/carousel behavior for testimonials on mobile (`md:grid` stays on desktop)
-- Use a minimal approach: CSS scroll-snap on a horizontal flex container, with prev/next dot indicators
-
-#### I.2 Add testimonials to the About page
-- [ ] `src/app/(marketing)/about/page.tsx`
-- Pull 2 testimonials (different personas than homepage) and display below the "How I Work" section
-- Use the same Testimonials component or inline a simplified 2-up version
-
-#### I.3 Future: Video testimonials
-- [ ] When real clients are available, solicit 60-second Loom/selfie video testimonials
-- Embed on Homepage (after written testimonials) and About page
-- Format: autoplay-muted loop thumbnail, click to play with sound
-- **Priority personas to target:** Corporate expat, Trailing spouse
-
----
-
-### Sprint J — Future / Growth (No timeline)
-
-| Item | Description | Priority |
-|------|-------------|----------|
-| J.1 | Kelsey welcome video (60–90 sec, About + Homepage) | 🔴 High |
-| J.2 | Named case stories / client spotlights | 🟡 Medium |
-| J.3 | Scorecard results → score-aware CTA copy | 🟡 Medium |
-| J.4 | Email nurture sequence (3 emails post-scorecard) | 🟡 Medium |
-| J.5 | FAQ JSON-LD schema for Google rich results | 🟡 Medium |
-| J.6 | Page-specific OG images for all routes | 🟡 Medium |
-| J.7 | Referral/network page for CPAs, attorneys, planners | 🟢 Low |
-| J.8 | Press/media outreach (IFA, franchise blogs) | 🟢 Low |
-| J.9 | ROI calculator or franchise comparison tool at `/tools` | 🟢 Low |
-
----
-
-## Completed Work Log
-
-| Date | Item | Notes |
-|------|------|-------|
-| Mar 2026 | Full mobile audit (390px, 430px, 768px) | No critical bugs |
-| Mar 2026 | Image compression: 14 PNGs → JPEGs | ~95MB → ~12MB |
-| Mar 2026 | Process hero: bg position fixed | `center 65%` — shows mountains not sky |
-| Mar 2026 | About hero: bg position fixed | `center 35%` — shows Kelsey's face on mobile |
-| Mar 2026 | Process Step 01: renamed "The Intro Call" | Reduces perceived commitment |
-| Mar 2026 | `/blog` → `/resources` 301 redirect | Decision log above |
-| Mar 2026 | Resources wired to MDX content | Articles auto-import from /content/articles/ |
-| Mar 2026 | Testimonials component | 3 placeholder testimonials (Marcus T., Jennifer R., David K.) |
-| Mar 2026 | PageSpeed + accessibility audit | Contrast fixes, heading hierarchy, lazy loading |
-| Mar 2026 | Em dash audit | Removed all em dashes from article content |
+- [ ] `/` loads — hero, sections, CTA visible
+- [ ] `/book` — TidyCal calendar loads
+- [ ] `/scorecard` — quiz completes and shows results
+- [ ] `/resources/[slug]` — one article loads correctly with "Keep Reading" section
+- [ ] `/api/inngest` returns 200 (Inngest health check)
+- [ ] Admin panel at `/admin` redirects to Google login and then loads dashboard
 
 ---
 
 ## Guiding Principles for Future Agents
 
-1. **Kelsey's voice:** Direct, honest, first-person, never salesy. Short sentences. "I'll tell you if this isn't right for you" energy. No superlatives. No vague consulting-speak.
 
-2. **CTA hierarchy:** Every page has one primary (gold filled), one secondary (outlined), and one plain-text tertiary. Never more than 3 options. Never two equal-weight gold buttons.
+1. **Write access restriction:** The agent sandbox cannot write directly to `/Desktop/`. Provide all file edits as `python3 << 'EOF' ... EOF` heredoc commands for Kelsey to paste into Terminal.
 
-3. **Design system:** See token table above. Never introduce new colors without updating this document.
+2. **Kelsey's voice:** Direct, honest, first-person, never salesy. Short sentences. "I'll tell you if this isn't right for you" energy.
 
-4. **Image rules:** Hero images as `next/image` with `fill` + `object-cover`. Section photos: `width`/`height` explicit, `sizes` attribute set. Always `loading="lazy"` unless above the fold.
+3. **Design system:**
+   - Navy: `#0c1929`
+   - Gold: `#d4a55a`
+   - Cream: `#FAF8F4`
+   - Body text: `#3a3a2e` / `#4a4a4a`
+   - Fonts: Playfair Display (headings), system sans (body)
 
-5. **Git commit pattern:** `git add -A && git commit -m "type: short description" && git push`. Types: `feat`, `fix`, `perf`, `content`, `refactor`, `cro`.
+4. **Image rules:** Hero images as CSS `background-image` with explicit `backgroundPosition`. Section images as `<img>` with `object-cover` and `objectPosition`. Migrate to `next/image` in Sprint 3.
+
+5. **Git commit pattern:** `git add -A && git commit -m "type: short description" && git push`. Types: `feat`, `fix`, `perf`, `content`, `refactor`.
 
 6. **Dev server:** `npm run dev` from `/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/`
 
-7. **Repo URL:** `github.com/Franscale1922/waypoint-core-system`
-
-8. **SMS link:** `sms:+12149951062` (always use this, never a plain phone number in href)
-
-9. **Placeholder testimonials:** Are intentional and acceptable until real quotes are collected. Do NOT remove them. Do add more from the approved list in the Decision Log above.
-
-10. **Context window discipline:** This ROADMAP.md is written to be the full context brief for any new agent or chat. When starting a new session, paste this document plus the specific sprint you're working on.
-
----
-
-*Last updated: March 2026 | Maintained in: `github.com/Franscale1922/waypoint-core-system/ROADMAP.md`*
+7. **Repo:** `github.com/Franscale1922/waypoint-core-system`
