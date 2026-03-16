@@ -62,6 +62,7 @@ const steps = [
     number: "01",
     label: "The Intro Call",
     headline: "Thirty minutes to see if this makes sense.",
+    outcome: "A clear picture of where you are in the process — and whether it makes sense to go deeper.",
     body: [
       "When I was on the franchisor side, I watched people get matched to brands that had nothing to do with their strengths, their lifestyle, or what they actually wanted to build. The match was fast. The regret was slow.",
       "The first thing we do is a short call, usually 20 to 30 minutes. No pitch, no intake form. I want to understand where you are in the process and whether it makes sense to go deeper. If it does, we schedule the two-hour discovery.",
@@ -73,6 +74,7 @@ const steps = [
     number: "02",
     label: "The Model",
     headline: "Your unemotional baseline, in writing.",
+    outcome: "A written profile that captures your capital range, working style, lifestyle requirements, and the red flags that would make the wrong franchise obvious.",
     body: [
       "After every discovery call, I write what I call a model. It is roughly four paragraphs that reflect back what I heard: the role you want to play in a business, the financial profile that makes sense, the lifestyle you are protecting, and the things that would make the wrong franchise feel obvious in hindsight.",
       "I send it to you and ask you to tell me if I got it right. More often than not, I do. If something is off, we adjust.",
@@ -83,6 +85,7 @@ const steps = [
     number: "03",
     label: "The Curated List",
     headline: "Three or four brands. Never more.",
+    outcome: "A curated shortlist of 3 to 4 validated brands built specifically around your profile — each pre-screened on financials, territory availability, and system-wide performance.",
     body: [
       "I work with roughly 250 franchise concepts across dozens of industries. Before I present anything, I have already reviewed the financial disclosures, checked territory availability in your area, and screened how units are performing across the system.",
       "What I will not bring you is a brand that does not report its financials, a brand where locations are closing faster than they are opening, or a brand that has no available territory near you.",
@@ -94,6 +97,7 @@ const steps = [
     number: "04",
     label: "Validation Calls",
     headline: "Talking to real owners, without the franchisor in the room.",
+    outcome: "Real, unfiltered conversations with existing owners — covering what a hard week looks like, where the brand falls short, and what they wish they had known before signing.",
     body: [
       "After your first couple of conversations with each brand, they will invite you to a group call with existing owners. The franchisor is not on that call. Nobody is watching what gets said.",
       "This is where you ask the questions that actually matter. What does a bad week look like? What does the support actually do? What do you wish you had known before you signed? Where does the brand fall short?",
@@ -104,6 +108,7 @@ const steps = [
     number: "05",
     label: "The Decision",
     headline: "You are always in control.",
+    outcome: "A confident yes or no — backed by complete data, a reviewed legal agreement, and a clear picture of what the business actually requires from you.",
     body: [
       "I use an analogy I made up on a call once and have never stopped using: I am the chauffeur. You own the car. You tell me where you want to go, and I drive and navigate and point out things worth noticing. But if you want to turn left, or slow down, or stop entirely, you tell me and we do that.",
       "At every step of this process, you are the one making decisions. My job is to make sure those decisions are informed ones.",
@@ -139,16 +144,22 @@ export default function ProcessPage() {
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
           <h1
-            className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-6"
+            className="font-playfair text-4xl sm:text-6xl text-white leading-tight mb-4"
             style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
           >
             Two hours before<br className="hidden sm:block" /> you see a single brand
           </h1>
           <p
-            className="text-white/95 text-lg sm:text-xl max-w-xl leading-relaxed"
+            className="text-white/80 text-base sm:text-lg max-w-xl leading-relaxed mb-2"
             style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
           >
             Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
+          </p>
+          <p
+            className="text-[#d4a55a] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
+          >
+            Because most consultants skip this part — and that&apos;s why people end up in the wrong franchise.
           </p>
         </div>
       </section>
@@ -200,6 +211,12 @@ export default function ProcessPage() {
                     </p>
                   ))}
                 </div>
+                {step.outcome && (
+                  <div className="mt-6 flex gap-3 items-start bg-[#f7f5f1] border border-[#e2ddd2] rounded-lg px-4 py-3">
+                    <span className="text-[#d4a55a] font-semibold text-xs uppercase tracking-widest whitespace-nowrap mt-0.5">Walk away with:</span>
+                    <p className="text-sm text-[#3a3a2e] leading-relaxed">{step.outcome}</p>
+                  </div>
+                )}
               </div>
             </div>
             {/* Mid-page CTA — inserted after Step 04 (Validation Calls) */}

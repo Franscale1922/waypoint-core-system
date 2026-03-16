@@ -70,21 +70,26 @@ export default function AboutPage() {
             <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
               The Short Version
             </h2>
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
               I live in Whitefish, Montana. I fish, I ski, and I hang out at
               the local tap house after a day on the mountain. I got into
               franchising when I helped take a family business and turn it into
               a real competitor. Then we franchised it as Bloomin&apos; Blinds
-              and grew it to a $40M system with over 200 locations. After that
-              I went the other direction and became a franchisee. Honestly, I
-              was terrible at it. We made a lot of mistakes and we lost money.
-              That failure taught me more about what makes a franchise work for
-              real people than anything I learned on the franchisor side.
+              and grew it to a{" "}
+              <strong className="text-[#1b3a5f] font-semibold">$40 million system with over 200 locations</strong>.
+            </p>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+              After that I went the other direction and became a franchisee. Honestly,{" "}
+              <strong className="text-[#1b3a5f] font-semibold">I was terrible at it. We made a lot of mistakes and we lost money.</strong>
+            </p>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              <strong className="text-[#1b3a5f] font-semibold">That failure taught me more about what makes a franchise work for real people</strong>{" "}
+              than anything I learned on the franchisor side.
             </p>
           </div>
 
           {/* Credential block — AEO entity extraction target */}
-          <div className="mb-10 sm:mb-12 bg-[#f0ede8] rounded-xl p-6 sm:p-8">
+          <div className="mb-6 sm:mb-8 bg-[#f0ede8] rounded-xl p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-5">Credentials &amp; Background</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
@@ -103,6 +108,16 @@ export default function AboutPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* D.2 — 30% stat callout */}
+          <div className="mb-10 sm:mb-12 bg-[#0c1929] rounded-xl p-6 sm:p-8">
+            <p className="font-playfair text-xl sm:text-2xl italic text-white leading-snug mb-2">
+              &ldquo;Roughly 7 in 10 people I work with decide not to buy a franchise.&rdquo;
+            </p>
+            <p className="text-[#d4a55a] text-sm font-medium">
+              That&apos;s not a failure. That&apos;s the point.
+            </p>
           </div>
 
           {/* Photo Zone A — After "The Short Version" — community/life context */}
