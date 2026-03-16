@@ -272,10 +272,39 @@ export default function FAQPage() {
         </div>
       </section>
 
+      {/* G.1 — Category anchor nav */}
+      <div className="sticky top-0 z-10 bg-[#FAF8F4] border-b border-[#e2ddd2] overflow-x-auto">
+        <div className="flex gap-2 px-6 py-3 max-w-3xl mx-auto no-scrollbar">
+          {[
+            { label: "Getting Started", id: "getting-started" },
+            { label: "The Process", id: "the-process" },
+            { label: "Funding & Capital", id: "funding-capital" },
+            { label: "Territory & Unit Count", id: "territory-unit-count" },
+            { label: "Understanding Franchises", id: "understanding-franchises" },
+            { label: "Ownership Models", id: "ownership-models" },
+            { label: "Agreement & Legal", id: "agreement-legal" },
+            { label: "Making the Decision", id: "making-the-decision" },
+          ].map(({ label, id }) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className="flex-shrink-0 text-xs font-semibold px-4 py-2 rounded-full border border-[#0c1929]/20 text-[#0c1929] hover:bg-[#0c1929] hover:text-white hover:border-[#0c1929] transition-all whitespace-nowrap"
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+      </div>
+
       {/* FAQ body */}
       <section className="max-w-3xl mx-auto px-6 py-16 sm:py-24 space-y-16">
-        {faqs.map(({ category, questions }) => (
-          <div key={category}>
+        {faqs.map(({ category, questions }) => {
+          const id = category
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "");
+          return (
+          <div key={category} id={id}>
             <h2 className="font-playfair text-xl text-[#d4a55a] mb-6 pb-3 border-b border-[#e8e0d0]">
               {category}
             </h2>
@@ -285,7 +314,7 @@ export default function FAQPage() {
               ))}
             </div>
           </div>
-        ))}
+        )})}
       </section>
 
       {/* Still have questions */}

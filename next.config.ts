@@ -35,6 +35,11 @@ const nextConfig: NextConfig = {
         destination: '/resources/:path*',
         permanent: true,
       },
+      {
+        source: '/tools',
+        destination: '/quizzes',
+        permanent: true,
+      },
     ];
   },
   async headers() {

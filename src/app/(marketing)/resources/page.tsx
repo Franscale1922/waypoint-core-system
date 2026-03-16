@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getArticlesByCategory } from "../../../lib/articles";
+import { getAllArticles, getArticlesByCategory } from "../../../lib/articles";
+import ResourcesGrid from "../../components/ResourcesGrid";
 
 export const metadata: Metadata = {
   title: "Franchise Resources | Waypoint Franchise Advisors",
@@ -17,6 +18,7 @@ export const metadata: Metadata = {
 
 export default function ResourcesPage() {
   const grouped = getArticlesByCategory();
+  const allArticles = getAllArticles();
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
@@ -47,46 +49,7 @@ export default function ResourcesPage() {
           </p>
         </div>
       </section>
-      <section className="max-w-5xl mx-auto px-6 py-16 sm:py-24 space-y-20">
-        {/* Category hub links */}
-        <div>
-          <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Browse by category</p>
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: "Getting Started", href: "/resources/getting-started" },
-              { label: "Going Deeper", href: "/resources/going-deeper" },
-              { label: "Industry Spotlights", href: "/resources/industry-spotlights" },
-            ].map(({ label, href }) => (
-              <Link
-                key={href}
-                href={href}
-                className="text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border border-[#d4a55a] text-[#c08b3e] hover:bg-[#d4a55a] hover:text-white transition-all rounded"
-              >
-                {label}
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {Object.entries(grouped).map(([category, articles]) => (
-          <div key={category}>
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-8 h-[2px] bg-[#d4a55a]" />
-              <h2 className="text-sm font-medium text-[#d4a55a] uppercase tracking-[0.18em]">{category}</h2>
-            </div>
-            <div className="grid gap-6 sm:grid-cols-2">
-              {articles.map((article) => (
-                <Link key={article.slug} href={`/resources/${article.slug}`} className="group bg-white border border-[#e8e0d0] rounded-lg p-6 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
-                  <div className="w-6 h-[2px] bg-[#d4a55a] mb-4 group-hover:w-10 transition-all duration-300" />
-                  <h3 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#d4a55a] transition-colors mb-3">{article.title}</h3>
-                  <p className="text-sm text-[#5a5a4a] leading-relaxed">{article.excerpt}</p>
-                  <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        ))}
-      </section>
+      <ResourcesGrid grouped={grouped} allArticles={allArticles} />
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">The fastest way to get a real answer is a real conversation.</p>
@@ -97,7 +60,7 @@ export default function ResourcesPage() {
         </div>
         <p className="mt-6 text-sm text-white/40">
           Not sure how the process works?{" "}
-          <Link href="/process" className="text-white/60 hover:text-white/80 underline transition-colors">See the full process →</Link>
+          <Link href="/process" className="text-white/60 hover:text-white/80 underline transition-colors">See the full process &rarr;</Link>
         </p>
       </section>
     </main>

@@ -172,6 +172,21 @@ export default function MobileNav() {
             >
               Book a Free Call
             </Link>
+            <a
+              href="sms:+12149951062"
+              style={{
+                display: "block",
+                textAlign: "center",
+                marginTop: 14,
+                fontSize: 13,
+                fontWeight: 500,
+                color: "rgba(255,255,255,0.5)",
+                textDecoration: "none",
+                letterSpacing: "0.03em",
+              }}
+            >
+              Or text Kelsey &rarr;
+            </a>
           </div>
 
           <p style={{ marginTop: 28, fontSize: 11, color: "rgba(255,255,255,0.25)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
