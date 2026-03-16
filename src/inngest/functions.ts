@@ -633,3 +633,106 @@ export const contentRefreshFunction = inngest.createFunction(
         };
     }
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TidyCal Booking Sync
+// Runs daily Mon–Fri. Polls TidyCal's REST API for bookings in the last 2 days
+// and updates matched leads to REPLIED status.
+// TidyCal does not support native outbound webhooks on the Individual plan —
+// polling is the reliable alternative.
+// ─────────────────────────────────────────────────────────────────────────────
+
+type TidyCalBooking = {
+    id: number;
+    cancelled_at: string | null;
+    starts_at: string;
+    contact?: {
+        email?: string;
+        name?: string;
+    };
+};
+
+export const tidycalBookingSync = inngest.createFunction(
+    { id: "tidycal-booking-sync", retries: 2 },
+    { cron: "0 16 * * 1-5" }, // 10 AM Mountain Time (UTC-6), Mon–Fri
+    async ({ step }) => {
+
+        // ── Step 1: Fetch bookings from TidyCal API ──────────────────────────
+        const bookings = await step.run("fetch-tidycal-bookings", async () => {
+            const apiKey = process.env.TIDYCAL_API_KEY;
+            if (!apiKey) throw new Error("[tidycal-sync] TIDYCAL_API_KEY is not set");
+
+            // 2-day lookback handles timezone drift and missed runs
+            const twoDaysAgo = new Date();
+            twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+            const startsAt = twoDaysAgo.toISOString().split("T")[0]; // YYYY-MM-DD
+
+            const res = await fetch(
+                `https://tidycal.com/api/bookings?starts_at=${startsAt}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${apiKey}`,
+                        Accept: "application/json",
+                    },
+                }
+            );
+
+            if (!res.ok) {
+                throw new Error(`[tidycal-sync] API error ${res.status}: ${await res.text()}`);
+            }
+
+            const data = await res.json();
+            return (data.data || []) as TidyCalBooking[];
+        });
+
+        // Filter out cancelled bookings
+        const activeBookings = bookings.filter(b => !b.cancelled_at);
+
+        if (activeBookings.length === 0) {
+            return { status: "No active bookings in 2-day window", matched: 0, unmatched: 0 };
+        }
+
+        // ── Step 2: Match each booking to a lead and update status ───────────
+        const results = await Promise.all(
+            activeBookings.map(booking =>
+                step.run(`sync-booking-${booking.id}`, async () => {
+                    const email = booking.contact?.email;
+                    if (!email) return { matched: false, reason: "no email on booking" };
+
+                    const lead = await prisma.lead.findFirst({
+                        where: { email },
+                        orderBy: { updatedAt: "desc" },
+                    });
+
+                    if (!lead) {
+                        console.log(`[tidycal-sync] No lead found for: ${email}`);
+                        return { matched: false, email, reason: "no matching lead" };
+                    }
+
+                    // Don't overwrite terminal statuses
+                    if (["REPLIED", "SUPPRESSED"].includes(lead.status)) {
+                        return { matched: false, email, reason: `already ${lead.status}` };
+                    }
+
+                    await prisma.lead.update({
+                        where: { id: lead.id },
+                        data: { status: "REPLIED" },
+                    });
+
+                    console.log(`[tidycal-sync] ✅ Booking synced: ${lead.name} (${email})`);
+                    return { matched: true, email, leadId: lead.id };
+                })
+            )
+        );
+
+        const matched = results.filter(r => r.matched).length;
+        const unmatched = results.filter(r => !r.matched).length;
+
+        return {
+            status: "Complete",
+            total: activeBookings.length,
+            matched,
+            unmatched,
+        };
+    }
+);
