@@ -1,0 +1,144 @@
+name: Notify Google on Deploy
+
+on:
+  push:
+    branches:
+      - main
+  # Allow manual trigger from GitHub Actions tab for testing
+  workflow_dispatch:
+
+jobs:
+  # ─────────────────────────────────────────────────
+  # LAYER 1: Google Sitemap Ping
+  # Simple advisory ping — tells Google the sitemap was updated
+  # ─────────────────────────────────────────────────
+  ping-sitemap:
+    name: Ping Google Sitemap
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Google with sitemap URL
+        run: |
+          SITEMAP="https://waypointfranchise.com/sitemap.xml"
+          echo "Pinging Google with sitemap: $SITEMAP"
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://www.google.com/ping?sitemap=${SITEMAP}")
+          echo "Google ping response: $STATUS"
+          if [ "$STATUS" -ne 200 ]; then
+            echo "Warning: Google ping returned $STATUS (non-fatal)"
+          fi
+
+  # ─────────────────────────────────────────────────
+  # LAYER 2: IndexNow
+  # Submits all URLs from the sitemap to Bing/IndexNow protocol.
+  # Google also monitors IndexNow signals.
+  # ─────────────────────────────────────────────────
+  indexnow:
+    name: Submit via IndexNow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch sitemap and extract URLs
+        id: extract
+        run: |
+          SITEMAP_URL="https://waypointfranchise.com/sitemap.xml"
+          echo "Fetching $SITEMAP_URL..."
+
+          # Download sitemap and extract all <loc> values into a JSON array
+          SITEMAP_XML=$(curl -s "$SITEMAP_URL")
+          URL_LIST=$(echo "$SITEMAP_XML" \
+            | grep -oP '(?<=<loc>)[^<]+' \
+            | jq -R . | jq -s .)
+
+          echo "Extracted URLs:"
+          echo "$URL_LIST"
+
+          # Save to env for next step
+          echo "url_list<<EOF" >> $GITHUB_OUTPUT
+          echo "$URL_LIST" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Submit URLs to IndexNow
+        run: |
+          INDEXNOW_KEY="93b7973196acee37de3cfa2ff2665274a8815cc5e48d2ac193c2313cac442758"
+          HOST="waypointfranchise.com"
+          KEY_LOCATION="https://${HOST}/${INDEXNOW_KEY}.txt"
+
+          PAYLOAD=$(cat <<EOF
+          {
+            "host": "$HOST",
+            "key": "$INDEXNOW_KEY",
+            "keyLocation": "$KEY_LOCATION",
+            "urlList": ${{ steps.extract.outputs.url_list }}
+          }
+          EOF
+          )
+
+          echo "Submitting to IndexNow..."
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "https://api.indexnow.org/indexnow" \
+            -H "Content-Type: application/json; charset=utf-8" \
+            -d "$PAYLOAD")
+
+          echo "IndexNow response: $STATUS"
+          # 200 = success, 202 = accepted (queued), both are valid
+          if [ "$STATUS" -ne 200 ] && [ "$STATUS" -ne 202 ]; then
+            echo "Warning: IndexNow returned $STATUS (non-fatal)"
+          fi
+
+  # ─────────────────────────────────────────────────
+  # LAYER 3: Google Indexing API (requires secret)
+  # Directly requests indexing for each URL in the sitemap.
+  # Requires GOOGLE_INDEXING_SA_KEY secret — skipped if not set.
+  # See docs/GOOGLE_INDEXING_SETUP.md for setup instructions.
+  # ─────────────────────────────────────────────────
+  google-indexing-api:
+    name: Google Indexing API
+    runs-on: ubuntu-latest
+    # Only run if the service account secret is configured
+    if: ${{ vars.GOOGLE_INDEXING_ENABLED == 'true' }}
+    steps:
+      - name: Install dependencies
+        run: npm install -g google-auth-library
+
+      - name: Fetch sitemap and submit URLs
+        env:
+          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_INDEXING_SA_KEY }}
+        run: |
+          # Decode base64 service account key
+          echo "$GOOGLE_SA_KEY" | base64 -d > /tmp/sa-key.json
+
+          # Get OAuth2 access token using service account
+          TOKEN=$(node -e "
+            const { GoogleAuth } = require('google-auth-library');
+            const auth = new GoogleAuth({
+              keyFile: '/tmp/sa-key.json',
+              scopes: ['https://www.googleapis.com/auth/indexing'],
+            });
+            auth.getAccessToken().then(t => process.stdout.write(t));
+          ")
+
+          # Fetch sitemap and extract URLs
+          SITEMAP_XML=$(curl -s "https://waypointfranchise.com/sitemap.xml")
+          URLS=$(echo "$SITEMAP_XML" | grep -oP '(?<=<loc>)[^<]+')
+
+          echo "Submitting $(echo "$URLS" | wc -l) URLs to Google Indexing API..."
+
+          # Submit each URL
+          while IFS= read -r URL; do
+            STATUS=$(curl -s -o /tmp/idx_response.json -w "%{http_code}" \
+              -X POST "https://indexing.googleapis.com/v3/urlNotifications:publish" \
+              -H "Authorization: Bearer $TOKEN" \
+              -H "Content-Type: application/json" \
+              -d "{\"url\": \"$URL\", \"type\": \"URL_UPDATED\"}")
+
+            if [ "$STATUS" -eq 200 ]; then
+              echo "✅ $URL"
+            else
+              DETAIL=$(cat /tmp/idx_response.json)
+              echo "⚠️  $URL → $STATUS: $DETAIL"
+            fi
+            # Be polite — Google limits to ~200 req/day per property
+            sleep 0.5
+          done <<< "$URLS"
+
+          # Cleanup
+          rm -f /tmp/sa-key.json
