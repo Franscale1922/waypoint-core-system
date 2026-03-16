@@ -77,7 +77,7 @@ h1, h2 {
 }
 
 /* Keep UI elements as sans-serif */
-nav *, footer h4, footer span, footer a,
+nav *, footer h3, footer span, footer a,
 button, input, label {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
@@ -285,6 +285,23 @@ a, button, [role="button"], input[type="submit"], .quiz-option {
 
 @keyframes shimmer {
   100% { left: 100%; }
+}
+
+/* ======================================
+   FRANCHISE MAP PIN PULSE
+   Single shared keyframe — replaces
+   per-element animate-pulse on SVG circles
+   to avoid 146+ independent paint targets
+   ====================================== */
+
+@keyframes pin-pulse {
+  0%, 100% { opacity: 0.12; }
+  50% { opacity: 0.35; }
+}
+
+.pin-pulse {
+  animation: pin-pulse 2.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
 /* ======================================

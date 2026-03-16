@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import FranchiseMap from "../components/FranchiseMap";
 import Testimonials from "../components/Testimonials";
+import FranchiseMapWrapper from "../components/FranchiseMapWrapper";
 
 export const metadata: Metadata = {
   title: "Find the Franchise That Fits Your Life",
@@ -51,7 +51,7 @@ export default function HomePage() {
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <Image
           src="/images/hero-mountains-dark-lake.png"
-          alt="Montana mountain landscape"
+          alt="Dark mountain lake at twilight with alpenglow peaks — Waypoint Franchise Advisors, Whitefish Montana"
           fill
           priority
           sizes="100vw"
@@ -115,7 +115,7 @@ export default function HomePage() {
           ============================================ */}
       <section className="py-4 sm:py-5 border-b border-[#e2ddd2]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-          <p className="text-[11px] sm:text-xs md:text-sm text-[#7a7a7a] tracking-wide leading-relaxed">
+          <p className="text-[11px] sm:text-xs md:text-sm text-[#555555] tracking-wide leading-relaxed">
             <span className="text-[#c08b3e] font-medium">100% free to you.</span>{" "}
             Franchise brands pay the referral fee when you purchase.
             My only incentive is getting the match right.
@@ -146,7 +146,7 @@ export default function HomePage() {
             ].map(({ stat, label }) => (
               <div key={label} className="bg-white border border-[#e2ddd2] rounded-lg py-4 px-3">
                 <p className="text-xl sm:text-2xl font-black text-[#1b3a5f]">{stat}</p>
-                <p className="mt-1 text-[10px] text-[#7a7a7a] uppercase tracking-widest leading-snug">{label}</p>
+                <p className="mt-1 text-[10px] text-[#555555] uppercase tracking-widest leading-snug">{label}</p>
               </div>
             ))}
           </div>
@@ -406,7 +406,7 @@ export default function HomePage() {
       {/* ============================================
           FRANCHISE MAP — dynamic pins from Google Sheet
           ============================================ */}
-      <FranchiseMap />
+      <FranchiseMapWrapper />
 
       {/* ============================================
           STATS — clean numbers, copper accents
@@ -424,7 +424,7 @@ export default function HomePage() {
                 <p className="text-2xl sm:text-3xl md:text-4xl font-black text-[#1b3a5f] tracking-tight">
                   {item.stat}
                 </p>
-                <p className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-[#7a7a7a] uppercase tracking-widest">
+                <p className="mt-1.5 sm:mt-2 text-[10px] sm:text-xs text-[#555555] uppercase tracking-widest">
                   {item.label}
                 </p>
               </div>

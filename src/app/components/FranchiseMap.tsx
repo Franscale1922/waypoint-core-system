@@ -148,7 +148,7 @@ export default function FranchiseMap() {
   return (
     <section className="py-16 sm:py-24 md:py-32 bg-[#0c1929] overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="reveal text-center mb-10 sm:mb-16">
+        <div className="text-center mb-10 sm:mb-16">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#d4a55a] mb-4 sm:mb-6">
             Trusted Nationwide
           </p>
@@ -168,7 +168,7 @@ export default function FranchiseMap() {
         </div>
 
         {/* Map Container */}
-        <div className="reveal relative w-full max-w-4xl mx-auto">
+        <div className="relative w-full max-w-4xl mx-auto">
           <svg
             viewBox="0 0 960 600"
             className="w-full h-auto"
@@ -224,8 +224,8 @@ export default function FranchiseMap() {
                   cy={t.y}
                   r="6"
                   fill="#d4a55a"
-                  opacity="0.15"
-                  className="animate-pulse"
+                  className="pin-pulse"
+                  style={{ animationDelay: `${(i * 37) % 2000}ms` }}
                 />
                 {/* Pin */}
                 <circle
@@ -280,7 +280,7 @@ export default function FranchiseMap() {
         </div>
 
         {/* Caption */}
-        <div className="reveal mt-8 sm:mt-12 text-center">
+        <div className="mt-8 sm:mt-12 text-center">
           <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-lg mx-auto">
             Every pin is an owner who trusted me to get it right.
             Across {uniqueStates} states and counting. This map updates live as new clients launch.

@@ -28,31 +28,31 @@ export default function MarketingLayout({
           <div className="hidden sm:flex items-center gap-6 md:gap-8">
             <Link
               href="/about"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
               About
             </Link>
             <Link
               href="/process"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
               Process
             </Link>
             <Link
               href="/faq"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
               FAQ
             </Link>
             <Link
               href="/resources"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
               Resources
             </Link>
             <Link
               href="/quizzes"
-              className="text-xs font-medium text-[#7a7a7a] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
               Quizzes
             </Link>
@@ -73,7 +73,7 @@ export default function MarketingLayout({
       <main className="flex-1">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-[#0c1929] text-[#7a7a7a] py-12 sm:py-16">
+      <footer className="bg-[#0c1929] text-[#9a9a9a] py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 sm:gap-10">
             <div>
@@ -92,9 +92,9 @@ export default function MarketingLayout({
               </p>
             </div>
             <div>
-              <h4 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Navigate
-              </h4>
+              </h3>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link href="/about" className="hover:text-white transition-colors inline-block py-1">
@@ -129,9 +129,9 @@ export default function MarketingLayout({
               </ul>
             </div>
           <div>
-              <h4 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Guides &amp; Tools
-              </h4>
+              </h3>
               <ul className="space-y-3 text-sm">
                 <li>
                   <Link href="/quizzes" className="hover:text-white transition-colors inline-block py-1">
@@ -156,9 +156,9 @@ export default function MarketingLayout({
               </ul>
             </div>
             <div>
-              <h4 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-[#c08b3e] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Contact
-              </h4>
+              </h3>
               <a
                 href="mailto:kelsey@waypointfranchise.com"
                 className="text-sm hover:text-white transition-colors inline-block py-1 break-all sm:break-normal"
@@ -214,7 +214,7 @@ export default function MarketingLayout({
               </a>
             </div>
           </div>
-          <div className="border-t border-white/5 mt-6 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs text-[#444]">
+          <div className="border-t border-white/5 mt-6 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-4 text-xs text-[#888888]">
             <span>
               &copy; {new Date().getFullYear()} Waypoint Franchise Advisors
             </span>
