@@ -86,7 +86,7 @@ export default function MarketingLayout({
                   className="h-14 w-auto"
                 />
               </Link>
-              <p className="text-sm leading-relaxed text-[#555]">
+              <p className="text-sm leading-relaxed text-[#9a9a9a]">
                 Guidance from Whitefish, Montana. Helping people find the
                 franchise that fits their life. Not the other way around.
               </p>
@@ -179,14 +179,14 @@ export default function MarketingLayout({
                   Text me
                 </a>
               </div>
-              <p className="mt-3 text-xs text-[#444]">
+              <p className="mt-3 text-xs text-[#888888]">
                 Whitefish, Montana
               </p>
             </div>
           </div>
           {/* Social media icons */}
           <div className="border-t border-white/5 mt-10 sm:mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-xs text-[#444] uppercase tracking-widest">Follow along</p>
+            <p className="text-xs text-[#888888] uppercase tracking-widest">Follow along</p>
             <div className="flex items-center gap-5">
               {/* LinkedIn */}
               <a href="https://www.linkedin.com/in/kelsey-stuart-014b7b50/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-[#555] hover:text-[#d4a55a] transition-colors">
