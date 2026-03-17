@@ -139,8 +139,10 @@ export default function ProcessPage() {
           className="object-cover"
           style={{ objectPosition: "center 35%" }}
         />
-        {/* Bottom-to-top gradient — works for centered mobile text + left-aligned desktop */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+        {/* Primary overlay: bottom-to-top gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/10" />
+        {/* Secondary scrim: left-side reinforcement so text area stays dark regardless of image content */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
           <h1
@@ -157,13 +159,13 @@ export default function ProcessPage() {
           </p>
           <p
             className="text-[#d4a55a] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
+            style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
           >
             Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
           </p>
           <p
-            className="text-[#d4a55a]/70 text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
-            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
+            className="text-[#d4a55a] text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
+            style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
           >
             Most candidates go from intro call to a clear decision in 6&ndash;10 weeks. The pace is always yours.
           </p>
