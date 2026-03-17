@@ -114,7 +114,7 @@ export default function MobileStickyBar() {
             fontSize: "14px",
             fontWeight: 600,
             color: "#0c1929",
-            backgroundColor: "#d4a55a",
+            backgroundColor: "#CC6535",
             borderRadius: "8px",
             minHeight: "48px",
             textDecoration: "none",
