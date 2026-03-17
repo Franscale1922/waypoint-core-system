@@ -6,23 +6,19 @@ import { createPortal } from "react-dom";
 /**
  * MobileStickyBar — B-5 CRO
  *
- * Positioned with position:fixed + visualViewport API so the bar stays
- * at the visible bottom edge on iOS Safari regardless of URL bar state.
+ * Root cause of all prior drift bugs: overflow-x: clip (or hidden) on <body>
+ * causes Safari to treat the body as a scroll container (CSS spec + Safari Bug
+ * #745729), making position:fixed resolve relative to body instead of the
+ * viewport. All visualViewport JS attempts failed because they were compensating
+ * for a symptom rather than fixing the cause.
  *
- * Event choice: vv.RESIZE only — NOT vv.scroll.
- *   vv.scroll fires on EVERY page pan gesture (it tracks visual viewport
- *   panning during pinch-zoom). Listening to it corrupts the `bottom`
- *   calculation during normal scroll, pushing the bar into the middle.
- *   vv.resize fires specifically when the visual viewport DIMENSIONS change
- *   (URL bar show/hide, keyboard, orientation) — the only cases that need
- *   a position correction.
+ * Fix applied upstream: overflow-x: clip moved from body → marketing layout
+ * wrapper. Now position:fixed resolves correctly to the viewport on all browsers.
  *
- * Bottom formula: window.innerHeight - vv.offsetTop - vv.height
- *   = how many px of layout viewport are BELOW the visual viewport.
- *   URL bar hidden → gap = 0 → bottom: 0px (bar at screen bottom).
- *   URL bar visible (top) → gap > 0 → bar pushed up by gap px.
- *   URL bar visible (bottom, modern iOS) → vv.height already excludes
- *   URL bar area, so layout viewport = vv.height → gap = 0. ✓
+ * This component is now pure CSS positioning — no visualViewport API.
+ * The visualViewport approach is unreliable for URL-bar transitions (events fire
+ * AFTER animation ends, not during) and is NOT needed now that the containing
+ * block is correct.
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
@@ -33,36 +29,13 @@ export default function MobileStickyBar() {
     setMounted(true);
 
     // Show bar after scrolling past 80% of viewport height
-    const handleWindowScroll = () => {
+    const handleScroll = () => {
       setVisible(window.scrollY > window.innerHeight * 0.8);
     };
-    window.addEventListener("scroll", handleWindowScroll, { passive: true });
-    handleWindowScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
 
-    const vv = window.visualViewport;
-    if (!vv) {
-      return () => window.removeEventListener("scroll", handleWindowScroll);
-    }
-
-    const positionBar = () => {
-      const bar = barRef.current;
-      if (!bar) return;
-      // Distance from layout viewport bottom to visual viewport bottom.
-      // Positive when URL bar is overlapping the layout viewport (top URL bar).
-      // Zero when URL bar is part of the OS chrome below the layout viewport.
-      const gap = Math.max(0, window.innerHeight - vv.offsetTop - vv.height);
-      bar.style.bottom = `${gap}px`;
-    };
-
-    // vv.resize: fires when URL bar shows/hides, keyboard appears, orientation changes.
-    // NOT vv.scroll — that fires on every scroll gesture and causes drift.
-    vv.addEventListener("resize", positionBar, { passive: true });
-    positionBar();
-
-    return () => {
-      window.removeEventListener("scroll", handleWindowScroll);
-      vv.removeEventListener("resize", positionBar);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   if (!mounted) return null;
@@ -83,7 +56,6 @@ export default function MobileStickyBar() {
         transition: "opacity 250ms ease",
         backgroundColor: "#0c1929",
         borderTop: "1px solid rgba(255,255,255,0.1)",
-        willChange: "transform",
       }}
     >
       <div
@@ -92,6 +64,7 @@ export default function MobileStickyBar() {
           gap: "12px",
           alignItems: "center",
           padding: "12px 16px",
+          // env(safe-area-inset-bottom) works now that viewport-fit=cover is set
           paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
         }}
       >

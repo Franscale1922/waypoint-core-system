@@ -1,8 +1,16 @@
+import type { Viewport } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import ScrollReveal from "../components/ScrollReveal";
 import MobileNav from "../components/MobileNav";
 import MobileStickyBar from "../components/MobileStickyBar";
+
+// viewport-fit=cover enables env(safe-area-inset-bottom) on notched iPhones
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export default function MarketingLayout({
   children,
@@ -10,7 +18,7 @@ export default function MarketingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F4]">
+    <div className="min-h-screen flex flex-col bg-[#FAF8F4]" style={{ overflowX: "clip" }}>
       <ScrollReveal />
 
       {/* Navigation */}
