@@ -18,7 +18,7 @@ const investmentGuideSchema = {
       name: "What is a franchise fee?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights — not ongoing operations.",
+        text: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
       },
     },
     {
@@ -34,7 +34,7 @@ const investmentGuideSchema = {
       name: "How much liquid capital do I need to buy a franchise?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, 401k that can be rolled). This is not the total investment — it is the liquidity threshold that makes most solid options accessible. Candidates with $250,000 or more in liquid capital can typically leverage SBA or other financing to access higher-investment concepts.",
+        text: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, 401k that can be rolled). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Candidates with $250,000 or more in liquid capital can typically leverage SBA or other financing to access higher-investment concepts.",
       },
     },
   ],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Investment Guide | Waypoint Franchise Advisors",
     description:
-      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and SBA financing — explained plainly.",
+      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and SBA financing, explained plainly.",
     url: "https://waypointfranchise.com/investment",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Investment Guide" }],
   },
@@ -257,7 +257,7 @@ export default function InvestmentPage() {
               Know roughly what tier fits your situation?
             </p>
             <p className="text-sm text-[#5a5a4a] leading-relaxed max-w-md">
-              That&apos;s actually the most useful thing to bring to a first call. Let&apos;s figure out where you fit — and what options are worth your time.
+              That&apos;s actually the most useful thing to bring to a first call. Let&apos;s figure out where you fit and what options are worth your time.
             </p>
           </div>
           <Link
@@ -399,7 +399,7 @@ export default function InvestmentPage() {
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
               The true cost of buying a franchise
             </h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">Beyond the franchise fee — what you actually spend to get open and operating.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Beyond the franchise fee: what you actually spend to get open and operating.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
 
@@ -412,7 +412,7 @@ export default function InvestmentPage() {
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
               How franchise funding actually works
             </h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">SBA loans, ROBS, HELOC, and franchisor financing — how buyers actually fund the deal.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">SBA loans, ROBS, HELOC, and franchisor financing. How buyers actually fund the deal.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
 
@@ -425,7 +425,7 @@ export default function InvestmentPage() {
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
               FDD decoded: what actually matters
             </h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">Which items in the Franchise Disclosure Document tell you the most — and what to look for in each.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Which items in the Franchise Disclosure Document tell you the most, and what to look for in each.</p>
             <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
           </Link>
 

@@ -233,7 +233,7 @@ export default function HomePage() {
             </Link>
             <Link
               href="/scorecard"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] border border-[#0c1929] hover:bg-[#0c1929]/10 rounded-lg transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-white border border-white/30 hover:bg-white/10 rounded-lg transition-all press-effect min-h-[48px]"
             >
               Take the Readiness Quiz
             </Link>
