@@ -6,18 +6,28 @@ import { createPortal } from "react-dom";
 /**
  * MobileStickyBar — B-5 CRO
  *
- * iOS Safari bug: position:fixed;bottom:0 anchors to the LAYOUT viewport.
- * When the URL bar shows/hides, the visual viewport changes independently,
- * causing the bar to appear in the middle of what the user sees.
+ * iOS Safari URL-bar drift: position:fixed;bottom:0 anchors to the LAYOUT
+ * viewport. When Safari's URL bar shows/hides, the VISUAL viewport shifts
+ * independently — the bar appears to float in the middle of what the user
+ * actually sees.
  *
- * Fix:
- *   - Listen to visualViewport "resize" ONLY (not "scroll").
- *     URL bar show/hide fires "resize". Listening to "scroll" caused jank
- *     because it fires asynchronously on every pan gesture.
- *   - On resize, calculate the gap between the layout viewport bottom and
- *     the visual viewport bottom, then translateY up by that gap.
- *   - Suppress the CSS transition during the correction so there's no
- *     visible slide animation — the bar is already where the user expects.
+ * Why previous fixes failed:
+ *   - vv.resize ONLY: fires once the URL bar finishes animating, missing
+ *     all intermediate frames during the slow iOS transition.
+ *   - transform: translateY: interacts poorly with Safari's own compositing
+ *     of position:fixed during momentum scroll, causing visual jank.
+ *
+ * This fix (the production approach used by Twitter/Google):
+ *   1. Listen to BOTH vv.resize AND vv.scroll — scroll tracks the visual
+ *      viewport DURING the URL bar animation in realtime.
+ *   2. Set `bottom` in px dynamically instead of transform — avoids Safari's
+ *      compositing interference and doesn't interact with CSS transitions.
+ *   3. Debounce with requestAnimationFrame to prevent layout thrash.
+ *
+ * Formula: bottom = window.innerHeight - vv.offsetTop - vv.height
+ *   = how far the visual viewport bottom is ABOVE the layout viewport bottom.
+ *   When URL bar is hidden: bottom = 0 (visual === layout). ✓
+ *   When URL bar is visible: bottom > 0 (bar moves up to stay visible). ✓
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
@@ -34,44 +44,43 @@ export default function MobileStickyBar() {
     window.addEventListener("scroll", handleWindowScroll, { passive: true });
     handleWindowScroll();
 
-    // Visual Viewport API: correct position when URL bar shows/hides on iOS.
-    // Key insight: only "resize" fires on URL bar toggle. "scroll" fires on
-    // every pan gesture and introduced jank in all previous fix attempts.
     const vv = window.visualViewport;
-    if (vv) {
-      const updatePosition = () => {
-        const bar = barRef.current;
-        if (!bar) return;
-
-        // Layout viewport bottom = window.innerHeight (from screen top)
-        // Visual viewport bottom = vv.offsetTop + vv.height (from screen top)
-        // When URL bar is hidden, visual viewport is taller → gap > 0
-        // Translate up by gap to keep bar at the visible bottom edge.
-        const gap = window.innerHeight - (vv.offsetTop + vv.height);
-        const correction = gap > 0 ? gap : 0;
-
-        // Suppress transition during correction — avoids a visible slide
-        // animation when the URL bar snaps. Restore after one rAF.
-        bar.style.transition = "none";
-        bar.style.transform = correction > 0 ? `translateY(${-correction}px)` : "";
-
-        requestAnimationFrame(() => {
-          if (barRef.current) {
-            barRef.current.style.transition = "";
-          }
-        });
-      };
-
-      vv.addEventListener("resize", updatePosition, { passive: true });
-      updatePosition(); // set correct position on mount
-
-      return () => {
-        window.removeEventListener("scroll", handleWindowScroll);
-        vv.removeEventListener("resize", updatePosition);
-      };
+    if (!vv) {
+      return () => window.removeEventListener("scroll", handleWindowScroll);
     }
 
-    return () => window.removeEventListener("scroll", handleWindowScroll);
+    // rAF handle so we only do one layout write per frame even if both
+    // vv.resize and vv.scroll fire in the same tick.
+    let rafId = 0;
+
+    const positionBar = () => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const bar = barRef.current;
+        if (!bar) return;
+        // Distance between the visual viewport bottom and layout viewport bottom.
+        // When URL bar is fully hidden this is 0. When URL bar is visible this
+        // is the height of the URL bar area.
+        const bottom = Math.max(
+          0,
+          window.innerHeight - vv.offsetTop - vv.height
+        );
+        bar.style.bottom = `${bottom}px`;
+      });
+    };
+
+    // vv.scroll: fires DURING the URL bar animation (tracks intermediate frames)
+    // vv.resize: fires at the END of the URL bar animation (catches final state)
+    vv.addEventListener("resize", positionBar, { passive: true });
+    vv.addEventListener("scroll", positionBar, { passive: true });
+    positionBar(); // set correct position immediately on mount
+
+    return () => {
+      window.removeEventListener("scroll", handleWindowScroll);
+      vv.removeEventListener("resize", positionBar);
+      vv.removeEventListener("scroll", positionBar);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   if (!mounted) return null;
@@ -83,7 +92,7 @@ export default function MobileStickyBar() {
       className="sm:hidden"
       style={{
         position: "fixed",
-        bottom: 0,
+        bottom: 0, // overridden by JS once vv is available
         left: 0,
         right: 0,
         zIndex: 9999,
@@ -92,7 +101,7 @@ export default function MobileStickyBar() {
         transition: "opacity 250ms ease",
         backgroundColor: "#0c1929",
         borderTop: "1px solid rgba(255,255,255,0.1)",
-        willChange: "transform",
+        willChange: "transform", // GPU compositing hint
       }}
     >
       <div
