@@ -42,18 +42,31 @@ const DAYS_BACK = 28;
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 function getAuth() {
-  const raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
-  if (!raw) {
-    console.error("❌ GSC_SERVICE_ACCOUNT_KEY is not set.");
-    console.error("   See docs/seo-reviews/SETUP.md for setup instructions.");
-    process.exit(1);
+  let credentials;
+
+  // Prefer file path (more reliable — no base64 corruption risk)
+  const keyPath = process.env.GSC_SERVICE_ACCOUNT_PATH;
+  if (keyPath) {
+    credentials = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
+    console.log("   Auth: loading from file path");
+  } else {
+    // Fall back to base64-encoded key
+    const raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
+    if (!raw) {
+      console.error("❌ Neither GSC_SERVICE_ACCOUNT_PATH nor GSC_SERVICE_ACCOUNT_KEY is set.");
+      console.error("   Add GSC_SERVICE_ACCOUNT_PATH=/path/to/credentials.json to your .env");
+      process.exit(1);
+    }
+    credentials = JSON.parse(Buffer.from(raw, "base64").toString("utf-8"));
+    console.log("   Auth: loading from base64 key");
   }
-  const credentials = JSON.parse(Buffer.from(raw, "base64").toString("utf-8"));
+
   return new google.auth.GoogleAuth({
     credentials,
     scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
   });
 }
+
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
@@ -203,19 +216,18 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
   return lines.join("\n");
 }
 
-// ─── Sitemap ping ─────────────────────────────────────────────────────────────
+// ─── Sitemap submission ───────────────────────────────────────────────────────
 
-async function pingSitemap() {
-  const url = "https://www.google.com/ping?sitemap=https://waypointfranchise.com/sitemap.xml";
+async function submitSitemap(searchconsole) {
+  const sitemapUrl = "https://waypointfranchise.com/sitemap.xml";
   try {
-    const res = await fetch(url);
-    if (res.ok) {
-      console.log("✅ Sitemap pinged to Google");
-    } else {
-      console.log(`⚠️  Sitemap ping returned ${res.status}`);
-    }
+    await searchconsole.sitemaps.submit({
+      siteUrl: SITE_URL,
+      feedpath: sitemapUrl,
+    });
+    console.log("✅ Sitemap submitted via GSC API");
   } catch (e) {
-    console.log(`⚠️  Sitemap ping failed: ${e.message}`);
+    console.log(`⚠️  Sitemap submission failed: ${e.message}`);
   }
 }
 
@@ -248,8 +260,8 @@ async function main() {
   fs.writeFileSync(outPath, report, "utf-8");
   console.log(`\n✅ Report saved to: docs/seo-reviews/${monthFolder}/gsc-report.md`);
 
-  // Ping sitemap while we're here
-  await pingSitemap();
+  // Submit sitemap via GSC API
+  await submitSitemap(searchconsole);
 
   console.log("\nDone. Open the report and run the optimization workflow.");
 }

@@ -479,12 +479,92 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | **HubSpot CRM** | ❌ Skip | Prisma DB is the CRM; duplicate data problem |
 | **EmailBison** | ❌ Skip | Grok-only recommendation, no consensus from other models |
 | **lemlist** | ❌ Skip | Already have Instantly for multi-channel; no second platform |
+| **Clay** | ⏳ Defer to Phase 2 | Enrichment waterfall across 50+ sources; minimum useful plan $149/mo. Overkill at 15/day sends. Re-evaluate when volume scales past 50+ sends/day and email find rate becomes measurable bottleneck. |
+| **Apollo (Search)** | ✅ Available when needed | Free People Search API (no credits consumed). Can supplement Apify as backup discovery source. Does not return emails — enrichment endpoint required for that. |
+| **Slack** | ✅ Active — March 2026 | Incoming Webhook wired into `notify-human` step as instant push alert alongside Resend email. Channel: `#waypoint-hot-replies`. |
+| **Go High Level (GHL)** | ⏸ Removed — contingency only | All-in-one platform (CRM, email, SMS, funnels, booking). Fully duplicates the current stack — custom CRM, Instantly, TidyCal, Inngest, n8n all do their respective jobs better. Only SMS adds net-new capability, but cold SMS to VP/Director ICP carries TCPA risk and brand risk at this stage. **Reactivate if:** the custom Waypoint CRM cannot scale to pipeline needs and a CRM replacement is required — GHL would be the all-in-one migration path. |
 
 ---
 
 ## Phase 2 Opportunities
 
-Tools evaluated and deferred — good products, wrong timing or wrong fit for Stage 1.
+Tools evaluated and deferred — good products, wrong timing for Stage 1.
+
+---
+
+### HeyGen — AI Avatar Video
+**What:** AI avatar creation and text-to-video platform. Records a training video of Kelsey once, then generates unlimited talking-head videos from typed scripts. Highest-quality AI avatar output available commercially.  
+**Account:** Free account exists. Paid required for API and custom avatar.  
+**Reviewed:** March 2026  
+**Decision:** ⏳ Deferred — activate at Phase 2 (YouTube + Podcast launch)
+
+**Use cases for Waypoint:**
+- **YouTube content** — GPT-4o or Claude writes scripts, HeyGen avatar delivers them as talking-head videos
+- **Podcast video character** — AI avatar co-host or solo host for video podcast format
+- **Personalized video cold outreach** — one-to-one intro video per lead (Phase 3, after cold email matures)
+- **Website explainer videos** — franchise process, scorecard walkthrough
+
+**Setup sequence when ready:**
+1. Record avatar training video (2–5 min, plain background, good lighting, natural delivery)
+2. Upgrade to **Team plan ($89/mo)** — minimum for API access and custom avatars
+3. Set up **ElevenLabs voice clone** (already in stack) → connect to HeyGen for premium voice output
+4. Add `HEYGEN_API_KEY` to Vercel env vars + `.env`
+5. Build n8n workflow: **Script in → HeyGen API → video out → route to YouTube/Typefully**
+
+**Integration with existing stack:**
+- **Subscribr** (in stack) → generates YouTube scripts → feeds HeyGen
+- **Opus Clip** (in stack) → clips HeyGen video output into shorts
+- **Descript** (in stack) → final polish/overdub if needed
+- **n8n** (in stack) → orchestrates the script → video pipeline
+
+**Pricing:**
+- Creator ($29/mo): 5 credits, no API, 1 avatar — good for testing quality
+- Team ($89/mo): API access, custom avatars, more credits — minimum for production use
+
+---
+
+### Clay — Lead Enrichment Waterfall
+**What:** Enrichment waterfall that queries Apollo, Hunter, LinkedIn, and 50+ sources in sequence until a verified email is found. Also includes AI personalization built in.  
+**Account:** Free tier exists (~100 credits).  
+**Reviewed:** March 2026  
+**Decision:** ⏳ Defer — re-evaluate at 50+ sends/day
+
+**Why deferred:** At 15/day sends, a single enrichment source (Hunter.io, now active) is sufficient. Clay's waterfall adds value only when single-source miss rates become a meaningful conversion bottleneck. Minimum useful plan ($149/mo) is not justified at current volume.
+
+**Trigger to activate:** Email find rate from Hunter.io drops below 60% sustained over 2+ weeks of production sends.
+
+---
+
+### beehiiv — Newsletter / Subscriber List
+**What:** Newsletter platform with subscriber automation, API access, and a built-in ad monetization network.  
+**Account:** Active. API key and Publication ID set in Vercel + local `.env`.  
+**Reviewed:** March 2026  
+**Decision:** ⏳ Deferred — activate at Phase 2 (after cold email warm-up sequences are running)
+
+**Use cases for Waypoint:**
+1. **Newsletter / Brand channel** — franchise insights content to a subscriber list. Converts content readers into warm prospects over time.
+2. **"Not now" subscriber rescue** — when `replyGuardianProcess` classifies a reply as `Not now`, instead of immediately suppressing the lead, send one low-pressure opt-in email offering the newsletter. If they click: subscribe to beehiiv, stay warm. If ignored: suppress as normal. Prevents permanently losing prospects who may convert in 3–12 months.
+3. **Post-scorecard nurture** — scorecard completions can trigger a beehiiv subscriber add, turning quiz takers into newsletter readers automatically.
+
+**The math:** At 440 leads/month, a 10% "Not now" rate = 44 prospects/month who aren’t ready but aren’t opposed. After 6 months that’s 264 warm leads reading Kelsey’s newsletter — some convert eventually without any additional cold outreach.
+
+**Setup when ready:**
+1. `BEEHIIV_API_KEY` and `BEEHIIV_PUBLICATION_ID` already set in Vercel + `.env`
+2. Build one Inngest step or n8n webhook: `POST /v2/publications/{pub_id}/subscriptions` with lead email + name
+3. Wire into `replyGuardianProcess`: on `Not now` classification → send opt-in email via Resend → if clicked, call beehiiv API
+4. Optionally wire to scorecard form submission as auto-subscribe
+
+**API endpoint:**
+```
+POST https://api.beehiiv.com/v2/publications/pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d/subscriptions
+Authorization: Bearer {BEEHIIV_API_KEY}
+```
+
+**Env vars:** ✅ Both set in Vercel + local
+```
+BEEHIIV_API_KEY
+BEEHIIV_PUBLICATION_ID=pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d
+```
 
 ---
 
@@ -540,3 +620,6 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
 | `HUNTER_API_KEY` | ✅ Set in Vercel | Free tier (25/mo) — upgrade to Starter ($49/mo) before first production run |
+| `SLACK_WEBHOOK_URL` | ✅ Set in Vercel + local | Incoming Webhook → `#waypoint-hot-replies` — HITL push notifications |
+| `BEEHIIV_API_KEY` | ✅ Set in Vercel + local | Phase 2 — newsletter subscriber API |
+| `BEEHIIV_PUBLICATION_ID` | ✅ Set in Vercel + local | `pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d` |

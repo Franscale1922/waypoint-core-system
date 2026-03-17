@@ -443,6 +443,53 @@ Write Kelsey's follow-up reply.`
                 ].join("\n"),
             });
 
+            // Slack push notification — instant alert to phone via #waypoint-hot-replies
+            const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+            if (slackWebhook) {
+                try {
+                    await fetch(slackWebhook, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            text: `${urgencyLabel} — *${lead.name}* replied to your cold email`,
+                            blocks: [
+                                {
+                                    type: "section",
+                                    text: {
+                                        type: "mrkdwn",
+                                        text: `${urgencyLabel} *${lead.name}* replied — respond within 15 min\n*Title:* ${lead.title || "N/A"}  |  *Company:* ${lead.company || "N/A"}\n*LinkedIn:* ${lead.linkedinUrl || "N/A"}`
+                                    }
+                                },
+                                {
+                                    type: "section",
+                                    text: {
+                                        type: "mrkdwn",
+                                        text: `*Their reply:*\n>${reply.content.replace(/\n/g, "\n>")}`
+                                    }
+                                },
+                                {
+                                    type: "section",
+                                    text: {
+                                        type: "mrkdwn",
+                                        text: `*AI draft:*\n>${draftReply.replace(/\n/g, "\n>")}`
+                                    }
+                                },
+                                {
+                                    type: "section",
+                                    text: {
+                                        type: "mrkdwn",
+                                        text: `Full context + draft in your email inbox. TidyCal: https://tidycal.com/m7v2jox/franchise-consultation`
+                                    }
+                                }
+                            ]
+                        }),
+                    });
+                    console.log(`[HITL] Slack alert sent for ${lead.name}`);
+                } catch (err) {
+                    console.error("[HITL] Slack notification failed:", err);
+                }
+            }
+
             console.log(`[HITL] Alert sent to Kelsey for ${lead.name} (${classification})`);
         });
 
