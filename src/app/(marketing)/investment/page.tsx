@@ -249,7 +249,28 @@ export default function InvestmentPage() {
         </div>
       </section>
 
+      {/* Mid-page CTA — bridge between tiers and financing */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 py-10">
+        <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+          <div>
+            <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-2">
+              Know roughly what tier fits your situation?
+            </p>
+            <p className="text-sm text-[#5a5a4a] leading-relaxed max-w-md">
+              That&apos;s actually the most useful thing to bring to a first call. Let&apos;s figure out where you fit — and what options are worth your time.
+            </p>
+          </div>
+          <Link
+            href="/book"
+            className="flex-shrink-0 inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+          >
+            Let&apos;s talk
+          </Link>
+        </div>
+      </section>
+
       {/* Capital and financing */}
+
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-14 sm:py-20">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
           Liquid Capital &amp; Financing

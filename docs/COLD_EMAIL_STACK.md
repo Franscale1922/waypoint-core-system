@@ -165,10 +165,22 @@ score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email ca
 - Consider enabling "Stop Campaign for Company on Reply" to avoid burning entire company relationships
 - Revisit daily limit (raise from 15 toward 30–50 after 4+ weeks clean metrics)
 
+**Inbound Reply Webhook** (connects Instantly replies → `replyGuardianProcess`):
+- Route: `src/app/api/webhooks/resend/route.ts` (receives Instantly payloads, NOT Resend events)
+- Auth: Bearer token = `INBOUND_WEBHOOK_SECRET` (✅ already set in Vercel)
+- **Setup in Instantly dashboard:** Settings → Inbound Webhooks → add:
+  ```
+  https://www.waypointfranchise.com/api/webhooks/resend
+  Authorization: Bearer {INBOUND_WEBHOOK_SECRET value}
+  ```
+- On receipt: creates `Reply` DB record → fires `workflow/lead.reply.received` → triggers `replyGuardianProcess`
+- ⚠️ **Pre-launch check:** Verify this webhook URL is registered in Instantly before first send
+
 **Env vars:**
 ```
 INSTANTLY_API_KEY=    ✅ set in Vercel (waypoint-core-system)
 INSTANTLY_CAMPAIGN_ID=e969de1c-e244-488a-8b29-6278f1ea39a2  ✅ set in Vercel
+INBOUND_WEBHOOK_SECRET=  ✅ set in Vercel — used by the inbound reply webhook route
 ```
 
 **Code integration:** `src/inngest/functions.ts` → `senderProcess` — calls Instantly v2 API to add lead to campaign.
@@ -406,24 +418,28 @@ Verification TXT records that were requested but cannot be added:
 
 ## Pre-Launch Checklist
 
-Complete every item below before sending the first cold email. These are the open gaps identified as of March 2026.
+Complete every item below before sending the first cold email.
 
 **Instantly Setup**
-- [x] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — ⏳ Pre-launch to-do (0 credits currently)
+- [ ] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — **MANUAL (Kelsey)**
 - [x] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only — ✅ Verified March 2026
 - [x] Confirm reply routing: replies land in the same sending inbox — ✅ Verified
+- [ ] **Register inbound reply webhook in Instantly dashboard** — Settings → Inbound Webhooks → add `https://www.waypointfranchise.com/api/webhooks/resend` with `Authorization: Bearer {INBOUND_WEBHOOK_SECRET}` — **MANUAL (Kelsey)**
 
-**Code**
-- [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅ Implemented March 2026
-- [x] ~~Remove the dead Hunter.io code block~~ — Hunter.io is now active (key set March 2026). SuperSearch remains the manual fallback for misses.
+**Code — Fixed March 2026**
+- [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅
+- [x] Fix gender pronouns in VOICE_RULES system prompt (`He` → `She`) — ✅ Fixed March 2026
+- [x] Fix `maxSendsPerDay` schema default (50 → 15) to match warmup phase — ✅ Fixed March 2026
+- [x] Clarify inbound reply webhook route comment + fix auth var (`RESEND_WEBHOOK_SECRET` → `INBOUND_WEBHOOK_SECRET`) — ✅ Fixed March 2026
+- [x] Hunter.io enrichment active (key set March 2026). SuperSearch is manual fallback for misses.
 
 **Google Postmaster Tools**
-- [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026): Instantly confirmed DFY domain DNS is fully managed by them with no exceptions. Sending domain verification is not possible.
-- [ ] **Pre-launch alternative:** Run one test send through [mail-tester.com](https://mail-tester.com) to confirm spam score and deliverability before first live send
+- [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026)
+- [ ] **Pre-launch alternative:** Run one test send through [mail-tester.com](https://mail-tester.com) — **MANUAL (Kelsey)**
 
 **Compliance**
-- [x] Add physical mailing address to email template footer — ✅ P.O. Box 3421, Whitefish, MT 59937 (March 2026)
-- [x] Add explicit opt-out line to email template — ✅ "Reply 'unsubscribe' to opt out" (March 2026)
+- [x] Add physical mailing address to email template footer — ✅ P.O. Box 3421, Whitefish, MT 59937
+- [x] Add explicit opt-out line to email template — ✅ "Reply 'unsubscribe' to opt out"
 
 ---
 

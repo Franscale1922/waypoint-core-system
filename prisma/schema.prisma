@@ -64,6 +64,6 @@ model SystemSettings {
   id             String   @id @default("singleton")
   openAiApiKey   String?
   resendApiKey   String?
-  maxSendsPerDay Int      @default(50)
+  maxSendsPerDay Int      @default(15) // Warmup phase target — raise to 30–50 after 4+ weeks clean metrics
   updatedAt      DateTime @updatedAt
 }

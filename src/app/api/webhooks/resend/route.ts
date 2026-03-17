@@ -3,9 +3,23 @@ import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { verifyBearer } from "@/app/lib/webhook-auth";
 
-// This endpoint receives incoming email webhooks from Resend/Instantly
+// ─── Instantly Inbound Reply Webhook ─────────────────────────────────────────
+// Receives reply-forwarding payloads from Instantly.ai when a prospect replies
+// to a cold email sent from the campaign.
+//
+// Setup: In the Instantly dashboard → Settings → Inbound Webhooks,
+// set the webhook URL to:
+//   https://www.waypointfranchise.com/api/webhooks/resend
+// with a Bearer token matching the INBOUND_WEBHOOK_SECRET env var (see below).
+//
+// Auth: Bearer token in Authorization header = INBOUND_WEBHOOK_SECRET
+// (env var is named INBOUND_WEBHOOK_SECRET — not RESEND_WEBHOOK_SECRET)
+//
+// On success: creates a Reply DB record and fires workflow/lead.reply.received
+// to trigger replyGuardianProcess (GPT-4o classification + HITL Resend + Slack).
+// ─────────────────────────────────────────────────────────────────────────────
 export async function POST(req: Request) {
-    const authError = verifyBearer(req, process.env.RESEND_WEBHOOK_SECRET);
+    const authError = verifyBearer(req, process.env.INBOUND_WEBHOOK_SECRET);
     if (authError) return authError;
 
     try {

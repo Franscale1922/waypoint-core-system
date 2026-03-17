@@ -22,10 +22,10 @@ export default function ContactPage() {
           Get in Touch
         </p>
         <h1 className="font-playfair text-4xl sm:text-5xl text-white mb-4">
-          Ask whatever is on your mind
+          Not sure where to start?<br className="hidden sm:block" /> That&apos;s why this exists.
         </h1>
-        <p className="text-white/70 max-w-md mx-auto text-base leading-relaxed">
-          Not ready to book a call yet? That is fine. Send a message and I will get back to you within one business day.
+        <p className="text-white/70 max-w-lg mx-auto text-base leading-relaxed">
+          Not sure if your budget qualifies. Not sure if the timing is right. Not sure if your partner is on board yet. Those are exactly the kinds of things worth talking through. Send a message and you&apos;ll hear back from me personally &mdash; not a bot, not an assistant &mdash; within 24 hours.
         </p>
       </section>
 

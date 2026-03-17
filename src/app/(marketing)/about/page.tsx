@@ -182,7 +182,10 @@ export default function AboutPage() {
                     <p className="text-xs text-[#7a7a7a] mt-0.5">{t.role}</p>
                     <p className="text-xs text-[#7a7a7a]">{t.location}</p>
                   </div>
-                  <span className="shrink-0 text-[10px] font-medium text-[#c08b3e] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide">{t.score}</span>
+                  <div>
+                    <span className="shrink-0 text-[10px] font-medium text-[#c08b3e] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide block mb-1">{t.score}</span>
+                    <a href="/scorecard" className="text-[9px] text-[#9a9a8a] hover:text-[#c08b3e] transition-colors">from the free quiz →</a>
+                  </div>
                 </div>
               </div>
             ))}

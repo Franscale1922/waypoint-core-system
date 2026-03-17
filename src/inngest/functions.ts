@@ -117,13 +117,14 @@ export const leadHunterProcess = inngest.createFunction(
                     }
                 }
 
-                // Hard suppression: if Hunter found nothing or confidence is too low, score = 0
-                if (!foundEmail || emailConfidence < 60) {
+                // Hard suppression: if Hunter found nothing or confidence is too low, suppress.
+                // Gate raised to 90 now that SuperSearch pre-verifies emails before DB import (March 2026).
+                if (!foundEmail || emailConfidence < 90) {
                     if (!lead.email) {
                         // Last resort guess — will be verified by Instantly's own validation
                         const nameParts = lead.name.trim().split(/\s+/);
                         foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
-                        score = Math.min(score, 60); // Cap at 60 if email is a guess — won't pass the 70 gate
+                        score = Math.min(score, 50); // Cap at 50 — unverified guess cannot clear the 70-point gate
                     }
                 }
             }

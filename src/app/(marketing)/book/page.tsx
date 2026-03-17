@@ -87,7 +87,7 @@ export default function BookPage() {
                 What to expect
               </p>
               {[
-                { icon: "30", label: "30 minutes, completely free" },
+                { icon: "✓", label: "30 minutes, completely free" },
                 { icon: "✓", label: "No brands shown on the first call" },
                 { icon: "✓", label: "Real conversation, not a pitch" },
                 { icon: "✓", label: "Honest answer, even if it's no" },
@@ -130,9 +130,30 @@ export default function BookPage() {
           </div>
 
           {/* Right: TidyCal calendar */}
-          <div className="bg-white rounded-xl border border-[#e8e0d0] shadow-sm overflow-hidden">
-            <TidyCalEmbed path="m7v2jox/waypoint30" />
+          <div className="space-y-4">
+            <div className="bg-white rounded-xl border border-[#e8e0d0] shadow-sm overflow-hidden">
+              <TidyCalEmbed path="m7v2jox/waypoint30" />
+            </div>
+
+            {/* After you book — post-booking clarity */}
+            <div className="bg-white border border-[#e8e0d0] rounded-xl p-5">
+              <p className="text-xs font-semibold text-[#d4a55a] uppercase tracking-[0.15em] mb-3">After you book</p>
+              <ul className="space-y-2.5">
+                {[
+                  "You\u2019ll get a confirmation email with a Zoom link — no setup needed on your end",
+                  "Nothing to prepare. Just show up ready to talk honestly about where you are",
+                  "Need to reschedule? The link in your confirmation email handles it — no awkward ask",
+                  "Want to loop in your partner before booking? Completely normal. I\u2019m here when you\u2019re both ready",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-[#3a3a2e] leading-snug">
+                    <span className="text-[#d4a55a] mt-0.5 flex-shrink-0">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+
 
         </div>
       </section>

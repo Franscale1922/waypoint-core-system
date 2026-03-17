@@ -89,7 +89,7 @@ const steps = [
     body: [
       "I work with roughly 250 franchise concepts across dozens of industries. Before I present anything, I have already reviewed the financial disclosures, checked territory availability in your area, and screened how units are performing across the system.",
       "What I will not bring you is a brand that does not report its financials, a brand where locations are closing faster than they are opening, or a brand that has no available territory near you.",
-      "What I look for are what I call triple-A brands. Not household names. Dunkin' and Domino's are the major leagues. Their best territories are long gone. Triple-A brands are established enough to have real systems and real support, but they still have open territory with room to grow. That is the sweet spot.",
+      "What I look for are brands established enough to have real systems and real support, but that still have open territory with room to grow. Think proven infrastructure, strong franchisee satisfaction data, and financials you can actually read in the FDD. Not household names &mdash; their best territories are long gone. The sweet spot is one level below that.",
       "I bring you three or four. Not twenty. Too many and you start making decisions based on marketing instead of fit.",
     ],
   },
@@ -108,7 +108,7 @@ const steps = [
     number: "05",
     label: "The Decision",
     headline: "You are always in control.",
-    outcome: "A yes or no backed by complete data, a reviewed legal agreement, and a clear picture of what the business actually requires from you.",
+    outcome: "A yes or no backed by complete data, a clear picture of the franchise agreement's terms, and a franchise attorney recommendation for independent legal review.",
     body: [
       "I use an analogy I made up on a call once and have never stopped using: I am the chauffeur. You own the car. You tell me where you want to go, and I drive and navigate and point out things worth noticing. But if you want to turn left, or slow down, or stop entirely, you tell me and we do that.",
       "At every step of this process, you are the one making decisions. My job is to make sure those decisions are informed ones.",
@@ -160,6 +160,7 @@ export default function ProcessPage() {
             style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
           >
             Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
+            Most candidates go from intro call to a clear decision in 6&ndash;10 weeks. The pace is always yours.
           </p>
         </div>
       </section>
@@ -283,7 +284,7 @@ export default function ProcessPage() {
           {[
             {
               title: "Liquid capital of $100K or more",
-              body: "This is not a hard floor, but it is where conversations get practical. The right amount depends on the business model we find. We will talk through what you have and what makes sense.",
+              body: "This is not a hard floor. At $75K you have options. At $100K or more, the options meaningfully expand. The right amount depends on the model we find. We will talk through what you have and what makes sense.",
             },
             {
               title: "A willingness to explore",
@@ -296,6 +297,10 @@ export default function ProcessPage() {
             {
               title: "A sense of what you do not want",
               body: "You do not need to know what you want to own. It helps a lot to know what you do not want. Industries you would not enjoy, work styles that drain you, commitments you cannot make. That clarity shapes everything.",
+            },
+            {
+              title: "Your partner doesn\'t need to be on the first call",
+              body: "But if we start to get somewhere, I encourage you to bring them in. This is a household decision and I treat it that way. It is completely normal to start the conversation solo.",
             },
           ].map(({ title, body }) => (
             <div
