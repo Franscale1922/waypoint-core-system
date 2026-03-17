@@ -34,17 +34,18 @@ export default function MobileStickyBar() {
 
   return (
     <div
-      className={`
-        fixed bottom-0 left-0 right-0 z-40
-        sm:hidden
-        transition-transform duration-300 ease-in-out
-        ${visible ? "translate-y-0" : "translate-y-full"}
-      `}
+      className="fixed bottom-0 left-0 right-0 z-40 sm:hidden"
       aria-hidden={!visible}
-      // translateZ(0) — forces a GPU compositing layer on iOS Safari.
-      // Without this, position:fixed elements drift to their document
-      // position during momentum scroll (rubber-band / inertia scrolling).
-      style={{ transform: visible ? "translateZ(0)" : "translateY(100%)", WebkitTransform: visible ? "translateZ(0)" : "translateY(100%)" }}
+      style={{
+        // translate3d(0,0,0) when visible: anchors to bottom AND forces a GPU
+        // compositing layer — prevents the element drifting mid-page on both
+        // Chrome and Safari during momentum/inertia scrolling.
+        // translate3d(0,100%,0) when hidden: slide off-screen below.
+        transform: visible ? "translate3d(0, 0, 0)" : "translate3d(0, 100%, 0)",
+        WebkitTransform: visible ? "translate3d(0, 0, 0)" : "translate3d(0, 100%, 0)",
+        transition: "transform 300ms ease-in-out",
+        WebkitTransition: "-webkit-transform 300ms ease-in-out",
+      }}
     >
       {/* Safe area inset for iPhone home indicator.
           No backdrop-blur here — it causes fixed positioning to break on Safari. */}
