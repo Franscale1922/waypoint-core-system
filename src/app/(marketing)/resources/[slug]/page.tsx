@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
 import RelatedArticles from "../../../../components/RelatedArticles";
+import EmailCapture from "../../../../components/EmailCapture";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -132,6 +133,12 @@ export default async function ArticlePage({ params }: Props) {
         <MDXRemote source={content} />
       </article>
       <RelatedArticles articles={related} />
+      {/* B-6: Email capture — research mode readers */}
+      <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
+        <div className="max-w-3xl mx-auto">
+          <EmailCapture variant="article" />
+        </div>
+      </section>
       {/* Archetype quiz callout */}
       <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -153,14 +160,12 @@ export default async function ArticlePage({ params }: Props) {
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">30 minutes. No pitch. Just an honest conversation about where you stand.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
-          <a
-            href="sms:+12149951062"
-            className="inline-flex items-center justify-center gap-1.5 px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-            Text Me
-          </a>
+          <Link href="/scorecard" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]">Take the Readiness Quiz</Link>
         </div>
+        <p className="mt-5 text-sm text-white/50">
+          Prefer to text?{" "}
+          <a href="sms:+12149951062" className="text-white/70 hover:text-white transition-colors underline">Text Kelsey directly →</a>
+        </p>
         <p className="mt-6 text-sm text-white/40">
           Want to see how the process works first?{" "}
           <Link href="/process" className="text-white/60 hover:text-white/80 underline transition-colors">See the full process →</Link>
