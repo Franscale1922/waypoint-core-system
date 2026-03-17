@@ -6,16 +6,18 @@ import { createPortal } from "react-dom";
 /**
  * MobileStickyBar — B-5 CRO
  *
- * DOM inspection confirmed: position:fixed + portal resolves correctly to
- * the viewport on desktop. The drift is iOS-Safari-specific: when the URL
- * bar shows/hides during scroll, the "visual viewport" shifts independently
- * of the "layout viewport". position:fixed;bottom:0 is relative to the
- * LAYOUT viewport, so it drifts relative to what the user actually sees.
+ * iOS Safari bug: position:fixed;bottom:0 anchors to the LAYOUT viewport.
+ * When the URL bar shows/hides, the visual viewport changes independently,
+ * causing the bar to appear in the middle of what the user sees.
  *
- * Fix: window.visualViewport API. It fires resize/scroll events whenever
- * the visible area changes (URL bar appear/disappear, keyboard, etc.) and
- * gives us the exact offset to correct the bar back to the visible bottom.
- * This API was built specifically for this class of problem.
+ * Fix:
+ *   - Listen to visualViewport "resize" ONLY (not "scroll").
+ *     URL bar show/hide fires "resize". Listening to "scroll" caused jank
+ *     because it fires asynchronously on every pan gesture.
+ *   - On resize, calculate the gap between the layout viewport bottom and
+ *     the visual viewport bottom, then translateY up by that gap.
+ *   - Suppress the CSS transition during the correction so there's no
+ *     visible slide animation — the bar is already where the user expects.
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
@@ -33,28 +35,39 @@ export default function MobileStickyBar() {
     handleWindowScroll();
 
     // Visual Viewport API: correct position when URL bar shows/hides on iOS.
-    // Without this, position:fixed;bottom:0 drifts relative to what's visible.
+    // Key insight: only "resize" fires on URL bar toggle. "scroll" fires on
+    // every pan gesture and introduced jank in all previous fix attempts.
     const vv = window.visualViewport;
     if (vv) {
       const updatePosition = () => {
         const bar = barRef.current;
         if (!bar) return;
-        // layout viewport bottom = window.innerHeight (from screen top)
-        // visual viewport bottom = vv.offsetTop + vv.height (from screen top)
-        // gap = how far layout bottom is BELOW the visual bottom
-        // We translate UP by that gap to keep the bar at the visible bottom.
+
+        // Layout viewport bottom = window.innerHeight (from screen top)
+        // Visual viewport bottom = vv.offsetTop + vv.height (from screen top)
+        // When URL bar is hidden, visual viewport is taller → gap > 0
+        // Translate up by gap to keep bar at the visible bottom edge.
         const gap = window.innerHeight - (vv.offsetTop + vv.height);
-        bar.style.transform = gap > 0 ? `translateY(${-gap}px)` : "";
+        const correction = gap > 0 ? gap : 0;
+
+        // Suppress transition during correction — avoids a visible slide
+        // animation when the URL bar snaps. Restore after one rAF.
+        bar.style.transition = "none";
+        bar.style.transform = correction > 0 ? `translateY(${-correction}px)` : "";
+
+        requestAnimationFrame(() => {
+          if (barRef.current) {
+            barRef.current.style.transition = "";
+          }
+        });
       };
 
       vv.addEventListener("resize", updatePosition, { passive: true });
-      vv.addEventListener("scroll", updatePosition, { passive: true });
       updatePosition(); // set correct position on mount
 
       return () => {
         window.removeEventListener("scroll", handleWindowScroll);
         vv.removeEventListener("resize", updatePosition);
-        vv.removeEventListener("scroll", updatePosition);
       };
     }
 
@@ -79,7 +92,7 @@ export default function MobileStickyBar() {
         transition: "opacity 250ms ease",
         backgroundColor: "#0c1929",
         borderTop: "1px solid rgba(255,255,255,0.1)",
-        willChange: "transform", // hint browser to keep this on GPU layer
+        willChange: "transform",
       }}
     >
       <div

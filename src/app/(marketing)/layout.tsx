@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import ScrollReveal from "../components/ScrollReveal";
 import MobileNav from "../components/MobileNav";
+import MobileStickyBar from "../components/MobileStickyBar";
 
 export default function MarketingLayout({
   children,
@@ -77,6 +78,9 @@ export default function MarketingLayout({
 
       {/* Page Content */}
       <main className="flex-1">{children}</main>
+
+      {/* Mobile sticky CTA — portal to document.body, iOS visualViewport corrected */}
+      <MobileStickyBar />
 
       {/* Footer */}
       <footer className="bg-[#0c1929] text-[#9a9a9a] py-12 sm:py-16">
