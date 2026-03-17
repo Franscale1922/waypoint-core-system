@@ -81,7 +81,13 @@ const sitemapXml = await new Promise((resolve, reject) => {
   }).on('error', reject);
 });
 
-const urls = [...sitemapXml.matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1]);
+// Split on <loc> tags — handles any whitespace/newline formatting
+const urls = sitemapXml
+  .split('<loc>')
+  .slice(1)
+  .map(s => s.split('</loc>')[0].trim())
+  .filter(u => u.startsWith('http'));
+
 console.log(`Found ${urls.length} URLs in sitemap`);
 
 // ── 4. Submit each URL to Indexing API ───────────────────────────────────
