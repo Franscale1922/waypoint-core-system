@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
 import RelatedArticles from "../../../../components/RelatedArticles";
-import EmailCapture from "../../../../components/EmailCapture";
+import EmailCapture from "../../../components/EmailCapture";
 
 type Props = { params: Promise<{ slug: string }> };
 
