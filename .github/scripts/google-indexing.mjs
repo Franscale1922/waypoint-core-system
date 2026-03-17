@@ -123,6 +123,9 @@ for (const url of urls) {
         if (res.statusCode === 200) {
           console.log(`✅ ${url}`);
           success++;
+        } else if (res.statusCode === 429) {
+          console.log(`⏳ ${url} → 429 Quota exceeded (daily limit reached — will retry tomorrow)`);
+          // Don't count as failure — quota resets daily
         } else {
           console.log(`⚠️  ${url} → ${res.statusCode}: ${data}`);
           failed++;
