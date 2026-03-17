@@ -29,7 +29,7 @@ _First 300 characters of each AI response, for review._
 ### "What does a franchise consultant do?"
 
 **GPT-4o:** ❌ Not cited  
-> A franchise consultant is a professional who specializes in helping businesses and individuals navigate the complexities of franchising. Their services can be beneficial to franchisors (business owners looking to expand through franchising) and franchisees (individuals looking to invest in a franchi...
+> A franchise consultant is a professional who provides expert advice and guidance to individuals and businesses interested in entering the franchise industry. Their primary role is to assist both prospective franchisees and franchisors in various aspects of franchising. Here are some of the key respo...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -40,7 +40,7 @@ _First 300 characters of each AI response, for review._
 ### "How much does it cost to buy a franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> The cost of buying a franchise can vary widely depending on several factors, including the brand, industry, location, and size of the franchise. Here are some general cost considerations:  1. **Initial Franchise Fee**: This fee grants you the right to use the franchisor's brand and system. It usuall...
+> The cost of buying a franchise varies significantly depending on the brand, industry, and location. Here are some common factors and typical cost ranges:  1. **Initial Franchise Fee:** This is the upfront fee you pay to the franchisor for the rights to use their brand and operating system. It can ra...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -51,7 +51,7 @@ _First 300 characters of each AI response, for review._
 ### "What is an FDD in franchising?"
 
 **GPT-4o:** ❌ Not cited  
-> In franchising, an FDD, or Franchise Disclosure Document, is a legal document that provides prospective franchisees with essential information about a franchise opportunity. It is a critical part of the due diligence process for anyone considering investing in a franchise. The FDD includes comprehen...
+> An FDD, or Franchise Disclosure Document, is a legal document required in the United States for franchisors to provide to prospective franchisees. It offers detailed information about the franchisor and the franchise system, enabling potential franchisees to make informed decisions about investing i...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -62,7 +62,7 @@ _First 300 characters of each AI response, for review._
 ### "What is a semi-absentee franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> A semi-absentee franchise is a type of franchise business model that allows the owner to maintain an active role in the business but does not require their full-time commitment. This model is appealing to individuals who want to keep their existing job, pursue other interests, or gradually transitio...
+> A semi-absentee franchise is a type of franchise model designed to allow the franchisee to own and operate the business without being fully involved in its day-to-day operations. This model typically requires a commitment of about 10 to 20 hours per week from the franchise owner, who may maintain ot...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -73,7 +73,7 @@ _First 300 characters of each AI response, for review._
 ### "Best home services franchises to buy"
 
 **GPT-4o:** ❌ Not cited  
-> Investing in a home services franchise can be a lucrative opportunity because these businesses often provide essential services that are always in demand. When considering the best franchises to buy into, you should consider several factors, including brand reputation, initial investment costs, trai...
+> When considering investing in a home services franchise, it's important to evaluate several factors, including market demand, brand reputation, initial investment costs, and the support provided by the franchisor. As of the latest information available, here are some reputable home services franchis...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -84,7 +84,7 @@ _First 300 characters of each AI response, for review._
 ### "How to finance a franchise"
 
 **GPT-4o:** ❌ Not cited  
-> Financing a franchise can be a complex process, but there are several avenues you can explore to secure the necessary funding. Here’s a step-by-step guide to help you finance a franchise:  1. **Assess Your Financial Situation:**    - Determine your net worth and assess your credit score.    - Evalua...
+> Financing a franchise can be a significant undertaking, but with proper planning and understanding of your financial options, you can secure the resources needed to get started. Here are several common methods to consider:  1. **Personal Savings:**    - Use your own savings to fund the franchise. Th...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -95,7 +95,7 @@ _First 300 characters of each AI response, for review._
 ### "Is franchise ownership passive income?"
 
 **GPT-4o:** ❌ Not cited  
-> Franchise ownership is generally not considered passive income. While a franchise can provide a steady income stream, it typically requires active involvement from the owner, especially in the initial stages. Here are a few considerations:  1. **Initial Setup and Training**: Becoming a franchise own...
+> Franchise ownership is not typically considered passive income. While some franchises can offer more managerial support and have established systems in place, franchise ownership generally requires active involvement and management. Responsibilities can include hiring and training staff, managing da...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
@@ -106,7 +106,7 @@ _First 300 characters of each AI response, for review._
 ### "What are red flags when buying a franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> Buying a franchise can be a lucrative business opportunity, but it’s important to approach it with caution and due diligence. Here are some red flags you should be aware of when considering a franchise investment:  1. **Unclear Financial Information**: If the franchisor is unwilling or unable to pro...
+> Buying a franchise can be a rewarding business venture, but it's essential to approach it with caution. Here are some common red flags to watch out for when considering purchasing a franchise:  1. **Lack of Transparency**: If the franchisor is unwilling or hesitant to provide detailed information ab...
 
 **Perplexity:** ⏭️ _Skipped — PERPLEXITY_API_KEY not set — add to .env to enable_
 
