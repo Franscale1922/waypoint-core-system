@@ -40,14 +40,22 @@ export default function ScrollReveal() {
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0, rootMargin: "0px 0px -40px 0px" }
     );
 
     // Small rAF delay so the DOM settles after navigation before we
     // snapshot element positions — avoids a race on fast machines where
     // the observer fires before layout is complete.
     const raf = requestAnimationFrame(() => {
-      elements.forEach((el) => observer.observe(el));
+      elements.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        // Immediately reveal elements already fully or partially in the viewport
+        if (rect.top < window.innerHeight && rect.bottom > 0) {
+          el.classList.add("visible");
+        } else {
+          observer.observe(el);
+        }
+      });
     });
 
     return () => {
