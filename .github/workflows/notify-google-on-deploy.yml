@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Ping Google with sitemap URL
         run: |
-          SITEMAP="https://waypointfranchise.com/sitemap.xml"
+          SITEMAP="https://www.waypointfranchise.com/sitemap.xml"
           echo "Pinging Google with sitemap: $SITEMAP"
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             "https://www.google.com/ping?sitemap=${SITEMAP}")
@@ -39,11 +39,11 @@ jobs:
       - name: Fetch sitemap and extract URLs
         id: extract
         run: |
-          SITEMAP_URL="https://waypointfranchise.com/sitemap.xml"
+          SITEMAP_URL="https://www.waypointfranchise.com/sitemap.xml"
           echo "Fetching $SITEMAP_URL..."
 
           # Download sitemap and extract all <loc> values into a JSON array
-          SITEMAP_XML=$(curl -s "$SITEMAP_URL")
+          SITEMAP_XML=$(curl -sL "$SITEMAP_URL")
           URL_LIST=$(echo "$SITEMAP_XML" \
             | grep -oP '(?<=<loc>)[^<]+' \
             | jq -R . | jq -s .)

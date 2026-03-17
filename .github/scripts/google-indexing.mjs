@@ -73,13 +73,22 @@ const token = await new Promise((resolve, reject) => {
 console.log('✅ Got access token');
 
 // ── 3. Fetch sitemap and extract URLs ────────────────────────────────────
-const sitemapXml = await new Promise((resolve, reject) => {
-  https.get('https://waypointfranchise.com/sitemap.xml', (res) => {
-    let data = '';
-    res.on('data', chunk => data += chunk);
-    res.on('end', () => resolve(data));
-  }).on('error', reject);
-});
+// Follow redirects manually (waypointfranchise.com redirects to www)
+function fetchUrl(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, (res) => {
+      if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+        resolve(fetchUrl(res.headers.location));
+      } else {
+        let data = '';
+        res.on('data', chunk => data += chunk);
+        res.on('end', () => resolve(data));
+      }
+    }).on('error', reject);
+  });
+}
+
+const sitemapXml = await fetchUrl('https://www.waypointfranchise.com/sitemap.xml');
 
 // Split on <loc> tags — handles any whitespace/newline formatting
 const urls = sitemapXml
