@@ -1,0 +1,117 @@
+name: Monthly SEO Review
+
+on:
+  schedule:
+    # Runs at 8:00 AM UTC on the 1st of every month
+    - cron: '0 8 1 * *'
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  seo-review:
+    name: Pull GSC Data, Check AI Citations, Email Summary
+    runs-on: ubuntu-latest
+
+    env:
+      GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
+      GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Install googleapis (if not in package-lock)
+        run: npm install googleapis --no-save
+
+      - name: Write service account credentials to file
+        run: |
+          echo "$GSC_SERVICE_ACCOUNT_KEY" | base64 -d > /tmp/gsc-credentials.json
+          echo "GSC_SERVICE_ACCOUNT_PATH=/tmp/gsc-credentials.json" >> $GITHUB_ENV
+
+      - name: Run GSC report
+        run: node scripts/gsc-report.mjs
+        continue-on-error: true
+
+      - name: Run AI citation check
+        run: node scripts/ai-citation-check.mjs
+        continue-on-error: true
+
+      - name: Commit reports to repo
+        run: |
+          git config user.name "Waypoint SEO Bot"
+          git config user.email "bot@waypointfranchise.com"
+          git add docs/seo-reviews/
+          git diff --staged --quiet || git commit -m "seo: monthly review report $(date +%Y-%m)"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build email summary
+        id: summary
+        run: |
+          MONTH=$(date +%Y-%m)
+          GSC_REPORT="docs/seo-reviews/${MONTH}/gsc-report.md"
+          CITE_REPORT="docs/seo-reviews/${MONTH}/ai-citation-check.md"
+
+          # Extract key numbers from reports
+          if [ -f "$GSC_REPORT" ]; then
+            CLICKS=$(grep "Total clicks" "$GSC_REPORT" | grep -o '[0-9]*' | head -1)
+            IMPRESSIONS=$(grep "Total impressions" "$GSC_REPORT" | grep -o '[0-9]*' | head -1)
+            AVG_POS=$(grep "Average position" "$GSC_REPORT" | grep -oE '[0-9]+\.[0-9]+' | head -1)
+            OPP_COUNT=$(grep -c "ListItem\|^|" "$GSC_REPORT" 2>/dev/null || echo "0")
+          fi
+
+          if [ -f "$CITE_REPORT" ]; then
+            CITE_HITS=$(grep -c "✅" "$CITE_REPORT" 2>/dev/null || echo "0")
+          fi
+
+          # Build plain-text summary for email
+          cat > /tmp/seo-summary.html << EOF
+          <html><body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+          <h2 style="color: #0c1929;">Waypoint Monthly SEO Report — ${MONTH}</h2>
+
+          <h3>📊 Search Console</h3>
+          <table style="border-collapse: collapse; width: 100%;">
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total clicks (28 days)</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${CLICKS:-0}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total impressions</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${IMPRESSIONS:-0}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Average position</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${AVG_POS:-—}</td></tr>
+          </table>
+
+          <h3>🤖 AI Citation Status</h3>
+          <p>${CITE_HITS:-0} of 24 AI queries returned a Waypoint citation (GPT-4o + Perplexity + Gemini × 8 questions).</p>
+
+          <h3>✅ Next Step</h3>
+          <p>Full reports are committed to <a href="https://github.com/Franscale1922/waypoint-core-system/tree/main/docs/seo-reviews/${MONTH}">docs/seo-reviews/${MONTH}/</a></p>
+          <p><b>To run optimizations:</b> open a conversation with your AI agent and type <code>/seo-review</code>. The agent will read these reports and make all keyword, schema, and AEO fixes automatically.</p>
+
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #999; font-size: 12px;">Automated by Waypoint SEO Bot · waypointfranchise.com</p>
+          </body></html>
+          EOF
+          echo "summary_built=true" >> $GITHUB_OUTPUT
+
+      - name: Send email report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "Waypoint Monthly SEO Report — ${{ env.MONTH }}"
+          to: kelsey@waypointfranchise.com
+          from: Waypoint SEO Bot <${{ secrets.GMAIL_USER }}>
+          html_body: file:///tmp/seo-summary.html
+        env:
+          MONTH: ${{ steps.summary.outputs.MONTH }}

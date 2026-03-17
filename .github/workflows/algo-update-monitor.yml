@@ -1,0 +1,206 @@
+name: Google Algorithm Update Monitor
+
+on:
+  schedule:
+    # Runs every Monday at 9:00 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+
+jobs:
+  check-updates:
+    name: Check Google Algorithm Update Sources
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Check for new Google algorithm updates
+        id: check
+        run: |
+          # Fetch Google Search Central Blog RSS
+          curl -s "https://developers.google.com/feeds/search-central-blog.xml" -o /tmp/google-blog.xml 2>/dev/null || \
+          curl -s "https://developers.google.com/search/blog/rss.xml" -o /tmp/google-blog.xml 2>/dev/null || true
+
+          # Fetch Search Engine Roundtable RSS (best independent source for algo updates)
+          curl -s "https://www.seroundtable.com/rss.xml" -o /tmp/sert.xml 2>/dev/null || true
+
+          # Check if state file exists (list of already-seen items)
+          STATE_FILE="docs/seo-reviews/.algo-monitor-state"
+          if [ -f "$STATE_FILE" ]; then
+            LAST_SEEN=$(cat "$STATE_FILE")
+          else
+            LAST_SEEN=""
+          fi
+
+          # Parse Google blog for new posts (last 7 days)
+          python3 << 'PYEOF'
+          import xml.etree.ElementTree as ET
+          import datetime, sys, os, re
+
+          KEYWORDS = [
+              'algorithm update', 'core update', 'helpful content', 'spam update',
+              'link spam', 'product reviews', 'google update', 'ranking update',
+              'search quality', 'search rater', 'quality rater', 'march update',
+              'june update', 'august update', 'september update', 'november update',
+          ]
+
+          seven_days_ago = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=7)
+          new_items = []
+
+          # Parse Search Engine Roundtable (most reliable algo update source)
+          try:
+              tree = ET.parse('/tmp/sert.xml')
+              root = tree.getroot()
+              ns = {'atom': 'http://www.w3.org/2005/Atom'}
+              
+              for item in root.findall('.//item'):
+                  title = item.findtext('title', '') or ''
+                  desc = item.findtext('description', '') or ''
+                  link = item.findtext('link', '') or ''
+                  pub_date = item.findtext('pubDate', '') or ''
+                  
+                  combined = (title + ' ' + desc).lower()
+                  is_algo = any(kw in combined for kw in KEYWORDS)
+                  
+                  if is_algo:
+                      try:
+                          from email.utils import parsedate_to_datetime
+                          pub_dt = parsedate_to_datetime(pub_date)
+                          if pub_dt.tzinfo is None:
+                              import pytz
+                              pub_dt = pytz.utc.localize(pub_dt)
+                          if pub_dt >= seven_days_ago:
+                              new_items.append({
+                                  'title': title,
+                                  'link': link,
+                                  'date': pub_date,
+                                  'source': 'Search Engine Roundtable'
+                              })
+                      except:
+                          pass
+          except Exception as e:
+              print(f"Note: Could not parse SERT: {e}", file=sys.stderr)
+
+          # Parse Google Search Central Blog
+          try:
+              tree = ET.parse('/tmp/google-blog.xml')
+              root = tree.getroot()
+              
+              for item in root.iter('item'):
+                  title = item.findtext('title', '') or ''
+                  desc = item.findtext('description', '') or ''
+                  link = item.findtext('link', '') or ''
+                  pub_date = item.findtext('pubDate', '') or ''
+                  
+                  combined = (title + ' ' + desc).lower()
+                  is_relevant = any(kw in combined for kw in KEYWORDS + ['ranking', 'search', 'quality'])
+                  
+                  if is_relevant:
+                      try:
+                          from email.utils import parsedate_to_datetime
+                          pub_dt = parsedate_to_datetime(pub_date)
+                          if pub_dt.tzinfo is None:
+                              import pytz
+                              pub_dt = pytz.utc.localize(pub_dt)
+                          if pub_dt >= seven_days_ago:
+                              new_items.append({
+                                  'title': title,
+                                  'link': link,
+                                  'date': pub_date,
+                                  'source': 'Google Search Central'
+                              })
+                      except Exception as e2:
+                          pass
+          except Exception as e:
+              print(f"Note: Could not parse Google blog: {e}", file=sys.stderr)
+
+          if new_items:
+              print(f"UPDATES_FOUND={len(new_items)}")
+              with open('/tmp/algo-updates.txt', 'w') as f:
+                  for item in new_items:
+                      f.write(f"SOURCE: {item['source']}\n")
+                      f.write(f"TITLE: {item['title']}\n")
+                      f.write(f"LINK: {item['link']}\n")
+                      f.write(f"DATE: {item['date']}\n")
+                      f.write("---\n")
+          else:
+              print("UPDATES_FOUND=0")
+          PYEOF
+
+          # Set outputs
+          if [ -f /tmp/algo-updates.txt ]; then
+            echo "updates_found=true" >> $GITHUB_OUTPUT
+            echo "update_count=$(grep -c 'SOURCE:' /tmp/algo-updates.txt)" >> $GITHUB_OUTPUT
+          else
+            echo "updates_found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build update email
+        if: steps.check.outputs.updates_found == 'true'
+        run: |
+          UPDATES=$(cat /tmp/algo-updates.txt)
+          TODAY=$(date +%Y-%m-%d)
+
+          python3 << PYEOF
+          with open('/tmp/algo-updates.txt', 'r') as f:
+              raw = f.read()
+
+          blocks = raw.strip().split('---')
+          rows = ""
+          for block in blocks:
+              if not block.strip():
+                  continue
+              lines = {l.split(': ', 1)[0].strip(): l.split(': ', 1)[1].strip() 
+                       for l in block.strip().split('\n') if ': ' in l}
+              rows += f"""
+              <tr>
+                <td style="padding: 12px; border-bottom: 1px solid #eee; vertical-align: top;">
+                  <b><a href="{lines.get('LINK', '#')}" style="color: #c08b3e;">{lines.get('TITLE', 'Update')}</a></b><br>
+                  <small style="color: #999;">{lines.get('SOURCE', '')} · {lines.get('DATE', '')}</small>
+                </td>
+              </tr>"""
+
+          html = f"""<html><body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
+          <h2 style="color: #0c1929;">⚠️ Google Algorithm Activity Detected</h2>
+          <p>The following algorithm-related announcements were published in the last 7 days. Review each one and determine if the site needs adjustments.</p>
+          
+          <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">{rows}</table>
+
+          <h3>What to do</h3>
+          <ol>
+            <li>Read each article above to understand what changed</li>
+            <li>Open a conversation with your AI agent</li>
+            <li>Paste the article title(s) and say: <i>"Google just released [update name]. Review waypointfranchise.com and tell me if we need to adjust anything."</i></li>
+            <li>The agent will analyze the update against the site and make any necessary changes</li>
+          </ol>
+
+          <p style="background: #f5f1eb; padding: 12px; border-radius: 4px; font-size: 13px;">
+          <b>Common things to check after a core update:</b> Content quality and depth · E-E-A-T signals (Experience, Expertise, Authority, Trust) · Page experience signals · Helpful content assessment · Spam patterns
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #999; font-size: 12px;">Automated by Waypoint SEO Bot · Monitors: Google Search Central Blog, Search Engine Roundtable</p>
+          </body></html>"""
+
+          with open('/tmp/algo-email.html', 'w') as f:
+              f.write(html)
+          print("Email built.")
+          PYEOF
+
+      - name: Send algorithm update email
+        if: steps.check.outputs.updates_found == 'true'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.GMAIL_USER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "⚠️ Google Algorithm Activity Detected — ${{ steps.check.outputs.update_count }} update(s) this week"
+          to: kelsey@waypointfranchise.com
+          from: Waypoint SEO Bot <${{ secrets.GMAIL_USER }}>
+          html_body: file:///tmp/algo-email.html
+
+      - name: No updates found (silent)
+        if: steps.check.outputs.updates_found == 'false'
+        run: echo "✅ No algorithm updates this week. No email sent."
