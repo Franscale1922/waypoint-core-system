@@ -92,7 +92,9 @@ export default async function AboutPage() {
           </p>
           <VimeoFacade
             videoId={VIDEO_ID}
-            thumbnailUrl={thumbnailUrl}
+            thumbnailUrl={thumbnailUrl ?? "https://i.vimeocdn.com/video/2134803942-aaf25817575a9a51d5162ec0b3de4af5986faedf1bfb3597e853e15e9d09f1bb-d_1280?region=us"}
+            label="3 min · Watch"
+            headline="Who is this Kelsey guy?"
             title="Kelsey Stuart on what honest franchise consulting actually looks like"
           />
         </div>
