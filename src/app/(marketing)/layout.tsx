@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import ScrollReveal from "../components/ScrollReveal";
 import MobileNav from "../components/MobileNav";
-import MobileStickyBar from "../components/MobileStickyBar";
 
 export default function MarketingLayout({
   children,
@@ -238,7 +237,6 @@ export default function MarketingLayout({
           </div>
         </div>
       </footer>
-      <MobileStickyBar />
     </div>
   );
 }
