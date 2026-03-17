@@ -9,15 +9,17 @@ import { useState } from "react";
  *
  * Performance notes:
  * - No iframe is rendered until click → no Vimeo JS bundle on initial load
- * - Poster image is a standard <img> — near-zero paint cost
+ * - thumbnailUrl is fetched server-side via oEmbed in the parent page
  * - Vimeo CDN handles adaptive streaming; no video bytes hit Vercel
  */
 export default function VimeoFacade({
   videoId,
+  thumbnailUrl,
   title = "Watch the video",
   aspectRatio = "16/9",
 }: {
   videoId: string;
+  thumbnailUrl?: string;
   title?: string;
   aspectRatio?: string;
 }) {
@@ -38,15 +40,16 @@ export default function VimeoFacade({
         />
       ) : (
         <>
-          {/* Poster: Vimeo's own oembed thumbnail */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={`https://vimeo.com/api/v2/video/${videoId}/thumbnail_large.jpg`}
-            alt={title}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-          />
+          {/* Poster: passed in from server-side oEmbed fetch */}
+          {thumbnailUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={thumbnailUrl}
+              alt={title}
+              className="absolute inset-0 w-full h-full object-cover"
+              loading="lazy"
+            />
+          )}
           {/* Dark overlay for contrast */}
           <div className="absolute inset-0 bg-black/30" />
           {/* Play button */}
@@ -55,7 +58,7 @@ export default function VimeoFacade({
             aria-label={`Play: ${title}`}
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 group"
           >
-            {/* Gold play circle */}
+            {/* Copper play circle */}
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#CC6535] group-hover:bg-[#D4724A] flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110">
               <svg
                 xmlns="http://www.w3.org/2000/svg"

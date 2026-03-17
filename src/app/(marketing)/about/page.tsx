@@ -3,8 +3,25 @@ import Image from "next/image";
 import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
 
-// Force dynamic rendering — prevents Vercel edge from caching a stale static copy
-export const revalidate = 0;
+// Revalidate every hour — re-fetches Vimeo oEmbed thumbnail if it ever changes
+export const revalidate = 3600;
+
+const VIDEO_ID = "1174270863";
+
+async function getVimeoThumbnail(videoId: string): Promise<string | undefined> {
+  try {
+    const res = await fetch(
+      `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
+      { next: { revalidate: 3600 } }
+    );
+    if (!res.ok) return undefined;
+    const data = await res.json();
+    return data.thumbnail_url as string | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
@@ -20,7 +37,8 @@ export const metadata: Metadata = {
   },
 };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const thumbnailUrl = await getVimeoThumbnail(VIDEO_ID);
   return (
     <>
       {/* Hero */}
@@ -73,7 +91,8 @@ export default function AboutPage() {
             Before you book a call, here&apos;s a 3-minute conversation that might answer most of your questions.
           </p>
           <VimeoFacade
-            videoId="1174270863"
+            videoId={VIDEO_ID}
+            thumbnailUrl={thumbnailUrl}
             title="Kelsey Stuart on what honest franchise consulting actually looks like"
           />
         </div>
