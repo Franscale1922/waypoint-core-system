@@ -10,6 +10,13 @@ import { useEffect, useState } from "react";
  * the hero's own CTAs. Appears after the user scrolls past the hero.
  *
  * Desktop: not shown (hidden sm:hidden).
+ *
+ * iOS Safari notes:
+ * - NO backdrop-filter/backdrop-blur: creates a stacking context that
+ *   breaks position:fixed on Safari, causing the element to drift mid-page
+ *   during momentum scroll.
+ * - translateZ(0) via inline style forces GPU layer promotion so the fixed
+ *   element stays anchored to the viewport during all scroll phases.
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
@@ -34,14 +41,25 @@ export default function MobileStickyBar() {
         ${visible ? "translate-y-0" : "translate-y-full"}
       `}
       aria-hidden={!visible}
+      // translateZ(0) — forces a GPU compositing layer on iOS Safari.
+      // Without this, position:fixed elements drift to their document
+      // position during momentum scroll (rubber-band / inertia scrolling).
+      style={{ transform: visible ? "translateZ(0)" : "translateY(100%)", WebkitTransform: visible ? "translateZ(0)" : "translateY(100%)" }}
     >
-      {/* Safe area inset for iPhone home indicator */}
-      <div className="bg-[#0c1929]/95 backdrop-blur-sm border-t border-white/10 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))]">
+      {/* Safe area inset for iPhone home indicator.
+          No backdrop-blur here — it causes fixed positioning to break on Safari. */}
+      <div
+        className="border-t border-white/10 px-4 pt-3"
+        style={{
+          backgroundColor: "#0c1929",
+          paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))",
+        }}
+      >
         <div className="flex gap-3 items-center">
           {/* Text Kelsey — secondary action */}
           <a
             href="sms:+12149951062"
-            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]"
+            className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white border border-white/25 rounded-lg min-h-[48px]"
             aria-label="Text Kelsey at (214) 995-1062"
           >
             <svg
@@ -64,7 +82,7 @@ export default function MobileStickyBar() {
           {/* Book a Free Call — primary action */}
           <a
             href="/book"
-            className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+            className="flex-1 inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] rounded-lg min-h-[48px]"
             aria-label="Book a free call with Kelsey Stuart"
           >
             Book a Free Call
@@ -74,3 +92,4 @@ export default function MobileStickyBar() {
     </div>
   );
 }
+
