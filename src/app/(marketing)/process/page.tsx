@@ -140,9 +140,9 @@ export default function ProcessPage() {
           style={{ objectPosition: "center 35%" }}
         />
         {/* Primary overlay: bottom-to-top gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-black/20" />
         {/* Secondary scrim: left-side reinforcement so text area stays dark regardless of image content */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/25 to-transparent" />
         <div className="relative z-10 max-w-3xl mx-auto w-full">
 
           <h1
@@ -159,13 +159,13 @@ export default function ProcessPage() {
           </p>
           <p
             className="text-[#CC6535] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
-            style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
+            style={{ textShadow: "0 0 20px rgba(0,0,0,1), 0 1px 12px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,1)" }}
           >
             Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
           </p>
           <p
             className="text-[#CC6535] text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
-            style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
+            style={{ textShadow: "0 0 20px rgba(0,0,0,1), 0 1px 12px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,1)" }}
           >
             Most candidates go from intro call to a clear decision in 6&ndash;10 weeks. The pace is always yours.
           </p>
