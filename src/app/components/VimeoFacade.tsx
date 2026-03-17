@@ -38,13 +38,14 @@ export default function VimeoFacade({
         />
       ) : (
         <>
-          {/* Poster: Vimeo's thumbnail endpoint */}
+          {/* Poster: Vimeo's own oembed thumbnail */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://vumbnail.com/${videoId}.jpg`}
+            src={`https://vimeo.com/api/v2/video/${videoId}/thumbnail_large.jpg`}
             alt={title}
             className="absolute inset-0 w-full h-full object-cover"
             loading="lazy"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
           />
           {/* Dark overlay for contrast */}
           <div className="absolute inset-0 bg-black/30" />
