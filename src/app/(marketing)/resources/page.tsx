@@ -61,7 +61,7 @@ export default function ResourcesPage() {
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">The fastest way to get a real answer is a real conversation.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
+          <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
           <Link href="/scorecard" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]">Take the Readiness Quiz</Link>
           <a href="sms:+12149951062" className="inline-flex items-center justify-center text-sm font-medium text-white/60 hover:text-white transition-colors min-h-[48px] px-2">Or text me &rarr;</a>
         </div>

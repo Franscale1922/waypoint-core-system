@@ -74,7 +74,7 @@ export default function Testimonials() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="reveal text-center mb-12 sm:mb-20">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#c08b3e] mb-4 sm:mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8E3012] mb-4 sm:mb-6">
             From the people who&apos;ve been through it
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a1a1a] tracking-tight max-w-2xl mx-auto leading-tight">
@@ -92,7 +92,7 @@ export default function Testimonials() {
             >
               {/* Quote mark */}
               <div
-                className="text-5xl sm:text-6xl font-serif text-[#d4a55a] leading-none mb-4 select-none"
+                className="text-5xl sm:text-6xl font-serif text-[#C8622E] leading-none mb-4 select-none"
                 aria-hidden="true"
               >
                 &ldquo;
@@ -104,7 +104,7 @@ export default function Testimonials() {
               </p>
 
               {/* Copper rule */}
-              <div className="h-px bg-[#d4a55a]/30 my-5 sm:my-6" />
+              <div className="h-px bg-[#C8622E]/30 my-5 sm:my-6" />
 
               {/* Attribution */}
               <div className="flex items-start justify-between gap-3">
@@ -114,7 +114,7 @@ export default function Testimonials() {
                   <p className="text-xs text-[#7a7a7a]">{t.location}</p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <span className="inline-block text-[10px] font-medium text-[#c08b3e] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide">
+                  <span className="inline-block text-[10px] font-medium text-[#8E3012] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide">
                     {t.score}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export default function Testimonials() {
           </p>
           <Link
             href="/scorecard"
-            className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all press-effect min-h-[48px]"
+            className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
           >
             Take the Readiness Quiz
           </Link>

@@ -117,7 +117,7 @@ export default function ScorecardClient() {
       <section className="py-16 sm:py-24 bg-gradient-to-br from-[#f2f7fc] via-white to-[#fbf5ea]/40 min-h-[80vh]">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#f5ebd1] mb-5 sm:mb-6">
-            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-[#c08b3e]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-[#8E3012]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -139,13 +139,13 @@ export default function ScorecardClient() {
                 <a
                   href="/book"
                   onClick={() => trackBookCallClicked("scorecard_results")}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
                   Book a Free Call
                 </a>
                 <a
                   href="sms:+12149951062"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
                   <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 4V5z" clipRule="evenodd" />
@@ -168,7 +168,7 @@ export default function ScorecardClient() {
             <div className="mt-6 sm:mt-8 space-y-3">
               <a
                 href="/resources"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
               >
                 Browse Franchise Resources
               </a>
@@ -200,14 +200,14 @@ export default function ScorecardClient() {
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#c08b3e] focus:border-transparent text-base min-h-[48px]"
+              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#8E3012] focus:border-transparent text-base min-h-[48px]"
             />
             <input
               type="email"
               placeholder="Your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#c08b3e] focus:border-transparent text-base min-h-[48px]"
+              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#8E3012] focus:border-transparent text-base min-h-[48px]"
             />
             <button
               onClick={handleSubmit}
@@ -238,7 +238,7 @@ export default function ScorecardClient() {
           </div>
           <div className="h-2 sm:h-2.5 bg-slate-100 rounded-full overflow-hidden progress-shimmer">
             <div
-              className="h-full bg-gradient-to-r from-[#1b3a5f] to-[#c08b3e] rounded-full transition-all duration-700 ease-out"
+              className="h-full bg-gradient-to-r from-[#1b3a5f] to-[#8E3012] rounded-full transition-all duration-700 ease-out"
               style={{ width: `${((currentStep) / questions.length) * 100}%` }}
             />
           </div>

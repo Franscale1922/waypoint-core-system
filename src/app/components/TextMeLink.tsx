@@ -13,8 +13,8 @@ export default function TextMeLink({
   const base = "inline-flex items-center justify-center gap-1.5 transition-colors";
 
   const styles = {
-    pill: `${base} text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] px-2.5 py-1 rounded`,
-    ghost: `${base} text-sm font-medium text-[#d4a55a] hover:text-[#e2be80]`,
+    pill: `${base} text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] px-2.5 py-1 rounded`,
+    ghost: `${base} text-sm font-medium text-[#C8622E] hover:text-[#D4724A]`,
     "outline-light": `${base} text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg px-7 py-4 min-h-[48px]`,
   };
 

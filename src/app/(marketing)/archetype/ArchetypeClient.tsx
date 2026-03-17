@@ -82,7 +82,7 @@ export default function ArchetypeClient() {
             <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#f5ebd1] text-4xl sm:text-5xl mb-5 shadow-md">
               {archetype.emoji}
             </div>
-            <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-2">
+            <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase mb-2">
               Your Franchise Archetype
             </p>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#1b3a5f] leading-tight">
@@ -144,7 +144,7 @@ export default function ArchetypeClient() {
 
           {/* Advisor Note */}
           <div className="bg-[#0c1929] rounded-2xl p-6 sm:p-8 mb-8">
-            <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-3">
+            <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase mb-3">
               A note from Kelsey
             </p>
             <p className="text-base sm:text-lg text-white/90 leading-relaxed">
@@ -158,7 +158,7 @@ export default function ArchetypeClient() {
               href="/book"
               id="archetype-result-book-cta"
               onClick={() => trackBookCallClicked("archetype_result")}
-              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-xl shadow-lg transition-all press-effect min-h-[52px]"
+              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[52px]"
             >
               Book a Free Call. Let&apos;s Match the Brands
             </a>
@@ -168,7 +168,7 @@ export default function ArchetypeClient() {
             <p className="mt-6 text-sm text-slate-500 mb-3">Want to check your readiness too?</p>
             <a
               href="/scorecard"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#c49848] rounded-xl transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl transition-all press-effect min-h-[48px]"
             >
               Take the Readiness Quiz
             </a>
@@ -202,14 +202,14 @@ export default function ArchetypeClient() {
               placeholder="Your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#c08b3e] focus:border-transparent text-base min-h-[48px]"
+              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#8E3012] focus:border-transparent text-base min-h-[48px]"
             />
             <input
               type="email"
               placeholder="Your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#c08b3e] focus:border-transparent text-base min-h-[48px]"
+              className="w-full border border-slate-200 rounded-xl px-4 sm:px-5 py-3.5 sm:py-4 text-slate-900 bg-white focus:outline-none focus:ring-2 focus:ring-[#8E3012] focus:border-transparent text-base min-h-[48px]"
             />
             <button
               id="archetype-capture-submit"
@@ -239,7 +239,7 @@ export default function ArchetypeClient() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6">
         {/* Header */}
         <div className="text-center mb-10">
-          <p className="text-xs font-semibold tracking-widest text-[#c08b3e] uppercase mb-2">
+          <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase mb-2">
             Franchise Archetype Quiz
           </p>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1b3a5f]">
@@ -258,7 +258,7 @@ export default function ArchetypeClient() {
           </div>
           <div className="h-2 sm:h-2.5 bg-slate-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#1b3a5f] to-[#c08b3e] rounded-full transition-all duration-700 ease-out"
+              className="h-full bg-gradient-to-r from-[#1b3a5f] to-[#8E3012] rounded-full transition-all duration-700 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>

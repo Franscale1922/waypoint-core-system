@@ -144,7 +144,7 @@ export default function MobileNav() {
                 fontSize: 20,
                 fontWeight: 600,
                 borderBottom: "1px solid rgba(255,255,255,0.07)",
-                color: pathname === link.href ? "#d4a55a" : "#ffffff",
+                color: pathname === link.href ? "#C8622E" : "#ffffff",
                 textDecoration: "none",
                 letterSpacing: "-0.01em",
               }}
@@ -166,7 +166,7 @@ export default function MobileNav() {
                 letterSpacing: "0.08em",
                 textTransform: "uppercase",
                 color: "#0c1929",
-                background: "#d4a55a",
+                background: "#C8622E",
                 borderRadius: 8,
                 textDecoration: "none",
               }}

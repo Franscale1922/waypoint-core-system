@@ -149,7 +149,7 @@ export default function FranchiseMap() {
     <section className="py-16 sm:py-24 md:py-32 bg-[#0c1929] overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10 sm:mb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#d4a55a] mb-4 sm:mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#C8622E] mb-4 sm:mb-6">
             Trusted Nationwide
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight max-w-2xl mx-auto leading-tight">
@@ -158,7 +158,7 @@ export default function FranchiseMap() {
               : (
                 <>
                   I&rsquo;ve helped{" "}
-                  <span className="text-[#d4a55a]">
+                  <span className="text-[#C8622E]">
                     {cities.length > 0 ? `${cities.length}+` : "146+"} owners
                   </span>{" "}
                   find and start the right franchise.
@@ -187,8 +187,8 @@ export default function FranchiseMap() {
                 </feMerge>
               </filter>
               <radialGradient id="pin-gradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#d4a55a" />
-                <stop offset="100%" stopColor="#c08b3e" />
+                <stop offset="0%" stopColor="#C8622E" />
+                <stop offset="100%" stopColor="#8E3012" />
               </radialGradient>
               {/* Subtle inner shadow for the map shape */}
               <filter id="map-inner-glow" x="-10%" y="-10%" width="120%" height="120%">
@@ -223,7 +223,7 @@ export default function FranchiseMap() {
                   cx={t.x}
                   cy={t.y}
                   r="6"
-                  fill="#d4a55a"
+                  fill="#C8622E"
                   className="pin-pulse"
                   style={{ animationDelay: `${(i * 37) % 2000}ms` }}
                 />
@@ -259,7 +259,7 @@ export default function FranchiseMap() {
                     height="20"
                     rx="4"
                     fill="#FAF8F4"
-                    stroke="#c08b3e"
+                    stroke="#8E3012"
                     strokeWidth="0.5"
                   />
                   <text

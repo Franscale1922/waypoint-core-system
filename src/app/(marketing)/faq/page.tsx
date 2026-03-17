@@ -312,7 +312,7 @@ export default function FAQPage() {
             .replace(/(^-|-$)/g, "");
           return (
           <div key={category} id={id} style={{ scrollMarginTop: "120px" }}>
-            <h2 className="font-playfair text-xl text-[#d4a55a] mb-6 pb-3 border-b border-[#e8e0d0]">
+            <h2 className="font-playfair text-xl text-[#C8622E] mb-6 pb-3 border-b border-[#e8e0d0]">
               {category}
             </h2>
             <div>
@@ -331,12 +331,12 @@ export default function FAQPage() {
         </p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">
           The fastest way to get a real answer is a real conversation.{" "}
-          Or <a href="/process" className="text-[#d4a55a] hover:underline">see exactly how the process works →</a>
+          Or <a href="/process" className="text-[#C8622E] hover:underline">see exactly how the process works →</a>
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>

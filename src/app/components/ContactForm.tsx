@@ -44,8 +44,8 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="bg-[#0c1929] rounded-xl p-8 text-center">
-        <div className="w-10 h-10 rounded-full bg-[#d4a55a]/20 flex items-center justify-center mx-auto mb-4">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d4a55a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div className="w-10 h-10 rounded-full bg-[#C8622E]/20 flex items-center justify-center mx-auto mb-4">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8622E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p className="font-playfair text-xl text-white mb-2">Got it.</p>
         <p className="text-sm text-white/60 leading-relaxed">
@@ -60,7 +60,7 @@ export default function ContactForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label htmlFor="cf-name" className="block text-xs font-semibold text-[#0c1929] uppercase tracking-wider mb-1.5">
-            Name <span className="text-[#c08b3e]">*</span>
+            Name <span className="text-[#8E3012]">*</span>
           </label>
           <input
             id="cf-name"
@@ -69,12 +69,12 @@ export default function ContactForm() {
             required
             autoComplete="name"
             placeholder="Your full name"
-            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#d4a55a] focus:border-transparent transition"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
           />
         </div>
         <div>
           <label htmlFor="cf-email" className="block text-xs font-semibold text-[#0c1929] uppercase tracking-wider mb-1.5">
-            Email <span className="text-[#c08b3e]">*</span>
+            Email <span className="text-[#8E3012]">*</span>
           </label>
           <input
             id="cf-email"
@@ -83,7 +83,7 @@ export default function ContactForm() {
             required
             autoComplete="email"
             placeholder="you@example.com"
-            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#d4a55a] focus:border-transparent transition"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
           />
         </div>
       </div>
@@ -98,13 +98,13 @@ export default function ContactForm() {
           type="tel"
           autoComplete="tel"
           placeholder="(214) 555-0100"
-          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#d4a55a] focus:border-transparent transition"
+          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
         />
       </div>
 
       <div>
         <label htmlFor="cf-message" className="block text-xs font-semibold text-[#0c1929] uppercase tracking-wider mb-1.5">
-          What&apos;s on your mind? <span className="text-[#c08b3e]">*</span>
+          What&apos;s on your mind? <span className="text-[#8E3012]">*</span>
         </label>
         <textarea
           id="cf-message"
@@ -112,7 +112,7 @@ export default function ContactForm() {
           required
           rows={5}
           placeholder="Where are you in the process? What are you trying to figure out?"
-          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#d4a55a] focus:border-transparent transition resize-none"
+          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition resize-none"
         />
       </div>
 
@@ -125,15 +125,15 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-all min-h-[48px]"
+        className="w-full inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-all min-h-[48px]"
       >
         {status === "submitting" ? "Sending..." : "Send Message"}
       </button>
 
       <p className="text-xs text-center text-[#9a9a8a]">
         Prefer to skip ahead?{" "}
-        <a href="/book" className="text-[#c08b3e] hover:underline">Book a call directly</a>
-        {" "}or text <a href="sms:+12149951062" className="text-[#c08b3e] hover:underline">(214) 995-1062</a>.
+        <a href="/book" className="text-[#8E3012] hover:underline">Book a call directly</a>
+        {" "}or text <a href="sms:+12149951062" className="text-[#8E3012] hover:underline">(214) 995-1062</a>.
       </p>
     </form>
   );

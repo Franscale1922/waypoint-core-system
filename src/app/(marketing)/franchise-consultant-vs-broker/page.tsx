@@ -96,7 +96,7 @@ export default function FranchiseConsultantVsBrokerPage() {
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-6 border-b border-[#e8e0d0]">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
             Comparison
           </p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-[#0c1929] leading-tight mb-6 max-w-3xl">
@@ -113,7 +113,7 @@ export default function FranchiseConsultantVsBrokerPage() {
 
       {/* Comparison table */}
       <section className="max-w-4xl mx-auto px-6 py-14 sm:py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
           Side by Side
         </p>
         <h2 className="font-playfair text-2xl sm:text-3xl mb-10">
@@ -152,7 +152,7 @@ export default function FranchiseConsultantVsBrokerPage() {
         <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm border-collapse">
             <thead>
-              <tr className="border-b-2 border-[#c08b3e]">
+              <tr className="border-b-2 border-[#8E3012]">
                 <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[30%]">Dimension</th>
                 <th className="text-left py-3 pl-4 pr-6 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Consultant</th>
                 <th className="text-left py-3 pl-4 pr-4 font-semibold text-[#1b3a5f] uppercase tracking-wider text-xs w-[32%]">Franchise Broker</th>
@@ -207,7 +207,7 @@ export default function FranchiseConsultantVsBrokerPage() {
             </p>
             <Link
               href="/process"
-              className="inline-flex items-center text-[#d4a55a] text-sm font-medium hover:text-[#e2be80] transition-colors mt-5"
+              className="inline-flex items-center text-[#C8622E] text-sm font-medium hover:text-[#D4724A] transition-colors mt-5"
             >
               See exactly how the process works →
             </Link>
@@ -217,7 +217,7 @@ export default function FranchiseConsultantVsBrokerPage() {
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto px-6 py-14 sm:py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
           Common Questions
         </p>
         <h2 className="font-playfair text-2xl sm:text-3xl mb-8">Questions about working with a consultant</h2>
@@ -236,7 +236,7 @@ export default function FranchiseConsultantVsBrokerPage() {
               a: "Ask them directly how many brands they presented to their last five clients, and whether any single brand generates a disproportionate share of their placements. Also look at how they structure the early part of the process: if they are showing you brands before understanding your situation, that is a signal. Independent consultants spend time on discovery before they spend time on presentation.",
             },
           ].map(({ q, a }) => (
-            <div key={q} className="border-l-2 border-[#c08b3e] pl-6">
+            <div key={q} className="border-l-2 border-[#8E3012] pl-6">
               <h3 className="font-semibold text-[#0c1929] mb-2">{q}</h3>
               <p className="text-sm text-[#4a4a3e] leading-relaxed">{a}</p>
             </div>
@@ -247,54 +247,54 @@ export default function FranchiseConsultantVsBrokerPage() {
       {/* Related resources, card format */}
       <section className="max-w-4xl mx-auto px-6 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-8 h-[2px] bg-[#d4a55a]" />
-          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Related Resources</p>
+          <div className="w-8 h-[2px] bg-[#C8622E]" />
+          <p className="text-xs font-medium text-[#C8622E] uppercase tracking-[0.2em]">Related Resources</p>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
 
           <Link
             href="/resources/do-you-need-a-franchise-consultant"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
           >
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Getting Started</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Getting Started</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               Do you need a franchise consultant?
             </h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">
               What a consultant actually does, how they differ from a broker, and how to tell if working with one makes sense for your search.
             </p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
           </Link>
 
           <Link
             href="/process"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
           >
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">The Process</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">The Process</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               How the Waypoint process works
             </h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">
               A step-by-step look at what happens from the first conversation through candidate presentation and due diligence.
             </p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">See the process →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">See the process →</p>
           </Link>
 
           <Link
             href="/faq"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
           >
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Common Questions</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Common Questions</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               Frequently asked questions
             </h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">
               Honest answers to the most common questions about cost, capital requirements, timing, and how the whole process works.
             </p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
           </Link>
 
         </div>
@@ -311,7 +311,7 @@ export default function FranchiseConsultantVsBrokerPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>

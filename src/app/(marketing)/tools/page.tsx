@@ -22,7 +22,7 @@ export default function ToolsPage() {
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-14 sm:pb-20 px-6 border-b border-[#e8e0d0]">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Free Tools</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Free Tools</p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-[#0c1929] leading-tight mb-6 max-w-2xl">
             Figure out where you stand before talking to anyone.
           </h1>
@@ -39,8 +39,8 @@ export default function ToolsPage() {
           {/* Readiness Quiz card */}
           <div className="bg-white border border-[#e8e0d0] rounded-xl p-8 sm:p-10 flex flex-col">
             <div className="mb-6">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Assessment 1 of 2</p>
-              <div className="w-8 h-[2px] bg-[#d4a55a] mb-5" />
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Assessment 1 of 2</p>
+              <div className="w-8 h-[2px] bg-[#C8622E] mb-5" />
               <h2 className="font-playfair text-2xl sm:text-3xl text-[#0c1929] leading-snug mb-4">
                 Franchise Readiness Quiz
               </h2>
@@ -57,7 +57,7 @@ export default function ToolsPage() {
                   "A plain-language read on where you stand and what to think about next",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#d4a55a] shrink-0" />
+                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C8622E] shrink-0" />
                     <p className="text-sm text-[#5a5a4a] leading-relaxed">{item}</p>
                   </div>
                 ))}
@@ -73,7 +73,7 @@ export default function ToolsPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/scorecard"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
               >
                 Take the Readiness Quiz →
               </Link>
@@ -83,8 +83,8 @@ export default function ToolsPage() {
           {/* Archetype Quiz card */}
           <div className="bg-white border border-[#e8e0d0] rounded-xl p-8 sm:p-10 flex flex-col">
             <div className="mb-6">
-              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">Assessment 2 of 2</p>
-              <div className="w-8 h-[2px] bg-[#d4a55a] mb-5" />
+              <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Assessment 2 of 2</p>
+              <div className="w-8 h-[2px] bg-[#C8622E] mb-5" />
               <h2 className="font-playfair text-2xl sm:text-3xl text-[#0c1929] leading-snug mb-4">
                 Franchise Archetype Quiz
               </h2>
@@ -101,7 +101,7 @@ export default function ToolsPage() {
                   "A starting point for narrowing your search before talking to anyone",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#d4a55a] shrink-0" />
+                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C8622E] shrink-0" />
                     <p className="text-sm text-[#5a5a4a] leading-relaxed">{item}</p>
                   </div>
                 ))}
@@ -117,7 +117,7 @@ export default function ToolsPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/archetype"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
               >
                 Take the Archetype Quiz →
               </Link>
@@ -130,7 +130,7 @@ export default function ToolsPage() {
       {/* "After the quizzes" context */}
       <section className="border-t border-[#e8e0d0] bg-[#f0ede8] py-14 px-6">
         <div className="max-w-3xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">After the Quizzes</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">After the Quizzes</p>
           <p className="font-playfair text-2xl text-[#0c1929] mb-4 leading-snug">
             The quizzes give you a starting point. A conversation fills in the rest.
           </p>
@@ -140,13 +140,13 @@ export default function ToolsPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/book"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
             >
               Book a Free Call
             </Link>
             <a
               href="sms:+12149951062"
-              className="inline-flex items-center justify-center gap-1.5 px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] border border-[#c08b3e]/40 hover:bg-[#e8dcc8] rounded-lg transition-all min-h-[48px]"
+              className="inline-flex items-center justify-center gap-1.5 px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] border border-[#8E3012]/40 hover:bg-[#e8dcc8] rounded-lg transition-all min-h-[48px]"
             >
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
               Text Me Instead

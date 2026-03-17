@@ -20,14 +20,18 @@
   --wp-navy-800: #1b3a5f;
   --wp-navy-700: #234e7e;
 
-  /* Copper Accent — rich dark metallic copper */
-  --wp-copper-700: #5a2a0d;
-  --wp-copper-600: #7c3b1a;
-  --wp-copper-500: #9e5025;
-  --wp-copper-400: #b85f2d;
-  --wp-copper-300: #cc7d4f;
-  --wp-copper-200: #dda880;
-  --wp-copper-100: #f0d4be;
+  /* Copper Accent — deep red-brown, burnished metallic */
+  --wp-copper-700: #4a1408;
+  --wp-copper-600: #6e2210;
+  --wp-copper-500: #8e3012;
+  --wp-copper-400: #b04020;
+  --wp-copper-300: #c4603d;
+  --wp-copper-200: #d99070;
+  --wp-copper-100: #edc8b0;
+
+  /* Semantic copper — contrast-safe for each background context */
+  --wp-copper-on-dark: #C8622E;  /* ~4.1:1 on navy-950 — text/accents on dark bg */
+  --wp-copper-on-light: #8E3012; /* ~6.2:1 on white — text/accents on cream/white bg */
 
   /* Text tones */
   --wp-charcoal: #1a1a1a;

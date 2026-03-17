@@ -61,7 +61,7 @@ export async function POST(req: Request) {
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
           <p>If you'd like to talk through what this means for your specific situation — and which specific brands match your profile — I'm happy to do that. It's free, and franchise brands pay the advisory fee, not you.</p>
           <p style="margin-top: 24px;">
-            <a href="https://waypointfranchise.com/book" style="background: #d4a55a; color: #0c1929; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Book a Free Call</a>
+            <a href="https://waypointfranchise.com/book" style="background: #C8622E; color: #0c1929; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Book a Free Call</a>
           </p>
           <p style="margin-top: 28px; color: #888; font-size: 14px;">— Kelsey<br/>Waypoint Franchise Advisors</p>
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />

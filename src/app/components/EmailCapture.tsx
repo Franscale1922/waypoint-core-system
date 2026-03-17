@@ -41,14 +41,14 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
   if (status === "success") {
     return (
       <div className="bg-[#f0ede8] border border-[#e2ddd2] rounded-xl p-6 sm:p-8 text-center">
-        <div className="w-10 h-10 rounded-full bg-[#d4a55a]/15 flex items-center justify-center mx-auto mb-4">
+        <div className="w-10 h-10 rounded-full bg-[#C8622E]/15 flex items-center justify-center mx-auto mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#d4a55a"
+            stroke="#C8622E"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -67,7 +67,7 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
   return (
     <div className={`bg-[#f0ede8] border border-[#e2ddd2] rounded-xl ${variant === "article" ? "p-6" : "p-6 sm:p-10"}`}>
       <div className="max-w-xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-3">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-3">
           Before you go
         </p>
         <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-2 leading-snug">
@@ -84,7 +84,7 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
               placeholder="First name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#d4a55a] transition-colors"
+              className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#C8622E] transition-colors"
             />
             <input
               type="email"
@@ -92,12 +92,12 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#d4a55a] transition-colors"
+              className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#C8622E] transition-colors"
             />
             <button
               type="submit"
               disabled={status === "loading"}
-              className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
+              className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
             >
               {status === "loading" ? "Sending…" : "Send me the checklist"}
             </button>

@@ -841,7 +841,7 @@ export default function GlossaryPage() {
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-6 border-b border-[#e8e0d0]">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
             Franchise Glossary
           </p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-[#0c1929] leading-tight mb-6 max-w-2xl">
@@ -860,7 +860,7 @@ export default function GlossaryPage() {
             <a
               key={letter}
               href={`#letter-${letter}`}
-              className="text-xs font-semibold text-[#c08b3e] hover:text-[#0c1929] transition-colors tracking-wider"
+              className="text-xs font-semibold text-[#8E3012] hover:text-[#0c1929] transition-colors tracking-wider"
             >
               {letter}
             </a>
@@ -873,7 +873,7 @@ export default function GlossaryPage() {
         {terms.map(({ letter, entries }) => (
           <div key={letter} id={`letter-${letter}`} style={{ scrollMarginTop: "100px" }}>
             <div className="flex items-center gap-4 mb-8">
-              <span className="font-playfair text-4xl text-[#d4a55a]/40 leading-none">{letter}</span>
+              <span className="font-playfair text-4xl text-[#C8622E]/40 leading-none">{letter}</span>
               <div className="flex-1 h-px bg-[#e8e0d0]" />
             </div>
             <div className="space-y-8">
@@ -887,7 +887,7 @@ export default function GlossaryPage() {
                     {related && relatedLabel && (
                       <Link
                         href={related}
-                        className="text-xs text-[#c08b3e] font-medium hover:text-[#d4a55a] transition-colors"
+                        className="text-xs text-[#8E3012] font-medium hover:text-[#C8622E] transition-colors"
                       >
                         {relatedLabel} →
                       </Link>
@@ -911,7 +911,7 @@ export default function GlossaryPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>

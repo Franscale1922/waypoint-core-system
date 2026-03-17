@@ -26,10 +26,10 @@ export function FAQItem({
         className="w-full text-left py-5 flex justify-between items-start gap-4 group"
         aria-expanded={open}
       >
-        <span className="font-medium text-[#0c1929] leading-snug group-hover:text-[#d4a55a] transition-colors">
+        <span className="font-medium text-[#0c1929] leading-snug group-hover:text-[#C8622E] transition-colors">
           {q}
         </span>
-        <span className="flex-shrink-0 mt-1 text-[#d4a55a] text-lg leading-none">
+        <span className="flex-shrink-0 mt-1 text-[#C8622E] text-lg leading-none">
           {open ? "−" : "+"}
         </span>
       </button>
@@ -42,7 +42,7 @@ export function FAQItem({
                 {" "}
                 <Link
                   href={link.url}
-                  className="text-[#d4a55a] hover:underline break-words"
+                  className="text-[#C8622E] hover:underline break-words"
                 >
                   {link.label} →
                 </Link>
@@ -53,7 +53,7 @@ export function FAQItem({
             <div className="mt-4">
               <Link
                 href={cta.href}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] px-5 py-2.5 rounded-lg transition-all"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] px-5 py-2.5 rounded-lg transition-all"
               >
                 {cta.text} →
               </Link>

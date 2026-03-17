@@ -13,7 +13,7 @@ export default function PrivacyPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="max-w-2xl mx-auto px-6 py-20 sm:py-28">
-        <Link href="/" className="text-xs text-[#d4a55a] tracking-widest uppercase hover:underline mb-10 inline-block">
+        <Link href="/" className="text-xs text-[#C8622E] tracking-widest uppercase hover:underline mb-10 inline-block">
           Back to Home
         </Link>
         <h1 className="font-playfair text-4xl mb-3">Privacy Policy</h1>
@@ -51,7 +51,7 @@ export default function PrivacyPage() {
             <h2 className="font-playfair text-xl mb-3">Your rights</h2>
             <p className="leading-relaxed">
               You can request access to, correction of, or deletion of your personal information at any time by emailing{" "}
-              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#d4a55a] hover:underline">
+              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#C8622E] hover:underline">
                 kelsey@waypointfranchise.com
               </a>
               . We will respond within 30 days.
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
             <h2 className="font-playfair text-xl mb-3">Contact</h2>
             <p className="leading-relaxed">
               Questions about this policy? Email{" "}
-              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#d4a55a] hover:underline">
+              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#C8622E] hover:underline">
                 kelsey@waypointfranchise.com
               </a>
               .

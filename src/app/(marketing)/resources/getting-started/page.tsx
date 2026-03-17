@@ -25,11 +25,11 @@ export default function GettingStartedPage() {
         <div className="max-w-4xl mx-auto">
           <Link
             href="/resources"
-            className="inline-flex items-center text-xs text-[#c08b3e] tracking-wide uppercase font-medium hover:text-[#d4a55a] transition-colors mb-8"
+            className="inline-flex items-center text-xs text-[#8E3012] tracking-wide uppercase font-medium hover:text-[#C8622E] transition-colors mb-8"
           >
             ← All Resources
           </Link>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#c08b3e] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
             Getting Started
           </p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-[#0c1929] leading-tight mb-6 max-w-3xl">
@@ -48,14 +48,14 @@ export default function GettingStartedPage() {
             <Link
               key={article.slug}
               href={`/resources/${article.slug}`}
-              className="group bg-white border border-[#e8e0d0] rounded-lg p-6 hover:shadow-md hover:border-[#d4a55a]/40 transition-all"
+              className="group bg-white border border-[#e8e0d0] rounded-lg p-6 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
             >
-              <div className="w-6 h-[2px] bg-[#d4a55a] mb-4 group-hover:w-10 transition-all duration-300" />
-              <h2 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#d4a55a] transition-colors mb-3">
+              <div className="w-6 h-[2px] bg-[#C8622E] mb-4 group-hover:w-10 transition-all duration-300" />
+              <h2 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#C8622E] transition-colors mb-3">
                 {article.title}
               </h2>
               <p className="text-sm text-[#5a5a4a] leading-relaxed">{article.excerpt}</p>
-              <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
+              <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
             </Link>
           ))}
         </div>
@@ -64,44 +64,44 @@ export default function GettingStartedPage() {
       {/* Related pages — card format */}
       <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-8 h-[2px] bg-[#d4a55a]" />
-          <p className="text-xs font-medium text-[#d4a55a] uppercase tracking-[0.2em]">Once You Have the Basics</p>
+          <div className="w-8 h-[2px] bg-[#C8622E]" />
+          <p className="text-xs font-medium text-[#C8622E] uppercase tracking-[0.2em]">Once You Have the Basics</p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <Link href="/archetype" className="group block bg-[#f5ebd1] border border-[#e8d8b0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/60 transition-all">
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Tool</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Owner Type Quiz</h3>
+          <Link href="/archetype" className="group block bg-[#f5ebd1] border border-[#e8d8b0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/60 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Tool</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">Owner Type Quiz</h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">8 questions that identify what type of franchise owner you are and which categories fit your natural working style.</p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Take the Quiz →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Take the Quiz →</p>
           </Link>
-          <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Guide</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Full investment guide</h3>
+          <Link href="/investment" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Guide</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">Full investment guide</h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">Total capital required, how it breaks down, and what to budget beyond the franchise fee.</p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
           </Link>
-          <Link href="/glossary" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Reference</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Franchise glossary</h3>
+          <Link href="/glossary" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Reference</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">Franchise glossary</h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">Plain-language definitions of every term you will encounter: FDD, royalty, territory, Item 19, and more.</p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Browse →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Browse →</p>
           </Link>
-          <Link href="/resources/going-deeper" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Going Deeper articles</h3>
+          <Link href="/resources/going-deeper" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">Going Deeper articles</h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">Funding, territory selection, multi-unit strategy, franchise agreements, and validation calls.</p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Explore →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Explore →</p>
           </Link>
-          <Link href="/faq" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#d4a55a]/40 transition-all">
-            <p className="text-[0.65rem] font-medium text-[#c08b3e] tracking-[0.15em] uppercase mb-3">Common Questions</p>
-            <div className="w-5 h-[2px] bg-[#d4a55a] mb-3 group-hover:w-8 transition-all duration-300" />
-            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#c08b3e] transition-colors mb-3">Frequently asked questions</h3>
+          <Link href="/faq" className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all">
+            <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Common Questions</p>
+            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">Frequently asked questions</h3>
             <p className="text-xs text-[#7a7a6a] leading-relaxed">Answers to the most common questions about cost, process, working with a consultant, and timing.</p>
-            <p className="mt-4 text-xs text-[#c08b3e] font-medium tracking-wide">Read →</p>
+            <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
           </Link>
         </div>
       </section>
@@ -116,7 +116,7 @@ export default function GettingStartedPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>
