@@ -188,6 +188,45 @@ export default function ProcessPage() {
         </div>
       </section>
 
+      {/* ── E-1: Prequalification — moved above steps ──── */}
+      {/* Reassures the right visitor early; gently redirects the wrong one */}
+      <section className="max-w-4xl mx-auto px-6 py-10 sm:py-14">
+        <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-6 sm:p-8">
+          <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-3">Before We Talk</p>
+          <h2 className="font-playfair text-xl sm:text-2xl mb-6">What you actually need to get started.</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                title: "Liquid capital of $100K or more",
+                body: "At $75K you have options. At $100K or more, the options meaningfully expand. We will talk through what makes sense for your situation.",
+              },
+              {
+                title: "A willingness to explore",
+                body: "You do not need to know anything about franchising. Most candidates do not. Just be open and honest about what you are looking for.",
+              },
+              {
+                title: "A couple of hours for a real conversation",
+                body: "The discovery call is not a 20-minute pitch. Budget two hours and show up ready to talk openly.",
+              },
+              {
+                title: "A sense of what you do not want",
+                body: "You do not need to know what you want to own. Knowing what you do not want shapes the search just as much.",
+              },
+              {
+                title: "Your partner doesn\'t need to be on the first call",
+                body: "But if we start to get somewhere, I encourage you to bring them in. This is a household decision and I treat it that way.",
+              },
+            ].map(({ title, body }) => (
+              <div key={title} className="bg-white border border-[#e8e0d0] rounded-lg p-5">
+                <div className="w-6 h-[2px] bg-[#d4a55a] mb-3" />
+                <h3 className="font-playfair text-base mb-2">{title}</h3>
+                <p className="text-xs text-[#5a5a4a] leading-relaxed">{body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Steps ─────────────────────────────────────── */}
       <section className="max-w-4xl mx-auto px-6 py-20 sm:py-28 space-y-24 sm:space-y-32">
         {steps.map((step, i) => (
@@ -277,49 +316,6 @@ export default function ProcessPage() {
         <p className="text-[#d4a55a] text-sm mt-6 tracking-widest uppercase">
           The Waypoint philosophy
         </p>
-      </section>
-
-      {/* ── What you need to start ────────────────────── */}
-      <section className="max-w-3xl mx-auto px-6 py-20 sm:py-28">
-        <p className="text-[#d4a55a] text-xs tracking-[0.2em] uppercase font-medium mb-4 text-center">
-          Before We Talk
-        </p>
-        <h2 className="font-playfair text-3xl sm:text-4xl text-center mb-12">
-          What you actually need to get started.
-        </h2>
-        <div className="grid sm:grid-cols-2 gap-6">
-          {[
-            {
-              title: "Liquid capital of $100K or more",
-              body: "This is not a hard floor. At $75K you have options. At $100K or more, the options meaningfully expand. The right amount depends on the model we find. We will talk through what you have and what makes sense.",
-            },
-            {
-              title: "A willingness to explore",
-              body: "You do not need to know anything about franchising. Most candidates do not. You just need to be open to learning and honest about what you are looking for. I will handle the rest.",
-            },
-            {
-              title: "A couple of hours for a real conversation",
-              body: "The discovery call is not a 20-minute pitch. It is a real conversation that I guide through your background, your goals, and your life. Budget two hours and show up willing to talk openly.",
-            },
-            {
-              title: "A sense of what you do not want",
-              body: "You do not need to know what you want to own. It helps a lot to know what you do not want. Industries you would not enjoy, work styles that drain you, commitments you cannot make. That clarity shapes everything.",
-            },
-            {
-              title: "Your partner doesn\'t need to be on the first call",
-              body: "But if we start to get somewhere, I encourage you to bring them in. This is a household decision and I treat it that way. It is completely normal to start the conversation solo.",
-            },
-          ].map(({ title, body }) => (
-            <div
-              key={title}
-              className="bg-white border border-[#e8e0d0] rounded-lg p-6"
-            >
-              <div className="w-8 h-[2px] bg-[#d4a55a] mb-4" />
-              <h3 className="font-playfair text-lg mb-3">{title}</h3>
-              <p className="text-sm text-[#5a5a4a] leading-relaxed">{body}</p>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* ── CTA ───────────────────────────────────────── */}

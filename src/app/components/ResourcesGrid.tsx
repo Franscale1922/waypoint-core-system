@@ -10,6 +10,12 @@ const START_HERE_SLUGS = [
   "fdd-decoded-what-actually-matters",
 ];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  "Getting Started": "Just starting to explore",
+  "Going Deeper": "Comparing options seriously",
+  "Industry Spotlights": "Browsing industries",
+};
+
 function ArticleCard({ article }: { article: Article }) {
   return (
     <Link
@@ -34,6 +40,9 @@ export default function ResourcesGrid({
   allArticles: Article[];
 }) {
   const [query, setQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const categories = Object.keys(grouped);
 
   const startHere = useMemo(
     () =>
@@ -52,9 +61,17 @@ export default function ResourcesGrid({
     );
   }, [query, allArticles]);
 
+  // Filtered by category (when not searching)
+  const displayGrouped = useMemo(() => {
+    if (activeCategory) {
+      return { [activeCategory]: grouped[activeCategory] ?? [] };
+    }
+    return grouped;
+  }, [grouped, activeCategory]);
+
   return (
     <section className="max-w-5xl mx-auto px-6 py-16 sm:py-24 space-y-20">
-      {/* Search — E.3 */}
+      {/* Search */}
       <div>
         <label htmlFor="resources-search" className="sr-only">
           Search articles
@@ -69,7 +86,7 @@ export default function ResourcesGrid({
             id="resources-search"
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => { setQuery(e.target.value); setActiveCategory(null); }}
             placeholder="Search articles…"
             className="w-full pl-11 pr-4 py-3 bg-white border border-[#e2ddd2] rounded-lg text-sm text-[#0c1929] placeholder:text-[#aaa] focus:outline-none focus:ring-2 focus:ring-[#d4a55a]/50 focus:border-[#d4a55a] transition-all"
           />
@@ -94,7 +111,7 @@ export default function ResourcesGrid({
         </div>
       ) : (
         <>
-          {/* Start Here — E.2 */}
+          {/* Start Here */}
           <div className="bg-[#0c1929] rounded-xl p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d4a55a] mb-2">
               New to franchising?
@@ -119,28 +136,38 @@ export default function ResourcesGrid({
             </div>
           </div>
 
-          {/* Category hub links */}
+          {/* D-3: Category toggle filters — in-page, no navigation */}
           <div>
-            <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Browse by category</p>
+            <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Filter by where you are</p>
             <div className="flex flex-wrap gap-3">
-              {[
-                { label: "Getting Started", href: "/resources/getting-started" },
-                { label: "Going Deeper", href: "/resources/going-deeper" },
-                { label: "Industry Spotlights", href: "/resources/industry-spotlights" },
-              ].map(({ label, href }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border border-[#d4a55a] text-[#c08b3e] hover:bg-[#d4a55a] hover:text-white transition-all rounded"
+              <button
+                onClick={() => setActiveCategory(null)}
+                className={`text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border rounded transition-all ${
+                  activeCategory === null
+                    ? "bg-[#0c1929] text-white border-[#0c1929]"
+                    : "border-[#d4a55a] text-[#c08b3e] hover:bg-[#d4a55a] hover:text-white"
+                }`}
+              >
+                All
+              </button>
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+                  className={`text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border rounded transition-all ${
+                    activeCategory === cat
+                      ? "bg-[#0c1929] text-white border-[#0c1929]"
+                      : "border-[#d4a55a] text-[#c08b3e] hover:bg-[#d4a55a] hover:text-white"
+                  }`}
                 >
-                  {label}
-                </Link>
+                  {CATEGORY_LABELS[cat] ?? cat}
+                </button>
               ))}
             </div>
           </div>
 
-          {/* Articles grouped by category */}
-          {Object.entries(grouped).map(([category, articles]) => (
+          {/* Articles grouped by category (filtered) */}
+          {Object.entries(displayGrouped).map(([category, articles]) => (
             <div key={category}>
               <div className="flex items-center gap-4 mb-8">
                 <div className="w-8 h-[2px] bg-[#d4a55a]" />

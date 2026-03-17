@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 };
 
 type FAQLink = { url: string; label: string };
-type FAQQuestion = { q: string; a: string; link?: FAQLink };
+type FAQQuestion = { q: string; a: string; link?: FAQLink; defaultOpen?: boolean; cta?: { text: string; href: string } };
 
 const faqs: { category: string; questions: FAQQuestion[] }[] = [
   {
@@ -28,6 +28,8 @@ const faqs: { category: string; questions: FAQQuestion[] }[] = [
         q: "What does this cost me?",
         a: "Nothing. My consulting services are completely free to you. Franchise brands pay a referral fee when a candidate they are introduced to becomes a franchisee. That fee comes from the brand, not from you, and it does not affect what you pay to buy the franchise.",
         link: { url: "/resources/do-you-need-a-franchise-consultant", label: "Do you need a franchise consultant?" },
+        defaultOpen: true,
+        cta: { text: "Still wondering if your situation qualifies? Let's find out", href: "/book" },
       },
       {
         q: "Do I need to know anything about franchising to get started?",
@@ -38,6 +40,7 @@ const faqs: { category: string; questions: FAQQuestion[] }[] = [
         q: "How much money do I need?",
         a: "A practical starting point is $100,000 in liquid assets, though the right number depends on the business model we find together. If you have $250,000 or more in deployable capital, you can generally leverage that up significantly through SBA financing or other programs. We will talk through your full financial picture during the discovery call.",
         link: { url: "/resources/the-true-cost-of-buying-a-franchise", label: "The true cost of buying a franchise" },
+        defaultOpen: true,
       },
       {
         q: "I have never owned a business. Does that disqualify me?",
@@ -52,10 +55,13 @@ const faqs: { category: string; questions: FAQQuestion[] }[] = [
       {
         q: "What happens after I book a call?",
         a: "We start with a short intro call, usually 20 to 30 minutes, to understand where you are in the process and whether going deeper makes sense. If it does, we schedule the two-hour discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
+        defaultOpen: true,
       },
       {
         q: "How long does the whole process take?",
         a: "Most candidates go from first conversation to a clear decision in four to eight weeks. Some move faster. Some take longer. The pace is yours to set. I am not here to rush you, and I am not going to disappear if you take time to think.",
+        defaultOpen: true,
+        cta: { text: "Ready to see what it looks like from your starting point? Book a conversation", href: "/book" },
       },
       {
         q: "How many brands will you show me?",
@@ -86,6 +92,7 @@ const faqs: { category: string; questions: FAQQuestion[] }[] = [
         q: "What are the most common ways to finance a franchise?",
         a: "Two paths handle the majority of franchise purchases. SBA 7(a) loans are the most common: the Small Business Administration guarantees up to 75% of the loan, which lowers the bank's risk and makes it accessible for qualified buyers. You typically put in 15 to 20 percent as a down payment and repay over 10 years. ROBS (Rollover for Business Startups) is the second most common approach, for buyers who have significant retirement savings and want to avoid debt entirely. There are also alternatives worth knowing: HELOCs, securities-backed lines of credit, and cash, depending on your asset picture.",
         link: { url: "/resources/how-franchise-funding-actually-works", label: "How franchise funding actually works" },
+        defaultOpen: true,
       },
       {
         q: "Can I use my 401(k) or IRA to buy a franchise?",
@@ -309,8 +316,8 @@ export default function FAQPage() {
               {category}
             </h2>
             <div>
-              {questions.map(({ q, a, link }) => (
-                <FAQItem key={q} q={q} a={a} link={link} />
+              {questions.map(({ q, a, link, defaultOpen, cta }) => (
+                <FAQItem key={q} q={q} a={a} link={link} defaultOpen={defaultOpen} cta={cta} />
               ))}
             </div>
           </div>

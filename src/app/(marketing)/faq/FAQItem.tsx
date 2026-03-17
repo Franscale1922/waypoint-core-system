@@ -3,9 +3,22 @@ import { useState } from "react";
 import Link from "next/link";
 
 type FAQLink = { url: string; label: string };
+type FAQCta = { text: string; href: string };
 
-export function FAQItem({ q, a, link }: { q: string; a: string; link?: FAQLink }) {
-  const [open, setOpen] = useState(false);
+export function FAQItem({
+  q,
+  a,
+  link,
+  cta,
+  defaultOpen = false,
+}: {
+  q: string;
+  a: string;
+  link?: FAQLink;
+  cta?: FAQCta;
+  defaultOpen?: boolean;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
   return (
     <div className="border-b border-[#e8e0d0]">
       <button
@@ -36,8 +49,19 @@ export function FAQItem({ q, a, link }: { q: string; a: string; link?: FAQLink }
               </>
             )}
           </p>
+          {cta && (
+            <div className="mt-4">
+              <Link
+                href={cta.href}
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0c1929] bg-[#d4a55a] hover:bg-[#e2be80] px-5 py-2.5 rounded-lg transition-all"
+              >
+                {cta.text} →
+              </Link>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 }
+
