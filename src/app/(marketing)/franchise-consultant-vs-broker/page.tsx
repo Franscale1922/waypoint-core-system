@@ -225,7 +225,7 @@ export default function FranchiseConsultantVsBrokerPage() {
           {[
             {
               q: "Should I use a franchise consultant or go directly to a franchise brand?",
-              a: "Going directly to brands is possible — franchisors have their own development teams. But a development rep works for the franchisor. Their job is to qualify you for their specific brand. A consultant's job is to figure out which brand is right for you, which may not be any of the ones a single brand's rep can offer. The consulting relationship is also free, which means there is no cost to having representation.",
+              a: "Going directly to brands is possible. Franchisors have their own development teams. But a development rep works for the franchisor. Their job is to qualify you for their specific brand. A consultant's job is to figure out which brand is right for you, which may not be any of the ones a single brand's rep can offer. The consulting relationship is also free, which means there is no cost to having representation.",
             },
             {
               q: "Can a franchise consultant show me any brand, or only brands in their network?",
@@ -244,7 +244,7 @@ export default function FranchiseConsultantVsBrokerPage() {
         </div>
       </section>
 
-      {/* Related resources — card format */}
+      {/* Related resources, card format */}
       <section className="max-w-4xl mx-auto px-6 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-8 h-[2px] bg-[#d4a55a]" />
