@@ -89,7 +89,7 @@ const steps = [
     body: [
       "I work with roughly 250 franchise concepts across dozens of industries. Before I present anything, I have already reviewed the financial disclosures, checked territory availability in your area, and screened how units are performing across the system.",
       "What I will not bring you is a brand that does not report its financials, a brand where locations are closing faster than they are opening, or a brand that has no available territory near you.",
-      "What I look for are brands established enough to have real systems and real support, but that still have open territory with room to grow. Think proven infrastructure, strong franchisee satisfaction data, and financials you can actually read in the FDD. Not household names &mdash; their best territories are long gone. The sweet spot is one level below that.",
+      "What I look for are brands established enough to have real systems and real support, but that still have open territory with room to grow. Think proven infrastructure, strong franchisee satisfaction data, and financials you can actually read in the FDD. Not household names. Their best territories are long gone. The sweet spot is one level below that.",
       "I bring you three or four. Not twenty. Too many and you start making decisions based on marketing instead of fit.",
     ],
   },
@@ -160,6 +160,11 @@ export default function ProcessPage() {
             style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
           >
             Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
+          </p>
+          <p
+            className="text-[#d4a55a]/70 text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
+            style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}
+          >
             Most candidates go from intro call to a clear decision in 6&ndash;10 weeks. The pace is always yours.
           </p>
         </div>
