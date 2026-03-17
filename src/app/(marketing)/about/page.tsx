@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import VimeoFacade from "../../components/VimeoFacade";
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
@@ -58,6 +59,20 @@ export default function AboutPage() {
               <p className="mt-3 text-sm text-[#7a7a7a]">Marcus T., Denver CO</p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* D-8: Kelsey video — click-to-load facade, zero perf cost on initial render */}
+      <section className="bg-[#FAF8F4] py-10 sm:py-14">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d4a55a] mb-3">Hear it from Kelsey directly</p>
+          <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-6 leading-snug max-w-xl">
+            Before you book a call, here&apos;s a 3-minute conversation that might answer most of your questions.
+          </p>
+          <VimeoFacade
+            videoId="1174270863"
+            title="Kelsey Stuart on what honest franchise consulting actually looks like"
+          />
         </div>
       </section>
 
