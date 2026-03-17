@@ -422,8 +422,8 @@ Complete every item below before sending the first cold email. These are the ope
 - [ ] **Pre-launch alternative:** Run one test send through [mail-tester.com](https://mail-tester.com) to confirm spam score and deliverability before first live send
 
 **Compliance**
-- [ ] Add physical mailing address to email template footer (CAN-SPAM required)
-- [ ] Add explicit opt-out line to email template: "Reply 'unsubscribe' to opt out"
+- [x] Add physical mailing address to email template footer — ✅ P.O. Box 3421, Whitefish, MT 59937 (March 2026)
+- [x] Add explicit opt-out line to email template — ✅ "Reply 'unsubscribe' to opt out" (March 2026)
 
 ---
 
@@ -431,8 +431,8 @@ Complete every item below before sending the first cold email. These are the ope
 
 Every cold email must include:
 - [x] Accurate From: name and domain (not deceptive)
-- [ ] **Physical mailing address** — add to template footer (CAN-SPAM required)
-- [ ] **Clear opt-out mechanism** — "Reply 'unsubscribe'" is sufficient at this volume
+- [x] **Physical mailing address** — ✅ P.O. Box 3421, Whitefish, MT 59937 | appended via `CAN_SPAM_FOOTER` in `personalizerProcess`
+- [x] **Clear opt-out mechanism** — ✅ "Reply 'unsubscribe' to opt out" | appended via `CAN_SPAM_FOOTER`
 - [x] Non-deceptive subject line
 - [x] Identity as franchise consultant disclosed
 

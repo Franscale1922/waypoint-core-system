@@ -164,7 +164,7 @@ export const leadHunterProcess = inngest.createFunction(
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-import { PROHIBITED_PHRASES, EMAIL_TEMPLATES, VOICE_RULES } from "@/lib/templates";
+import { PROHIBITED_PHRASES, EMAIL_TEMPLATES, VOICE_RULES, CAN_SPAM_FOOTER } from "@/lib/templates";
 
 export const personalizerProcess = inngest.createFunction(
     { id: "personalizer-process" },
@@ -225,11 +225,12 @@ Write the email using plain text. Do NOT wrap it in quotes or markdown.`;
         });
 
         // Save to DB and update status
+        // CAN-SPAM footer appended here — deterministically, not by the AI
         await step.run("save-draft-email", async () => {
             await prisma.lead.update({
                 where: { id: lead.id },
                 data: {
-                    draftEmail,
+                    draftEmail: draftEmail + CAN_SPAM_FOOTER,
                     status: "SEQUENCED"
                 }
             });

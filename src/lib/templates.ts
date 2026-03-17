@@ -80,6 +80,15 @@ export const PROHIBITED_PHRASES = [
     "checking in"
 ];
 
+// ─── CAN-SPAM Footer ──────────────────────────────────────────────────────────
+// Required by law. Appended deterministically to every outbound email after
+// GPT-4o generation in personalizerProcess — never left to the AI to include.
+export const CAN_SPAM_FOOTER = `
+
+--
+Reply "unsubscribe" to opt out of future messages.
+Waypoint Franchise Advisors | P.O. Box 3421, Whitefish, MT 59937`;
+
 export const EMAIL_TEMPLATES = `
 ### Template A – Job Change / Transition
 Hi {{first_name}},
