@@ -1,43 +1,74 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 /**
  * MobileStickyBar — B-5 CRO
  *
- * Rendered via ReactDOM.createPortal into <body> to avoid any parent
- * CSS transform creating a wrong containing block for position:fixed.
+ * DOM inspection confirmed: position:fixed + portal resolves correctly to
+ * the viewport on desktop. The drift is iOS-Safari-specific: when the URL
+ * bar shows/hides during scroll, the "visual viewport" shifts independently
+ * of the "layout viewport". position:fixed;bottom:0 is relative to the
+ * LAYOUT viewport, so it drifts relative to what the user actually sees.
  *
- * Visibility is controlled ONLY by opacity + pointer-events — zero transforms.
- * The element is ALWAYS at { position: fixed; bottom: 0 } in the DOM.
- * This eliminates every translate/transform-based positioning glitch
- * on iOS Safari and Chrome for Android.
+ * Fix: window.visualViewport API. It fires resize/scroll events whenever
+ * the visible area changes (URL bar appear/disappear, keyboard, etc.) and
+ * gives us the exact offset to correct the bar back to the visible bottom.
+ * This API was built specifically for this class of problem.
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
 
-    const handleScroll = () => {
+    // Show bar after scrolling past 80% of viewport height
+    const handleWindowScroll = () => {
       setVisible(window.scrollY > window.innerHeight * 0.8);
     };
+    window.addEventListener("scroll", handleWindowScroll, { passive: true });
+    handleWindowScroll();
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Visual Viewport API: correct position when URL bar shows/hides on iOS.
+    // Without this, position:fixed;bottom:0 drifts relative to what's visible.
+    const vv = window.visualViewport;
+    if (vv) {
+      const updatePosition = () => {
+        const bar = barRef.current;
+        if (!bar) return;
+        // layout viewport bottom = window.innerHeight (from screen top)
+        // visual viewport bottom = vv.offsetTop + vv.height (from screen top)
+        // gap = how far layout bottom is BELOW the visual bottom
+        // We translate UP by that gap to keep the bar at the visible bottom.
+        const gap = window.innerHeight - (vv.offsetTop + vv.height);
+        bar.style.transform = gap > 0 ? `translateY(${-gap}px)` : "";
+      };
+
+      vv.addEventListener("resize", updatePosition, { passive: true });
+      vv.addEventListener("scroll", updatePosition, { passive: true });
+      updatePosition(); // set correct position on mount
+
+      return () => {
+        window.removeEventListener("scroll", handleWindowScroll);
+        vv.removeEventListener("resize", updatePosition);
+        vv.removeEventListener("scroll", updatePosition);
+      };
+    }
+
+    return () => window.removeEventListener("scroll", handleWindowScroll);
   }, []);
 
   if (!mounted) return null;
 
   return createPortal(
     <div
+      ref={barRef}
       aria-hidden={!visible}
+      className="sm:hidden"
       style={{
-        // Always pinned to bottom — NO transform, NO translate.
-        // Opacity + pointer-events control visibility.
         position: "fixed",
         bottom: 0,
         left: 0,
@@ -46,14 +77,10 @@ export default function MobileStickyBar() {
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? "auto" : "none",
         transition: "opacity 250ms ease",
-        // Background and border via inline style (portal bypasses Tailwind purge)
         backgroundColor: "#0c1929",
         borderTop: "1px solid rgba(255,255,255,0.1)",
+        willChange: "transform", // hint browser to keep this on GPU layer
       }}
-      // sm:hidden — hide on desktop (640px+)
-      // Note: class is still needed for desktop suppression; the inline
-      // opacity/pointer-events above handle mobile show/hide.
-      className="sm:hidden"
     >
       <div
         style={{
@@ -114,7 +141,7 @@ export default function MobileStickyBar() {
             fontSize: "14px",
             fontWeight: 600,
             color: "#0c1929",
-            backgroundColor: "#CC6535",
+            backgroundColor: "#d4a55a",
             borderRadius: "8px",
             minHeight: "48px",
             textDecoration: "none",
