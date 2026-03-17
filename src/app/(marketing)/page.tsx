@@ -94,10 +94,14 @@ export default function HomePage() {
           </div>
 
           {/* B-3: 70% stat — safety/permission signal, not a proof credential */}
-          <p className="mt-5 sm:mt-7 text-[11px] sm:text-xs text-white/50 animate-fade-in-up stagger-4 leading-relaxed max-w-sm">
-            <span className="text-[#d4a55a] font-medium block">7 in 10 people I work with don&apos;t end up buying a franchise.</span>
-            <span className="block">That&apos;s not a failure. That&apos;s the point.</span>
-          </p>
+          <div className="mt-5 sm:mt-7 animate-fade-in-up stagger-4 space-y-0.5">
+            <p className="text-[11px] sm:text-xs text-[#d4a55a] font-medium leading-snug">
+              7 in 10 people I work with don&apos;t buy a franchise.
+            </p>
+            <p className="text-[11px] sm:text-xs text-white/50 leading-snug whitespace-nowrap">
+              That&apos;s not a failure. That&apos;s the point.
+            </p>
+          </div>
 
         </div>
       </section>
