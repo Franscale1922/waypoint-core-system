@@ -6,19 +6,19 @@ import { createPortal } from "react-dom";
 /**
  * MobileStickyBar — B-5 CRO
  *
- * Root cause of all prior drift bugs: overflow-x: clip (or hidden) on <body>
- * causes Safari to treat the body as a scroll container (CSS spec + Safari Bug
- * #745729), making position:fixed resolve relative to body instead of the
- * viewport. All visualViewport JS attempts failed because they were compensating
- * for a symptom rather than fixing the cause.
+ * Position:fixed works via two layered CSS fixes:
+ *   1. overflow-x: clip moved from body → marketing layout wrapper
+ *      (body overflow creates a scroll container on Safari, breaking
+ *      viewport-relative position:fixed — CSS spec + Safari Bug #745729)
+ *   2. iOS-only @supports block in globals.css locks html/body to stable
+ *      viewport dimensions, bypassing WebKit Bug #297779 (compositor
+ *      drifts fixed GPU layers during scroll direction changes).
  *
- * Fix applied upstream: overflow-x: clip moved from body → marketing layout
- * wrapper. Now position:fixed resolves correctly to the viewport on all browsers.
- *
- * This component is now pure CSS positioning — no visualViewport API.
- * The visualViewport approach is unreliable for URL-bar transitions (events fire
- * AFTER animation ends, not during) and is NOT needed now that the containing
- * block is correct.
+ * Scroll detection note: When the iOS fix in globals.css is active,
+ * body becomes the scroll container (overflow-y: auto). In that case,
+ * window.scrollY = 0 always and window.scroll never fires. We listen
+ * to BOTH window scroll (desktop/Chrome) and body scroll (iOS Safari)
+ * and read document.body.scrollTop as the authoritative source on iOS.
  */
 export default function MobileStickyBar() {
   const [visible, setVisible] = useState(false);
@@ -28,14 +28,26 @@ export default function MobileStickyBar() {
   useEffect(() => {
     setMounted(true);
 
-    // Show bar after scrolling past 80% of viewport height
+    // Reads the current scroll position regardless of whether
+    // window or body is the scroll container.
+    const getScrollY = () =>
+      document.body.scrollTop || window.scrollY || 0;
+
     const handleScroll = () => {
-      setVisible(window.scrollY > window.innerHeight * 0.8);
+      setVisible(getScrollY() > window.innerHeight * 0.8);
     };
+
+    // Desktop / Chrome on iOS: window scroll
     window.addEventListener("scroll", handleScroll, { passive: true });
+    // iOS Safari with @supports fix: body is the scroll container,
+    // scroll events fire on body rather than window.
+    document.body.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      document.body.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   if (!mounted) return null;
@@ -64,7 +76,6 @@ export default function MobileStickyBar() {
           gap: "12px",
           alignItems: "center",
           padding: "12px 16px",
-          // env(safe-area-inset-bottom) works now that viewport-fit=cover is set
           paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
         }}
       >

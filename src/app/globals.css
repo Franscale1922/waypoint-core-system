@@ -72,11 +72,34 @@ body {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* NO overflow on body — any overflow property (including clip) can cause
-     Safari to treat body as a scroll container per CSS spec + Safari Bug #745729,
-     making position:fixed resolve relative to body instead of the viewport.
-     Horizontal overflow is controlled on the inner .layout-clip wrapper instead. */
+  /* NO overflow on body — preserves viewport-relative positioning for position:fixed.
+     Overflow clipping handled on the inner layout wrapper. */
 }
+
+/* ======================================
+   iOS SAFARI VIEWPORT FIX
+   WebKit Bug #297779: position:fixed compositor layer drifts during
+   scroll direction changes regardless of containing block.
+   Fix: lock html/body to screen boundaries so the layout viewport
+   is always stable. body becomes the scroll container, which on iOS
+   means position:fixed anchors to the stable, full-screen body.
+   NOTE: body.scrollTop (not window.scrollY) is the scroll position
+   when this CSS is active — MobileStickyBar handles both.
+   Only applies to iOS Safari via @supports touch-callout detection.
+   ====================================== */
+@supports (-webkit-touch-callout: none) {
+  html {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    height: 100%;
+    overflow-y: auto;
+    /* Restore native momentum scrolling feel */
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 
 /* Serif headlines — editorial authority */
 h1, h2 {
