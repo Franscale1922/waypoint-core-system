@@ -1,7 +1,23 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import VimeoFacade from "../../components/VimeoFacade";
+import dynamic from "next/dynamic";
+
+const VimeoFacade = dynamic(() => import("../../components/VimeoFacade"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="relative w-full overflow-hidden rounded-xl bg-[#0c1929] shadow-xl flex items-center justify-center"
+      style={{ aspectRatio: "16/9" }}
+    >
+      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#CC6535]/40 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0c1929" className="w-7 h-7 sm:w-9 sm:h-9 ml-1" aria-hidden="true">
+          <path d="M8 5v14l11-7z" />
+        </svg>
+      </div>
+    </div>
+  ),
+});
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
