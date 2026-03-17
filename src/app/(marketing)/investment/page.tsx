@@ -219,7 +219,7 @@ export default function InvestmentPage() {
       {/* Investment tiers */}
       <section className="bg-[#0c1929] py-14 sm:py-20 px-5 sm:px-6">
         <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C8622E] mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-4">
             Investment Tiers
           </p>
           <h2 className="font-playfair text-2xl sm:text-3xl text-white mb-4">
@@ -232,13 +232,13 @@ export default function InvestmentPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {investmentTiers.map((tier) => (
               <div key={tier.range} className="bg-[#0f2035] border border-[#1b3a5f] rounded-xl p-6">
-                <p className="text-[#C8622E] font-black text-xl mb-1">{tier.range}</p>
+                <p className="text-[#CC6535] font-black text-xl mb-1">{tier.range}</p>
                 <p className="text-white font-semibold text-sm mb-3">{tier.label}</p>
                 <p className="text-white/60 text-sm leading-relaxed mb-4">{tier.description}</p>
                 <ul className="space-y-1">
                   {tier.examples.map((ex) => (
                     <li key={ex} className="text-xs text-white/50 flex items-start gap-2">
-                      <span className="text-[#C8622E] mt-0.5 flex-shrink-0">—</span>
+                      <span className="text-[#CC6535] mt-0.5 flex-shrink-0">—</span>
                       {ex}
                     </li>
                   ))}
@@ -262,7 +262,7 @@ export default function InvestmentPage() {
           </div>
           <Link
             href="/book"
-            className="flex-shrink-0 inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
+            className="flex-shrink-0 inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Let&apos;s talk
           </Link>
@@ -315,7 +315,7 @@ export default function InvestmentPage() {
               ].map(({ title, oneliner, range, bestFor, watchOut }) => (
                 <div key={title} className="bg-white border border-[#e2ddd2] rounded-lg p-5">
                   <div className="flex items-start gap-3 mb-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#C8622E] mt-2 flex-shrink-0" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#CC6535] mt-2 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-bold text-[#0c1929]">{title}</p>
                       <p className="text-xs text-[#5a5a4a] mt-0.5 leading-relaxed">{oneliner}</p>
@@ -385,17 +385,17 @@ export default function InvestmentPage() {
       {/* Related resources — card format */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-8 h-[2px] bg-[#C8622E]" />
-          <p className="text-xs font-medium text-[#C8622E] uppercase tracking-[0.2em]">Related Resources</p>
+          <div className="w-8 h-[2px] bg-[#CC6535]" />
+          <p className="text-xs font-medium text-[#CC6535] uppercase tracking-[0.2em]">Related Resources</p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
 
           <Link
             href="/resources/the-true-cost-of-buying-a-franchise"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Getting Started</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               The true cost of buying a franchise
             </h3>
@@ -405,10 +405,10 @@ export default function InvestmentPage() {
 
           <Link
             href="/resources/how-franchise-funding-actually-works"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               How franchise funding actually works
             </h3>
@@ -418,10 +418,10 @@ export default function InvestmentPage() {
 
           <Link
             href="/resources/fdd-decoded-what-actually-matters"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Going Deeper</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               FDD decoded: what actually matters
             </h3>
@@ -431,10 +431,10 @@ export default function InvestmentPage() {
 
           <Link
             href="/faq"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Common Questions</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               Frequently asked questions
             </h3>
@@ -456,7 +456,7 @@ export default function InvestmentPage() {
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 justify-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>

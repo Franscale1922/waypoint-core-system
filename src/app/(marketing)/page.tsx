@@ -63,7 +63,7 @@ export default function HomePage() {
           <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight max-w-3xl animate-fade-in-up stagger-1">
             Find the franchise that fits your life
             <br />
-            <span className="text-[#C8622E] [text-shadow:0_2px_12px_rgba(0,0,0,0.85),0_1px_4px_rgba(0,0,0,0.9)] sm:[text-shadow:none]">Not the other way around</span>
+            <span className="text-[#CC6535] [text-shadow:0_2px_12px_rgba(0,0,0,0.85),0_1px_4px_rgba(0,0,0,0.9)] sm:[text-shadow:none]">Not the other way around</span>
           </h1>
           <p className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/70 leading-relaxed max-w-xl animate-fade-in-up stagger-2">
             I&apos;m Kelsey Stuart. Former franchise owner. I help burned-out
@@ -74,7 +74,7 @@ export default function HomePage() {
             <Link
               href="/book"
               id="hero-cta-book"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all press-effect min-h-[48px]"
             >
               Book a Free Call
             </Link>
@@ -95,7 +95,7 @@ export default function HomePage() {
 
           {/* B-3: 70% stat — safety/permission signal, not a proof credential */}
           <div className="mt-5 sm:mt-7 animate-fade-in-up stagger-4 space-y-0.5">
-            <p className="text-[11px] sm:text-xs text-[#C8622E] font-medium leading-snug">
+            <p className="text-[11px] sm:text-xs text-[#CC6535] font-medium leading-snug">
               7 in 10 people I work with don&apos;t buy a franchise.
             </p>
             <p className="text-[11px] sm:text-xs text-white/50 leading-snug whitespace-nowrap">
@@ -205,7 +205,7 @@ export default function HomePage() {
       <section className="py-16 sm:py-24 md:py-32 bg-[#0c1929]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="reveal">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#C8622E] mb-4 sm:mb-6">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#CC6535] mb-4 sm:mb-6">
               Sound familiar?
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight max-w-2xl">
@@ -225,7 +225,7 @@ export default function HomePage() {
                 style={{ transitionDelay: `${i * 100}ms` }}
               >
                 <div className={i === personas.length - 1 && personas.length % 2 !== 0 ? "max-w-2xl mx-auto text-center" : ""}>
-                  <h3 className="text-base sm:text-lg font-semibold text-[#C8622E] mb-3 sm:mb-4">
+                  <h3 className="text-base sm:text-lg font-semibold text-[#CC6535] mb-3 sm:mb-4">
                     {persona.title}
                   </h3>
                   <p className="text-sm text-slate-400 leading-relaxed">
@@ -239,7 +239,7 @@ export default function HomePage() {
           <div className="reveal mt-8 sm:mt-12 text-center flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/book"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all press-effect min-h-[48px]"
             >
               Book a Free Call
             </Link>
@@ -324,7 +324,7 @@ export default function HomePage() {
           <div className="reveal mt-10 sm:mt-14 text-center">
             <Link
               href="/process"
-              className="inline-flex items-center text-sm text-[#8E3012] font-medium hover:text-[#C8622E] transition-colors tracking-wide"
+              className="inline-flex items-center text-sm text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors tracking-wide"
             >
               See exactly how this works →
             </Link>
@@ -357,7 +357,7 @@ export default function HomePage() {
           {/* Text side */}
           <div className="bg-[#0c1929] px-5 sm:px-8 md:px-16 py-12 sm:py-16 md:py-24 flex items-center">
             <div className="reveal max-w-lg">
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#C8622E] mb-4 sm:mb-6">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#CC6535] mb-4 sm:mb-6">
                 About Kelsey
               </p>
               <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight mb-6 sm:mb-8">
@@ -377,7 +377,7 @@ export default function HomePage() {
               </p>
               <Link
                 href="/about"
-                className="inline-flex items-center text-sm text-[#C8622E] font-medium hover:text-[#D4724A] transition-colors tracking-wide min-h-[44px]"
+                className="inline-flex items-center text-sm text-[#CC6535] font-medium hover:text-[#D4724A] transition-colors tracking-wide min-h-[44px]"
               >
                 Read My Full Story
                 <svg className="ml-2 w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -420,7 +420,7 @@ export default function HomePage() {
             <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-tight leading-tight">
               Not sure if this is right for you?
               <br />
-              <span className="text-[#C8622E]">Good. Let&apos;s find out.</span>
+              <span className="text-[#CC6535]">Good. Let&apos;s find out.</span>
             </h2>
             <p className="mt-5 sm:mt-6 text-sm sm:text-base text-white/60 leading-relaxed max-w-xl mx-auto">
               The 2-minute Readiness Quiz gives you a real score and an honest
@@ -431,7 +431,7 @@ export default function HomePage() {
               <Link
                 href="/book"
                 id="cta-bottom-book"
-                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Book a Free Call
               </Link>

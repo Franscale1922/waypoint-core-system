@@ -43,7 +43,7 @@ export function followUpDay5Html(name: string, score: number): string {
       <p style="margin:0 0 8px;font-size:22px;color:#FFFFFF;line-height:1.4;">
         &ldquo;The worst outcome is making a $300K decision on incomplete information.&rdquo;
       </p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#C8622E;">
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
         — Something I say in every first call
       </p>
     </div>
@@ -53,7 +53,7 @@ export function followUpDay5Html(name: string, score: number): string {
     </p>
 
     <a href="https://waypointfranchise.com/book"
-       style="display:inline-block;background:#C8622E;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
+       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
       Book a Free Call When You're Ready
     </a>
 

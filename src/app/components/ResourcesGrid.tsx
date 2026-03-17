@@ -20,10 +20,10 @@ function ArticleCard({ article }: { article: Article }) {
   return (
     <Link
       href={`/resources/${article.slug}`}
-      className="group bg-white border border-[#e8e0d0] rounded-lg p-6 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+      className="group bg-white border border-[#e8e0d0] rounded-lg p-6 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
     >
-      <div className="w-6 h-[2px] bg-[#C8622E] mb-4 group-hover:w-10 transition-all duration-300" />
-      <h3 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#C8622E] transition-colors mb-3">
+      <div className="w-6 h-[2px] bg-[#CC6535] mb-4 group-hover:w-10 transition-all duration-300" />
+      <h3 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#CC6535] transition-colors mb-3">
         {article.title}
       </h3>
       <p className="text-sm text-[#5a5a4a] leading-relaxed">{article.excerpt}</p>
@@ -88,7 +88,7 @@ export default function ResourcesGrid({
             value={query}
             onChange={(e) => { setQuery(e.target.value); setActiveCategory(null); }}
             placeholder="Search articles…"
-            className="w-full pl-11 pr-4 py-3 bg-white border border-[#e2ddd2] rounded-lg text-sm text-[#0c1929] placeholder:text-[#aaa] focus:outline-none focus:ring-2 focus:ring-[#C8622E]/50 focus:border-[#C8622E] transition-all"
+            className="w-full pl-11 pr-4 py-3 bg-white border border-[#e2ddd2] rounded-lg text-sm text-[#0c1929] placeholder:text-[#aaa] focus:outline-none focus:ring-2 focus:ring-[#CC6535]/50 focus:border-[#CC6535] transition-all"
           />
         </div>
       </div>
@@ -113,7 +113,7 @@ export default function ResourcesGrid({
         <>
           {/* Start Here */}
           <div className="bg-[#0c1929] rounded-xl p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C8622E] mb-2">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-2">
               New to franchising?
             </p>
             <h2 className="font-playfair text-2xl sm:text-3xl text-white mb-6 leading-snug">
@@ -124,10 +124,10 @@ export default function ResourcesGrid({
                 <Link
                   key={article.slug}
                   href={`/resources/${article.slug}`}
-                  className="group bg-white/10 hover:bg-white/15 border border-white/15 hover:border-[#C8622E]/60 rounded-lg p-5 transition-all"
+                  className="group bg-white/10 hover:bg-white/15 border border-white/15 hover:border-[#CC6535]/60 rounded-lg p-5 transition-all"
                 >
-                  <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
-                  <h3 className="text-sm font-semibold text-white leading-snug mb-1 group-hover:text-[#C8622E] transition-colors">
+                  <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
+                  <h3 className="text-sm font-semibold text-white leading-snug mb-1 group-hover:text-[#CC6535] transition-colors">
                     {article.title}
                   </h3>
                   <p className="text-xs text-white/60 leading-relaxed">{article.excerpt}</p>
@@ -145,7 +145,7 @@ export default function ResourcesGrid({
                 className={`text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border rounded transition-all ${
                   activeCategory === null
                     ? "bg-[#0c1929] text-white border-[#0c1929]"
-                    : "border-[#C8622E] text-[#8E3012] hover:bg-[#C8622E] hover:text-white"
+                    : "border-[#CC6535] text-[#8E3012] hover:bg-[#CC6535] hover:text-white"
                 }`}
               >
                 All
@@ -157,7 +157,7 @@ export default function ResourcesGrid({
                   className={`text-xs font-semibold uppercase tracking-[0.15em] px-4 py-2 border rounded transition-all ${
                     activeCategory === cat
                       ? "bg-[#0c1929] text-white border-[#0c1929]"
-                      : "border-[#C8622E] text-[#8E3012] hover:bg-[#C8622E] hover:text-white"
+                      : "border-[#CC6535] text-[#8E3012] hover:bg-[#CC6535] hover:text-white"
                   }`}
                 >
                   {CATEGORY_LABELS[cat] ?? cat}
@@ -170,8 +170,8 @@ export default function ResourcesGrid({
           {Object.entries(displayGrouped).map(([category, articles]) => (
             <div key={category}>
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-8 h-[2px] bg-[#C8622E]" />
-                <h2 className="text-sm font-medium text-[#C8622E] uppercase tracking-[0.18em]">{category}</h2>
+                <div className="w-8 h-[2px] bg-[#CC6535]" />
+                <h2 className="text-sm font-medium text-[#CC6535] uppercase tracking-[0.18em]">{category}</h2>
               </div>
               <div className="grid gap-6 sm:grid-cols-2">
                 {articles.map((article) => (

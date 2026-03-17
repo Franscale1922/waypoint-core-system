@@ -18,7 +18,7 @@ export default function ContactPage() {
 
       {/* Hero */}
       <section className="bg-[#0c1929] pt-24 pb-16 px-6 text-center">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C8622E] mb-4">
+        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-4">
           Get in Touch
         </p>
         <h1 className="font-playfair text-4xl sm:text-5xl text-white mb-4">
@@ -50,7 +50,7 @@ export default function ContactPage() {
                   className="flex items-center gap-4 group"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#0c1929] flex items-center justify-center flex-shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8622E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC6535" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#0c1929] group-hover:text-[#8E3012] transition-colors">(214) 995-1062</p>
@@ -63,7 +63,7 @@ export default function ContactPage() {
                   className="flex items-center gap-4 group"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#0c1929] flex items-center justify-center flex-shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8622E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC6535" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#0c1929] group-hover:text-[#8E3012] transition-colors">Text Kelsey</p>
@@ -76,7 +76,7 @@ export default function ContactPage() {
                   className="flex items-center gap-4 group"
                 >
                   <div className="w-10 h-10 rounded-full bg-[#0c1929] flex items-center justify-center flex-shrink-0">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C8622E" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#CC6535" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#0c1929] group-hover:text-[#8E3012] transition-colors">kelsey@waypointfranchise.com</p>
@@ -92,7 +92,7 @@ export default function ContactPage() {
               </p>
               <a
                 href="/book"
-                className="inline-flex items-center justify-center w-full px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all"
+                className="inline-flex items-center justify-center w-full px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all"
               >
                 Book a Free 30-Min Call
               </a>

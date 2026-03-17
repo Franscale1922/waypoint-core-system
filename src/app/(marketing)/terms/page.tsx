@@ -13,7 +13,7 @@ export default function TermsPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <section className="max-w-2xl mx-auto px-6 py-20 sm:py-28">
-        <Link href="/" className="text-xs text-[#C8622E] tracking-widest uppercase hover:underline mb-10 inline-block">
+        <Link href="/" className="text-xs text-[#CC6535] tracking-widest uppercase hover:underline mb-10 inline-block">
           Back to Home
         </Link>
         <h1 className="font-playfair text-4xl mb-3">Terms of Use</h1>
@@ -69,7 +69,7 @@ export default function TermsPage() {
             <h2 className="font-playfair text-xl mb-3">Contact</h2>
             <p className="leading-relaxed">
               Questions about these terms? Email{" "}
-              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#C8622E] hover:underline">
+              <a href="mailto:kelsey@waypointfranchise.com" className="text-[#CC6535] hover:underline">
                 kelsey@waypointfranchise.com
               </a>
               .

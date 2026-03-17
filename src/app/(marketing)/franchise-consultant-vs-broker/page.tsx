@@ -207,7 +207,7 @@ export default function FranchiseConsultantVsBrokerPage() {
             </p>
             <Link
               href="/process"
-              className="inline-flex items-center text-[#C8622E] text-sm font-medium hover:text-[#D4724A] transition-colors mt-5"
+              className="inline-flex items-center text-[#CC6535] text-sm font-medium hover:text-[#D4724A] transition-colors mt-5"
             >
               See exactly how the process works →
             </Link>
@@ -247,17 +247,17 @@ export default function FranchiseConsultantVsBrokerPage() {
       {/* Related resources, card format */}
       <section className="max-w-4xl mx-auto px-6 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-8 h-[2px] bg-[#C8622E]" />
-          <p className="text-xs font-medium text-[#C8622E] uppercase tracking-[0.2em]">Related Resources</p>
+          <div className="w-8 h-[2px] bg-[#CC6535]" />
+          <p className="text-xs font-medium text-[#CC6535] uppercase tracking-[0.2em]">Related Resources</p>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
 
           <Link
             href="/resources/do-you-need-a-franchise-consultant"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Getting Started</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               Do you need a franchise consultant?
             </h3>
@@ -269,10 +269,10 @@ export default function FranchiseConsultantVsBrokerPage() {
 
           <Link
             href="/process"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">The Process</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               How the Waypoint process works
             </h3>
@@ -284,10 +284,10 @@ export default function FranchiseConsultantVsBrokerPage() {
 
           <Link
             href="/faq"
-            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#C8622E]/40 transition-all"
+            className="group block bg-white border border-[#e8e0d0] rounded-lg p-5 hover:shadow-md hover:border-[#CC6535]/40 transition-all"
           >
             <p className="text-[0.65rem] font-medium text-[#8E3012] tracking-[0.15em] uppercase mb-3">Common Questions</p>
-            <div className="w-5 h-[2px] bg-[#C8622E] mb-3 group-hover:w-8 transition-all duration-300" />
+            <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               Frequently asked questions
             </h3>
@@ -311,7 +311,7 @@ export default function FranchiseConsultantVsBrokerPage() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/book"
-            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
+            className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
           >
             Book a Free Call
           </Link>

@@ -158,13 +158,13 @@ export default function ProcessPage() {
             Before you see a single franchise brand, I want to understand you: your career, your goals, what you actually want from the next chapter.
           </p>
           <p
-            className="text-[#C8622E] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
+            className="text-[#CC6535] text-sm sm:text-base max-w-xl leading-relaxed font-medium"
             style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
           >
             Most consultants skip this part. That&apos;s why people end up in the wrong franchise.
           </p>
           <p
-            className="text-[#C8622E] text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
+            className="text-[#CC6535] text-sm sm:text-base max-w-xl leading-relaxed font-medium mt-2"
             style={{ textShadow: "0 1px 12px rgba(0,0,0,0.9), 0 2px 4px rgba(0,0,0,0.9)" }}
           >
             Most candidates go from intro call to a clear decision in 6&ndash;10 weeks. The pace is always yours.
@@ -192,7 +192,7 @@ export default function ProcessPage() {
       {/* Reassures the right visitor early; gently redirects the wrong one */}
       <section className="max-w-4xl mx-auto px-6 py-10 sm:py-14">
         <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-6 sm:p-8">
-          <p className="text-[#C8622E] text-xs tracking-[0.2em] uppercase font-medium mb-3">Before We Talk</p>
+          <p className="text-[#CC6535] text-xs tracking-[0.2em] uppercase font-medium mb-3">Before We Talk</p>
           <h2 className="font-playfair text-xl sm:text-2xl mb-6">What you actually need to get started.</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
@@ -218,7 +218,7 @@ export default function ProcessPage() {
               },
             ].map(({ title, body }) => (
               <div key={title} className="bg-white border border-[#e8e0d0] rounded-lg p-5">
-                <div className="w-6 h-[2px] bg-[#C8622E] mb-3" />
+                <div className="w-6 h-[2px] bg-[#CC6535] mb-3" />
                 <h3 className="font-playfair text-base mb-2">{title}</h3>
                 <p className="text-xs text-[#5a5a4a] leading-relaxed">{body}</p>
               </div>
@@ -237,17 +237,17 @@ export default function ProcessPage() {
             >
               {/* Number + label */}
               <div className="flex-shrink-0 sm:w-40 text-center sm:text-right">
-                <span className="block font-playfair text-6xl sm:text-7xl text-[#C8622E]/30 leading-none">
+                <span className="block font-playfair text-6xl sm:text-7xl text-[#CC6535]/30 leading-none">
                   {step.number}
                 </span>
-                <span className="block text-xs tracking-[0.18em] uppercase text-[#C8622E] mt-2 font-medium">
+                <span className="block text-xs tracking-[0.18em] uppercase text-[#CC6535] mt-2 font-medium">
                   {step.label}
                 </span>
               </div>
 
               {/* Content */}
               <div className="flex-1 pt-2">
-                <div className="w-12 h-[2px] bg-[#C8622E] mb-6" />
+                <div className="w-12 h-[2px] bg-[#CC6535] mb-6" />
                 <h2 className="font-playfair text-2xl sm:text-3xl leading-snug mb-6">
                   {step.headline}
                 </h2>
@@ -260,7 +260,7 @@ export default function ProcessPage() {
                 </div>
                 {step.outcome && (
                   <div className="mt-6 flex gap-3 items-start bg-[#f7f5f1] border border-[#e2ddd2] rounded-lg px-4 py-3">
-                    <span className="text-[#C8622E] font-semibold text-xs uppercase tracking-widest whitespace-nowrap mt-0.5">Walk away with:</span>
+                    <span className="text-[#CC6535] font-semibold text-xs uppercase tracking-widest whitespace-nowrap mt-0.5">Walk away with:</span>
                     <p className="text-sm text-[#3a3a2e] leading-relaxed">{step.outcome}</p>
                   </div>
                 )}
@@ -269,13 +269,13 @@ export default function ProcessPage() {
             {/* Mid-page CTA — inserted after Step 04 (Validation Calls) */}
             {step.number === "04" && (
               <div className="bg-[#0c1929] rounded-xl p-8 sm:p-10 text-center">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C8622E] mb-3">Sound like the right approach?</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-3">Sound like the right approach?</p>
                 <h3 className="font-playfair text-2xl sm:text-3xl text-white mb-6 leading-snug">
                   Book a 30-minute intro call.
                 </h3>
                 <Link
                   href="/book"
-                  className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
+                  className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]"
                 >
                   Book a Free Call
                 </Link>
@@ -289,7 +289,7 @@ export default function ProcessPage() {
       <div className="max-w-3xl mx-auto px-6 pb-8 text-center">
         <p className="text-[#5a5a4a] text-sm">
           Want to go deeper before the call?{" "}
-          <a href="/resources" className="text-[#8E3012] font-medium hover:text-[#C8622E] transition-colors">
+          <a href="/resources" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">
             Browse franchise resources →
           </a>
         </p>
@@ -313,7 +313,7 @@ export default function ProcessPage() {
         <p className="font-playfair text-2xl sm:text-3xl text-white max-w-2xl mx-auto leading-relaxed italic">
           &ldquo;The worst outcome is making a $300,000 decision on incomplete information.&rdquo;
         </p>
-        <p className="text-[#C8622E] text-sm mt-6 tracking-widest uppercase">
+        <p className="text-[#CC6535] text-sm mt-6 tracking-widest uppercase">
           The Waypoint philosophy
         </p>
       </section>
@@ -331,7 +331,7 @@ export default function ProcessPage() {
         />
         <div className="absolute inset-0 bg-[#0c1929]/50" />
         <div className="relative z-10 max-w-2xl mx-auto">
-          <p className="text-[#C8622E] text-xs tracking-[0.2em] uppercase font-medium mb-4">
+          <p className="text-[#CC6535] text-xs tracking-[0.2em] uppercase font-medium mb-4">
             Ready to Start
           </p>
           <h2 className="font-playfair text-3xl sm:text-5xl text-white mb-6">
@@ -344,7 +344,7 @@ export default function ProcessPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/book"
-                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all min-h-[48px]"
               >
                 Book a Free Call
               </Link>

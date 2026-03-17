@@ -139,13 +139,13 @@ export default function ScorecardClient() {
                 <a
                   href="/book"
                   onClick={() => trackBookCallClicked("scorecard_results")}
-                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
                   Book a Free Call
                 </a>
                 <a
                   href="sms:+12149951062"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
                   <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fillRule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v7a2 2 0 01-2 2H6l-4 4V5z" clipRule="evenodd" />
@@ -168,7 +168,7 @@ export default function ScorecardClient() {
             <div className="mt-6 sm:mt-8 space-y-3">
               <a
                 href="/resources"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
               >
                 Browse Franchise Resources
               </a>

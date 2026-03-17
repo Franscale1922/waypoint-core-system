@@ -41,14 +41,14 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
   if (status === "success") {
     return (
       <div className="bg-[#f0ede8] border border-[#e2ddd2] rounded-xl p-6 sm:p-8 text-center">
-        <div className="w-10 h-10 rounded-full bg-[#C8622E]/15 flex items-center justify-center mx-auto mb-4">
+        <div className="w-10 h-10 rounded-full bg-[#CC6535]/15 flex items-center justify-center mx-auto mb-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
             height="20"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#C8622E"
+            stroke="#CC6535"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -84,7 +84,7 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
               placeholder="First name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#C8622E] transition-colors"
+              className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
             />
             <input
               type="email"
@@ -92,12 +92,12 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#C8622E] transition-colors"
+              className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
             />
             <button
               type="submit"
               disabled={status === "loading"}
-              className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
+              className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
             >
               {status === "loading" ? "Sending…" : "Send me the checklist"}
             </button>

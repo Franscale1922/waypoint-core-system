@@ -92,7 +92,7 @@ export default function Testimonials() {
             >
               {/* Quote mark */}
               <div
-                className="text-5xl sm:text-6xl font-serif text-[#C8622E] leading-none mb-4 select-none"
+                className="text-5xl sm:text-6xl font-serif text-[#CC6535] leading-none mb-4 select-none"
                 aria-hidden="true"
               >
                 &ldquo;
@@ -104,7 +104,7 @@ export default function Testimonials() {
               </p>
 
               {/* Copper rule */}
-              <div className="h-px bg-[#C8622E]/30 my-5 sm:my-6" />
+              <div className="h-px bg-[#CC6535]/30 my-5 sm:my-6" />
 
               {/* Attribution */}
               <div className="flex items-start justify-between gap-3">
@@ -130,7 +130,7 @@ export default function Testimonials() {
           </p>
           <Link
             href="/scorecard"
-            className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
+            className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
           >
             Take the Readiness Quiz
           </Link>

@@ -117,7 +117,7 @@ export default async function ArticlePage({ params }: Props) {
         }}
       />
       <section className="max-w-3xl mx-auto px-6 pt-16 sm:pt-24 pb-10">
-        <Link href="/resources" className="inline-flex items-center text-xs text-[#8E3012] tracking-wide uppercase font-medium hover:text-[#C8622E] transition-colors mb-8">
+        <Link href="/resources" className="inline-flex items-center text-xs text-[#8E3012] tracking-wide uppercase font-medium hover:text-[#CC6535] transition-colors mb-8">
           ← Resources
         </Link>
         <p className="text-xs text-[#8E3012] tracking-[0.18em] uppercase font-medium mb-4">{meta.category}</p>
@@ -149,7 +149,7 @@ export default async function ArticlePage({ params }: Props) {
           </div>
           <Link
             href="/archetype"
-            className="shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[44px] whitespace-nowrap"
+            className="shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[44px] whitespace-nowrap"
           >
             Take the Quiz →
           </Link>
@@ -159,7 +159,7 @@ export default async function ArticlePage({ params }: Props) {
         <p className="font-playfair text-xl sm:text-2xl text-white mb-4">Ready to talk through your situation?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">30 minutes. No pitch. Just an honest conversation about where you stand.</p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
+          <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>
           <Link href="/scorecard" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white border border-white/25 hover:bg-white/10 rounded-lg transition-all min-h-[48px]">Take the Readiness Quiz</Link>
         </div>
         <p className="mt-5 text-sm text-white/50">

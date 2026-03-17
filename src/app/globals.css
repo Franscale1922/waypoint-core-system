@@ -30,8 +30,9 @@
   --wp-copper-100: #edc8b0;
 
   /* Semantic copper — contrast-safe for each background context */
-  --wp-copper-on-dark: #C8622E;  /* ~4.1:1 on navy-950 — text/accents on dark bg */
-  --wp-copper-on-light: #8E3012; /* ~6.2:1 on white — text/accents on cream/white bg */
+  --wp-copper-on-dark: #CC6535;       /* hsl(19°,59%,50%) — ~4.7:1 on navy, red-brown not gold */
+  --wp-copper-on-dark-hover: #D97545; /* lighter hover state */
+  --wp-copper-on-light: #8E3012;      /* ~6.2:1 on white — deep rust for light bg */
 
   /* Text tones */
   --wp-charcoal: #1a1a1a;
@@ -71,7 +72,13 @@ body {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  /* overflow-x: clip instead of hidden — critical distinction:
+     overflow-x: hidden implicitly sets overflow-y to auto, making <body>
+     a scroll container. When body is the scroll container, position:fixed
+     resolves relative to body (not the viewport), causing sticky elements
+     to drift. overflow-x: clip prevents horizontal overflow WITHOUT
+     creating a scroll container, so position:fixed stays viewport-relative. */
+  overflow-x: clip;
 }
 
 /* Serif headlines — editorial authority */

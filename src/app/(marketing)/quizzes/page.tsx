@@ -40,7 +40,7 @@ export default function QuizzesPage() {
           <div className="bg-white border border-[#e8e0d0] rounded-xl p-8 sm:p-10 flex flex-col">
             <div className="mb-6">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Assessment 1 of 2</p>
-              <div className="w-8 h-[2px] bg-[#C8622E] mb-5" />
+              <div className="w-8 h-[2px] bg-[#CC6535] mb-5" />
               <h2 className="font-playfair text-2xl sm:text-3xl text-[#0c1929] leading-snug mb-4">
                 Franchise Readiness Quiz
               </h2>
@@ -57,7 +57,7 @@ export default function QuizzesPage() {
                   "A plain-language read on where you stand and what to think about next",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C8622E] shrink-0" />
+                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#CC6535] shrink-0" />
                     <p className="text-sm text-[#5a5a4a] leading-relaxed">{item}</p>
                   </div>
                 ))}
@@ -73,7 +73,7 @@ export default function QuizzesPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/scorecard"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all min-h-[48px]"
               >
                 Take the Readiness Quiz →
               </Link>
@@ -84,7 +84,7 @@ export default function QuizzesPage() {
           <div className="bg-white border border-[#e8e0d0] rounded-xl p-8 sm:p-10 flex flex-col">
             <div className="mb-6">
               <p className="text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Assessment 2 of 2</p>
-              <div className="w-8 h-[2px] bg-[#C8622E] mb-5" />
+              <div className="w-8 h-[2px] bg-[#CC6535] mb-5" />
               <h2 className="font-playfair text-2xl sm:text-3xl text-[#0c1929] leading-snug mb-4">
                 Owner Type Quiz
               </h2>
@@ -101,7 +101,7 @@ export default function QuizzesPage() {
                   "A starting point for narrowing your search before talking to anyone",
                 ].map((item) => (
                   <div key={item} className="flex items-start gap-3">
-                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#C8622E] shrink-0" />
+                    <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[#CC6535] shrink-0" />
                     <p className="text-sm text-[#5a5a4a] leading-relaxed">{item}</p>
                   </div>
                 ))}
@@ -117,7 +117,7 @@ export default function QuizzesPage() {
             <div className="mt-auto pt-6">
               <Link
                 href="/archetype"
-                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all min-h-[48px]"
+                className="inline-flex items-center justify-center w-full px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all min-h-[48px]"
               >
                 Find Your Owner Type →
               </Link>
@@ -140,7 +140,7 @@ export default function QuizzesPage() {
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
               href="/book"
-              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-lg transition-all min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-lg transition-all min-h-[48px]"
             >
               Book a Free Call
             </Link>

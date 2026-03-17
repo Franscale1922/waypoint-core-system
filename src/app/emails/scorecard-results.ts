@@ -58,11 +58,11 @@ export function scoreResultsHtml({ name, score, primaryDriver, biggestFear }: Sc
 
     <!-- Score badge -->
     <div style="background:#0c1929;border-radius:12px;padding:28px 32px;margin-bottom:32px;text-align:center;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#C8622E;">
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:#CC6535;">
         YOUR READINESS SCORE
       </p>
       <p style="margin:0;font-size:56px;font-weight:900;color:#ffffff;line-height:1.1;">
-        ${score}<span style="font-size:28px;color:#C8622E;">/100</span>
+        ${score}<span style="font-size:28px;color:#CC6535;">/100</span>
       </p>
       <p style="margin:8px 0 0;font-family:Arial,sans-serif;font-size:13px;color:#94a3b8;">
         ${tier.label} position · ${primaryDriver}
@@ -85,7 +85,7 @@ export function scoreResultsHtml({ name, score, primaryDriver, biggestFear }: Sc
 
     <!-- CTA -->
     <a href="https://waypointfranchise.com/book"
-       style="display:inline-block;background:#C8622E;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
+       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
       Book a Free 30-Min Call
     </a>
 

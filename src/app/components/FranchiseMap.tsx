@@ -149,7 +149,7 @@ export default function FranchiseMap() {
     <section className="py-16 sm:py-24 md:py-32 bg-[#0c1929] overflow-hidden">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-10 sm:mb-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#C8622E] mb-4 sm:mb-6">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#CC6535] mb-4 sm:mb-6">
             Trusted Nationwide
           </p>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight max-w-2xl mx-auto leading-tight">
@@ -158,7 +158,7 @@ export default function FranchiseMap() {
               : (
                 <>
                   I&rsquo;ve helped{" "}
-                  <span className="text-[#C8622E]">
+                  <span className="text-[#CC6535]">
                     {cities.length > 0 ? `${cities.length}+` : "146+"} owners
                   </span>{" "}
                   find and start the right franchise.
@@ -187,7 +187,7 @@ export default function FranchiseMap() {
                 </feMerge>
               </filter>
               <radialGradient id="pin-gradient" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#C8622E" />
+                <stop offset="0%" stopColor="#CC6535" />
                 <stop offset="100%" stopColor="#8E3012" />
               </radialGradient>
               {/* Subtle inner shadow for the map shape */}
@@ -223,7 +223,7 @@ export default function FranchiseMap() {
                   cx={t.x}
                   cy={t.y}
                   r="6"
-                  fill="#C8622E"
+                  fill="#CC6535"
                   className="pin-pulse"
                   style={{ animationDelay: `${(i * 37) % 2000}ms` }}
                 />

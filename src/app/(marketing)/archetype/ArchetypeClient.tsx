@@ -158,7 +158,7 @@ export default function ArchetypeClient() {
               href="/book"
               id="archetype-result-book-cta"
               onClick={() => trackBookCallClicked("archetype_result")}
-              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[52px]"
+              className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[52px]"
             >
               Book a Free Call. Let&apos;s Match the Brands
             </a>
@@ -168,7 +168,7 @@ export default function ArchetypeClient() {
             <p className="mt-6 text-sm text-slate-500 mb-3">Want to check your readiness too?</p>
             <a
               href="/scorecard"
-              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#A8521E] rounded-xl transition-all press-effect min-h-[48px]"
+              className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-xl transition-all press-effect min-h-[48px]"
             >
               Take the Readiness Quiz
             </a>

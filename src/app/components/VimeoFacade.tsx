@@ -55,7 +55,7 @@ export default function VimeoFacade({
             className="absolute inset-0 flex flex-col items-center justify-center gap-4 group"
           >
             {/* Gold play circle */}
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#C8622E] group-hover:bg-[#D4724A] flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#CC6535] group-hover:bg-[#D4724A] flex items-center justify-center shadow-lg transition-all duration-200 group-hover:scale-110">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"

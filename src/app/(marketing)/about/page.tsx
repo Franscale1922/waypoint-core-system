@@ -51,7 +51,7 @@ export default function AboutPage() {
       <section className="bg-white border-b border-[#e2ddd2]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
           <div className="flex gap-5 sm:gap-6 items-start">
-            <div className="flex-shrink-0 w-1 sm:w-[3px] rounded-full bg-[#C8622E] self-stretch" />
+            <div className="flex-shrink-0 w-1 sm:w-[3px] rounded-full bg-[#CC6535] self-stretch" />
             <div>
               <p className="font-playfair text-xl sm:text-2xl md:text-3xl italic text-[#1a1a1a] leading-snug">
                 &ldquo;He didn&apos;t show me a single franchise until he had spent two hours understanding what I actually wanted.&rdquo;
@@ -65,7 +65,7 @@ export default function AboutPage() {
       {/* D-8: Kelsey video — click-to-load facade, zero perf cost on initial render */}
       <section className="bg-[#FAF8F4] py-10 sm:py-14">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#C8622E] mb-3">Hear it from Kelsey directly</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-3">Hear it from Kelsey directly</p>
           <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-6 leading-snug max-w-xl">
             Before you book a call, here&apos;s a 3-minute conversation that might answer most of your questions.
           </p>
@@ -130,7 +130,7 @@ export default function AboutPage() {
             <p className="font-playfair text-xl sm:text-2xl italic text-white leading-snug mb-2">
               &ldquo;Roughly 7 in 10 people I work with decide not to buy a franchise.&rdquo;
             </p>
-            <p className="text-[#C8622E] text-sm font-medium">
+            <p className="text-[#CC6535] text-sm font-medium">
               That&apos;s not a failure. That&apos;s the point.
             </p>
           </div>
@@ -188,9 +188,9 @@ export default function AboutPage() {
               },
             ].map((t) => (
               <div key={t.name} className="flex flex-col bg-white rounded-2xl p-6 sm:p-8 border border-[#e2ddd2] shadow-sm">
-                <div className="text-5xl font-serif text-[#C8622E] leading-none mb-3 select-none" aria-hidden="true">&ldquo;</div>
+                <div className="text-5xl font-serif text-[#CC6535] leading-none mb-3 select-none" aria-hidden="true">&ldquo;</div>
                 <p className="text-sm text-[#3a3a3a] leading-relaxed flex-1">{t.quote}</p>
-                <div className="h-px bg-[#C8622E]/30 my-5" />
+                <div className="h-px bg-[#CC6535]/30 my-5" />
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
@@ -251,7 +251,7 @@ export default function AboutPage() {
 
           {/* CTA */}
           <div className="bg-[#0c1929] rounded-xl sm:rounded-2xl p-6 sm:p-8 md:p-10">
-            <h3 className="text-base sm:text-lg font-semibold text-[#C8622E] mb-3">
+            <h3 className="text-base sm:text-lg font-semibold text-[#CC6535] mb-3">
               Want to have a real conversation?
             </h3>
             <p className="text-sm sm:text-base text-slate-400 mb-5 sm:mb-6">
@@ -261,7 +261,7 @@ export default function AboutPage() {
             <div className="flex flex-col sm:flex-row flex-wrap gap-3">
               <a
                 href="/book"
-                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
+                className="inline-flex items-center justify-center px-6 py-3.5 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all press-effect min-h-[48px]"
               >
                 Book a Free Call
               </a>

@@ -31,7 +31,7 @@ export function followUpDay2Html(name: string): string {
     </p>
 
     <!-- Question 1 -->
-    <div style="border-left:3px solid #C8622E;padding-left:20px;margin:28px 0;">
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
       <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">01</p>
       <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"What does a bad week look like?"</p>
       <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
@@ -40,7 +40,7 @@ export function followUpDay2Html(name: string): string {
     </div>
 
     <!-- Question 2 -->
-    <div style="border-left:3px solid #C8622E;padding-left:20px;margin:28px 0;">
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
       <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">02</p>
       <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"What's the real reason people leave the system?"</p>
       <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
@@ -49,7 +49,7 @@ export function followUpDay2Html(name: string): string {
     </div>
 
     <!-- Question 3 -->
-    <div style="border-left:3px solid #C8622E;padding-left:20px;margin:28px 0;">
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
       <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">03</p>
       <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"How does the brand make money when I'm struggling?"</p>
       <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
@@ -62,7 +62,7 @@ export function followUpDay2Html(name: string): string {
     </p>
 
     <a href="https://waypointfranchise.com/book"
-       style="display:inline-block;background:#C8622E;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
+       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
       Book a Free 30-Min Call
     </a>
 

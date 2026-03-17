@@ -44,8 +44,8 @@ export default function ContactForm() {
   if (status === "success") {
     return (
       <div className="bg-[#0c1929] rounded-xl p-8 text-center">
-        <div className="w-10 h-10 rounded-full bg-[#C8622E]/20 flex items-center justify-center mx-auto mb-4">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C8622E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div className="w-10 h-10 rounded-full bg-[#CC6535]/20 flex items-center justify-center mx-auto mb-4">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CC6535" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
         <p className="font-playfair text-xl text-white mb-2">Got it.</p>
         <p className="text-sm text-white/60 leading-relaxed">
@@ -69,7 +69,7 @@ export default function ContactForm() {
             required
             autoComplete="name"
             placeholder="Your full name"
-            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#CC6535] focus:border-transparent transition"
           />
         </div>
         <div>
@@ -83,7 +83,7 @@ export default function ContactForm() {
             required
             autoComplete="email"
             placeholder="you@example.com"
-            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
+            className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#CC6535] focus:border-transparent transition"
           />
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function ContactForm() {
           type="tel"
           autoComplete="tel"
           placeholder="(214) 555-0100"
-          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition"
+          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#CC6535] focus:border-transparent transition"
         />
       </div>
 
@@ -112,7 +112,7 @@ export default function ContactForm() {
           required
           rows={5}
           placeholder="Where are you in the process? What are you trying to figure out?"
-          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#C8622E] focus:border-transparent transition resize-none"
+          className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#CC6535] focus:border-transparent transition resize-none"
         />
       </div>
 
@@ -125,7 +125,7 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={status === "submitting"}
-        className="w-full inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-all min-h-[48px]"
+        className="w-full inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] disabled:opacity-60 disabled:cursor-not-allowed rounded-lg transition-all min-h-[48px]"
       >
         {status === "submitting" ? "Sending..." : "Send Message"}
       </button>

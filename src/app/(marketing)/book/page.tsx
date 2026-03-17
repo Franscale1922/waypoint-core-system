@@ -69,8 +69,8 @@ export default function BookPage() {
             </div>
 
             {/* Name + title */}
-            <div className="border-t-2 border-[#C8622E] pt-5">
-              <p className="text-xs font-semibold text-[#C8622E] uppercase tracking-[0.2em] mb-1">
+            <div className="border-t-2 border-[#CC6535] pt-5">
+              <p className="text-xs font-semibold text-[#CC6535] uppercase tracking-[0.2em] mb-1">
                 Your advisor
               </p>
               <h2 className="font-playfair text-2xl text-[#0c1929] mb-1">
@@ -83,7 +83,7 @@ export default function BookPage() {
 
             {/* What to expect */}
             <div className="bg-white border border-[#e8e0d0] rounded-xl p-5 space-y-4">
-              <p className="text-xs font-semibold text-[#C8622E] uppercase tracking-[0.15em]">
+              <p className="text-xs font-semibold text-[#CC6535] uppercase tracking-[0.15em]">
                 What to expect
               </p>
               {[
@@ -93,7 +93,7 @@ export default function BookPage() {
                 { icon: "✓", label: "Honest answer, even if it's no" },
               ].map(({ icon, label }) => (
                 <div key={label} className="flex items-start gap-3">
-                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#C8622E]/10 text-[#C8622E] text-xs font-bold flex items-center justify-center">
+                  <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#CC6535]/10 text-[#CC6535] text-xs font-bold flex items-center justify-center">
                     {icon}
                   </span>
                   <span className="text-sm text-[#3a3a2e] leading-snug pt-0.5">
@@ -120,7 +120,7 @@ export default function BookPage() {
                 </a>
                 <a
                   href="sms:+12149951062"
-                  className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#C8622E] hover:bg-[#D4724A] px-2.5 py-1 rounded transition-colors"
+                  className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] px-2.5 py-1 rounded transition-colors"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
                   Text me
@@ -137,7 +137,7 @@ export default function BookPage() {
 
             {/* After you book — post-booking clarity */}
             <div className="bg-white border border-[#e8e0d0] rounded-xl p-5">
-              <p className="text-xs font-semibold text-[#C8622E] uppercase tracking-[0.15em] mb-3">After you book</p>
+              <p className="text-xs font-semibold text-[#CC6535] uppercase tracking-[0.15em] mb-3">After you book</p>
               <ul className="space-y-2.5">
                 {[
                   "You\u2019ll get a confirmation email with a Zoom link — no setup needed on your end",
@@ -146,7 +146,7 @@ export default function BookPage() {
                   "Want to loop in your partner before booking? Completely normal. I\u2019m here when you\u2019re both ready",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-[#3a3a2e] leading-snug">
-                    <span className="text-[#C8622E] mt-0.5 flex-shrink-0">✓</span>
+                    <span className="text-[#CC6535] mt-0.5 flex-shrink-0">✓</span>
                     {item}
                   </li>
                 ))}
