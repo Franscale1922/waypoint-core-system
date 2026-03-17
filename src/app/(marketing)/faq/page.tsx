@@ -304,7 +304,7 @@ export default function FAQPage() {
             .replace(/[^a-z0-9]+/g, "-")
             .replace(/(^-|-$)/g, "");
           return (
-          <div key={category} id={id}>
+          <div key={category} id={id} style={{ scrollMarginTop: "120px" }}>
             <h2 className="font-playfair text-xl text-[#d4a55a] mb-6 pb-3 border-b border-[#e8e0d0]">
               {category}
             </h2>
