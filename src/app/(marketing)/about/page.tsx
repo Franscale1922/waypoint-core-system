@@ -1,23 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import dynamic from "next/dynamic";
-
-const VimeoFacade = dynamic(() => import("../../components/VimeoFacade"), {
-  ssr: false,
-  loading: () => (
-    <div
-      className="relative w-full overflow-hidden rounded-xl bg-[#0c1929] shadow-xl flex items-center justify-center"
-      style={{ aspectRatio: "16/9" }}
-    >
-      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#CC6535]/40 flex items-center justify-center">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#0c1929" className="w-7 h-7 sm:w-9 sm:h-9 ml-1" aria-hidden="true">
-          <path d="M8 5v14l11-7z" />
-        </svg>
-      </div>
-    </div>
-  ),
-});
+import VimeoFacade from "../../components/VimeoFacade";
 
 export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
@@ -146,7 +130,7 @@ export default function AboutPage() {
             <p className="font-playfair text-xl sm:text-2xl italic text-white leading-snug mb-2">
               &ldquo;Roughly 7 in 10 people I work with decide not to buy a franchise.&rdquo;
             </p>
-            <p className="text-[#CC6535] text-sm font-medium">
+            <p className="text-[#CC6535] text-sm font-medium whitespace-nowrap">
               That&apos;s not a failure. That&apos;s the point.
             </p>
           </div>
