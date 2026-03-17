@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getAllArticles, getArticlesByCategory } from "../../../lib/articles";
 import ResourcesGrid from "../../components/ResourcesGrid";
+import EmailCapture from "../../components/EmailCapture";
 
 export const metadata: Metadata = {
   title: "Franchise Resources | Waypoint Franchise Advisors",
@@ -50,6 +51,12 @@ export default function ResourcesPage() {
         </div>
       </section>
       <ResourcesGrid grouped={grouped} allArticles={allArticles} />
+
+      {/* B-6: Email capture — research-mode visitors */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 py-12">
+        <EmailCapture />
+      </section>
+
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">The fastest way to get a real answer is a real conversation.</p>

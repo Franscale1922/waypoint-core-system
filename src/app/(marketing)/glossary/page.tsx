@@ -871,7 +871,7 @@ export default function GlossaryPage() {
       {/* Terms */}
       <section className="max-w-4xl mx-auto px-6 py-12 sm:py-16 space-y-14">
         {terms.map(({ letter, entries }) => (
-          <div key={letter} id={`letter-${letter}`}>
+          <div key={letter} id={`letter-${letter}`} style={{ scrollMarginTop: "100px" }}>
             <div className="flex items-center gap-4 mb-8">
               <span className="font-playfair text-4xl text-[#d4a55a]/40 leading-none">{letter}</span>
               <div className="flex-1 h-px bg-[#e8e0d0]" />
