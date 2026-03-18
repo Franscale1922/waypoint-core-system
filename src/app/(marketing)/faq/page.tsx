@@ -281,7 +281,7 @@ export default function FAQPage() {
 
       {/* G.1 — Category anchor nav */}
       <div className="sticky top-0 z-10 bg-[#FAF8F4] border-b border-[#e2ddd2] overflow-x-auto">
-        <div className="flex gap-2 px-6 py-3 max-w-3xl mx-auto no-scrollbar">
+        <div className="flex gap-2 px-6 py-3 no-scrollbar">
           {[
             { label: "Getting Started", id: "getting-started" },
             { label: "The Process", id: "the-process" },
