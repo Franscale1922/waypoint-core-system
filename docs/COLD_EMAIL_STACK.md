@@ -77,8 +77,8 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → REPLIED status
 ### 3. Instantly SuperSearch (Email Finding / Enrichment)
 **What:** Built-in B2B lead database and email enrichment tool inside Instantly.ai.  
 **Why:** Already included in Instantly Growth plan (no extra subscription), waterfall enrichment across 5+ providers for higher match rates (~70%) vs Hunter.io alone (~56%).  
-**Cost:** Requires SuperSearch credits — recommend Growth Credits tier ($47/mo = 1,500–2,000 credits)  
-**Setup status:** ⏳ Credits not yet purchased — $47/mo Growth Credits plan needed
+**Cost:** $47/mo Growth Credits tier (1,500–2,000 credits)  
+**Setup status:** ✅ Purchased March 2026 — Growth Credits active
 
 **How it works:**
 - After CSV import, leads have LinkedIn data but no verified email
@@ -158,7 +158,7 @@ score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email ca
 **Sequence** (Campaigns → Waypoint Outbound → Sequences):
 - Step 1 only (no follow-up steps — correct for Stage 1)
 - Subject: `quick thought`
-- Body: `{{personalization}}` — maps directly to the `personalization` field sent by `senderProcess` via Instantly v2 API
+- Body: `{{personalization}}` — ✅ Verified March 2026 — maps directly to the `personalization` field sent by `senderProcess` via Instantly v2 API
 
 **Phase 2 — when adding follow-up steps:**
 - Enable "Stop Sending Emails on Auto-Reply" in Options (currently off — irrelevant with single-step sequence, but correct behavior for multi-step)
@@ -421,10 +421,10 @@ Verification TXT records that were requested but cannot be added:
 Complete every item below before sending the first cold email.
 
 **Instantly Setup**
-- [ ] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — **MANUAL (Kelsey)**
+- [x] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — ✅ Purchased March 2026
 - [x] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only — ✅ Verified March 2026
 - [x] Confirm reply routing: replies land in the same sending inbox — ✅ Verified
-- [ ] **Register inbound reply webhook in Instantly dashboard** — Settings → Inbound Webhooks → add `https://www.waypointfranchise.com/api/webhooks/resend` with `Authorization: Bearer {INBOUND_WEBHOOK_SECRET}` — **MANUAL (Kelsey)**
+- [x] **Register inbound reply webhook in Instantly dashboard** — ✅ Verified active March 2026 — URL: `https://www.waypointfranchise.com/api/webhooks/resend`, Bearer auth with `INBOUND_WEBHOOK_SECRET`
 
 **Code — Fixed March 2026**
 - [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅
