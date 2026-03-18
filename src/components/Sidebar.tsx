@@ -11,10 +11,10 @@ function cn(...inputs: ClassValue[]) {
 }
 
 const navItems = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "Leads Manager", href: "/leads", icon: Users },
-    { name: "Inbox & Replies", href: "/inbox", icon: Inbox },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Overview", href: "/admin/dashboard", icon: LayoutDashboard },
+    { name: "Leads Manager", href: "/admin/leads", icon: Users },
+    { name: "Inbox & Replies", href: "/admin/inbox", icon: Inbox },
+    { name: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function Sidebar() {
