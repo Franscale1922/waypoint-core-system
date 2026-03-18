@@ -181,40 +181,68 @@ export const personalizerProcess = inngest.createFunction(
             return { status: "Skipped - Not Enriched or Not Found" };
         }
 
+        // ── Quality Gate ──────────────────────────────────────────────────────
+        // Research consensus (Perplexity + Gemini + Claude, March 2026):
+        // If no high-authenticity signal is available, HOLD the lead.
+        // A generic email performs WORSE than no email for skeptical executives.
+        // Priority A = company news event. Priority B = post topic paraphrase.
+        const companyNewsEvent  = ((lead as any).companyNewsEvent as string | undefined)?.trim() ?? "";
+        const recentPostSummary = (lead.recentPostSummary ?? "").trim();
+        const hasHighAuthToken  = !!(companyNewsEvent || recentPostSummary);
+
+        if (!hasHighAuthToken) {
+            return { status: "Held - No Priority A or B signal. Populate companyNewsEvent or recentPostSummary to release." };
+        }
+
         const { draftEmail } = await step.run("generate-personalized-email", async () => {
             const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
             const apiKey = settings?.openAiApiKey || process.env.OPENAI_API_KEY;
 
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
+            // Signal selection — Priority A beats Priority B. Max 1 signal in email body.
+            const primarySignal = companyNewsEvent || recentPostSummary;
+            const signalType = companyNewsEvent
+                ? "Priority A: company news event (macro, public — WARN Act, 8-K, reorg, layoffs)"
+                : "Priority B: paraphrase of LinkedIn post topic (never verbatim — topic only)";
+
             const systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
-Your goal is to write a highly personalized, human-feeling cold email to a corporate professional.
+Your ONLY goal is to write ONE cold email that generates a single reply from a highly skeptical corporate executive.
 
 ${VOICE_RULES}
 
-PROHIBITED PHRASES (never use any of these):
+PROHIBITED PHRASES — never use any of these:
 ${PROHIBITED_PHRASES.join(", ")}
-AND NO em dashes (—). NO exclamation points (!). AND NO starting three sentences in a row with "I" or "Most".
+AND: NO em dashes (—). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
 
-TEMPLATE REFERENCE — choose the closest template and modify heavily for this specific person:
+PERSONALIZATION RULES — mandatory:
+- Use EXACTLY 1 signal in the email body (provided below as the Personalization Signal).
+- NEVER verbatim-quote the prospect's own words. Paraphrase the topic only, no quotation marks.
+- NEVER state the logical connection between the signal and the pitch. The reader makes that connection.
+- NEVER reference: tenure, city, location, college, graduation year, hobbies, passive LinkedIn activity (likes/comments).
+
+TEMPLATE REFERENCE — rotate structure per email:
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK before outputting: confirm email is 70–140 words, no forbidden phrases, opens without flattery, one call to action, closes with low pressure, reads like a real person wrote it.
+FINAL CHECK: 50–90 words total. Opens with the signal — never with flattery, never with a greeting. One CTA only. Closes with low pressure. Plain text only.
 `;
 
-            // Pass the scraped details to the model
-            const userPrompt = `Prospect Details:
-Name: ${lead.name}
-Title: ${lead.title || 'Executive'}
-Company: ${lead.company || 'Corporate'}
-Career Trigger: ${lead.careerTrigger || ''}
-Recent Post Summary: ${lead.recentPostSummary || ''}
-Pulled Quote from Post: ${lead.pulledQuoteFromPost || ''}
-Specific Project/Metric: ${lead.specificProjectOrMetric || ''}
-Place/Personal Detail: ${lead.placeOrPersonalDetail || ''}
-Franchise Angle: ${lead.franchiseAngle || ''}
+            const firstName = lead.name.trim().split(/\s+/)[0];
 
-Write the email using plain text. Do NOT wrap it in quotes or markdown.`;
+            // Blacklisted fields excluded — only safe signals passed to the model
+            const userPrompt = `Prospect:
+Name: ${lead.name}
+First name: ${firstName}
+Title: ${lead.title || "Executive"}
+Company: ${lead.company || "their company"}
+Career Trigger Type: ${lead.careerTrigger || ""}
+Franchise Angle (internal context — do not reference directly): ${lead.franchiseAngle || ""}
+
+Personalization Signal:
+Type: ${signalType}
+Signal: ${primarySignal}
+
+Write the email. Plain text only. No markdown. No quotes around the email.`;
 
             const { text } = await generateText({
                 model: openai("gpt-4o"),

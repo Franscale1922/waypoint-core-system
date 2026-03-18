@@ -14,12 +14,10 @@ export function ImportLeadForm() {
         linkedinUrl: "",
         title: "",
         company: "",
-        careerTrigger: "",
-        recentPostSummary: "",
-        pulledQuoteFromPost: "",
-        specificProjectOrMetric: "",
-        placeOrPersonalDetail: "",
-        franchiseAngle: ""
+        companyNewsEvent: "",   // Priority A: WARN filing, 8-K departure, reorg, layoffs
+        recentPostSummary: "", // Priority B: paraphrase of post TOPIC — never verbatim
+        careerTrigger: "",     // Signal type: layoff / job change / burnout / opentowork
+        franchiseAngle: ""     // Internal context for GPT-4o framing only
     });
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -33,7 +31,7 @@ export function ImportLeadForm() {
             });
             if (res.ok) {
                 setIsOpen(false);
-                setFormData({ name: "", linkedinUrl: "", title: "", company: "", careerTrigger: "", recentPostSummary: "", pulledQuoteFromPost: "", specificProjectOrMetric: "", placeOrPersonalDetail: "", franchiseAngle: "" });
+                setFormData({ name: "", linkedinUrl: "", title: "", company: "", companyNewsEvent: "", recentPostSummary: "", careerTrigger: "", franchiseAngle: "" });
                 router.refresh();
             } else {
                 alert("Failed to import lead.");
@@ -86,36 +84,53 @@ export function ImportLeadForm() {
                             </div>
 
                             <hr className="border-slate-100 my-4" />
-                            <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-2">Context Signals</p>
+                            <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-2">Personalization Signals</p>
+                            <p className="text-xs text-slate-400 mb-3">Max 2 signals used per email. Priority A (company event) beats Priority B (post topic).</p>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Career Trigger</label>
-                                <input placeholder="e.g. Laid off, Stepped down as VP" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.careerTrigger} onChange={e => setFormData({ ...formData, careerTrigger: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Company News Event <span className="text-xs text-blue-500 ml-1">Priority A</span>
+                                </label>
+                                <input
+                                    placeholder="e.g. WARN filing — 400 layoffs announced Jan 15 | Boeing reorg Q1"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                                    value={formData.companyNewsEvent}
+                                    onChange={e => setFormData({ ...formData, companyNewsEvent: e.target.value })}
+                                />
+                                <p className="text-xs text-slate-400 mt-1">WARN Act, SEC 8-K departure, M&A, reorg, layoffs. Public macro data only.</p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Recent Post Summary</label>
-                                <input placeholder="e.g. Talked about corporate burnout" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.recentPostSummary} onChange={e => setFormData({ ...formData, recentPostSummary: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-700 mb-1">
+                                    Recent Post Topic <span className="text-xs text-slate-400 ml-1">Priority B — paraphrase only, no quotes</span>
+                                </label>
+                                <input
+                                    placeholder="e.g. Leadership changes creating operational uncertainty"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                                    value={formData.recentPostSummary}
+                                    onChange={e => setFormData({ ...formData, recentPostSummary: e.target.value })}
+                                />
+                                <p className="text-xs text-slate-400 mt-1">Topic only — never paste a verbatim quote. 8 words max.</p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Pulled Quote from Post</label>
-                                <input placeholder="e.g. 'I realized the ladder leads nowhere'" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.pulledQuoteFromPost} onChange={e => setFormData({ ...formData, pulledQuoteFromPost: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Career Trigger Type</label>
+                                <input
+                                    placeholder="e.g. Layoff, Stepped down, OpenToWork badge, Reorg survivor"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                                    value={formData.careerTrigger}
+                                    onChange={e => setFormData({ ...formData, careerTrigger: e.target.value })}
+                                />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Specific Project or Metric</label>
-                                <input placeholder="e.g. Led $12M supply chain transformation" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.specificProjectOrMetric} onChange={e => setFormData({ ...formData, specificProjectOrMetric: e.target.value })} />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Place or Personal Detail</label>
-                                <input placeholder="e.g. Based in Denver, coaches youth soccer" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.placeOrPersonalDetail} onChange={e => setFormData({ ...formData, placeOrPersonalDetail: e.target.value })} />
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Franchise Angle</label>
-                                <input placeholder="e.g. Wants stability and equity" className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm" value={formData.franchiseAngle} onChange={e => setFormData({ ...formData, franchiseAngle: e.target.value })} />
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Franchise Angle <span className="text-xs text-slate-400">(internal only)</span></label>
+                                <input
+                                    placeholder="e.g. Wants equity, autonomy-driven, risk-averse"
+                                    className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                                    value={formData.franchiseAngle}
+                                    onChange={e => setFormData({ ...formData, franchiseAngle: e.target.value })}
+                                />
                             </div>
 
                             <div className="pt-4 flex justify-end gap-3">
