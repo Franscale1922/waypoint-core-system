@@ -25,12 +25,15 @@ model Lead {
   company           String?
   linkedinUrl       String?    @unique
   country           String?
-  recentPostSummary       String?
-  pulledQuoteFromPost     String?
-  specificProjectOrMetric String?
-  placeOrPersonalDetail   String?
-  franchiseAngle          String?
-  careerTrigger           String?
+  // ── Personalization signals (research-backed model, March 2026) ──────────
+  companyNewsEvent        String?  // Priority A: WARN Act, SEC 8-K, reorg, layoffs (macro, public)
+  recentPostSummary       String?  // Priority B: post topic paraphrase (never verbatim)
+  careerTrigger           String?  // Signal type: layoff / job change / burnout / opentowork
+  franchiseAngle          String?  // Internal context — not referenced in email
+  // Legacy fields — no longer populated, kept for existing rows
+  pulledQuoteFromPost     String?  // BLACKLISTED — creepiness score 7/10. Do not populate.
+  specificProjectOrMetric String?  // BLACKLISTED — removed from form and prompt
+  placeOrPersonalDetail   String?  // BLACKLISTED — removed from form and prompt
   email             String?
   score             Int        @default(0)
   status            LeadStatus @default(RAW)
