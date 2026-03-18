@@ -187,4 +187,11 @@ Hi {{first_name}},
 After a long run in {{function}} leadership, most people have at least thought about what it would look like to run their own thing. The ones who end up working with me aren't reckless — they're the ones who want to see the real numbers before they decide.
 I run a one-hour exercise that maps three paths on one page: stay the course, make a strategic move, or step into ownership. Want to see what it looks like for your situation?
 Kelsey
+
+### Template G – Lead Magnet Offer (soft CTA — works with any signal, especially Priority C or low-confidence B)
+// Use this when the signal context is weaker or when a lower-commitment first touch makes sense.
+// Offers a free resource instead of a conversation ask. Once they say yes, follow up with personalized context.
+Hi {{first_name}},
+{{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You" — based on the patterns I keep seeing across the executives I work with. Want me to send you a copy?
+Kelsey
 `;

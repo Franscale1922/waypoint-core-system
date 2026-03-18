@@ -30,6 +30,7 @@ model Lead {
   recentPostSummary       String?  // Priority B: post topic paraphrase (never verbatim)
   careerTrigger           String?  // Signal type: layoff / job change / burnout / opentowork
   franchiseAngle          String?  // Internal context — not referenced in email
+  yearsInCurrentRole      Int?     // Scoring signal only — NEVER passed to email generator (blacklisted per Nemo 2025)
   // Legacy fields — no longer populated, kept for existing rows
   pulledQuoteFromPost     String?  // BLACKLISTED — creepiness score 7/10. Do not populate.
   specificProjectOrMetric String?  // BLACKLISTED — removed from form and prompt

@@ -75,6 +75,13 @@ export const leadHunterProcess = inngest.createFunction(
                 }
             }
 
+            // ── Tenure Signal (up to +7) ──────────────────────────────────────────────
+            // Source: Nemo (2025) — 8+ years in current role correlates with burnout/plateau readiness.
+            // IMPORTANT: This field is NEVER passed to the email generator. Scoring use only.
+            if ((lead as any).yearsInCurrentRole && (lead as any).yearsInCurrentRole >= 8) {
+                score += 7;
+            }
+
             // Cap at 100
             if (score > 100) score = 100;
 
@@ -470,6 +477,20 @@ Write Kelsey's follow-up reply.`
                     ``,
                     `After you reply, send them your TidyCal link:`,
                     `https://tidycal.com/m7v2jox/franchise-consultation`,
+                    ``,
+                    `═════════════════════════`,
+                    `30-DAY GHOST RECOVERY KIT (save for if this lead goes quiet)`,
+                    `═════════════════════════`,
+                    `If ${lead.name} stops responding after your first exchange, send one of these:`,
+                    ``,
+                    `Option A (direct re-engagement):`,
+                    `  "${lead.name.split(" ")[0]} — are you doing this?"`,
+                    ``,
+                    `Option B (no-oriented question, Chris Voss):`,
+                    `  "Have you given up on franchise ownership?"`,
+                    ``,
+                    `Send as a standalone 1-sentence LinkedIn DM or email reply. Nothing else.`,
+                    `Only use after 30+ days of silence.`,
                 ].join("\n"),
             });
 
@@ -868,5 +889,207 @@ export const tidycalBookingSync = inngest.createFunction(
             matched,
             unmatched,
         };
+    }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LinkedIn DM Queue
+// Runs Mon–Fri at 9 AM MT. Finds leads that have been in SENT status for 5+
+// days with no reply and posts a Slack summary to #waypoint-hot-replies with
+// copy-paste LinkedIn DM scripts for each. Automated trigger, manual delivery
+// (LinkedIn DM automation violates ToS — this is the practical equivalent).
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const linkedInDmQueue = inngest.createFunction(
+    { id: "linkedin-dm-queue", retries: 1 },
+    { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon–Fri
+    async ({ step }) => {
+        const staleLeads = await step.run("find-stale-sent-leads", async () => {
+            const fiveDaysAgo = new Date();
+            fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+            return prisma.lead.findMany({
+                where: {
+                    status: "SENT",
+                    updatedAt: { lte: fiveDaysAgo },
+                },
+                orderBy: { score: "desc" },
+                take: 20, // Cap at 20 per day to keep the list actionable
+                select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
+            });
+        });
+
+        if (staleLeads.length === 0) {
+            console.log("[linkedin-dm-queue] No stale SENT leads today.");
+            return { status: "No stale leads", count: 0 };
+        }
+
+        await step.run("post-linkedin-dm-queue-to-slack", async () => {
+            const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+            if (!slackWebhook) {
+                console.warn("[linkedin-dm-queue] No SLACK_WEBHOOK_URL — skipping alert");
+                return;
+            }
+
+            const leadBlocks = staleLeads.map(lead => ({
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: [
+                        `*${lead.name}* | ${lead.title || "N/A"} @ ${lead.company || "N/A"} | Score: ${lead.score}`,
+                        lead.linkedinUrl ? `LinkedIn: ${lead.linkedinUrl}` : "No LinkedIn URL",
+                        `📋 DM script: _"Hi ${lead.name.split(" ")[0]} — can I send you a free copy of my guide, "5 Things That Actually Determine If Franchise Ownership Makes Sense For You"?"_`,
+                    ].join("\n"),
+                },
+            }));
+
+            await fetch(slackWebhook, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text: `📬 LinkedIn DM Queue — ${staleLeads.length} lead${staleLeads.length !== 1 ? "s" : ""} need a LinkedIn touch today`,
+                    blocks: [
+                        {
+                            type: "header",
+                            text: {
+                                type: "plain_text",
+                                text: `📬 LinkedIn DM Queue — ${staleLeads.length} lead${staleLeads.length !== 1 ? "s" : ""} (5+ days SENT, no reply)`,
+                            },
+                        },
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: "These leads were emailed 5+ days ago and haven't replied. Send each a 1-sentence LinkedIn DM using the script below each name. Copy-paste ready.",
+                            },
+                        },
+                        ...leadBlocks,
+                        {
+                            type: "context",
+                            elements: [
+                                {
+                                    type: "mrkdwn",
+                                    text: "After they say yes to the guide, personalize your follow-up based on their LinkedIn profile. Qualify first, personalize second.",
+                                },
+                            ],
+                        },
+                    ],
+                }),
+            });
+
+            console.log(`[linkedin-dm-queue] Slack alert sent — ${staleLeads.length} leads queued`);
+        });
+
+        return { status: "Sent", count: staleLeads.length };
+    }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Ghost Recovery Alert
+// Runs every Monday at 10 AM MT. Finds leads with Curious or Ambiguous
+// classification that replied 30+ days ago and still haven't booked.
+// Posts ghost recovery scripts (Nemo 2025) to Slack for Kelsey to deploy.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const ghostRecoveryAlert = inngest.createFunction(
+    { id: "ghost-recovery-alert", retries: 1 },
+    { cron: "0 16 * * 1" }, // 10 AM Mountain Time (UTC-6), Monday only
+    async ({ step }) => {
+        const ghostedLeads = await step.run("find-ghosted-warm-leads", async () => {
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            // Warm leads (REPLIED) that went quiet 30+ days ago without booking
+            const leads = await prisma.lead.findMany({
+                where: {
+                    status: "REPLIED",
+                    updatedAt: { lte: thirtyDaysAgo },
+                },
+                orderBy: { score: "desc" },
+                take: 15,
+                select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true, updatedAt: true },
+            });
+
+            // Cross-reference: only return leads whose most recent Reply classification was Curious or Ambiguous
+            const filtered = await Promise.all(
+                leads.map(async (lead) => {
+                    const latestReply = await prisma.reply.findFirst({
+                        where: { leadId: lead.id },
+                        orderBy: { createdAt: "desc" },
+                        select: { classification: true },
+                    });
+                    const isColdable = ["Curious", "Ambiguous", "Not now"].includes(latestReply?.classification ?? "");
+                    return isColdable ? { ...lead, classification: latestReply?.classification } : null;
+                })
+            );
+
+            return filtered.filter(Boolean) as typeof leads;
+        });
+
+        if (ghostedLeads.length === 0) {
+            console.log("[ghost-recovery-alert] No ghosted warm leads this week.");
+            return { status: "No ghosted leads", count: 0 };
+        }
+
+        await step.run("post-ghost-recovery-to-slack", async () => {
+            const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+            if (!slackWebhook) {
+                console.warn("[ghost-recovery-alert] No SLACK_WEBHOOK_URL — skipping alert");
+                return;
+            }
+
+            const leadBlocks = ghostedLeads.map(lead => ({
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: [
+                        `*${lead.name}* | ${lead.title || "N/A"} @ ${lead.company || "N/A"} | Score: ${lead.score}`,
+                        lead.linkedinUrl ? `LinkedIn: ${lead.linkedinUrl}` : "No LinkedIn URL",
+                        `Last active: ${new Date(lead.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
+                        ``,
+                        `👻 Ghost Option A: _"${lead.name.split(" ")[0]} — are you doing this?"_`,
+                        `👻 Ghost Option B: _"Have you given up on franchise ownership?"_`,
+                    ].join("\n"),
+                },
+            }));
+
+            await fetch(slackWebhook, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text: `👻 Ghost Recovery Alert — ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} gone quiet for 30+ days`,
+                    blocks: [
+                        {
+                            type: "header",
+                            text: {
+                                type: "plain_text",
+                                text: `👻 Ghost Recovery — ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} silent for 30+ days`,
+                            },
+                        },
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: "These leads replied with interest but have gone dark. Pick *one* script per lead and send it as a standalone 1-sentence reply — nothing else attached.",
+                            },
+                        },
+                        ...leadBlocks,
+                        {
+                            type: "context",
+                            elements: [
+                                {
+                                    type: "mrkdwn",
+                                    text: "Only use these after 30+ days of silence. Send as LinkedIn DM or direct email reply. Source: Nemo (2025) + Chris Voss *Never Split the Difference*.",
+                                },
+                            ],
+                        },
+                    ],
+                }),
+            });
+
+            console.log(`[ghost-recovery-alert] Slack alert sent — ${ghostedLeads.length} ghosted leads`);
+        });
+
+        return { status: "Sent", count: ghostedLeads.length };
     }
 );

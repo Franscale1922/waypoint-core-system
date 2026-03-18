@@ -37,6 +37,12 @@ const COLUMN_ALIASES: Record<string, string> = {
     "careertrigger": "careerTrigger",
     "franchise angle": "franchiseAngle",
     "franchiseangle": "franchiseAngle",
+    // tenure — exported from Sales Navigator as "Years in Current Position"
+    "years in current position": "yearsInCurrentRole",
+    "years in position": "yearsInCurrentRole",
+    "yearsincurrentposition": "yearsInCurrentRole",
+    "tenure (years)": "yearsInCurrentRole",
+    "tenure": "yearsInCurrentRole",
 };
 
 type LeadRow = {
@@ -49,6 +55,7 @@ type LeadRow = {
     recentPostSummary?: string;
     careerTrigger?: string;
     franchiseAngle?: string;
+    yearsInCurrentRole?: number;  // Scoring signal only — never referenced in email
     _valid: boolean;
     _error?: string;
 };
@@ -89,6 +96,7 @@ function parseCSV(text: string): LeadRow[] {
             recentPostSummary: row["recentPostSummary"] || undefined,
             careerTrigger: row["careerTrigger"] || undefined,
             franchiseAngle: row["franchiseAngle"] || undefined,
+            yearsInCurrentRole: row["yearsInCurrentRole"] ? parseInt(row["yearsInCurrentRole"], 10) || undefined : undefined,
             _valid: true,
         };
 
@@ -118,7 +126,8 @@ export function ImportLeadForm() {
         companyNewsEvent: "",
         recentPostSummary: "",
         careerTrigger: "",
-        franchiseAngle: ""
+        franchiseAngle: "",
+        yearsInCurrentRole: "" as string | number,
     });
 
     const handleClose = () => {
@@ -128,7 +137,7 @@ export function ImportLeadForm() {
         setBatchTrigger("");
         setImportResult(null);
         setTab("manual");
-        setFormData({ name: "", linkedinUrl: "", title: "", company: "", companyNewsEvent: "", recentPostSummary: "", careerTrigger: "", franchiseAngle: "" });
+        setFormData({ name: "", linkedinUrl: "", title: "", company: "", companyNewsEvent: "", recentPostSummary: "", careerTrigger: "", franchiseAngle: "", yearsInCurrentRole: "" });
     };
 
     // ── Manual submit ──────────────────────────────────────────────────────
@@ -139,7 +148,10 @@ export function ImportLeadForm() {
             const res = await fetch("/api/leads", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify([formData])
+                body: JSON.stringify([{
+                    ...formData,
+                    yearsInCurrentRole: formData.yearsInCurrentRole !== "" ? Number(formData.yearsInCurrentRole) : undefined,
+                }])
             });
             if (res.ok) {
                 handleClose();
@@ -311,6 +323,21 @@ export function ImportLeadForm() {
                                             value={formData.franchiseAngle}
                                             onChange={e => setFormData({ ...formData, franchiseAngle: e.target.value })}
                                         />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">
+                                            Years in Current Role <span className="text-xs text-slate-400 ml-1">(optional — from Sales Nav, scoring signal only)</span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="50"
+                                            placeholder="e.g. 9"
+                                            className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
+                                            value={formData.yearsInCurrentRole}
+                                            onChange={e => setFormData({ ...formData, yearsInCurrentRole: e.target.value })}
+                                        />
+                                        <p className="text-xs text-slate-400 mt-1">8+ years adds +7 to lead score. Never referenced in the email.</p>
                                     </div>
                                     <div className="pt-4 flex justify-end gap-3">
                                         <button type="button" onClick={handleClose} className="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-lg font-medium text-sm transition-colors">Cancel</button>
