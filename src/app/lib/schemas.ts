@@ -8,12 +8,15 @@ export const LeadSchema = z.object({
   title: z.string().optional(),
   company: z.string().optional(),
   country: z.string().optional(),
-  recentPostSummary: z.string().optional(),
+  // ── Personalization signals (research-backed model, March 2026) ──────────
+  companyNewsEvent: z.string().optional(),       // Priority A: WARN Act, 8-K, reorg, layoffs
+  recentPostSummary: z.string().optional(),      // Priority B: paraphrase of post topic only
+  careerTrigger: z.string().optional(),          // Signal type: layoff / burnout / opentowork
+  franchiseAngle: z.string().optional(),         // Internal framing context — not sent in email
+  // Legacy blacklisted fields — kept for existing rows, not populated going forward
   pulledQuoteFromPost: z.string().optional(),
   specificProjectOrMetric: z.string().optional(),
   placeOrPersonalDetail: z.string().optional(),
-  franchiseAngle: z.string().optional(),
-  careerTrigger: z.string().optional(),
 });
 
 export const LeadBatchSchema = z.union([LeadSchema, z.array(LeadSchema)]);

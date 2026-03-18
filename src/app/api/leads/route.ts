@@ -31,12 +31,15 @@ export async function POST(req: Request) {
                     title: leadData.title,
                     company: leadData.company,
                     country: leadData.country,
-                    recentPostSummary: leadData.recentPostSummary,
+                    // ── Personalization signals ─────────────────────────────
+                    companyNewsEvent: leadData.companyNewsEvent,         // Priority A
+                    recentPostSummary: leadData.recentPostSummary,       // Priority B
+                    careerTrigger: leadData.careerTrigger,
+                    franchiseAngle: leadData.franchiseAngle,
+                    // Legacy blacklisted fields — kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
                     placeOrPersonalDetail: leadData.placeOrPersonalDetail,
-                    franchiseAngle: leadData.franchiseAngle,
-                    careerTrigger: leadData.careerTrigger,
                 },
                 create: {
                     name: leadData.name,
@@ -44,12 +47,15 @@ export async function POST(req: Request) {
                     title: leadData.title,
                     company: leadData.company,
                     country: leadData.country,
-                    recentPostSummary: leadData.recentPostSummary,
+                    // ── Personalization signals ─────────────────────────────
+                    companyNewsEvent: leadData.companyNewsEvent,         // Priority A
+                    recentPostSummary: leadData.recentPostSummary,       // Priority B
+                    careerTrigger: leadData.careerTrigger,
+                    franchiseAngle: leadData.franchiseAngle,
+                    // Legacy blacklisted fields — kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
                     placeOrPersonalDetail: leadData.placeOrPersonalDetail,
-                    franchiseAngle: leadData.franchiseAngle,
-                    careerTrigger: leadData.careerTrigger,
                     status: "RAW"
                 }
             });
