@@ -27,12 +27,12 @@ export const metadata: Metadata = {
   title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
   description:
     "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life. Honest, no-pitch consulting.",
-  alternates: { canonical: "https://waypointfranchise.com/about" },
+  alternates: { canonical: "https://www.waypointfranchise.com/about" },
   openGraph: {
     title: "About Kelsey Stuart | Waypoint Franchise Advisors",
     description:
       "I helped build a $40M franchise system and then failed as a franchisee. That combination is exactly why you should talk to me first.",
-    url: "https://waypointfranchise.com/about",
+    url: "https://www.waypointfranchise.com/about",
     images: [{ url: "/og_about_1773343956962.png", width: 1200, height: 630, alt: "Kelsey Stuart, Franchise Advisor" }],
   },
 };

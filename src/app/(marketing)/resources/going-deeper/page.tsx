@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: "Going Deeper: Advanced Franchise Guides | Waypoint Franchise Advisors",
   description:
     "You know the basics. Now go deeper. Guides covering funding, territory selection, multi-unit strategy, the franchise agreement, what to look for at Discovery Day, and how to read an FDD.",
-  alternates: { canonical: "https://waypointfranchise.com/resources/going-deeper" },
+  alternates: { canonical: "https://www.waypointfranchise.com/resources/going-deeper" },
   openGraph: {
     title: "Going Deeper: Advanced Franchise Guides | Waypoint",
     description:
       "Beyond the basics. Funding paths, territory math, multi-unit strategy, franchisee validation, and what to look for in the franchise agreement.",
-    url: "https://waypointfranchise.com/resources/going-deeper",
+    url: "https://www.waypointfranchise.com/resources/going-deeper",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Advanced Franchise Guides" }],
   },
 };

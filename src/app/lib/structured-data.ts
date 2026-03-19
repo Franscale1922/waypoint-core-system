@@ -1,4 +1,4 @@
-export const SITE_URL = "https://waypointfranchise.com";
+export const SITE_URL = "https://www.waypointfranchise.com";
 
 export const localBusinessSchema = {
   "@context": "https://schema.org",

@@ -51,10 +51,10 @@ export const metadata: Metadata = {
     title: "How the Waypoint Process Works",
     description:
       "Two hours before you see a single brand. A step-by-step look at how Kelsey guides candidates from curious to confident.",
-    url: "https://waypointfranchise.com/process",
+    url: "https://www.waypointfranchise.com/process",
     images: [{ url: "/og/og-process.png", width: 1200, height: 630, alt: "The Waypoint Process — No Pitch, No Hard Close" }],
   },
-  alternates: { canonical: "https://waypointfranchise.com/process" },
+  alternates: { canonical: "https://www.waypointfranchise.com/process" },
 };
 
 const steps = [

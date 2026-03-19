@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: "What Kind of Franchise Owner Are You?",
     description:
       "Discover your franchise archetype and which industries align with your goals, background, and working style.",
-    url: "https://waypointfranchise.com/archetype",
+    url: "https://www.waypointfranchise.com/archetype",
     type: "website",
   },
 };

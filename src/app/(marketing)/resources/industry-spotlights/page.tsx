@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
   description:
     "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
-  alternates: { canonical: "https://waypointfranchise.com/resources/industry-spotlights" },
+  alternates: { canonical: "https://www.waypointfranchise.com/resources/industry-spotlights" },
   openGraph: {
     title: "Franchise Industry Spotlights | Waypoint",
     description:
       "Category-specific analysis covering home services, senior care, fitness, B2B, restoration, and more, with honest reads on the economics and operator fit for each.",
-    url: "https://waypointfranchise.com/resources/industry-spotlights",
+    url: "https://www.waypointfranchise.com/resources/industry-spotlights",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Industry Spotlights" }],
   },
 };

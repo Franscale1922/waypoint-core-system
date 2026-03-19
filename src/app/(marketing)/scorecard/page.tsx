@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: "Franchise Readiness Quiz | Are You Ready to Own a Franchise?",
   description:
     "Take the 2-minute franchise readiness quiz. Get a personalized score based on your capital, timeline, and motivation. Free, honest, no-pitch results from a former franchisor.",
-  alternates: { canonical: "https://waypointfranchise.com/scorecard" },
+  alternates: { canonical: "https://www.waypointfranchise.com/scorecard" },
   openGraph: {
     title: "Franchise Readiness Quiz | Waypoint Franchise Advisors",
     description:
       "5 questions. 2 minutes. Get an honest read on where you stand before making one of the biggest financial decisions of your life.",
-    url: "https://waypointfranchise.com/scorecard",
+    url: "https://www.waypointfranchise.com/scorecard",
     images: [
       {
         url: "/og_scorecard_1773343944094.png",

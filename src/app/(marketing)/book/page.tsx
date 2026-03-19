@@ -6,12 +6,12 @@ export const metadata: Metadata = {
   title: "Book a Free Discovery Call",
   description:
     "30 minutes with Kelsey Stuart. No pitch, no agenda. Just an honest conversation about whether franchise ownership makes sense for your situation right now.",
-  alternates: { canonical: "https://waypointfranchise.com/book" },
+  alternates: { canonical: "https://www.waypointfranchise.com/book" },
   openGraph: {
     title: "Book a Free 30-Min Call | Waypoint Franchise Advisors",
     description:
       "Pick a time that works. 30 minutes, completely free. If franchising isn't right for you, I'll tell you that too.",
-    url: "https://waypointfranchise.com/book",
+    url: "https://www.waypointfranchise.com/book",
     images: [{ url: "/og_book_1773343995375.png", width: 1200, height: 630, alt: "Book a Call with Kelsey Stuart" }],
   },
 };

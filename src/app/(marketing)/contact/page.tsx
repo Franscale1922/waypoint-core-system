@@ -4,11 +4,11 @@ import ContactForm from "../../components/ContactForm";
 export const metadata: Metadata = {
   title: "Contact | Waypoint Franchise Advisors",
   description: "Ask a question, share where you are in the process, or just say hello. Kelsey responds within one business day.",
-  alternates: { canonical: "https://waypointfranchise.com/contact" },
+  alternates: { canonical: "https://www.waypointfranchise.com/contact" },
   openGraph: {
     title: "Contact Kelsey | Waypoint Franchise Advisors",
     description: "Ask a question or start a conversation. No pitch, no pressure.",
-    url: "https://waypointfranchise.com/contact",
+    url: "https://www.waypointfranchise.com/contact",
   },
 };
 

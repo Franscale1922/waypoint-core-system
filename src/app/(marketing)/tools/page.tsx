@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: "Free Franchise Tools | Waypoint Franchise Advisors",
   description:
     "Two free tools to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz tells you if your capital, mindset, and situation are aligned. The Archetype Quiz tells you which franchise categories fit the way you naturally work.",
-  alternates: { canonical: "https://waypointfranchise.com/tools" },
+  alternates: { canonical: "https://www.waypointfranchise.com/tools" },
   openGraph: {
     title: "Free Franchise Tools | Waypoint Franchise Advisors",
     description:
       "Two free assessments, franchise readiness and personality archetype, that tell you where you stand before committing to a conversation.",
-    url: "https://waypointfranchise.com/tools",
+    url: "https://www.waypointfranchise.com/tools",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Free Franchise Tools" }],
   },
 };

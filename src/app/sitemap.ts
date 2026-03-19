@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "../lib/articles";
 
-const SITE_URL = "https://waypointfranchise.com";
+const SITE_URL = "https://www.waypointfranchise.com";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const articles = getAllArticles();
@@ -60,12 +60,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.8,
-    },
-    {
-      url: `${SITE_URL}/tools`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.85,
     },
     {
       url: `${SITE_URL}/quizzes`,

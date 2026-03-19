@@ -11,10 +11,10 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Resources | Waypoint Franchise Advisors",
     description: "Guides, articles, and tools for anyone seriously exploring franchise ownership.",
-    url: "https://waypointfranchise.com/resources",
+    url: "https://www.waypointfranchise.com/resources",
     images: [{ url: "/og/og-resources.png", width: 1200, height: 630, alt: "Waypoint Franchise Resources" }],
   },
-  alternates: { canonical: "https://waypointfranchise.com/resources" },
+  alternates: { canonical: "https://www.waypointfranchise.com/resources" },
 };
 
 export default function ResourcesPage() {

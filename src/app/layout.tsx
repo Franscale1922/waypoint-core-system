@@ -13,7 +13,7 @@ const playfair = Playfair_Display({
   display: "swap",
 });
 
-const SITE_URL = "https://waypointfranchise.com";
+const SITE_URL = "https://www.waypointfranchise.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

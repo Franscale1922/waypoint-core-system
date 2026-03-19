@@ -36,12 +36,12 @@ export const metadata: Metadata = {
   title: "Franchise Consultant vs. Franchise Broker: What's the Difference? | Waypoint",
   description:
     "Franchise consultants and franchise brokers are often the same thing legally, but they work very differently. Here is what the distinction actually means for your process.",
-  alternates: { canonical: "https://waypointfranchise.com/franchise-consultant-vs-broker" },
+  alternates: { canonical: "https://www.waypointfranchise.com/franchise-consultant-vs-broker" },
   openGraph: {
     title: "Franchise Consultant vs. Broker | Waypoint Franchise Advisors",
     description:
       "Both are free to you. Both are paid by the brand. The difference is in how they work. And that difference matters a lot.",
-    url: "https://waypointfranchise.com/franchise-consultant-vs-broker",
+    url: "https://www.waypointfranchise.com/franchise-consultant-vs-broker",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Consultant vs Broker" }],
   },
 };

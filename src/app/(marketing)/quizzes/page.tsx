@@ -5,12 +5,12 @@ export const metadata: Metadata = {
   title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
   description:
     "Two free assessments to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz scores your capital, mindset, and timing. The Owner Type Quiz tells you which franchise categories fit the way you naturally work.",
-  alternates: { canonical: "https://waypointfranchise.com/quizzes" },
+  alternates: { canonical: "https://www.waypointfranchise.com/quizzes" },
   openGraph: {
     title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
     description:
       "Two free assessments — franchise readiness and ownership archetype — that tell you where you stand before committing to a conversation.",
-    url: "https://waypointfranchise.com/quizzes",
+    url: "https://www.waypointfranchise.com/quizzes",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Free Franchise Quizzes" }],
   },
 };

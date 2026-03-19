@@ -7,10 +7,10 @@ const glossarySchema = {
   name: "Franchise Glossary | Waypoint Franchise Advisors",
   description:
     "Plain-language definitions of franchise industry terms for prospective franchise buyers, including FDD items, royalty, territory, discovery day, ROBS, unit economics, semi-absentee, SBA loans, and more.",
-  url: "https://waypointfranchise.com/glossary",
+  url: "https://www.waypointfranchise.com/glossary",
   publisher: {
     "@type": "Organization",
-    "@id": "https://waypointfranchise.com/#business",
+    "@id": "https://www.waypointfranchise.com/#business",
     name: "Waypoint Franchise Advisors",
   },
 };
@@ -19,12 +19,12 @@ export const metadata: Metadata = {
   title: "Franchise Glossary: 90+ Key Terms Explained | Waypoint Franchise Advisors",
   description:
     "The most complete plain-language franchise glossary for buyers: FDD items 5–21, royalty, territory, Item 19, discovery day, ROBS, SBA loans, unit economics, semi-absentee, non-compete, transfer fee, and more.",
-  alternates: { canonical: "https://waypointfranchise.com/glossary" },
+  alternates: { canonical: "https://www.waypointfranchise.com/glossary" },
   openGraph: {
     title: "Franchise Glossary | Waypoint Franchise Advisors",
     description:
       "Every term a franchise buyer needs to understand, explained in plain language. 60+ definitions from FDD to unit economics.",
-    url: "https://waypointfranchise.com/glossary",
+    url: "https://www.waypointfranchise.com/glossary",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Glossary" }],
   },
 };

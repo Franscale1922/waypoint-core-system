@@ -30,6 +30,14 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   async redirects() {
     return [
+      // Canonical domain: non-www → www (permanent 301)
+      // Without this, Vercel issues a 307 temporary redirect which confuses Googlebot
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'waypointfranchise.com' }],
+        destination: 'https://www.waypointfranchise.com/:path*',
+        permanent: true,
+      },
       {
         source: '/blog/:path*',
         destination: '/resources/:path*',
@@ -38,6 +46,17 @@ const nextConfig: NextConfig = {
       {
         source: '/tools',
         destination: '/quizzes',
+        permanent: true,
+      },
+      // Suppress WordPress 404s from old bot crawls (GSC "Not found" errors)
+      {
+        source: '/wp-content/:path*',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/wp-admin/:path*',
+        destination: '/',
         permanent: true,
       },
     ];

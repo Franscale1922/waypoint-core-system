@@ -7,12 +7,12 @@ export const metadata: Metadata = {
   title: "FAQ | Waypoint Franchise Advisors",
   description:
     "Honest answers to common questions about franchise consulting, cost, capital requirements, funding paths, territory, semi-absentee ownership, the FDD, and how the process works.",
-  alternates: { canonical: "https://waypointfranchise.com/faq" },
+  alternates: { canonical: "https://www.waypointfranchise.com/faq" },
   openGraph: {
     title: "Frequently Asked Questions | Waypoint Franchise Advisors",
     description:
       "No jargon, no pitch. Straight answers about what franchise consulting costs, how the process works, and what it takes to get started.",
-    url: "https://waypointfranchise.com/faq",
+    url: "https://www.waypointfranchise.com/faq",
     images: [{ url: "/og/og-faq.png", width: 1200, height: 630, alt: "Waypoint FAQ — Honest Answers" }],
   },
 };
