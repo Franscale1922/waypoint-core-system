@@ -15,12 +15,12 @@ export const leadHunterProcess = inngest.createFunction(
             return { status: "Skipped - Already Processed or Not Found" };
         }
 
-        const { email, rawScore, apolloTenureYears } = await step.run("enrich-and-score", async () => {
+        const { email, rawScore } = await step.run("enrich-and-score", async () => {
             // ── Hard suppression gates ─────────────────────────────────────────
             // Non-serviceable markets (add more as needed)
             const nonServiceableMarkets = ["India", "Philippines", "Pakistan", "Nigeria", "Bangladesh"];
             if (lead.country && nonServiceableMarkets.some(m => lead.country!.includes(m))) {
-                return { email: null, rawScore: 0, apolloTenureYears: null };
+                return { email: null, rawScore: 0 };
             }
 
             // ── Base score ────────────────────────────────────────────────────
@@ -96,129 +96,21 @@ export const leadHunterProcess = inngest.createFunction(
             // Cap at 100
             if (score > 100) score = 100;
 
-            // ── Email discovery via Apollo People Enrichment API ───────────────
-            // POST /api/v1/people/match — pass first_name, last_name, domain
-            // Returns person.email + person.email_status ("verified" | "likely" | "guessed" | null)
-            // email_status confidence mapping:
-            //   "verified" → 95  (clears the 90-point gate — include in pipeline)
-            //   "likely"   → 75  (does not clear gate — suppressed)
-            //   "guessed"  → 55  (does not clear gate — suppressed)
-            //   null/other → 0   (no match — fall through to last-resort guess)
+            // ── Email ─────────────────────────────────────────────────────────
+            // Evaboot exports are email-verified, so lead.email is almost always set.
+            // If not, construct a best-guess and cap score at 50 — it cannot clear
+            // the 70-pt gate and won't be sent. Clay upstream handles true enrichment.
             let foundEmail: string | null = lead.email || null;
-            let emailConfidence = 100; // If email already provided (from Evaboot), treat as confident
-            // Track whether Apollo returned employment history so we can auto-populate tenure
-            let apolloTenureYears: number | null = null;
-
             if (!foundEmail) {
-                const apolloKey = process.env.APOLLO_API_KEY;
-                if (apolloKey && lead.company) {
-                    try {
-                        const nameParts = lead.name.trim().split(/\s+/);
-                        const firstName = nameParts[0] ?? "";
-                        const lastName = nameParts.slice(1).join(" ") ?? "";
-
-                        // Derive domain from company name — best-effort, Apollo normalises internally
-                        const companySlug = lead.company
-                            .toLowerCase()
-                            .replace(/\s+/g, "")
-                            .replace(/[^a-z0-9]/g, "");
-                        const domain = `${companySlug}.com`;
-
-                        const res = await fetch("https://api.apollo.io/api/v1/people/match", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                                "Cache-Control": "no-cache",
-                                "X-Api-Key": apolloKey,
-                            },
-                            body: JSON.stringify({
-                                first_name: firstName,
-                                last_name: lastName,
-                                domain,
-                                reveal_personal_emails: false, // work emails only
-                            }),
-                        });
-
-                        if (res.ok) {
-                            const json = await res.json();
-                            const person = json?.person;
-                            if (person?.email) {
-                                foundEmail = person.email;
-                                // Map Apollo's qualitative status to a numeric confidence
-                                const statusMap: Record<string, number> = {
-                                    verified: 95,
-                                    likely: 75,
-                                    guessed: 55,
-                                };
-                                emailConfidence = statusMap[person.email_status ?? ""] ?? 0;
-                            }
-
-                            // ── Auto-populate tenure from Apollo employment_history ────────
-                            // Apollo returns employment_history[] with start_date on each entry.
-                            // The current position is the most recent (index 0) and has current == true
-                            // or no end_date. We calculate years from start_date to today.
-                            // This only writes if: (a) Apollo returns history AND (b) lead has no
-                            // existing yearsInCurrentRole value (CSV-provided takes precedence).
-                            if (person?.employment_history && Array.isArray(person.employment_history) && !(lead as any).yearsInCurrentRole) {
-                                const currentJob = person.employment_history.find(
-                                    (e: any) => e.current === true || !e.end_date
-                                );
-                                if (currentJob?.start_date) {
-                                    const startYear = new Date(currentJob.start_date).getFullYear();
-                                    const currentYear = new Date().getFullYear();
-                                    const startMonth = new Date(currentJob.start_date).getMonth();
-                                    const currentMonth = new Date().getMonth();
-                                    const yearsFloat = (currentYear - startYear) + (currentMonth - startMonth) / 12;
-                                    apolloTenureYears = Math.floor(yearsFloat);
-                                }
-                            }
-                        }
-                    } catch (_err) {
-                        // Apollo failed — fall through to last-resort guess below
-                    }
-                }
-
-                // Hard suppression gate: only Apollo "verified" emails (confidence 95) clear the 90 threshold.
-                // "likely" (75) and "guessed" (55) are suppressed — not reliable enough for executive outreach.
-                if (!foundEmail || emailConfidence < 90) {
-                    if (!lead.email) {
-                        // Last resort guess — Instantly's own validation will catch hard bounces
-                        const nameParts = lead.name.trim().split(/\s+/);
-                        foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
-                        score = Math.min(score, 50); // Cap at 50 — unverified guess cannot clear the 70-point gate
-                    }
-                }
+                const nameParts = lead.name.trim().split(/\s+/);
+                foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
+                score = Math.min(score, 50);
             }
 
-            // ── Apply Apollo-derived tenure to scoring if we got it ────────────
-            // Do this AFTER the email block so score is calculated on best available data.
-            // If Apollo gave us tenure and it improves the score, apply it.
-            if (apolloTenureYears !== null && !(lead as any).yearsInCurrentRole) {
-                // Re-apply tenure scoring with Apollo data (initial scoring above used lead.yearsInCurrentRole)
-                if (apolloTenureYears >= 8) {
-                    score += 20;
-                } else if (apolloTenureYears >= 5) {
-                    score += 10;
-                }
-                if (score > 100) score = 100;
-            }
-
-            return { email: foundEmail, rawScore: score, apolloTenureYears };
+            return { email: foundEmail, rawScore: score };
         });
 
-        // Write Apollo-derived tenure to DB if it was auto-calculated (takes precedence only if not already set)
-        if (apolloTenureYears !== null && apolloTenureYears !== undefined && !(lead as any).yearsInCurrentRole) {
-            await step.run("save-apollo-tenure", async () => {
-                await prisma.lead.update({
-                    where: { id: lead.id },
-                    // @ts-ignore — yearsInCurrentRole is in schema
-                    data: { yearsInCurrentRole: apolloTenureYears } as any,
-                });
-            });
-        }
-
         if (rawScore < 70) {
-            // Mark as Suppressed or skip
             await step.run("mark-suppressed-or-ignored", async () => {
                 await prisma.lead.update({
                     where: { id: lead.id },
@@ -228,7 +120,6 @@ export const leadHunterProcess = inngest.createFunction(
             return { status: "Skipped - Score too low", score: rawScore };
         }
 
-        // Update to ENRICHED
         await step.run("update-to-enriched", async () => {
             await prisma.lead.update({
                 where: { id: lead.id },
@@ -236,7 +127,6 @@ export const leadHunterProcess = inngest.createFunction(
             });
         });
 
-        // Phase 3 trigger: Personalizer will pick up from here
         await step.sendEvent("trigger-personalizer", {
             name: "workflow/lead.personalize.start",
             data: { leadId: lead.id }
@@ -266,14 +156,17 @@ export const personalizerProcess = inngest.createFunction(
         }
 
         // ── Quality Gate ──────────────────────────────────────────────────────
-        // Priority A = company news event. Priority B = post topic paraphrase.
-        // If neither is available (CSV-only leads from Evaboot), fall back to a bare
-        // title+company template. A low-personalization email still outperforms infinite
-        // hold time — volume is the mechanism, quality gate is for signal-rich leads.
+        // Priority A = company news event (macro, public — WARN Act, 8-K, reorg, layoffs).
+        // Priority B = paraphrase of LinkedIn post topic (never verbatim — topic only).
+        // Clay is the automated enrichment path that populates these fields upstream.
+        // A generic email performs WORSE than no email for skeptical executives.
         const companyNewsEvent  = ((lead as any).companyNewsEvent as string | undefined)?.trim() ?? "";
         const recentPostSummary = (lead.recentPostSummary ?? "").trim();
         const hasHighAuthToken  = !!(companyNewsEvent || recentPostSummary);
-        // hasHighAuthToken is used below to select the prompt path (rich vs. bare template)
+
+        if (!hasHighAuthToken) {
+            return { status: "HELD — No personalization signal. Clay enrichment will auto-release this lead." };
+        }
 
         const { draftEmail } = await step.run("generate-personalized-email", async () => {
             const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
@@ -283,84 +176,47 @@ export const personalizerProcess = inngest.createFunction(
 
             const firstName = lead.name.trim().split(/\s+/)[0];
 
-            let systemPrompt: string;
-            let userPrompt: string;
+            // By the time we reach here, the quality gate has guaranteed hasHighAuthToken is true.
+            // Priority A beats Priority B. Only one signal used in the email body.
+            const primarySignal = companyNewsEvent || recentPostSummary;
+            const signalType = companyNewsEvent
+                ? "Priority A: company news event (macro, public \u2014 WARN Act, 8-K, reorg, layoffs)"
+                : "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
 
-            if (hasHighAuthToken) {
-                // ── Rich path: personalization signal available ───────────────────
-                // Signal selection — Priority A beats Priority B. Max 1 signal in email body.
-                const primarySignal = companyNewsEvent || recentPostSummary;
-                const signalType = companyNewsEvent
-                    ? "Priority A: company news event (macro, public — WARN Act, 8-K, reorg, layoffs)"
-                    : "Priority B: paraphrase of LinkedIn post topic (never verbatim — topic only)";
-
-                systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
+            const systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
 Your ONLY goal is to write ONE cold email that generates a single reply from a highly skeptical corporate executive.
 
 ${VOICE_RULES}
 
-PROHIBITED PHRASES — never use any of these:
+PROHIBITED PHRASES \u2014 never use any of these:
 ${PROHIBITED_PHRASES.join(", ")}
-AND: NO em dashes (—). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
+AND: NO em dashes (\u2014). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
 
-PERSONALIZATION RULES — mandatory:
+PERSONALIZATION RULES \u2014 mandatory:
 - Use EXACTLY 1 signal in the email body (provided below as the Personalization Signal).
 - NEVER verbatim-quote the prospect's own words. Paraphrase the topic only, no quotation marks.
 - NEVER state the logical connection between the signal and the pitch. The reader makes that connection.
 - NEVER reference: tenure, city, location, college, graduation year, hobbies, passive LinkedIn activity (likes/comments).
 
-TEMPLATE REFERENCE — rotate structure per email:
+TEMPLATE REFERENCE \u2014 rotate structure per email:
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK: 50–90 words total. Opens with the signal — never with flattery, never with a greeting. One CTA only. Closes with low pressure. Plain text only.
+FINAL CHECK: 50\u201390 words total. Opens with the signal \u2014 never with flattery, never with a greeting. One CTA only. Closes with low pressure. Plain text only.
 `;
 
-                userPrompt = `Prospect:
+            const userPrompt = `Prospect:
 Name: ${lead.name}
 First name: ${firstName}
 Title: ${lead.title || "Executive"}
 Company: ${lead.company || "their company"}
 Career Trigger Type: ${lead.careerTrigger || ""}
-Franchise Angle (internal context — do not reference directly): ${lead.franchiseAngle || ""}
+Franchise Angle (internal context \u2014 do not reference directly): ${lead.franchiseAngle || ""}
 
 Personalization Signal:
 Type: ${signalType}
 Signal: ${primarySignal}
 
 Write the email. Plain text only. No markdown. No quotes around the email.`;
-
-            } else {
-                // ── Bare-minimum path: CSV-only lead with no personalization signal ──
-                // No LinkedIn post, no company news. Use a value-lead template that
-                // opens with an outcome question, not a personalization hook.
-                // This lets volume flow while preserving email quality guardrails.
-                systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
-Your ONLY goal is to write ONE cold email that generates a single reply from a highly skeptical corporate executive.
-
-${VOICE_RULES}
-
-PROHIBITED PHRASES — never use any of these:
-${PROHIBITED_PHRASES.join(", ")}
-AND: NO em dashes (—). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
-
-INSTRUCTIONS FOR THIS EMAIL:
-- You have NO personalization signal for this lead. Do NOT try to fabricate one.
-- Open with a sharp outcome question that resonates with a senior professional thinking about
-  whether their current trajectory will get them where they want to go.
-- The question should make them pause and think — not feel sold to.
-- Reference their seniority/role type and company casually. Nothing more.
-- Keep it 50–70 words. One question to open. One sentence of context. One low-pressure CTA.
-- No flattery. No em dashes. Plain text only.
-`;
-
-                userPrompt = `Prospect:
-Name: ${lead.name}
-First name: ${firstName}
-Title: ${lead.title || "Senior Professional"}
-Company: ${lead.company || "their company"}
-
-Write the email. Plain text only. No markdown. No quotes around the email.`;
-            }
 
             const { text } = await generateText({
                 model: openai("gpt-4o"),
