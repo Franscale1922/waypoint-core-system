@@ -1,6 +1,6 @@
 # Waypoint Cold Email System — Tech Stack Reference
 
-**Last updated:** March 2026  
+**Last updated:** March 18, 2026 — Lead sourcing path decided (modified Path B)  
 **Volume target:** 15–20 sends/day, Mon–Fri  
 **Goal:** Book franchise advisory consultations with VP/Director/CXO corporate executives in career transition
 
@@ -11,11 +11,13 @@
 ## Pipeline Overview
 
 ```
-Lead Discovery (Sales Navigator)
+Lead Discovery (Sales Navigator — behavioral signals: OpenToWork, Posted 30d)
     ↓
-Manual CSV Export → ImportLeadForm.tsx → DB (RAW status)
+Evaboot Chrome extension → "Extract with Evaboot" → CSV with emails (~65% match)
     ↓
-Inngest: leadHunterProcess → enriches via SuperSearch → scores (0–100)
+ImportLeadForm.tsx → DB (RAW status)
+    ↓
+Inngest: leadHunterProcess → enriches via Apollo API → scores (0–100)
     ↓ (gate: score ≥ 70)
 Inngest: personalizerProcess → GPT-4o writes email from 5 context fields
     ↓
@@ -25,7 +27,7 @@ Inngest: replyGuardianProcess → classifies reply, alerts Kelsey
     ↓
 HITL: Kelsey reviews AI draft, sends reply, shares TidyCal link
     ↓
-TidyCal booking → Inngest: tidycalBookingSync → lead → REPLIED status
+TidyCal booking → Inngest: tidycalBookingSync → lead → BOOKED status
 ```
 
 ---
@@ -55,18 +57,23 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → REPLIED status
 
 ---
 
-### 2. Lead Export & Import
-**What:** Manual data transfer from Sales Navigator to the CRM database.  
-**Why:** Avoids LinkedIn ToS violations from automated scrapers (Apify community actors carry ban risk).  
-**Cost:** $0  
-**Setup status:** ✅ Decided — process is manual
+### 2. Lead Export & Import — Evaboot
+**What:** Evaboot Chrome extension adds an "Extract with Evaboot" button inside Sales Navigator. Extracts and cleans Sales Navigator search results into a structured CSV, including emails at ~60–70% match rate.  
+**Why:** Preserves LinkedIn behavioral signals at the list level (OpenToWork badge, "Posted 30 days" filter). Ban-safe — uses Kelsey's own LinkedIn session, respects LinkedIn's 2,500 lead/day cap. Cheaper than the fully-manual workflow when volume is consistent at 15–20/day.  
+**Cost:** ~$29–39/mo (Entry/Starter tier — sufficient for 400–500 leads/month at current volume. $79/mo Growth tier is not needed until 50+/day sends.)  
+**Setup status:** ⏳ Not yet purchased — activate when ready to launch (see §Lead Sourcing Decision below)
 
 **How it works:**
-1. In Sales Navigator: filter leads → Export to CSV (native feature, no third-party tool)
-2. In Waypoint admin panel: navigate to lead import → paste/upload via `ImportLeadForm.tsx`
-3. Leads enter database as `RAW` status and trigger `leadHunterProcess` via Inngest event
+1. In Sales Navigator: run filtered search (seniority, company size, OpenToWork, Posted 30d, function)
+2. Click "Extract with Evaboot" → Evaboot exports and cleans the list, deduplicates, and finds emails
+3. Download CSV → upload via `ImportLeadForm.tsx`
+4. Leads enter database as `RAW` status and trigger `leadHunterProcess` via Inngest event
 
-**Scale trigger:** When sends exceed 50/day, evaluate Evaboot ($9–49/mo) for automated Sales Nav export + email finding bundled.
+**Email match rate:** ~60–70%. For 500 Sales Nav leads pulled/month → ~300–350 usable email addresses → well above 20 sends/day × 22 days = 440 sends/month needed.
+
+**What Evaboot preserves that manual export cannot:**
+- The exact Sales Nav filter set is encoded in the export — you can re-run the same search reproducibly
+- Evaboot flags and excludes high-bounce-risk emails during extraction (freshness scoring)
 
 **Do NOT use:**
 - Apify `curious_coder` actor — community actor with ToS risk, not purchased, don't start
@@ -74,45 +81,62 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → REPLIED status
 
 ---
 
-### 3. Instantly SuperSearch (Email Finding / Enrichment)
-**What:** Built-in B2B lead database and email enrichment tool inside Instantly.ai.  
-**Why:** Already included in Instantly Growth plan (no extra subscription), waterfall enrichment across 5+ providers for higher match rates (~70%) vs Hunter.io alone (~56%).  
-**Cost:** $47/mo Growth Credits tier (1,500–2,000 credits)  
-**Setup status:** ✅ Purchased March 2026 — Growth Credits active
+### 3. Apollo.io (Email Enrichment — Primary)
+**What:** B2B contact database with 275M+ contacts, used as the programmatic email enrichment layer.  
+**Why:** Highest email accuracy of the three options evaluated (independent tests: ~85–90% vs SuperSearch's lower accuracy and Hunter.io free tier's 25/mo cap). Apollo replaces both Hunter.io and SuperSearch as the enrichment engine. Has a backup discovery DB in case a Evaboot miss needs a fallback lookup.  
+**Cost:** $49/mo Basic plan (2,500 credits/mo — covers 440 lookups/mo with strong buffer)  
+**Setup status:** ⏳ Not yet purchased — activate when ready to launch
 
-**How it works:**
-- After CSV import, leads have LinkedIn data but no verified email
-- SuperSearch finds work email by name + company (1 credit per lookup)
-- At 20 leads/day × 22 working days = ~440 lookups/mo → ~630 credits needed (70% hit rate)
-- Growth Credits (1,500) provides comfortable buffer
+**How it works in the pipeline:**
+- Evaboot extraction produces ~65% email match rate on Sales Nav leads
+- For the ~35% with no email from Evaboot: `leadHunterProcess` calls the Apollo enrichment API by name + company domain → returns verified email + confidence score
+- Leads with verified emails pass the 70-point gate; unverified leads are capped and suppressed
 
-**⚠️ Important — SuperSearch has no public API:**  
-SuperSearch is a **dashboard-only** tool inside Instantly. There is no API endpoint to call it programmatically. This means the enrichment flow works as follows:
-
-1. After CSV import, leads are in the DB with `RAW` status and a guess-format email
-2. **Manual step:** Go to Instantly dashboard → SuperSearch → bulk-enrich by name + company → export verified emails
-3. Re-import verified emails into the Lead table (or update via admin panel)
-4. Only then does `leadHunterProcess` promote leads through the score gate
-
-**Current code behavior (as of March 2026):**  
-The `leadHunterProcess` in `functions.ts` calls **Hunter.io** (`HUNTER_API_KEY`) as its programmatic email-finding step. **Key is now set in Vercel (March 2026)** — the enrichment block is active. Hunter.io takes first name + last name + company domain → returns a verified email confidence score. Leads with verified emails pass the 70-point gate; unverified leads are capped at 60 and suppressed.
-
-**To do after purchasing SuperSearch credits:**
-- [ ] Buy Growth Credits tier ($47/mo) in Instantly dashboard
-- [ ] Enrich leads via SuperSearch UI before importing to DB via admin panel
-- [ ] Update `functions.ts` line 121:
+**Code change required — swap Hunter.io for Apollo:**
 ```typescript
-// Change from:
+// In leadHunterProcess (functions.ts) — replace Hunter.io block with Apollo People Enrichment API:
+// GET https://api.apollo.io/v1/people/match?first_name=...&last_name=...&domain=...
+// Returns: email, email_status ("verified" | "guessed" | "unavailable")
+// Map email_status === "verified" → confidence 95, "guessed" → confidence 60
+```
+
+**Gate thresholds to update in `functions.ts`:**
+```typescript
+// Change from Hunter.io confidence < 60 gate:
 if (!foundEmail || emailConfidence < 60) {
-// Change to:
-if (!foundEmail || emailConfidence < 90) {  // ← raise gate from 60 to 90
+// Change to Apollo confidence gate:
+if (!foundEmail || emailConfidence < 90) {  // "verified" = 95, passes; "guessed" = 60, blocked
 ```
-- [ ] Update line 126:
 ```typescript
-score = Math.min(score, 50); // ← lower cap from 60 to 50 (unverified email cannot clear 70-point gate)
+score = Math.min(score, 50); // unverified email cannot clear 70-point gate
 ```
 
-**Env var:** `HUNTER_API_KEY` — ✅ Set in Vercel (March 2026, free tier). Upgrade to Starter ($49/mo, 500/mo) before first production run at 440 leads/month.
+**Env vars to add:**
+```
+APOLLO_API_KEY=    ⏳ not yet set — add to Vercel before launch
+```
+
+**Retire these when Apollo is live:**
+- `HUNTER_API_KEY` — superseded by Apollo (can leave in Vercel as inert; remove from enrichment code path)
+- SuperSearch enrichment manual step — no longer needed as primary enrichment
+
+---
+
+### 3b. Instantly SuperSearch (Sending Layer — Backup Only)
+**What:** Built-in B2B contact database inside Instantly.ai. Already paid for (Growth Credits tier).  
+**Role in current stack:** Demoted to backup/convenience use only — NOT the primary enrichment engine.  
+**Cost:** $47/mo Growth Credits tier (1,500 credits) — already active  
+**Setup status:** ✅ Purchased March 2026 — Growth Credits active. Role changed to backup.
+
+**Why SuperSearch is backup, not primary:**  
+Multiple independent reviews flag data accuracy concerns (outdated emails, wrong titles, elevated bounce rates for executive-level contacts). A long-form review aggregating 100+ user reports rates SuperSearch lead quality ~3/5 and recommends pairing with a dedicated provider (Apollo/ZoomInfo) when data accuracy is critical. For a 15–20/day precision executive program, even a modest increase in bounce rate is a meaningful deliverability risk.
+
+**Remaining valid uses for SuperSearch credits:**
+- Quick segment tests (new geography, new function — before committing a full Evaboot run)
+- Occasional gap-fill when Apollo returns `unavailable` and you need a second attempt
+- Discovery of low-risk supplemental lists (broad ICP, not primary executive targets)
+
+**SuperSearch has no public API** — dashboard-only. Any enrichment via SuperSearch remains a manual step.
 
 ---
 
@@ -416,6 +440,46 @@ Verification TXT records that were requested but cannot be added:
 
 ---
 
+## Lead Sourcing Decision — March 2026
+
+> Documented after tri-model LLM research synthesis (ChatGPT, Claude, Perplexity). All three models reached the same conclusion independently.
+
+### The three paths evaluated
+
+| Path | Stack | Monthly cost | Verdict |
+|---|---|---|---|
+| **A — Apollo only** | Apollo $49 + Instantly $47 (+ Sales Nav $80 if kept) | ~$176–196/mo | Loses LinkedIn behavioral signals for list-building. Not aligned with exec ICP requiring timing precision. |
+| **B — Evaboot + Instantly SuperSearch** | Sales Nav $80 + Evaboot $79 + Instantly $47 | ~$206/mo | Keeps signals but uses SuperSearch (weak enrichment). Highest cost for weakest enrichment layer. |
+| **C — SuperSearch only** | Instantly $47 | ~$47/mo | No behavioral signals, lowest data quality. Wrong for executive precision ICP. |
+| **✅ Modified B (chosen)** | Sales Nav $80 + Evaboot ~$35 + Apollo $49 + Instantly $47 | ~$211/mo | Best targeting precision + best email accuracy + behavioral signals preserved. |
+
+### Why modified Path B
+
+**1. Behavioral signals are not optional for this ICP.**  
+LinkedIn's own data: OpenToWork badge = 3× higher positive response rate vs. non-badge profiles. "Posted in last 30 days" filter is a live intent signal unavailable in any static database. At 15–20 emails/day, a 3× response rate lift per lead is the whole ballgame — this is not a marginal gain.
+
+**2. Database quality ranking is unambiguous.**  
+All three models independently ranked: Sales Navigator > Apollo > Instantly SuperSearch. The gap widens at senior levels (VP/Director/CXO) because static databases lag job changes; LinkedIn reflects them in near-real time (users update their own profiles).
+
+**3. Apollo beats SuperSearch for enrichment.**  
+SuperSearch is rated ~3/5 for data accuracy in independent reviews. Apollo achieves ~85–90% email accuracy with a 7-step verification process + waterfall enrichment (rolled out 2025). Apollo at $49/mo is actually cheaper than the $79/mo Evaboot+SuperSearch combo originally priced for Path B.
+
+**4. Evaboot lower tier is sufficient.**  
+Evaboot pricing is credit-based. At 400–500 leads/month (15–20/day), the Entry/Starter tier (~$29–39/mo) covers the volume. The $79/mo Growth tier is for 50+/day operations.
+
+**5. Cost delta from current stack:** ~+$84/mo net (Evaboot ~$35 + Apollo $49, minus Hunter.io upgrade that is no longer needed). One booked consultation exceeds 12 months of this cost.
+
+### Actions required to activate
+- [ ] Purchase Evaboot Entry/Starter plan (~$29–39/mo based on credit count needed for 500 leads/mo)
+- [ ] Install Evaboot Chrome extension → verify "Extract with Evaboot" button appears in Sales Navigator
+- [ ] Purchase Apollo Basic plan ($49/mo) → get `APOLLO_API_KEY`
+- [ ] Add `APOLLO_API_KEY` to Vercel env vars
+- [ ] Update `leadHunterProcess` in `functions.ts` — replace Hunter.io enrichment block with Apollo People Enrichment API (see §3 for code spec)
+- [ ] Raise confidence gate from 60 → 90 and update score cap (see §3)
+- [ ] Cancel Hunter.io free tier (or leave inert — no cost either way)
+
+---
+
 ## Pre-Launch Checklist
 
 Complete every item below before sending the first cold email.
@@ -461,8 +525,6 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 
 | Tool | Trigger to buy | Purpose | Cost |
 |---|---|---|
-| Evaboot | Sends > 50/day | Automated Sales Nav export + email finding bundled | $9–49/mo |
-| Apollo.io | Need enrichment scale | Enrichment + sequences in one tool | $49/mo |
 | Clay.com | Sends > 50/day + 1,100+ leads/mo | Waterfall enrichment, intent signals, automation | Variable |
 | LeadIQ | After WARN workflow established | Job change alerts for executives 30–45 days post-WARN | Paid |
 | GlockApps | Sends > 50/day | Inbox placement testing across all major providers | $80/mo |
@@ -490,13 +552,14 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | Tool | Decision | Reason |
 |---|---|---|
 | **Bombora** | ❌ Skip permanently | $30K–$100K/yr; account-level SaaS intent only; wrong buyer type |
-| **Apify** | ❌ Skip permanently | Never purchased; ToS risk; native CSV export is safer |
-| **Hunter.io** | ✅ Active (free tier) | Key set in Vercel March 2026. Free: 25/mo — upgrade to Starter ($49/mo, 500/mo) before production run. SuperSearch remains manual fallback for misses. |
+| **Apify** | ❌ Skip permanently | Never purchased; ToS risk; Evaboot is the safe extraction path |
+| **Hunter.io** | ⛔ Superseded by Apollo | Key set in Vercel but code path will be replaced by Apollo enrichment API. Do not upgrade. |
 | **HubSpot CRM** | ❌ Skip | Prisma DB is the CRM; duplicate data problem |
 | **EmailBison** | ❌ Skip | Grok-only recommendation, no consensus from other models |
 | **lemlist** | ❌ Skip | Already have Instantly for multi-channel; no second platform |
 | **Clay** | ⏳ Defer to Phase 2 | Enrichment waterfall across 50+ sources; minimum useful plan $149/mo. Overkill at 15/day sends. Re-evaluate when volume scales past 50+ sends/day and email find rate becomes measurable bottleneck. |
-| **Apollo (Search)** | ✅ Available when needed | Free People Search API (no credits consumed). Can supplement Apify as backup discovery source. Does not return emails — enrichment endpoint required for that. |
+| **Apollo.io** | ✅ Active — enrichment engine (March 2026 decision) | Basic plan ($49/mo, 2,500 credits). Primary programmatic email enrichment, replacing Hunter.io. Independent accuracy tests: ~85–90% on verified emails. Also serves as backup discovery DB. See §3. |
+| **Evaboot** | ✅ Active — extraction layer (March 2026 decision) | Entry/Starter tier ~$29–39/mo. Chrome extension extracts Sales Nav search results into clean CSV with emails (~65% match). Ban-safe. Preserves LinkedIn behavioral signals. See §2. |
 | **Slack** | ✅ Active — March 2026 | Incoming Webhook wired into `notify-human` step as instant push alert alongside Resend email. Channel: `#waypoint-hot-replies`. |
 | **Go High Level (GHL)** | ⏸ Removed — contingency only | All-in-one platform (CRM, email, SMS, funnels, booking). Fully duplicates the current stack — custom CRM, Instantly, TidyCal, Inngest, n8n all do their respective jobs better. Only SMS adds net-new capability, but cold SMS to VP/Director ICP carries TCPA risk and brand risk at this stage. **Reactivate if:** the custom Waypoint CRM cannot scale to pipeline needs and a CRM replacement is required — GHL would be the all-in-one migration path. |
 
@@ -635,7 +698,8 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | Webhook auth (query param) |
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
-| `HUNTER_API_KEY` | ✅ Set in Vercel | Free tier (25/mo) — upgrade to Starter ($49/mo) before first production run |
+| `HUNTER_API_KEY` | ⛔ Inert — leave set, do not upgrade | Superseded by Apollo enrichment API (March 2026 decision) |
+| `APOLLO_API_KEY` | ⏳ Not yet set | Primary email enrichment — add to Vercel before launch (Apollo Basic plan) |
 | `SLACK_WEBHOOK_URL` | ✅ Set in Vercel + local | Incoming Webhook → `#waypoint-hot-replies` — HITL push notifications |
 | `BEEHIIV_API_KEY` | ✅ Set in Vercel + local | Phase 2 — newsletter subscriber API |
 | `BEEHIIV_PUBLICATION_ID` | ✅ Set in Vercel + local | `pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d` |

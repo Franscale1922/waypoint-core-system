@@ -85,50 +85,71 @@ export const leadHunterProcess = inngest.createFunction(
             // Cap at 100
             if (score > 100) score = 100;
 
-            // ── Email discovery via Hunter.io ──────────────────────────────────
-            // Uses the Email Finder endpoint: GET /v2/email-finder?domain=&first_name=&last_name=
+            // ── Email discovery via Apollo People Enrichment API ───────────────
+            // POST /api/v1/people/match — pass first_name, last_name, domain
+            // Returns person.email + person.email_status ("verified" | "likely" | "guessed" | null)
+            // email_status confidence mapping:
+            //   "verified" → 95  (clears the 90-point gate — include in pipeline)
+            //   "likely"   → 75  (does not clear gate — suppressed)
+            //   "guessed"  → 55  (does not clear gate — suppressed)
+            //   null/other → 0   (no match — fall through to last-resort guess)
             let foundEmail: string | null = lead.email || null;
-            let emailConfidence = 100; // If email already known, treat as confident
+            let emailConfidence = 100; // If email already provided (from Evaboot), treat as confident
 
             if (!foundEmail) {
-                const hunterKey = process.env.HUNTER_API_KEY;
-                if (hunterKey && lead.company) {
+                const apolloKey = process.env.APOLLO_API_KEY;
+                if (apolloKey && lead.company) {
                     try {
                         const nameParts = lead.name.trim().split(/\s+/);
                         const firstName = nameParts[0] ?? "";
                         const lastName = nameParts.slice(1).join(" ") ?? "";
 
-                        // Derive domain from company name (Hunter also accepts company name)
+                        // Derive domain from company name — best-effort, Apollo normalises internally
                         const companySlug = lead.company
                             .toLowerCase()
                             .replace(/\s+/g, "")
                             .replace(/[^a-z0-9]/g, "");
-                        const domain = `${companySlug}.com`; // best-effort; Hunter normalizes
+                        const domain = `${companySlug}.com`;
 
-                        const hunterUrl = new URL("https://api.hunter.io/v2/email-finder");
-                        hunterUrl.searchParams.set("domain", domain);
-                        hunterUrl.searchParams.set("first_name", firstName);
-                        hunterUrl.searchParams.set("last_name", lastName);
-                        hunterUrl.searchParams.set("api_key", hunterKey);
+                        const res = await fetch("https://api.apollo.io/api/v1/people/match", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Cache-Control": "no-cache",
+                                "X-Api-Key": apolloKey,
+                            },
+                            body: JSON.stringify({
+                                first_name: firstName,
+                                last_name: lastName,
+                                domain,
+                                reveal_personal_emails: false, // work emails only
+                            }),
+                        });
 
-                        const res = await fetch(hunterUrl.toString());
                         if (res.ok) {
                             const json = await res.json();
-                            if (json?.data?.email) {
-                                foundEmail = json.data.email;
-                                emailConfidence = json.data.confidence ?? 0;
+                            const person = json?.person;
+                            if (person?.email) {
+                                foundEmail = person.email;
+                                // Map Apollo's qualitative status to a numeric confidence
+                                const statusMap: Record<string, number> = {
+                                    verified: 95,
+                                    likely: 75,
+                                    guessed: 55,
+                                };
+                                emailConfidence = statusMap[person.email_status ?? ""] ?? 0;
                             }
                         }
                     } catch (_err) {
-                        // Hunter failed — fall through to guess below
+                        // Apollo failed — fall through to last-resort guess below
                     }
                 }
 
-                // Hard suppression: if Hunter found nothing or confidence is too low, suppress.
-                // Gate raised to 90 now that SuperSearch pre-verifies emails before DB import (March 2026).
+                // Hard suppression gate: only Apollo "verified" emails (confidence 95) clear the 90 threshold.
+                // "likely" (75) and "guessed" (55) are suppressed — not reliable enough for executive outreach.
                 if (!foundEmail || emailConfidence < 90) {
                     if (!lead.email) {
-                        // Last resort guess — will be verified by Instantly's own validation
+                        // Last resort guess — Instantly's own validation will catch hard bounces
                         const nameParts = lead.name.trim().split(/\s+/);
                         foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
                         score = Math.min(score, 50); // Cap at 50 — unverified guess cannot clear the 70-point gate
