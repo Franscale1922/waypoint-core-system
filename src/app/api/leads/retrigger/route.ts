@@ -1,8 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+    // Simple secret-header guard — set RETRIGGER_SECRET in Vercel env vars
+    const secret = process.env.RETRIGGER_SECRET;
+    if (secret && req.headers.get("x-retrigger-secret") !== secret) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
     try {
         // Fetch all leads still sitting at RAW status
         const rawLeads = await prisma.lead.findMany({

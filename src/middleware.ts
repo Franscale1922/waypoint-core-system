@@ -7,7 +7,8 @@ export default auth((req) => {
 
   // API routes return 401 JSON — they can't redirect to a login page
   const isProtectedApi =
-    pathname.startsWith("/api/leads") || pathname.startsWith("/api/settings");
+    (pathname.startsWith("/api/leads") && !pathname.startsWith("/api/leads/retrigger")) ||
+    pathname.startsWith("/api/settings");
 
   if (!isLoggedIn) {
     if (isProtectedApi) {
@@ -27,7 +28,7 @@ export const config = {
   // IMPORTANT: exclude /admin/login and /api/auth/* or they cause redirect loops
   matcher: [
     "/admin/((?!login$).*)", // all /admin/* EXCEPT /admin/login
-    "/api/leads/:path*",
+    "/api/leads/((?!retrigger$).*)", // all /api/leads/* EXCEPT /api/leads/retrigger
     "/api/settings/:path*",
   ],
 };
