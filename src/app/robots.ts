@@ -6,9 +6,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/privacy", "/terms"],
+        disallow: ["/api/"],
       },
     ],
-    sitemap: "https://waypointfranchise.com/sitemap.xml",
+    sitemap: "https://www.waypointfranchise.com/sitemap.xml",
   };
 }
