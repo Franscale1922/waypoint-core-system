@@ -551,11 +551,21 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | B | Last Name | Clay `Last Name` |
 | C | LinkedIn URL | Clay `LinkedIn URL (Slash)` |
 | D | Email | Clay `work email` |
-| E | Title | Clay `Title` |
-| F | Company | Clay `Company` |
+| E | Title | Clay `Job Title` |
+| F | Company | Clay `Company Name` |
 | G | Country | Clay `Country` |
 | H | Recent Post Summary | Clay `Recent Post Summary` |
 | I | Company News Event | Clay `Company News` |
+| J | Tenure Years | Clay `Tenure Years` (formula column — see below) |
+
+**Tenure Years formula column in Clay:**
+Add a Formula column named `Tenure Years`. The formula calculates years in the current role from the LinkedIn profile position start date:
+```
+=IF({{Person LinkedIn Profile.positions[0].startedOn.year}},
+  YEAR(TODAY()) - {{Person LinkedIn Profile.positions[0].startedOn.year}},
+  "")
+```
+The exact column reference path depends on which Clay LinkedIn enrichment is active. Verify by clicking into a position field in an existing row to see the reference path. Output is a whole number (e.g. `7`). Scoring: ≥8 years = +20 pts, ≥5 years = +10 pts.
 
 **Env var:**
 ```
