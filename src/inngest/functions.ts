@@ -26,21 +26,85 @@ export const leadHunterProcess = inngest.createFunction(
             // ── Base score ────────────────────────────────────────────────────
             let score = 40;
 
-            // ── Title / Seniority (up to +18) ─────────────────────────────────
-            // C-suite trimmed: equity/prestige reduces burnout-readiness vs Director/VP.
-            // Director is the sweet spot — enough stature, enough grind, enough golden handcuffs.
+            // ── Title / Seniority (up to +20) ──────────────────────────────────
+            // Four-stage pipeline:
+            //   1. Franchise ICP — score first, before any suppression check
+            //   2. Hard suppress non-franchise owners, founders, freelancers
+            //   3. Regex fast path for corporate seniority tiers
+            //   4. GPT-4o-mini fallback for any title that scored 0 on regex
             const title = (lead.title || "").toLowerCase();
-            if (/\b(ceo|coo|cfo|cto|cmo|chro|chief)\b/i.test(title)) {
-                score += 15;
-            } else if (/\bsvp\b|\bevp\b|\bvp\b|vice president/i.test(title)) {
-                score += 18;
-            } else if (/\bdirector\b/i.test(title)) {
-                score += 15;
-            } else if (/\bsenior manager\b|\bprincipal\b/i.test(title)) {
-                score += 12;
-            } else if (/\bmanager\b/i.test(title)) {
-                score += 5;
+            let titleBonus = 0;
+            let titleMatched = false;
+
+            // ── Stage 1: Franchise ICP (multi-unit expansion candidates) ──────
+            // These leads have already proven franchise interest — score them high.
+            // Multi-unit/multi-brand operators are the most qualified targets.
+            if (/\bmulti[.\s-]?unit\b|\bmulti[.\s-]?brand\b/i.test(title)) {
+                titleBonus = 20; titleMatched = true; // Multi-unit operator — top franchise ICP
+            } else if (/\bfranchise\s*(owner|operator|partner)\b|\bfranchisee\b/i.test(title)) {
+                titleBonus = 18; titleMatched = true; // Single-unit — multi-unit expansion candidate
             }
+
+            // ── Stage 2: Hard suppression (non-franchise owners, founders) ────
+            if (!titleMatched) {
+                if (/\b(founder|co-founder|business owner|co-owner)\b/i.test(title) ||
+                    /\bfreelance\b|\bindependent consultant\b/i.test(title)) {
+                    return { email: null, rawScore: 0 };
+                }
+            }
+
+            // ── Stage 3: Regex fast path (corporate seniority tiers) ──────────
+            if (!titleMatched) {
+                if (/\b(ceo|coo|cfo|cto|cmo|chro|chief)\b/i.test(title)) {
+                    titleBonus = 15; titleMatched = true; // C-suite
+                } else if (/\bsvp\b|\bevp\b|\brvp\b|\bvp\b|vice president|managing director/i.test(title)) {
+                    titleBonus = 18; titleMatched = true; // VP / Managing Director tier
+                } else if (/\bavp\b|assistant vice president/i.test(title)) {
+                    titleBonus = 12; titleMatched = true; // AVP — financial services / banking
+                } else if (/\bdirector\b|\bhead of\b|general manager/i.test(title) ||
+                           /\bgm\b.*(sales|operations|region|district|market)/i.test(title)) {
+                    titleBonus = 15; titleMatched = true; // Director-equivalents
+                } else if (/\bpresident\b|\bmanaging partner\b|\bpartner\b|\bprincipal\b|\bsenior manager\b/i.test(title)) {
+                    titleBonus = 12; titleMatched = true; // President (division), Partner, Sr. Manager
+                } else if (/\bmanager\b/i.test(title)) {
+                    titleBonus = 5; titleMatched = true;  // Catch-all: any manager variant
+                }
+            }
+
+            // ── Stage 4: LLM fallback for unrecognised titles ─────────────────
+            // Only fires when regex matched nothing (titleMatched = false).
+            // Uses gpt-4o-mini — cheap, fast, semantically robust.
+            // Handles: "Exec VP", "Country Lead", "Practice Director", etc.
+            if (!titleMatched && title.length > 2) {
+                try {
+                    const settings = await prisma.systemSettings.findUnique({ where: { id: "singleton" } });
+                    const apiKey = settings?.openAiApiKey || process.env.OPENAI_API_KEY;
+                    if (apiKey) {
+                        const { createOpenAI } = require("@ai-sdk/openai");
+                        const miniModel = createOpenAI({ apiKey })("gpt-4o-mini");
+                        const { text } = await generateText({
+                            model: miniModel,
+                            system: `Classify a LinkedIn job title into one of these seniority tiers.
+Reply with ONLY the numeric tier — nothing else.
+20 = Multi-unit or multi-brand franchise operator
+18 = VP-tier: any Vice President variant (Executive VP, EVP, Exec VP, SVP, RVP, AVP-senior, Managing Director, MD)
+15 = Director-tier: any Director, Head of [dept], General Manager, GM (with context), Country/Market Lead
+12 = Senior Manager-tier: Senior Manager, Principal, Managing Partner, Partner, President of a division/region
+5  = Manager-tier: any manager not covered above (Regional Manager, Account Manager, etc.)
+0  = Junior, irrelevant, or self-employed (analyst, coordinator, associate, intern, student, freelancer, owner, founder)`,
+                            prompt: `Job title: "${lead.title}"\nTier:`,
+                        });
+                        const parsed = parseInt(text.trim().split(/\s/)[0], 10);
+                        if ([20, 18, 15, 12, 5, 0].includes(parsed)) {
+                            titleBonus = parsed;
+                        }
+                    }
+                } catch {
+                    // LLM fallback failed silently — title scores 0 bonus, pipeline continues
+                }
+            }
+
+            score += titleBonus;
 
             // ── Career Trigger Signal (up to +20) ─────────────────────────────
             // FIX: promotion/new role signals the WRONG direction — someone who just started
@@ -110,6 +174,8 @@ export const leadHunterProcess = inngest.createFunction(
                 score += 20; // Core ICP — 8+ years = high burnout-readiness
             } else if (tenureYears && tenureYears >= 5) {
                 score += 10; // Solid tenure — worth pursuing
+            } else if (tenureYears && tenureYears >= 3) {
+                score += 5;  // Building toward plateau — mild early signal
             }
 
             // Cap at 100
