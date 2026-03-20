@@ -607,24 +607,16 @@ function postRow(sheet, row, secret) {
   };
 
   const body = JSON.stringify(payload);
-  const sig  = computeHmac(secret, body);
   const options = {
     method: "post",
     contentType: "application/json",
     payload: body,
-    headers: { "x-clay-secret": sig },
+    headers: { "x-clay-secret": secret },  // raw secret — webhook uses direct string comparison
     muteHttpExceptions: true,
   };
 
   const res = UrlFetchApp.fetch(WEBHOOK_URL, options);
   Logger.log(`Row ${row} → ${res.getResponseCode()} ${res.getContentText()}`);
-}
-
-function computeHmac(secret, message) {
-  const key = Utilities.newBlob(secret).getBytes();
-  const msg = Utilities.newBlob(message).getBytes();
-  const raw = Utilities.computeHmacSha256Signature(msg, key);
-  return raw.map(b => ("0" + (b & 0xff).toString(16)).slice(-2)).join("");
 }
 ```
 
