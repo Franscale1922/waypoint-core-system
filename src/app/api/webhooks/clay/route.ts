@@ -69,9 +69,27 @@ export async function POST(req: NextRequest) {
         );
     }
 
+    // ── Normalise LinkedIn URL and try multiple variants ───────────────────────
+    // Clay's "LinkedIn URL (Slash)" column adds a trailing slash; Evaboot may not.
+    // Some exports use linkedin.com, others www.linkedin.com. Try all variants.
+    function normalizeLinkedIn(url: string) {
+        return url
+            .trim()
+            .toLowerCase()
+            .replace(/\/+$/, "")                                      // strip trailing slash(es)
+            .replace(/^https?:\/\/(www\.)?linkedin\.com/, "https://www.linkedin.com"); // force www
+    }
+    const normalized = normalizeLinkedIn(linkedinUrl);
+    const variants = Array.from(new Set([
+        normalized,           // https://www.linkedin.com/in/username
+        normalized + "/",     // https://www.linkedin.com/in/username/
+        normalized.replace("https://www.linkedin.com", "https://linkedin.com"),
+        normalized.replace("https://www.linkedin.com", "https://linkedin.com") + "/",
+    ]));
+
     // ── Match lead by LinkedIn URL ─────────────────────────────────────────────
     const lead = await prisma.lead.findFirst({
-        where: { linkedinUrl: linkedinUrl.trim() },
+        where: { linkedinUrl: { in: variants } },
         orderBy: { updatedAt: "desc" },
     });
 
