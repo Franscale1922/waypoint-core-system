@@ -805,7 +805,7 @@ export const tidycalBookingSync = inngest.createFunction(
             // 2-day lookback handles timezone drift and missed runs
             const twoDaysAgo = new Date();
             twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-            const startsAt = twoDaysAgo.toISOString().split("T")[0]; // YYYY-MM-DD
+            const startsAt = twoDaysAgo.toISOString().replace(/\.\d{3}Z$/, "Z"); // Full ISO 8601: 2026-03-18T00:00:00Z (TidyCal rejects date-only)
 
             const res = await fetch(
                 `https://tidycal.com/api/bookings?starts_at=${startsAt}`,
