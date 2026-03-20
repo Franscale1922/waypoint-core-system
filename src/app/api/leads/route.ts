@@ -31,7 +31,9 @@ export async function POST(req: Request) {
                     title: leadData.title,
                     company: leadData.company,
                     country: leadData.country,
-                    // ── Personalization signals ─────────────────────────────
+                    // Only overwrite email if we have one and the lead doesn't yet
+                    ...(leadData.email && { email: leadData.email.toLowerCase().trim() }),
+                    // ── Personalization signals ──────────────────────────────
                     companyNewsEvent: leadData.companyNewsEvent,         // Priority A
                     recentPostSummary: leadData.recentPostSummary,       // Priority B
                     careerTrigger: leadData.careerTrigger,
@@ -44,10 +46,11 @@ export async function POST(req: Request) {
                 create: {
                     name: leadData.name,
                     linkedinUrl: leadData.linkedinUrl,
+                    email: leadData.email ? leadData.email.toLowerCase().trim() : undefined,
                     title: leadData.title,
                     company: leadData.company,
                     country: leadData.country,
-                    // ── Personalization signals ─────────────────────────────
+                    // ── Personalization signals ──────────────────────────────
                     companyNewsEvent: leadData.companyNewsEvent,         // Priority A
                     recentPostSummary: leadData.recentPostSummary,       // Priority B
                     careerTrigger: leadData.careerTrigger,
@@ -56,17 +59,17 @@ export async function POST(req: Request) {
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
                     placeOrPersonalDetail: leadData.placeOrPersonalDetail,
-                    status: "RAW"
+                    // Hold at PENDING_CLAY — Clay enrichment must arrive before scoring.
+                    // The Clay webhook (/api/webhooks/clay) triggers the pipeline once
+                    // enrichment signals are received. A fallback cron (pendingClayFallback)
+                    // advances leads after 24h if Clay never sends enrichment.
+                    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+                    status: "PENDING_CLAY",
                 }
             });
 
-            // trigger the main orchestration workflow for this lead if it hasn't been sequenced
-            if (lead.status === "RAW") {
-                await inngest.send({
-                    name: "workflow/lead.hunter.start",
-                    data: { leadId: lead.id }
-                });
-            }
+            // Do NOT trigger Inngest here — scoring waits for Clay enrichment.
+            // Pipeline entry point is now: Clay webhook → leadHunterProcess.
 
             results.push({ success: true, id: lead.id });
         }

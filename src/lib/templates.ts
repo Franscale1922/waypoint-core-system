@@ -189,8 +189,8 @@ I run a one-hour exercise that maps three paths on one page: stay the course, ma
 Kelsey
 
 ### Template G – Lead Magnet Offer (soft CTA — works with any signal, especially Priority C or low-confidence B)
-// Use this when the signal context is weaker or when a lower-commitment first touch makes sense.
-// Offers a free resource instead of a conversation ask. Once they say yes, follow up with personalized context.
+> Use when signal context is weaker or a lower-commitment first touch makes sense.
+> Offers a free resource instead of a conversation ask. Follow up with personalized context once they say yes.
 Hi {{first_name}},
 {{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You" — based on the patterns I keep seeing across the executives I work with. Want me to send you a copy?
 Kelsey

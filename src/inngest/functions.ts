@@ -600,6 +600,67 @@ Write Kelsey's follow-up reply.`
     }
 );
 
+// ─── PENDING_CLAY Fallback Cron ────────────────────────────────────────────────
+// Leads imported via CSV sit in PENDING_CLAY until Clay enrichment arrives via
+// /api/webhooks/clay. This cron is the safety net: if Clay hasn't enriched a
+// lead within 24 hours, it advances to RAW and scores without enrichment signals
+// (Priority C ICP fallback email). Ensures no lead is stuck in PENDING_CLAY forever.
+//
+// Fires Mon–Fri at 7 AM Mountain Time (13:00 UTC) — before the 8 AM warmup scheduler.
+
+export const pendingClayFallback = inngest.createFunction(
+    { id: "pending-clay-fallback", retries: 1 },
+    { cron: "0 13 * * 1-5" }, // 7 AM Mountain Time (UTC-6), Mon–Fri
+    async ({ step }) => {
+        const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000); // 24 hours ago
+
+        // Find leads stuck in PENDING_CLAY for more than 24 hours
+        const stuckLeads = await step.run("find-stuck-pending-clay", async () => {
+            return prisma.lead.findMany({
+                where: {
+                    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+                    status: "PENDING_CLAY",
+                    createdAt: { lt: cutoff },
+                },
+                select: { id: true, name: true, createdAt: true },
+            });
+        });
+
+        if (stuckLeads.length === 0) {
+            return { status: "No leads stuck in PENDING_CLAY", checked: new Date().toISOString() };
+        }
+
+        // Advance stuck leads to RAW so they can score without enrichment
+        await step.run("advance-to-raw", async () => {
+            await prisma.lead.updateMany({
+                where: {
+                    id: { in: stuckLeads.map(l => l.id) },
+                },
+                // @ts-ignore — PENDING_CLAY in schema; resolves after Prisma client regenerates
+                data: { status: "RAW" },
+            });
+        });
+
+        // Fire scoring pipeline for each lead
+        const BATCH_SIZE = 100;
+        for (let i = 0; i < stuckLeads.length; i += BATCH_SIZE) {
+            const batch = stuckLeads.slice(i, i + BATCH_SIZE);
+            await step.sendEvent(`fire-fallback-batch-${i}`, batch.map(lead => ({
+                name: "workflow/lead.hunter.start" as const,
+                data: { leadId: lead.id },
+            })));
+        }
+
+        console.log(`[pending-clay-fallback] Advanced ${stuckLeads.length} leads from PENDING_CLAY → RAW`);
+
+        return {
+            status: "Advanced",
+            count: stuckLeads.length,
+            leads: stuckLeads.map(l => ({ id: l.id, name: l.name, age: l.createdAt })),
+        };
+    }
+);
+
 // ─── Daily Warm-up Scheduler ──────────────────────────────────────────────────
 // Runs each morning, picks top-scored SEQUENCED leads, pushes them to Instantly.
 // Volume is controlled by SystemSettings.maxSendsPerDay (admin-panel configurable).

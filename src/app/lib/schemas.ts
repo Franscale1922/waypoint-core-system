@@ -5,6 +5,7 @@ import { z } from "zod";
 export const LeadSchema = z.object({
   name: z.string().min(1, "Name is required"),
   linkedinUrl: z.string().url("Must be a valid URL"),
+  email: z.string().email().optional(),              // Captured from Evaboot CSV when available
   title: z.string().optional(),
   company: z.string().optional(),
   country: z.string().optional(),

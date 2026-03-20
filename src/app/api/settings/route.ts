@@ -11,7 +11,7 @@ export async function GET() {
     const settings = await prisma.systemSettings.upsert({
         where: { id: "singleton" },
         update: {},
-        create: { maxSendsPerDay: 50 }
+        create: { maxSendsPerDay: 15 } // Warmup phase default — raise to 30–50 after 4+ weeks clean metrics
     });
 
     // ⚠️  Never return raw API keys — send masked values only

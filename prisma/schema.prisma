@@ -9,6 +9,7 @@ datasource db {
 }
 
 enum LeadStatus {
+  PENDING_CLAY  // Waiting for Clay enrichment before scoring. Set on CSV import.
   RAW
   ENRICHED
   SEQUENCED

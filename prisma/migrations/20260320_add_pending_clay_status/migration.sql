@@ -1,0 +1,2 @@
+-- AddValue
+ALTER TYPE "LeadStatus" ADD VALUE 'PENDING_CLAY';

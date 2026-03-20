@@ -114,18 +114,23 @@ export async function POST(req: NextRequest) {
         updateData.yearsInCurrentRole = tenure;
     }
 
-    // ── Update lead and reset to RAW so the pipeline re-runs ──────────────────
+    // ── Update lead and advance through the pipeline hold state ───────────────
+    // PENDING_CLAY: Any Clay data (even email-only) is enough to unblock scoring.
+    //              Advance to RAW and fire the pipeline immediately.
+    // RAW/ENRICHED/SUPPRESSED: Only retrigger if a quality-gate signal arrived
+    //              (recentPostSummary or companyNewsEvent) — same as before.
+    // SENT/REPLIED/BOOKED: Update enrichment fields but never retrigger.
+    const isPendingClay = lead.status === ("PENDING_CLAY" as any);
+    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+    const retriggerable = ["PENDING_CLAY", "RAW", "ENRICHED", "SUPPRESSED"].includes(lead.status);
     const hasNewSignal = !!(
         updateData.recentPostSummary ||
         updateData.companyNewsEvent
     );
 
     if (Object.keys(updateData).length > 0) {
-        // Reset to RAW only if we got a quality-gate signal AND the lead was HELD/ENRICHED.
-        // SENT/REPLIED/BOOKED leads should not be re-triggered.
-        const retriggerable = ["RAW", "ENRICHED", "SUPPRESSED"].includes(lead.status);
-        if (hasNewSignal && retriggerable) {
-            updateData.status = "RAW";
+        if (retriggerable && (isPendingClay || hasNewSignal)) {
+            updateData.status = "RAW"; // Advance to RAW — pipeline will score on next step
         }
 
         await prisma.lead.update({
