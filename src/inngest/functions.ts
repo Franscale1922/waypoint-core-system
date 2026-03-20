@@ -59,13 +59,32 @@ export const leadHunterProcess = inngest.createFunction(
                 }
             }
 
-            // ── LinkedIn Post Content (up to +10) ─────────────────────────────
+            // ── Company News Event (up to +20) — Priority A signal ────────────────
+            // A macro public event (WARN Act, layoff, reorg) is the strongest ICP
+            // signal: target still employed, transition mindset active, capital arriving.
+            // Previously this only gated the quality check — now it scores too.
+            const newsEvent = ((lead as any).companyNewsEvent as string | undefined ?? "").toLowerCase();
+            if (newsEvent) {
+                if (/warn|layoff|laid off|reduction in force|rif|job cut|headcount|downsiz|restructur/i.test(newsEvent)) {
+                    score += 20; // WARN Act / mass layoff — highest urgency ICP signal
+                } else if (/reorg|reorgani|acqui|merger|spin.?off|divest|leadership change|ceo depart|shut down|office clos/i.test(newsEvent)) {
+                    score += 10; // Structural change — career uncertainty, moderate signal
+                } else {
+                    score += 5;  // Company in news — any signal beats none
+                }
+            }
+
+            // ── LinkedIn Post Content (up to +8) ──────────────────────────────────
+            // Executives don't vent on LinkedIn. Score realistic professional language:
+            // "next chapter", "open to", "exploring" — not burnout keywords.
             const post = (lead.recentPostSummary || "").toLowerCase();
             if (post) {
-                if (/burnout|burned out|autonomy|ownership|side business|w-?2|golden handcuff|corporate grind|tired of|had enough|escape/i.test(post)) {
-                    score += 10;
+                if (/next chapter|exciting next|open to|exploring|what.s next|new opportunity|transition|ready for something|time to reflect|taking stock|considering|evaluating|pivot/i.test(post)) {
+                    score += 8;  // Career transition signal — professional phrasing
+                } else if (/burnout|burned out|autonomy|ownership|side business|w-?2|golden handcuff|corporate grind|tired of|had enough|escape/i.test(post)) {
+                    score += 8;  // Explicit signal — rare on LinkedIn but keep it
                 } else {
-                    score += 3; // post present but generic
+                    score += 5;  // Active on LinkedIn = valid personalization hook
                 }
             }
 
