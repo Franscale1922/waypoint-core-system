@@ -32,7 +32,7 @@ export const leadHunterProcess = inngest.createFunction(
             const title = (lead.title || "").toLowerCase();
             if (/\b(ceo|coo|cfo|cto|cmo|chro|chief)\b/i.test(title)) {
                 score += 15;
-            } else if (/\bvp\b|vice president/i.test(title)) {
+            } else if (/\bsvp\b|\bvp\b|vice president/i.test(title)) {
                 score += 18;
             } else if (/\bdirector\b/i.test(title)) {
                 score += 15;
