@@ -118,7 +118,9 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Re-trigger Inngest pipeline if we have a quality-gate signal ───────────
-    if (hasNewSignal && ["RAW", "ENRICHED", "SUPPRESSED"].includes(lead.status)) {
+    // Check updateData.status rather than lead.status — lead is the pre-update snapshot
+    // and would reflect the stale value before the DB write committed.
+    if (updateData.status === "RAW") {
         await inngest.send({
             name: "workflow/lead.hunter.start",
             data: { leadId: lead.id },
@@ -134,6 +136,8 @@ export async function POST(req: NextRequest) {
         status: "updated",
         leadId: lead.id,
         fieldsUpdated: Object.keys(updateData),
-        note: hasNewSignal ? "Lead not retriggered (status prevents it)" : "No quality-gate signal provided — lead not retriggered",
+        note: hasNewSignal
+            ? "Lead not retriggered (status prevents it — already SENT/REPLIED/BOOKED)"
+            : "No quality-gate signal provided — lead not retriggered",
     });
 }

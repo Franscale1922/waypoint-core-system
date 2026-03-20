@@ -525,9 +525,42 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 
 | Tool | Trigger to buy | Purpose | Cost |
 |---|---|---|
-| Clay.com | Sends > 50/day + 1,100+ leads/mo | Waterfall enrichment, intent signals, automation | Variable |
 | LeadIQ | After WARN workflow established | Job change alerts for executives 30–45 days post-WARN | Paid |
 | GlockApps | Sends > 50/day | Inbox placement testing across all major providers | $80/mo |
+
+---
+
+### Clay.com — Enrichment (Active, Free Tier)
+**What:** Enrichment waterfall that queries Hunter, Findymail, LinkedIn, PredictLeads, Google News and 50+ sources in sequence.  
+**Setup status:** ✅ Active — "Cold Email Test 1" table (103 leads). Free tier in use.  
+**Enrichment columns configured (March 2026):**
+- Hunter "Find work email" → `work email` column (primary, ~50% hit rate)
+- Findymail "Find Work Email" → fallback when `!{{work email}}` (~+15%)
+- "Get person's professional posts" → `Recent Post Summary` column (`posts[0].text`)
+- Company News waterfall: PredictLeads primary → Google News fallback → `Company News` column
+
+**Bridge to pipeline:** Clay's HTTP API action column requires a paid plan upgrade. Use the Google Sheets bridge instead:
+1. Clay "Add row to Google Sheet" action exports enriched data to [Cold Email Test 1 Sheet](https://docs.google.com/spreadsheets/d/1YF73at-vjjXPvfYuUEmiP7NeGI7Ku4G3gskJcUSr-ko/edit)
+2. Google Apps Script (`Code.gs` attached to sheet) POSTs each row to `POST /api/webhooks/clay`
+3. Auth: `x-clay-secret` header = `CLAY_WEBHOOK_SECRET` env var (stored as Script Property in Apps Script)
+
+**Google Sheet columns (must match Apps Script column map):**
+| Col | Header | Clay source |
+|-----|--------|-------------|
+| A | First Name | Clay `First Name` |
+| B | Last Name | Clay `Last Name` |
+| C | LinkedIn URL | Clay `LinkedIn URL (Slash)` |
+| D | Email | Clay `work email` |
+| E | Title | Clay `Title` |
+| F | Company | Clay `Company` |
+| G | Country | Clay `Country` |
+| H | Recent Post Summary | Clay `Recent Post Summary` |
+| I | Company News Event | Clay `Company News` |
+
+**Env var:**
+```
+CLAY_WEBHOOK_SECRET=  ⚠️ Must set in Vercel AND as Script Property in Apps Script
+```
 
 ### Stage 2 Project: Social Comment Lead Mining
 **Idea:** Monitor WARNTracker and Layoffs.fyi Twitter/LinkedIn post replies for employees at newly-announced layoff companies who comment on those posts.
@@ -698,8 +731,9 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | Webhook auth (query param) |
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
-| `HUNTER_API_KEY` | ⛔ Inert — leave set, do not upgrade | Superseded by Apollo enrichment API (March 2026 decision) |
+| `HUNTER_API_KEY` | ⛔ Inert — leave set, do not upgrade | Superseded by Clay enrichment (March 2026 decision) |
 | `APOLLO_API_KEY` | ⏳ Not yet set | Primary email enrichment — add to Vercel before launch (Apollo Basic plan) |
+| `CLAY_WEBHOOK_SECRET` | ⚠️ Must set in Vercel | Auth header for `/api/webhooks/clay` — if unset, endpoint accepts ALL requests (no auth). Value must match `x-clay-secret` header sent by the Google Apps Script bridge. |
 | `SLACK_WEBHOOK_URL` | ✅ Set in Vercel + local | Incoming Webhook → `#waypoint-hot-replies` — HITL push notifications |
 | `BEEHIIV_API_KEY` | ✅ Set in Vercel + local | Phase 2 — newsletter subscriber API |
 | `BEEHIIV_PUBLICATION_ID` | ✅ Set in Vercel + local | `pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d` |
