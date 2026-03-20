@@ -129,7 +129,7 @@ export const leadHunterProcess = inngest.createFunction(
             return { email: foundEmail, rawScore: score };
         });
 
-        if (rawScore < 70) {
+        if (rawScore < 60) {
             await step.run("mark-suppressed-or-ignored", async () => {
                 await prisma.lead.update({
                     where: { id: lead.id },
