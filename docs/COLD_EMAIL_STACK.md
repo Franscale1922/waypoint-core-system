@@ -556,21 +556,79 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | G | Country | Clay `Country` |
 | H | Recent Post Summary | Clay `Recent Post Summary` |
 | I | Company News Event | Clay `Company News` |
-| J | Tenure Years | Clay `Tenure Years` (formula column — see below) |
+| J | Years in Position | Clay native `Years in Position` enrichment (no formula column needed) |
 
-**Tenure Years formula column in Clay:**
-Add a Formula column named `Tenure Years`. The formula calculates years in the current role from the LinkedIn profile position start date:
-```
-=IF({{Person LinkedIn Profile.positions[0].startedOn.year}},
-  YEAR(TODAY()) - {{Person LinkedIn Profile.positions[0].startedOn.year}},
-  "")
-```
-The exact column reference path depends on which Clay LinkedIn enrichment is active. Verify by clicking into a position field in an existing row to see the reference path. Output is a whole number (e.g. `7`). Scoring: ≥8 years = +20 pts, ≥5 years = +10 pts.
+> **Clay note:** The `Years in Position` enrichment output stores values as quoted strings (`"5"` instead of `5`). The Apps Script strips these quotes before sending to the webhook — no Clay formula column is needed.
+
+**Scoring for `yearsInCurrentRole`:** ≥8 years = +20 pts | ≥5 years = +10 pts
 
 **Env var:**
 ```
 CLAY_WEBHOOK_SECRET=  ⚠️ Must set in Vercel AND as Script Property in Apps Script
 ```
+
+**Final Apps Script (paste into Extensions → Apps Script → Code.gs):**
+```javascript
+const WEBHOOK_URL = "https://www.waypointfranchise.com/api/webhooks/clay";
+const SHEET_NAME = "Sheet1";
+
+function postAllRows() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const lastRow = sheet.getLastRow();
+  const secret = PropertiesService.getScriptProperties().getProperty("CLAY_WEBHOOK_SECRET");
+  for (let row = 2; row <= lastRow; row++) {
+    postRow(sheet, row, secret);
+    Utilities.sleep(800);
+  }
+}
+
+function postRow(sheet, row, secret) {
+  // A:First Name  B:Last Name  C:LinkedIn URL  D:Email  E:Title  F:Company
+  // G:Country  H:Recent Post Summary  I:Company News  J:Years in Position
+  const values = sheet.getRange(row, 1, 1, 10).getValues()[0];
+  const linkedinUrl = (values[2] || "").toString().trim();
+  if (!linkedinUrl) return;
+
+  // Strip literal quotes from Years in Position ("5" → 5)
+  const rawTenure = String(values[9]).replace(/[^0-9]/g, "");
+  const tenure = rawTenure ? parseInt(rawTenure, 10) : undefined;
+
+  const payload = {
+    firstName:          values[0],
+    lastName:           values[1],
+    linkedinUrl:        linkedinUrl,
+    email:              values[3],
+    title:              values[4],
+    company:            values[5],
+    country:            values[6],
+    recentPostSummary:  values[7],
+    companyNewsEvent:   values[8],
+    yearsInCurrentRole: tenure,
+  };
+
+  const body = JSON.stringify(payload);
+  const sig  = computeHmac(secret, body);
+  const options = {
+    method: "post",
+    contentType: "application/json",
+    payload: body,
+    headers: { "x-clay-secret": sig },
+    muteHttpExceptions: true,
+  };
+
+  const res = UrlFetchApp.fetch(WEBHOOK_URL, options);
+  Logger.log(`Row ${row} → ${res.getResponseCode()} ${res.getContentText()}`);
+}
+
+function computeHmac(secret, message) {
+  const key = Utilities.newBlob(secret).getBytes();
+  const msg = Utilities.newBlob(message).getBytes();
+  const raw = Utilities.computeHmacSha256Signature(msg, key);
+  return raw.map(b => ("0" + (b & 0xff).toString(16)).slice(-2)).join("");
+}
+```
+
+
 
 ### Stage 2 Project: Social Comment Lead Mining
 **Idea:** Monitor WARNTracker and Layoffs.fyi Twitter/LinkedIn post replies for employees at newly-announced layoff companies who comment on those posts.
