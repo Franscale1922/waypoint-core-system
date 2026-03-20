@@ -174,17 +174,24 @@ export const personalizerProcess = inngest.createFunction(
             return { status: "Skipped - Not Enriched or Not Found" };
         }
 
-        // ── Quality Gate ──────────────────────────────────────────────────────
-        // Priority A = company news event (macro, public — WARN Act, 8-K, reorg, layoffs).
-        // Priority B = paraphrase of LinkedIn post topic (never verbatim — topic only).
-        // Clay is the automated enrichment path that populates these fields upstream.
-        // A generic email performs WORSE than no email for skeptical executives.
+        // ── Signal selection (Priority A > B > C) ────────────────────────────────
+        // A = company news event. B = LinkedIn post paraphrase. C = ICP fallback.
+        // No lead is held — every lead scoring ≥50 gets an email attempt.
         const companyNewsEvent  = ((lead as any).companyNewsEvent as string | undefined)?.trim() ?? "";
         const recentPostSummary = (lead.recentPostSummary ?? "").trim();
-        const hasHighAuthToken  = !!(companyNewsEvent || recentPostSummary);
 
-        if (!hasHighAuthToken) {
-            return { status: "HELD — No personalization signal. Clay enrichment will auto-release this lead." };
+        let primarySignal: string;
+        let signalType: string;
+
+        if (companyNewsEvent) {
+            primarySignal = companyNewsEvent;
+            signalType = "Priority A: company news event (macro, public \u2014 WARN Act, 8-K, reorg, layoffs)";
+        } else if (recentPostSummary) {
+            primarySignal = recentPostSummary;
+            signalType = "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
+        } else {
+            primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
+            signalType = "Priority C: ICP-based outreach \u2014 NO external signal available. Open with the golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure. Lead with the universal truth of their role (ceiling, stability trap, income without equity). Never fabricate a specific hook or claim something you don\u2019t know about them.";
         }
 
         const { draftEmail } = await step.run("generate-personalized-email", async () => {
@@ -194,13 +201,6 @@ export const personalizerProcess = inngest.createFunction(
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
             const firstName = lead.name.trim().split(/\s+/)[0];
-
-            // By the time we reach here, the quality gate has guaranteed hasHighAuthToken is true.
-            // Priority A beats Priority B. Only one signal used in the email body.
-            const primarySignal = companyNewsEvent || recentPostSummary;
-            const signalType = companyNewsEvent
-                ? "Priority A: company news event (macro, public \u2014 WARN Act, 8-K, reorg, layoffs)"
-                : "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
 
             const systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
 Your ONLY goal is to write ONE cold email that generates a single reply from a highly skeptical corporate executive.
@@ -220,7 +220,7 @@ PERSONALIZATION RULES \u2014 mandatory:
 TEMPLATE REFERENCE \u2014 rotate structure per email:
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK: 50\u201390 words total. Opens with the signal \u2014 never with flattery, never with a greeting. One CTA only. Closes with low pressure. Plain text only.
+FINAL CHECK: 50\u201390 words total. For Priority A/B: opens with the signal \u2014 never with flattery, never with a greeting. For Priority C: opens with a universal truth about their situation \u2014 no fabricated hooks, no fake personalization. One CTA only. Closes with low pressure. Plain text only.
 `;
 
             const userPrompt = `Prospect:
