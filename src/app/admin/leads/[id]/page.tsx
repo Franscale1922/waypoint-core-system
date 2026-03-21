@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, Newspaper, MessageSquare } from "lucide-react";
 import { EmailBlock } from "@/components/EmailBlock";
+import { RegenerateButton } from "@/components/RegenerateButton";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -115,17 +116,31 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
 
             {/* Draft Email */}
             {lead.draftEmail ? (
-                <Section icon={<FileText className="w-4 h-4 text-indigo-500" />} title="Generated Email">
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-slate-700 font-semibold">
+                            <FileText className="w-4 h-4 text-indigo-500" />
+                            <span>Generated Email</span>
+                        </div>
+                        <RegenerateButton mode="single" leadId={lead.id} />
+                    </div>
                     <EmailBlock draftEmail={lead.draftEmail} />
-                </Section>
+                </div>
             ) : (
-                <Section icon={<FileText className="w-4 h-4 text-slate-300" />} title="Generated Email">
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-slate-700 font-semibold">
+                            <FileText className="w-4 h-4 text-slate-300" />
+                            <span>Generated Email</span>
+                        </div>
+                        {lead.score >= 50 && <RegenerateButton mode="single" leadId={lead.id} />}
+                    </div>
                     <p className="text-sm text-slate-400 italic">
                         {lead.score >= 50
                             ? "Email not generated yet — personalizerProcess may still be running."
                             : "No email generated — lead did not clear the 50-point gate."}
                     </p>
-                </Section>
+                </div>
             )}
 
             {/* Enrichment Signals */}

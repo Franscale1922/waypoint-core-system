@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { ImportLeadForm } from "@/components/ImportLeadForm";
+import { RegenerateButton } from "@/components/RegenerateButton";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -31,7 +32,10 @@ export default async function LeadsManager() {
                     </h1>
                     <p className="text-slate-500 mt-2">Click any lead to view score, draft email, and enrichment signals.</p>
                 </div>
-                <ImportLeadForm />
+                <div className="flex items-center gap-3">
+                    <RegenerateButton mode="all" />
+                    <ImportLeadForm />
+                </div>
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
