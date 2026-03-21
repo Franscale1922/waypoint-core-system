@@ -42,9 +42,10 @@ function Section({ icon, title, children }: { icon: React.ReactNode; title: stri
     );
 }
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const lead = await prisma.lead.findUnique({
-        where: { id: params.id },
+        where: { id },
         include: { replies: { orderBy: { createdAt: "desc" } } },
     });
 
