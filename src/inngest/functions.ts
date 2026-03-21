@@ -236,7 +236,10 @@ export const personalizerProcess = inngest.createFunction(
             return prisma.lead.findUnique({ where: { id: leadId } });
         });
 
-        if (!lead || lead.status !== "ENRICHED") {
+        // Allow both ENRICHED (normal pipeline path) and SEQUENCED (manual
+        // regeneration path — lead already passed scoring and had an email,
+        // but the email is being regenerated with the updated prompt).
+        if (!lead || (lead.status !== "ENRICHED" && lead.status !== "SEQUENCED")) {
             return { status: "Skipped - Not Enriched or Not Found" };
         }
 
