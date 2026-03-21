@@ -149,6 +149,26 @@ export const PROHIBITED_PHRASES = [
     // Hard formatting bans — added to enable server-side detection + retry
     // The FINAL CHECK prompt alone is insufficient; GPT-4o reliably ignores it.
     "—",  // em dash (U+2014) — the single most common recurring violation across audits
+    "–",  // en dash (U+2013) — less common but equally banned
+    // High-frequency AI vocabulary — added to server-side guard after Voice QC banner
+    // confirmed these slip through the prompt instruction alone (Joel Goodman: "leverage")
+    "leverage",
+    "delve",
+    "landscape",
+    "synergies",
+    "embark",
+    "tapestry",
+    "multifaceted",
+    "revolutionize",
+    "cutting-edge",
+    "game-changing",
+    "thought leader",
+    "it's clear that",
+    "it goes without saying",
+    "needless to say",
+    "in today's fast-paced",
+    "in the ever-evolving",
+    "as we move forward",
 ];
 
 
