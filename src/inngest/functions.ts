@@ -256,8 +256,8 @@ export const personalizerProcess = inngest.createFunction(
         // Priority B (LinkedIn post) is only a valid signal if the post has a
         // career or business-ownership dimension. Posts about politics, charity/
         // volunteer work, purely operational/technical topics, recruiter promo
-        // posts, or low-signal casual reactions all produce forced, tone-deaf
-        // emails. Gate them to Priority C.
+        // posts, low-signal casual reactions, OR posts about a third-party person
+        // (not the prospect's own career perspective) all gate to Priority C.
         const NON_CAREER_SIGNAL_KEYWORDS = [
             // political / government
             "politic", "election", "congress", "senate", "democrat", "republican",
@@ -276,25 +276,44 @@ export const personalizerProcess = inngest.createFunction(
             "exciting times in", "let us help you", "next career step", "we're hiring",
             "we are hiring", "join our team", "help you find", "your next opportunity",
             "reach out to me", "send me a dm", "open to connections",
+            // third-party praise / farewell posts (prospect is commenting about someone else leaving)
+            "lucky company she chooses", "lucky company he chooses", "lucky company they choose",
+            "can't wait to see which", "cant wait to see which",
+            "in a class all to herself", "in a class all to himself",
+            "so excited for her", "so excited for him", "so excited for them",
+            "congratulations to", "congrats to", "wishing her the best", "wishing him the best",
+            "she will be missed", "he will be missed", "they will be missed",
+            "send her off", "send him off",
         ];
         // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
         const postLowercase = recentPostSummary.toLowerCase();
         // Minimum word count gate — casual one-liner social reactions (< 15 words) are
         // not substantive career signals regardless of keyword content.
         const postTooShort = recentPostSummary.trim().split(/\s+/).length < 15;
+        // Third-party structural gate — posts that are about someone else's career journey,
+        // not the prospect's own perspective. Key pattern: post begins with a named person
+        // (possessive or nominative) and describes that person's achievement/departure.
+        // Example: "Karen's truly in a class all to herself...Can't wait to see which lucky
+        // company she chooses to call home." — David is commenting about Karen, not himself.
+        // If we email David referencing Karen, he has zero context for why a stranger is
+        // mentioning Karen's name — it feels surveillance-like and confusing.
+        const postAboutThirdParty = /^[A-Z][a-z]+'s\s|\bshe('s|\s+is)\b|\bhe('s|\s+is)\b|\bthey('re|\s+are)\b/
+            .test(recentPostSummary.trim()) &&
+            /lucky company|call home|new chapter|next chapter|next role|new role|next opportunity/i
+            .test(recentPostSummary);
         const postLooksNonCareer = recentPostSummary
-            ? (NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw)) || postTooShort)
+            ? (NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw)) || postTooShort || postAboutThirdParty)
             : false;
 
         if (companyNewsEvent) {
             primarySignal = companyNewsEvent;
-            signalType = "Priority A: company news event (macro, public \u2014 WARN Act, 8-K, reorg, layoffs)";
+            signalType = "Priority A: company news event (macro, public — WARN Act, 8-K, reorg, layoffs)";
         } else if (recentPostSummary && !postLooksNonCareer) {
             primarySignal = recentPostSummary;
-            signalType = "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
+            signalType = "Priority B: paraphrase of LinkedIn post TOPIC only (never verbatim, never name a third party if the post is about someone else).";
         } else {
             primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
-            signalType = `Priority C: ICP-based outreach \u2014 NO external signal available.
+            signalType = `Priority C: ICP-based outreach — NO external signal available.
 Open with a golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure.
 Lead with the universal truth of their situation (ceiling, stability trap, income without ownership).
 STRICT RULES for Priority C:
@@ -317,27 +336,45 @@ Your ONLY goal is to write ONE cold email that generates a single reply from a h
 
 ${VOICE_RULES}
 
-PROHIBITED PHRASES \u2014 never use any of these:
+PROHIBITED PHRASES — never use any of these:
 ${PROHIBITED_PHRASES.join(", ")}
-AND: NO em dashes (\u2014). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
+AND: NO em dashes (—). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
 
-PERSONALIZATION RULES \u2014 mandatory:
+PROHIBITED AI-SOUNDING VOCABULARY — these words instantly mark the email as machine-generated. Do NOT use them:
+delve, landscape, leverage, synergies, pivoting, intersection, tapestry, multifaceted, embark, journey,
+realm, navigate, unlock, transform, revolutionize, innovative, cutting-edge, game-changing, thought leader,
+visionary, robust, it's clear that, it's evident that, it goes without saying, needless to say,
+in today's fast-paced, in today's dynamic, in the ever-evolving, as we move forward.
+If you write any of these words or phrases, rewrite that sentence before outputting. No exceptions.
+
+PROHIBITED AI STARTER SENTENCES — never open the email body (the line after "Hi [Name],") with:
+"In today...", "As a...", "With the current...", "It's no secret...", "Whether you're...",
+"As someone who...", "Given your...", "I came across your...", "I noticed...", "I wanted to reach out",
+"I hope this finds you well", "I'm reaching out because".
+If your first line after the greeting falls into one of these patterns, delete it and restart.
+
+PERSONALIZATION RULES — mandatory:
 - Use EXACTLY 1 signal in the email body (provided below as the Personalization Signal).
 - NEVER verbatim-quote the prospect's own words. Paraphrase the topic only, no quotation marks.
 - NEVER state the logical connection between the signal and the pitch. The reader makes that connection.
 - NEVER reference: tenure, city, location, college, graduation year, hobbies, passive LinkedIn activity (likes/comments).
+- NEVER name a third party from a LinkedIn post. If the signal is a post about someone else (a colleague, a connection being praised, a farewell shout-out), treat it as Priority C — open with a golden handcuffs universal truth instead. The recipient would have zero context for why a stranger is referencing names from their social feed.
 
-TEMPLATE REFERENCE \u2014 rotate structure per email:
+TEMPLATE REFERENCE — rotate structure per email:
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK (run this before outputting):
-1. Word count is between 50 and 90.
-2. For Priority A/B: first sentence opens with the signal — never a greeting, never flattery.
-   For Priority C: first sentence opens with a universal truth — no fabricated hooks.
-3. Scan every word against the PROHIBITED PHRASES list above. If any match is found, rewrite that sentence before outputting. Do not rationalise exceptions — just rewrite.
-4. No em dashes. No exclamation points. Not more than 2 sentences in a row starting with "I" or "Most".
-5. Plain text only — no markdown, no quotes around the email.
+FINAL CHECK — binary pass/fail. Rewrite until ALL 7 pass before outputting:
+1. Word count 50–90. If outside range, cut or expand.
+2. Priority A/B: first sentence after greeting opens directly with the signal topic. No "I noticed", no flattery.
+   Priority C: first sentence opens with a universal career truth. No fabricated hooks.
+3. Zero words from PROHIBITED PHRASES or PROHIBITED AI-SOUNDING VOCABULARY. If any found — rewrite. No rationalisations.
+4. ZERO em dashes (—) or en dashes (–) anywhere in the email. Replace with a comma, period, or new sentence.
+   THIS IS A HARD FAIL. One em dash = the entire email must be rewritten.
+5. Zero exclamation points. Max 2 consecutive sentences starting with "I" or "Most".
+6. Zero AI starter sentences. If your opener reads like ChatGPT output, delete and rewrite.
+7. Plain text only. No markdown, no bullets, no quotation marks framing the email.
 `;
+
 
             const userPrompt = `Prospect:
 Name: ${lead.name}

@@ -80,7 +80,12 @@ WHAT THIS EMAIL MUST NEVER DO
 ❌ Claim to know what the reader is feeling or planning ("it seems like you're considering…")
 ❌ Explain the logical transition between signal and offer — trust the reader
 ❌ Use passive voice — say who does what
+❌ Use em dashes (—) or en dashes (–). Replace with a comma, period, or convert to a new sentence. This is a hard rule — one em dash fails the entire draft.
+❌ Use AI-sounding vocabulary: delve, leverage, landscape, synergies, pivoting, intersection, tapestry, multifaceted, embark, journey, realm, navigate, unlock, transform, revolutionize, innovative, cutting-edge, game-changing, thought leader, visionary, robust, it's clear that, it goes without saying, needless to say, in today's fast-paced, in the ever-evolving.
+❌ Open the email body with AI starter sentences: "In today...", "As a...", "With the current...", "It's no secret...", "As someone who...", "Given your...", "I noticed...", "I wanted to reach out", "I hope this finds you well", "I'm reaching out because".
+❌ Name or reference a third party from a LinkedIn post. Posts about someone else (farewells, praise for a colleague leaving) provide zero context to the recipient and feel surveillance-like. Treat them as Priority C.
 `;
+
 
 export const PROHIBITED_PHRASES = [
     // Classic spam tells
