@@ -48,7 +48,7 @@ export const leadHunterProcess = inngest.createFunction(
             // ── Stage 2: Hard suppression (non-franchise owners, founders) ────
             if (!titleMatched) {
                 if (/\b(founder|co-founder|business owner|co-owner)\b/i.test(title) ||
-                    /\bfreelance\b|\bindependent consultant\b/i.test(title)) {
+                    /\bfreelance\b|\bindependent\s+(consultant|writer|contractor|professional|advisor|coach|creator)\b/i.test(title)) {
                     return { email: null, rawScore: 0 };
                 }
             }
