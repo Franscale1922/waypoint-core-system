@@ -13,11 +13,13 @@
  *      {
  *        "linkedinUrl":        "{{linkedin_url}}",
  *        "email":              "{{email}}",
- *        "recentPostSummary":  "{{recent_post_summary}}",
+ *        "recentPostSummary":  "{{posts}}",          ← raw posts column is fine; server extracts posts[0].text automatically
  *        "companyNewsEvent":   "{{company_news_event}}",
  *        "careerTrigger":      "{{career_trigger}}",
  *        "yearsInCurrentRole": "{{years_in_current_role}}"
  *      }
+ *      NOTE: If you have a formula/text column that already extracts posts[0].text,
+ *      map that instead. Either shape works — the webhook handles both.
  *   5. Trigger this action after enrichment is complete on each row.
  *
  * Security: CLAY_WEBHOOK_SECRET env var must match the x-clay-secret header.
@@ -102,22 +104,69 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: Record<string, any> = {};
 
-    // ── Bio-detection guard ────────────────────────────────────────────────────
-    // Clay's Recent Post Summary column sometimes returns the LinkedIn bio
-    // instead of posts[0].text (raw posts array passed as text). Detect and
-    // discard any value that is clearly a bio rather than a post paraphrase:
-    //   • >300 chars  →  bios are verbose; post summaries should be short
-    //   • Contains bio boilerplate keywords (experienced, results-driven, etc.)
+    // ── Post summary extraction ────────────────────────────────────────────────
+    // Clay's "Recent Post Summary" column can send different shapes depending on
+    // how it is configured. We handle all cases here so no Clay formula change
+    // is needed on Kelsey's end.
+    //
+    // Shape 1 — JSON array string (raw `posts` column mapped directly):
+    //   "[{\"text\":\"...\",\"date\":\"...\", ...}]"
+    //   → extract posts[0].text
+    //
+    // Shape 2 — JSON object string (single post object):
+    //   "{\"text\":\"...\",\"date\":\"...\"}"
+    //   → extract .text
+    //
+    // Shape 3 — Plain text (correctly summarized post or bio):
+    //   "Post about leadership and franchise..." or full bio text
+    //   → keep if it passes the bio-detection filter below
+    //
+    // Bio-detection filter — discard if it looks like a LinkedIn bio:
+    //   • >300 chars  →  bios are verbose; post summaries should be 1–2 sentences
+    //   • Contains bio boilerplate keywords
     const BIO_BOILERPLATE = [
-        "results-driven", "experienced", "passionate about", "proven track record",
-        "strategic leader", "dynamic professional", "highly motivated", "seasoned",
-        "extensive experience", "dedicated professional", "accomplished", "innovative leader",
+        "results-driven", "passionate about", "proven track record",
+        "strategic leader", "dynamic professional", "highly motivated", "seasoned professional",
+        "extensive experience in", "dedicated professional", "innovative leader",
+        "i am a", "i'm a", "with over", "years of experience",
     ];
-    const rawPost = typeof recentPostSummary === "string" ? recentPostSummary.trim() : "";
-    const looksLikeBio =
-        rawPost.length > 300 ||
-        BIO_BOILERPLATE.some((kw) => rawPost.toLowerCase().includes(kw));
-    const cleanedPostSummary = rawPost && !looksLikeBio ? rawPost : undefined;
+
+    function extractPostText(raw: unknown): string | undefined {
+        if (!raw || typeof raw !== "string") return undefined;
+        const trimmed = raw.trim();
+        if (!trimmed) return undefined;
+
+        // Try to parse as JSON (Shape 1 or 2)
+        if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+            try {
+                const parsed = JSON.parse(trimmed);
+                // Shape 1: array of post objects
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    const text = parsed[0]?.text ?? parsed[0]?.content ?? parsed[0]?.body ?? "";
+                    if (text && typeof text === "string") return text.trim() || undefined;
+                }
+                // Shape 2: single post object
+                if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                    const text = parsed.text ?? parsed.content ?? parsed.body ?? "";
+                    if (text && typeof text === "string") return text.trim() || undefined;
+                }
+                // JSON parsed but no useful text field found → discard
+                return undefined;
+            } catch {
+                // Not valid JSON — fall through to plain-text handling
+            }
+        }
+
+        // Shape 3: plain text — apply bio-detection filter
+        const lower = trimmed.toLowerCase();
+        const looksLikeBio =
+            trimmed.length > 300 ||
+            BIO_BOILERPLATE.some((kw) => lower.includes(kw));
+
+        return looksLikeBio ? undefined : trimmed;
+    }
+
+    const cleanedPostSummary = extractPostText(recentPostSummary);
 
     if (email && !lead.email) updateData.email = email.trim();
     if (cleanedPostSummary) updateData.recentPostSummary = cleanedPostSummary;
