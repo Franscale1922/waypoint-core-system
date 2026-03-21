@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, Newspaper, MessageSquare } from "lucide-react";
+import { EmailBlock } from "@/components/EmailBlock";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -115,9 +116,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             {/* Draft Email */}
             {lead.draftEmail ? (
                 <Section icon={<FileText className="w-4 h-4 text-indigo-500" />} title="Generated Email">
-                    <div className="bg-slate-50 rounded-xl p-5 text-sm text-slate-800 leading-relaxed whitespace-pre-wrap font-mono border border-slate-100">
-                        {lead.draftEmail}
-                    </div>
+                    <EmailBlock draftEmail={lead.draftEmail} />
                 </Section>
             ) : (
                 <Section icon={<FileText className="w-4 h-4 text-slate-300" />} title="Generated Email">
