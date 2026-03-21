@@ -135,6 +135,12 @@ export const PROHIBITED_PHRASES = [
     "schedule a call",
     "book a meeting",
     "let's connect",
+    // Eager-salesperson closings (spirit of "I'd love to" — closes the gap)
+    "I'd be glad to",
+    "I would be glad to",
+    "I'd be happy to",
+    "I would be happy to",
+    "walk you through",
 ];
 
 // ─── CAN-SPAM Footer ──────────────────────────────────────────────────────────
