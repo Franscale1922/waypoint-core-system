@@ -141,7 +141,11 @@ export const PROHIBITED_PHRASES = [
     "I'd be happy to",
     "I would be happy to",
     "walk you through",
+    // Hard formatting bans — added to enable server-side detection + retry
+    // The FINAL CHECK prompt alone is insufficient; GPT-4o reliably ignores it.
+    "—",  // em dash (U+2014) — the single most common recurring violation across audits
 ];
+
 
 // ─── CAN-SPAM Footer ──────────────────────────────────────────────────────────
 // Required by law. Appended deterministically in personalizerProcess —
