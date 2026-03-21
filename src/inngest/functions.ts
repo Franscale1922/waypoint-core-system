@@ -255,8 +255,9 @@ export const personalizerProcess = inngest.createFunction(
         // ── Signal quality gate ────────────────────────────────────────────────
         // Priority B (LinkedIn post) is only a valid signal if the post has a
         // career or business-ownership dimension. Posts about politics, charity/
-        // volunteer work, or purely operational/technical topics with no career
-        // angle all produce forced, tone-deaf emails. Gate them to Priority C.
+        // volunteer work, purely operational/technical topics, recruiter promo
+        // posts, or low-signal casual reactions all produce forced, tone-deaf
+        // emails. Gate them to Priority C.
         const NON_CAREER_SIGNAL_KEYWORDS = [
             // political / government
             "politic", "election", "congress", "senate", "democrat", "republican",
@@ -271,11 +272,18 @@ export const personalizerProcess = inngest.createFunction(
             "fixed a bug", "server issue", "merged a pr", "pushed to prod",
             // video / media production operational posts
             "video issue", "footage", " render", "upload", "editing", "video fix",
+            // recruiter / promotional cheerleading posts (not the prospect's own career voice)
+            "exciting times in", "let us help you", "next career step", "we're hiring",
+            "we are hiring", "join our team", "help you find", "your next opportunity",
+            "reach out to me", "send me a dm", "open to connections",
         ];
         // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
         const postLowercase = recentPostSummary.toLowerCase();
+        // Minimum word count gate — casual one-liner social reactions (< 15 words) are
+        // not substantive career signals regardless of keyword content.
+        const postTooShort = recentPostSummary.trim().split(/\s+/).length < 15;
         const postLooksNonCareer = recentPostSummary
-            ? NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw))
+            ? (NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw)) || postTooShort)
             : false;
 
         if (companyNewsEvent) {
@@ -359,7 +367,9 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
 
             let emailText = await generateEmail();
 
-            // Server-side prohibited phrase scan
+            // ── Server-side prohibited phrase scan ─────────────────────────────
+            // GPT occasionally drifts on prohibited phrases despite prompt instructions.
+            // We scan the output deterministically and retry once if needed — 100% reliable.
             const emailLower = emailText.toLowerCase();
             const hitPhrase = PROHIBITED_PHRASES.find(phrase =>
                 emailLower.includes(phrase.toLowerCase())
@@ -377,6 +387,37 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                     prompt: retryPrompt,
                 });
                 emailText = retryText;
+            }
+
+            // ── Verbatim post-quote detection ──────────────────────────────────
+            // Hard blacklist rule: never quote the prospect's own words verbatim.
+            // Compare meaningful words (> 3 chars) from the signal against the email.
+            // If overlap ratio > 60% across 4+ signal words, force a paraphrase retry.
+            if (signalType.startsWith("Priority B") && primarySignal.length > 0) {
+                const signalMeaningfulWords = primarySignal
+                    .toLowerCase()
+                    .split(/\s+/)
+                    .filter(w => w.replace(/[^a-z]/g, "").length > 3);
+                if (signalMeaningfulWords.length >= 4) {
+                    const emailTextLower = emailText.toLowerCase();
+                    const matchCount = signalMeaningfulWords.filter(w =>
+                        emailTextLower.includes(w.replace(/[^a-z]/g, ""))
+                    ).length;
+                    const verbatimRatio = matchCount / signalMeaningfulWords.length;
+                    if (verbatimRatio > 0.6) {
+                        // High verbatim overlap detected — retry with explicit paraphrase instruction
+                        const verbatimRetryPrompt = userPrompt +
+                            `\n\n[SYSTEM NOTE: Your previous draft copied too many words directly from the Personalization Signal. ` +
+                            `Rewrite the email. You MUST paraphrase the TOPIC only — do not copy any specific words or phrases from the signal. ` +
+                            `Do not reference this note in your output.]`;
+                        const { text: verbatimRetryText } = await generateText({
+                            model: openai("gpt-4o"),
+                            system: systemPrompt,
+                            prompt: verbatimRetryPrompt,
+                        });
+                        emailText = verbatimRetryText;
+                    }
+                }
             }
 
             return { draftEmail: emailText, hitPhrase: hitPhrase ?? null };
