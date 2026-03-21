@@ -249,10 +249,31 @@ export const personalizerProcess = inngest.createFunction(
         let primarySignal: string;
         let signalType: string;
 
+        // ── Signal quality gate ────────────────────────────────────────────────
+        // Priority B (LinkedIn post) is only a valid signal if the post has a
+        // career or business-ownership dimension. Posts about politics, charity/
+        // volunteer work, or purely operational/technical topics with no career
+        // angle all produce forced, tone-deaf emails. Gate them to Priority C.
+        const NON_CAREER_SIGNAL_KEYWORDS = [
+            // political
+            "politic", "election", "congress", "senate", "democrat", "republican",
+            "president", "legislation", "bill ", "policy", "vote", "tariff", "government",
+            // charity / CSR / volunteer
+            "haven house", "nonprofit", "volunteer", "charity", "donate", "fundrais",
+            "shelter", "food bank", "awareness", "giveback", "give back",
+            // purely operational / technical (no career angle)
+            "fixed a bug", "server issue", "merged a pr", "pushed to prod",
+        ];
+        const postLooksNonCareer = recentPostSummary
+            ? NON_CAREER_SIGNAL_KEYWORDS.some(kw =>
+                recentPostSummary.toLowerCase().includes(kw)
+              )
+            : false;
+
         if (companyNewsEvent) {
             primarySignal = companyNewsEvent;
             signalType = "Priority A: company news event (macro, public \u2014 WARN Act, 8-K, reorg, layoffs)";
-        } else if (recentPostSummary) {
+        } else if (recentPostSummary && !postLooksNonCareer) {
             primarySignal = recentPostSummary;
             signalType = "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
         } else {
@@ -286,7 +307,13 @@ PERSONALIZATION RULES \u2014 mandatory:
 TEMPLATE REFERENCE \u2014 rotate structure per email:
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK: 50\u201390 words total. For Priority A/B: opens with the signal \u2014 never with flattery, never with a greeting. For Priority C: opens with a universal truth about their situation \u2014 no fabricated hooks, no fake personalization. One CTA only. Closes with low pressure. Plain text only.
+FINAL CHECK (run this before outputting):
+1. Word count is between 50 and 90.
+2. For Priority A/B: first sentence opens with the signal — never a greeting, never flattery.
+   For Priority C: first sentence opens with a universal truth — no fabricated hooks.
+3. Scan every word against the PROHIBITED PHRASES list above. If any match is found, rewrite that sentence before outputting. Do not rationalise exceptions — just rewrite.
+4. No em dashes. No exclamation points. Not more than 2 sentences in a row starting with "I" or "Most".
+5. Plain text only — no markdown, no quotes around the email.
 `;
 
             const userPrompt = `Prospect:
