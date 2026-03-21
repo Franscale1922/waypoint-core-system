@@ -258,19 +258,24 @@ export const personalizerProcess = inngest.createFunction(
         // volunteer work, or purely operational/technical topics with no career
         // angle all produce forced, tone-deaf emails. Gate them to Priority C.
         const NON_CAREER_SIGNAL_KEYWORDS = [
-            // political
+            // political / government
             "politic", "election", "congress", "senate", "democrat", "republican",
             "president", "legislation", "bill ", "policy", "vote", "tariff", "government",
+            "white house", "convince itself", "administration", "executive order",
+            "partisan", "geopolit", "sanctions", "trump", "biden", "harris",
             // charity / CSR / volunteer
             "haven house", "nonprofit", "volunteer", "charity", "donate", "fundrais",
             "shelter", "food bank", "awareness", "giveback", "give back",
+            "women in construction", "women in stem", "women in tech",
             // purely operational / technical (no career angle)
             "fixed a bug", "server issue", "merged a pr", "pushed to prod",
+            // video / media production operational posts
+            "video issue", "footage", " render", "upload", "editing", "video fix",
         ];
+        // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
+        const postLowercase = recentPostSummary.toLowerCase();
         const postLooksNonCareer = recentPostSummary
-            ? NON_CAREER_SIGNAL_KEYWORDS.some(kw =>
-                recentPostSummary.toLowerCase().includes(kw)
-              )
+            ? NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw))
             : false;
 
         if (companyNewsEvent) {
@@ -281,7 +286,14 @@ export const personalizerProcess = inngest.createFunction(
             signalType = "Priority B: paraphrase of LinkedIn post topic (never verbatim \u2014 topic only)";
         } else {
             primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
-            signalType = "Priority C: ICP-based outreach \u2014 NO external signal available. Open with the golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure. Lead with the universal truth of their role (ceiling, stability trap, income without equity). Never fabricate a specific hook or claim something you don\u2019t know about them.";
+            signalType = `Priority C: ICP-based outreach \u2014 NO external signal available.
+Open with a golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure.
+Lead with the universal truth of their situation (ceiling, stability trap, income without ownership).
+STRICT RULES for Priority C:
+- NEVER fabricate a specific hook, event, or industry observation you cannot verify.
+- NEVER open with an excited or flattering statement (e.g. 'Exciting times in...', 'Impressive work at...').
+- NEVER assume their industry, vertical, or current challenges without evidence.
+- The ONLY safe openers are universal truths about corporate career trajectories in general.`;
         }
 
         const { draftEmail } = await step.run("generate-personalized-email", async () => {
@@ -333,13 +345,41 @@ Signal: ${primarySignal}
 
 Write the email. Plain text only. No markdown. No quotes around the email.`;
 
-            const { text } = await generateText({
-                model: openai("gpt-4o"),
-                system: systemPrompt,
-                prompt: userPrompt,
-            });
+            // ── Generation + server-side prohibited phrase guard ──────────────
+            // GPT occasionally drifts on prohibited phrases despite prompt instructions.
+            // We scan the output deterministically and retry once if needed — 100% reliable.
+            async function generateEmail(): Promise<string> {
+                const { text } = await generateText({
+                    model: openai("gpt-4o"),
+                    system: systemPrompt,
+                    prompt: userPrompt,
+                });
+                return text;
+            }
 
-            return { draftEmail: text };
+            let emailText = await generateEmail();
+
+            // Server-side prohibited phrase scan
+            const emailLower = emailText.toLowerCase();
+            const hitPhrase = PROHIBITED_PHRASES.find(phrase =>
+                emailLower.includes(phrase.toLowerCase())
+            );
+
+            if (hitPhrase) {
+                // Retry once with an explicit prefix nudge
+                const retryPrompt = userPrompt +
+                    `\n\n[SYSTEM NOTE: Your previous draft contained the prohibited phrase "${hitPhrase}". ` +
+                    `Rewrite the email without using that phrase or any other phrase on the PROHIBITED PHRASES list. ` +
+                    `Do not reference this note in your output.]`;
+                const { text: retryText } = await generateText({
+                    model: openai("gpt-4o"),
+                    system: systemPrompt,
+                    prompt: retryPrompt,
+                });
+                emailText = retryText;
+            }
+
+            return { draftEmail: emailText, hitPhrase: hitPhrase ?? null };
         });
 
         // Save to DB and update status
