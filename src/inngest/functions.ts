@@ -477,7 +477,47 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                 }
             }
 
+            // ── Deterministic post-generation sanitizer ───────────────────────
+            // Runs AFTER all GPT retries. GPT-triggered retries can themselves
+            // produce em/en dashes — a single retry is not enough since the
+            // re-generation has no memory of the previous violation.
+            //
+            // Rules applied here are hard formatting constraints that are 100%
+            // deterministically fixable with string operations — no GPT needed.
+            //
+            // Rule 1: Em dash (U+2014) and en dash (U+2013) — replace with a
+            //   comma or period depending on context. Simple heuristic: if the
+            //   character is surrounded by spaces, replace with a comma; otherwise
+            //   replace with a comma (conservative choice that reads naturally).
+            emailText = emailText
+                .replace(/ — /g, ", ")   // em dash surrounded by spaces → comma
+                .replace(/—/g, ", ")      // em dash with no spaces → comma
+                .replace(/ – /g, ", ")    // en dash surrounded by spaces → comma
+                .replace(/–/g, ", ");     // en dash with no spaces → comma
+
+            // Rule 2: Approved CTA enforcement.
+            // GPT occasionally substitutes a different closing question.
+            // If the email does NOT end with one of the 3 approved CTAs, append it.
+            const approvedEndings = CLOSING_CTAS as readonly string[];
+            const hasApprovedCTA = approvedEndings.some(cta =>
+                emailText.trimEnd().endsWith(cta)
+            );
+            if (!hasApprovedCTA) {
+                // Strip the last sentence (assumed to be the rogue CTA) and append the required one.
+                // Split on sentence-ending punctuation, remove last fragment, append correct CTA.
+                const sentences = emailText.trimEnd().replace(/[.?!]\s*$/, "").split(/(?<=[.?!])\s+/);
+                if (sentences.length > 1) {
+                    sentences.pop(); // Remove the rogue last sentence
+                    emailText = sentences.join(" ").trimEnd() + "\n" + requiredCTA;
+                } else {
+                    // Only one sentence (very short) — just append the CTA
+                    emailText = emailText.trimEnd() + "\n" + requiredCTA;
+                }
+                console.log(`[personalizer] Sanitizer replaced unapproved CTA with required: "${requiredCTA}"`);
+            }
+
             return { draftEmail: emailText, hitPhrase: hitPhrase ?? null };
+
         });
 
         // Save to DB and update status
