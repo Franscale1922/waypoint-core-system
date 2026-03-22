@@ -1,6 +1,6 @@
 # Waypoint Cold Email System — Tech Stack Reference
 
-**Last updated:** March 18, 2026 — Lead sourcing path decided (modified Path B)  
+**Last updated:** March 21, 2026 — Sending layer QC audit complete. All fixes applied.  
 **Volume target:** 15–20 sends/day, Mon–Fri  
 **Goal:** Book franchise advisory consultations with VP/Director/CXO corporate executives in career transition
 
@@ -367,10 +367,13 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 | `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
 | `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
 | `replyGuardianProcess` | event: `workflow/lead.reply.received` | ✅ Live | Classifies reply; HITL Resend alert implemented March 2026 |
-| `monitorProcess` | cron: `0 9 * * *` | ⏳ Mock | Pipeline health checks — bounce/complaint data is mocked random values |
+| `monitorProcess` | cron: `0 9 * * *` | ⚠️ Mock | Pipeline health checks — bounce/complaint data is **mocked random values**. At Stage 1 volume (15/day), use Instantly inbox health dashboard (all 6 inboxes at 100%) as the real signal. Revisit at 50+/day. |
 | `warmupScheduler` | cron: `0 14 * * 1-5` (8 AM MT) | ✅ Live | Fires daily send events up to dailyCap |
 | `contentRefreshFunction` | cron: `0 14 1 * *` + event: `content/refresh.run` | ✅ Live | Rewrites stale articles via GPT-4o |
 | `tidycalBookingSync` | cron: `0 16 * * 1-5` (10 AM MT) | ✅ Live | Polls TidyCal API, syncs bookings to leads |
+| `pendingClayFallback` | cron: `0 13 * * 1-5` (7 AM MT) | ✅ Live (fixed March 21, 2026) | Advances PENDING_CLAY leads stuck >24h to RAW — safety net so no lead is lost if Clay doesn't enrich |
+| `linkedInDmQueue` | cron: `0 15 * * 1-5` (9 AM MT) | ✅ Live | Finds SENT leads with no reply after 5+ days; posts LinkedIn DM scripts to Slack |
+| `ghostRecoveryAlert` | cron: `0 16 * * 1` (10 AM MT, Mon) | ✅ Live | Finds REPLIED leads gone quiet 30+ days; posts ghost recovery scripts to Slack |
 
 **Env vars:**
 ```
@@ -496,6 +499,10 @@ Complete every item below before sending the first cold email.
 - [x] Fix `maxSendsPerDay` schema default (50 → 15) to match warmup phase — ✅ Fixed March 2026
 - [x] Clarify inbound reply webhook route comment + fix auth var (`RESEND_WEBHOOK_SECRET` → `INBOUND_WEBHOOK_SECRET`) — ✅ Fixed March 2026
 - [x] Hunter.io enrichment active (key set March 2026). SuperSearch is manual fallback for misses.
+
+**Code — Fixed March 21, 2026 (QC Audit)**
+- [x] Register `pendingClayFallback` in Inngest serve() — was defined but never firing — ✅ Fixed
+- [x] Added `Send Now` button to admin lead detail page — triggers `senderProcess` manually for a single SEQUENCED lead. Use to test Instantly API integration before first scheduled cron fires. Route: `POST /api/admin/send-now`
 
 **Google Postmaster Tools**
 - [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026)
