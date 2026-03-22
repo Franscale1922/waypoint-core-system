@@ -21,6 +21,16 @@
 // QUALITY GATE: If neither Priority A nor Priority B token is populated,
 // the lead must be HELD in queue — do not send a degraded email.
 
+// ─── Approved Closing CTAs ────────────────────────────────────────────────────
+// GPT defaults to "Curious if that's even a thought?" in ~80% of generations.
+// To enforce rotation, functions.ts selects one deterministically by lead-name
+// hash and injects it as a hard instruction — GPT's choice is removed entirely.
+export const CLOSING_CTAS = [
+    "Worth a conversation?",
+    "Would it be worth 15 minutes to find out?",
+    "Curious if that's even a thought?",
+] as const;
+
 // ─── Voice Rules ──────────────────────────────────────────────────────────────
 // Injected into the GPT-4o system prompt on every personalization call.
 
@@ -66,9 +76,11 @@ Option 1: observation → peer inference → value → soft CTA
 Option 2: news anchor → social proof ("a lot of directors in your position…") → permission-based question
 Option 3: career-arc framing → specific outcome → soft CTA
 
-CLOSING RULES — low pressure only
-"Worth a conversation?" / "Would it be worth 15 minutes to find out?" / "Curious if that's even a thought."
+CLOSING RULES — mandatory
+The closing question for this email will be specified in the user prompt. Use it word for word as your final sentence. Do not substitute a different question, do not omit it, do not add any sentence after it.
+Approved options (one will be required): "Worth a conversation?" / "Would it be worth 15 minutes to find out?" / "Curious if that's even a thought?"
 Never: "Can we schedule a call?" / "Let's hop on a call" / "Find 15 minutes on your calendar."
+
 
 WHAT THIS EMAIL MUST NEVER DO
 ❌ Pitch a franchise brand or promise financial outcomes

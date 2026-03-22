@@ -224,7 +224,7 @@ Reply with ONLY the numeric tier — nothing else.
 import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 
-import { PROHIBITED_PHRASES, EMAIL_TEMPLATES, VOICE_RULES, CAN_SPAM_FOOTER } from "@/lib/templates";
+import { PROHIBITED_PHRASES, EMAIL_TEMPLATES, VOICE_RULES, CAN_SPAM_FOOTER, CLOSING_CTAS } from "@/lib/templates";
 
 export const personalizerProcess = inngest.createFunction(
     { id: "personalizer-process" },
@@ -284,6 +284,14 @@ export const personalizerProcess = inngest.createFunction(
             "congratulations to", "congrats to", "wishing her the best", "wishing him the best",
             "she will be missed", "he will be missed", "they will be missed",
             "send her off", "send him off",
+            // conference/event attendance logistics — these are social networking posts,
+            // not career-state signals. "Looking forward to seeing you at AUSA!" tells
+            // us nothing about the prospect's career trajectory. Gate to Priority C.
+            "looking forward to seeing", "looking forward to meeting everyone",
+            "see you at", "see you in ", "who else is going", "who's going to be at",
+            "who's attending", "let's connect at", "find me at", "stop by our booth",
+            "drop by and say hello", "heading to ", "will be in ",
+            "i'll be at", "i'll be in ", "safe travels",
         ];
         // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
         const postLowercase = recentPostSummary.toLowerCase();
@@ -330,6 +338,16 @@ STRICT RULES for Priority C:
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
             const firstName = lead.name.trim().split(/\s+/)[0];
+
+            // ── Deterministic CTA rotation ────────────────────────────────────
+            // GPT anchors on "Curious if that's even a thought?" ~80% of the time.
+            // We select one of the 3 approved CTAs using a simple char-code hash of
+            // the lead's name — reproducible, no DB column needed, guarantees variety
+            // across the full lead list without repeating the same phrase in bulk.
+            const ctaIndex = lead.name
+                .split("")
+                .reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % CLOSING_CTAS.length;
+            const requiredCTA = CLOSING_CTAS[ctaIndex];
 
             const systemPrompt = `You are the Waypoint Franchise Advisors "Personalizer Agent".
 Your ONLY goal is to write ONE cold email that generates a single reply from a highly skeptical corporate executive.
@@ -387,6 +405,8 @@ Franchise Angle (internal context \u2014 do not reference directly): ${lead.fran
 Personalization Signal:
 Type: ${signalType}
 Signal: ${primarySignal}
+
+Required closing question (use word for word as the final sentence): "${requiredCTA}"
 
 Write the email. Plain text only. No markdown. No quotes around the email.`;
 
