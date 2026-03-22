@@ -500,12 +500,20 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             // producing a duplicate. The endsWith() check misses this case.
             //
             // Strategy:
-            //   a. Strip ALL occurrences of every approved CTA from the email text.
-            //   b. Collapse any resulting blank lines caused by removal.
-            //   c. Append exactly one copy of requiredCTA on its own line.
+            //   a. Normalize Unicode smart quotes/apostrophes → straight ASCII so that
+            //      GPT's curly-quote CTA variants ("that\u2019s") match our straight-quote
+            //      CLOSING_CTAS definitions. Without this, the strip regex misses GPT's
+            //      version and we end up with TWO CTAs (theirs + the appended clean copy).
+            //   b. Strip ALL occurrences of every approved CTA from the normalized text.
+            //   c. Collapse any resulting blank lines caused by removal.
+            //   d. Append exactly one copy of requiredCTA on its own line.
             //
             // This runs unconditionally — it's cheaper than any conditional logic
             // and guarantees one clean CTA regardless of GPT output.
+            emailText = emailText
+                .replace(/[\u2018\u2019\u201A\u201B]/g, "'")   // curly/smart single quotes → straight '
+                .replace(/[\u201C\u201D\u201E\u201F]/g, '"');   // curly/smart double quotes → straight "
+
             const approvedEndings = CLOSING_CTAS as readonly string[];
             for (const cta of approvedEndings) {
                 // Replace the CTA whether it appears mid-sentence (with trailing punctuation
