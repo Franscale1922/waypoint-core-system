@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, Newspaper, MessageSquare } from "lucide-react";
 import { EmailBlock } from "@/components/EmailBlock";
 import { RegenerateButton } from "@/components/RegenerateButton";
+import { SendNowButton } from "@/components/SendNowButton";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -82,6 +83,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                             LinkedIn
                         </a>
                     )}
+                    <SendNowButton leadId={lead.id} status={lead.status} />
                 </div>
             </div>
 
