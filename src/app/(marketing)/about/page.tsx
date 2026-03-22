@@ -306,9 +306,9 @@ export default async function AboutPage() {
               Want to see how I work first?{" "}
               <a href="/process" className="text-white/60 underline hover:text-white/80 transition-colors">See the process &rarr;</a>
             </p>
-            <p className="mt-3 text-xs text-white/30">
+            <p className="mt-3 text-xs text-white/45">
               Know someone who might benefit from this conversation?{" "}
-              <a href="/refer" className="text-white/50 underline hover:text-white/70 transition-colors">Here&apos;s how to send them my way &rarr;</a>
+              <a href="/refer" className="text-white/60 underline hover:text-white/80 transition-colors">Here&apos;s how to send them my way &rarr;</a>
             </p>
           </div>
 

@@ -12,6 +12,21 @@ export const metadata: Metadata = {
     description:
       "If you know someone who's been thinking about owning a business, here's an easy way to send them to Kelsey.",
     url: "https://www.waypointfranchise.com/refer",
+    images: [
+      {
+        url: "https://www.waypointfranchise.com/images/refer-hero-overlook.jpg",
+        width: 1200,
+        height: 800,
+        alt: "Refer a friend to Waypoint Franchise Advisors",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Refer a Friend | Waypoint Franchise Advisors",
+    description:
+      "Know someone who's been quietly thinking about franchise ownership? Here's a simple way to point them in the right direction.",
+    images: ["https://www.waypointfranchise.com/images/refer-hero-overlook.jpg"],
   },
 };
 
@@ -43,9 +58,56 @@ const emailBody = encodeURIComponent(
   `Hi Kelsey,\n\nI wanted to introduce you to [Name]. They've been thinking about franchise ownership and I think a conversation with you would be worthwhile for them.\n\n[Name]\n[Phone or email]\n\nFeel free to reach out.`
 );
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.waypointfranchise.com/refer",
+      "name": "Refer a Friend | Waypoint Franchise Advisors",
+      "description": "Know someone who's been quietly thinking about franchise ownership? Here's a simple way to point them in the right direction.",
+      "url": "https://www.waypointfranchise.com/refer",
+      "publisher": {
+        "@type": "LocalBusiness",
+        "name": "Waypoint Franchise Advisors",
+        "url": "https://www.waypointfranchise.com"
+      }
+    },
+    {
+      "@type": "HowTo",
+      "name": "How to Refer Someone to Waypoint Franchise Advisors",
+      "description": "Three simple ways to send a friend or colleague to speak with Kelsey Stuart about franchise ownership — no formal process required.",
+      "step": [
+        {
+          "@type": "HowToStep",
+          "position": 1,
+          "name": "Mention that you know Kelsey",
+          "text": "A quick text or email letting them know works perfectly. No formal intro needed."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 2,
+          "name": "Send them to this site",
+          "text": "They can read about the process, take the readiness quiz, or just reach out directly at waypointfranchise.com/refer."
+        },
+        {
+          "@type": "HowToStep",
+          "position": 3,
+          "name": "Or send Kelsey a direct intro",
+          "text": "Email kelsey@waypointfranchise.com with the person's name and contact info. There's no right way to do this."
+        }
+      ]
+    }
+  ]
+};
+
 export default function ReferPage() {
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero */}
       <section className="relative pt-16 pb-36 sm:py-24 md:py-32 overflow-hidden">
         <Image

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Find the Franchise That Fits Your Life",
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners across 35 states find the right franchise. No pitch, no pressure.",
-  alternates: { canonical: "https://waypointfranchise.com" },
+  alternates: { canonical: "https://www.waypointfranchise.com" },
   openGraph: {
     title: "Find the Franchise That Fits Your Life | Waypoint",
     description:
@@ -252,6 +252,14 @@ export default function HomePage() {
             >
               Or text me &rarr;
             </a>
+          </div>
+          <div className="reveal mt-4 text-center">
+            <Link
+              href="/refer"
+              className="text-xs text-white/35 hover:text-white/60 transition-colors tracking-wide"
+            >
+              Know someone this fits? Send them here &rarr;
+            </Link>
           </div>
         </div>
       </section>
