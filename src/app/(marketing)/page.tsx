@@ -246,6 +246,12 @@ export default function HomePage() {
             >
               Take the Readiness Quiz
             </Link>
+            <a
+              href="sms:+12149951062"
+              className="inline-flex items-center justify-center text-sm font-medium text-white/60 hover:text-white transition-colors min-h-[48px] px-2"
+            >
+              Or text me &rarr;
+            </a>
           </div>
         </div>
       </section>

@@ -101,6 +101,10 @@ export default function ContactPage() {
             <p className="text-xs text-[#9a9a8a] leading-relaxed">
               Based in Whitefish, Montana. Responding Mon–Fri.
             </p>
+            <p className="text-xs text-[#9a9a8a] leading-relaxed mt-4">
+              Not looking for yourself?{" "}
+              <a href="/refer" className="text-[#8E3012] hover:text-[#CC6535] transition-colors">Here&apos;s how to refer someone &rarr;</a>
+            </p>
           </div>
 
         </div>

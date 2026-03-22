@@ -66,6 +66,12 @@ export default function MarketingLayout({
               Quizzes
             </Link>
             <Link
+              href="/refer"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Refer a Friend
+            </Link>
+            <Link
               href="/contact"
               className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
@@ -147,6 +153,11 @@ export default function MarketingLayout({
                 <li>
                   <Link href="/book" className="hover:text-white transition-colors inline-block py-1">
                     Book a Free Call
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/refer" className="hover:text-white transition-colors inline-block py-1">
+                    Refer a Friend
                   </Link>
                 </li>
               </ul>
