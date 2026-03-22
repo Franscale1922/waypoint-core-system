@@ -169,7 +169,17 @@ export const PROHIBITED_PHRASES = [
     "in today's fast-paced",
     "in the ever-evolving",
     "as we move forward",
+    // Additional AI vocabulary caught in post-regeneration audit (10-lead review)
+    // Daniel Harris: 'navigating' fired Voice QC banner but wasn't in server-side guard
+    "navigating",
+    "navigate",
+    "visionary",
+    "robust",
+    "innovative",
+    "it's clear",   // catches both "it's clear that" and "it's clear [X] is..."
+    "sounds like you",  // flattery opener caught on Copeland Isaacson ("Sounds like you're creating significant value")
 ];
+
 
 
 // ─── CAN-SPAM Footer ──────────────────────────────────────────────────────────
