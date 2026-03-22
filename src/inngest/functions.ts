@@ -495,26 +495,30 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                 .replace(/ – /g, ", ")    // en dash surrounded by spaces → comma
                 .replace(/–/g, ", ");     // en dash with no spaces → comma
 
-            // Rule 2: Approved CTA enforcement.
-            // GPT occasionally substitutes a different closing question.
-            // If the email does NOT end with one of the 3 approved CTAs, append it.
+            // Rule 2: CTA deduplication + enforcement.
+            // GPT can embed the CTA inside the body paragraph AND add it again at the end,
+            // producing a duplicate. The endsWith() check misses this case.
+            //
+            // Strategy:
+            //   a. Strip ALL occurrences of every approved CTA from the email text.
+            //   b. Collapse any resulting blank lines caused by removal.
+            //   c. Append exactly one copy of requiredCTA on its own line.
+            //
+            // This runs unconditionally — it's cheaper than any conditional logic
+            // and guarantees one clean CTA regardless of GPT output.
             const approvedEndings = CLOSING_CTAS as readonly string[];
-            const hasApprovedCTA = approvedEndings.some(cta =>
-                emailText.trimEnd().endsWith(cta)
-            );
-            if (!hasApprovedCTA) {
-                // Strip the last sentence (assumed to be the rogue CTA) and append the required one.
-                // Split on sentence-ending punctuation, remove last fragment, append correct CTA.
-                const sentences = emailText.trimEnd().replace(/[.?!]\s*$/, "").split(/(?<=[.?!])\s+/);
-                if (sentences.length > 1) {
-                    sentences.pop(); // Remove the rogue last sentence
-                    emailText = sentences.join(" ").trimEnd() + "\n" + requiredCTA;
-                } else {
-                    // Only one sentence (very short) — just append the CTA
-                    emailText = emailText.trimEnd() + "\n" + requiredCTA;
-                }
-                console.log(`[personalizer] Sanitizer replaced unapproved CTA with required: "${requiredCTA}"`);
+            for (const cta of approvedEndings) {
+                // Replace the CTA whether it appears mid-sentence (with trailing punctuation
+                // that may already be part of the string) or as a standalone line.
+                // Escape regex special chars in CTA.
+                const escaped = cta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                emailText = emailText.replace(new RegExp(escaped, "gi"), "").trim();
             }
+            // Remove any doubled blank lines left behind by the removal
+            emailText = emailText.replace(/\n{3,}/g, "\n\n").trim();
+            // Append the required CTA as a clean standalone line
+            emailText = emailText + "\n" + requiredCTA;
+            console.log(`[personalizer] Sanitizer enforced CTA: "${requiredCTA}"`);
 
             return { draftEmail: emailText, hitPhrase: hitPhrase ?? null };
 
