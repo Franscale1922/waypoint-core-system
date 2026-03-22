@@ -61,8 +61,51 @@ export async function POST(req: Request) {
             campaign_id?: string;
         };
 
-        // Instantly may send multiple event types to the same webhook URL.
-        // Only process actual replies — silently ignore everything else.
+        // ── Handle bounce and unsubscribe events ──────────────────────────────
+        // Instantly fires these to the same webhook URL as replies.
+        // Bounce events: event_type = "lead_bounced" | "email_bounced"
+        // Unsubscribe events: event_type = "lead_unsubscribed" | "unsubscribe"
+        // On either: mark lead SUPPRESSED in DB + add to SuppressionList table.
+        const bounceEventTypes = ["lead_bounced", "email_bounced"];
+        const unsubEventTypes   = ["lead_unsubscribed", "unsubscribe"];
+        const isBounce = event_type && bounceEventTypes.includes(event_type);
+        const isUnsub  = event_type && unsubEventTypes.includes(event_type);
+
+        if (isBounce || isUnsub) {
+            const reason = isBounce ? "bounce" : "unsubscribe";
+            console.log(`[inbound-reply] ${reason} event for: ${lead_email ?? "(unknown)"}`);
+
+            if (lead_email) {
+                const normalized = lead_email.toLowerCase().trim();
+
+                // Suppress the lead record
+                const lead = await prisma.lead.findFirst({
+                    where: { email: normalized },
+                    orderBy: { updatedAt: "desc" },
+                });
+
+                if (lead) {
+                    await prisma.lead.update({
+                        where: { id: lead.id },
+                        data: { status: "SUPPRESSED" },
+                    });
+                    console.log(`[inbound-reply] Suppressed lead ${lead.name} (${normalized}) — reason: ${reason}`);
+                }
+
+                // Add to suppression list (upsert — safe if already present)
+                await prisma.suppressionList.upsert({
+                    where: { email: normalized },
+                    update: { reason },
+                    create: { email: normalized, reason },
+                });
+
+                console.log(`[inbound-reply] Added ${normalized} to SuppressionList — reason: ${reason}`);
+            }
+
+            return NextResponse.json({ success: true, action: `suppressed:${reason}`, email: lead_email });
+        }
+
+        // Silently ignore all other event types (e.g. email_opened, link_clicked).
         if (event_type && event_type !== "reply_received") {
             console.log(`[inbound-reply] Ignored non-reply event: ${event_type}`);
             return NextResponse.json({ success: true, message: `Ignored: ${event_type}` });
