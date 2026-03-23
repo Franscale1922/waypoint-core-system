@@ -644,3 +644,360 @@ When multi-unit makes sense early: when the brand is designed for portfolio owne
 
 Even then — it's a harder start than it looks. Full piece on the tradeoffs: [link]
 ```
+
+---
+
+### Buying an Existing Franchise: What You're Actually Getting
+**URL:** `/resources/buying-an-existing-franchise-what-you-need-to-know`
+
+**Twitter/X Thread:**
+```
+Most buyers ask: should I buy a franchise?
+
+A smaller group asks the better question: should I buy an existing unit or start a new one?
+
+Here's what the resale path actually looks like. 🧵
+
+The pitch is simple:
+
+Skip the startup phase. Revenue is already coming in. Staff is in place. Customer base exists.
+
+What the pitch leaves out:
+
+You're inheriting every decision the previous owner made — including the bad ones.
+
+The first question to ask any seller: why are you selling?
+
+Three categories of sellers:
+- Life event (retirement, relocation, health) — usually cleanest
+- Opportunity seller (cashing out at peak) — can be excellent
+- Distress seller (burned out, underperforming) — price looks good for a reason
+
+What to verify before signing:
+
+Three years of P&L statements matched against three years of tax returns. P&Ls can be dressed up. Tax returns are harder to manipulate.
+
+Customer concentration. In B2B models, if one client is 20% of revenue, that client is a material risk.
+
+Staff. Key employees may or may not stay through an ownership transition.
+
+Franchisor relationship. Is there history here that will follow you into year one?
+
+The resale path can be excellent. The opportunity is entirely in the due diligence.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+Buying an existing franchise unit sounds simpler than starting from scratch.
+
+Revenue coming in. Staff in place. Customer base established.
+
+But you're also inheriting every decision the previous owner made — good and bad.
+
+Three questions to answer before you go further:
+
+Why is this person selling? Life event sellers (retirement, relocation) are typically the cleanest deals. Distress sellers offer attractive prices for reasons that become your problem.
+
+Does the revenue survive the transition? In B2B and service models, a meaningful portion of relationships may be loyal to the person, not the brand. Validation calls and a review of customer concentration will tell you.
+
+What do the financials actually show? Three years of P&L against three years of tax returns. These two documents should match.
+
+The resale path can be excellent. The opportunity is entirely in the due diligence.
+
+Full breakdown: [link]
+```
+
+---
+
+### SBA Loan vs. ROBS: Which Franchise Funding Path Fits You
+**URL:** `/resources/sba-loan-vs-robs-franchise-funding-comparison`
+
+**Twitter/X Thread:**
+```
+Two paths dominate franchise funding.
+
+SBA loans. ROBS.
+
+One is debt. One is equity. Choosing wrong creates strain from day one. 🧵
+
+SBA 7(a) loans:
+
+Government-backed bank financing. Typically 10–20% down as of 2026. Repay over 10 years.
+
+Upside: real capital access, retirement savings stay untouched.
+
+Cost: fixed monthly payments regardless of business performance, 680+ credit required, personal guarantee.
+
+ROBS:
+
+Roll eligible retirement funds into a C-Corp that buys your franchise. No tax event, no early withdrawal penalty, no loan.
+
+Upside: no debt service, no monthly payment.
+
+Cost: your retirement savings are the risk. C-Corp compliance required.
+
+The combined structure:
+
+ROBS covers the SBA down payment. SBA covers the remainder. Lower debt service, retirement funds partially diversified. More common than most buyers realize.
+
+The decision framework:
+
+Strong credit + liquid capital + want retirement savings protected → SBA
+Substantial retirement savings + want to avoid debt service → ROBS
+Need down payment capital but want smaller loan → ROBS + SBA combined
+
+Full comparison: [link]
+```
+
+**LinkedIn Post:**
+```
+SBA loans and ROBS are both legitimate franchise funding paths. The structural difference matters more than most buyers realize.
+
+SBA creates debt — payments start regardless of how the business ramps. ROBS creates equity — no monthly obligation, but your retirement savings are the investment.
+
+The question that drives the choice: where is your capital, and what risk profile allows you to operate without financial stress during a 6–12 month ramp-up?
+
+Many buyers use a combined structure: ROBS covers the SBA down payment requirement, SBA covers the remainder. This reduces monthly debt service while keeping retirement funds partially diversified.
+
+Full comparison with decision framework and side-by-side table: [link]
+```
+
+---
+
+### Food and Beverage Franchises: What the Category Actually Demands
+**URL:** `/resources/food-and-beverage-franchise-what-it-actually-demands`
+
+**Twitter/X Thread:**
+```
+Food franchises are the first thing most buyers think about.
+
+They're also the most operationally demanding category most will consider.
+
+Here's the honest version. 🧵
+
+Three things the sales process doesn't lead with:
+
+1. Staff turnover in food service averages 75% annually as of 2026.
+
+You're replacing 7–8 of every 10 employees each year. Managing that pipeline is not a side task. It is the job.
+
+2. Three cost lines eat your margin simultaneously.
+
+Food cost (~30%). Labor cost (~30%). Royalty (~6%). Add rent. You may have 75–85% of revenue committed before a dollar hits your pocket.
+
+3. Location is close to permanent.
+
+A well-operated food unit in a bad location rarely recovers. Site selection is one of the highest-stakes decisions in the process — and most buyers have less control over it than they think.
+
+Who this category is built for:
+
+People who like managing people and processes. Who are comfortable being present in the operation. Who can maintain high standards across a rotating staff.
+
+Not for buyers who love food and assume that translates to enjoying the business of running it.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+Food and beverage is the franchise category most buyers think about first.
+
+It's also where the gap between expectation and operational reality is widest.
+
+Three things the sales process doesn't lead with:
+
+Staff turnover in food service averages 75% annually as of 2026. That's 7–8 of every 10 employees replaced each year. Hiring and retaining hourly workers is not a secondary task — it is the primary operational challenge.
+
+Three cost lines run simultaneously: food cost, labor, and royalty. Before rent, 75–85% of revenue may already be committed. The margin window is real but narrow.
+
+Location is nearly permanent. A well-operated unit in a poor location rarely recovers. Site selection is one of the highest-stakes decisions in the entire process.
+
+This isn't a case against the category. It's the honest version of the conversation buyers should have before they're in a sales process.
+
+Full piece: [link]
+```
+
+---
+
+### Understanding Franchise Royalties: What You're Actually Paying For
+**URL:** `/resources/understanding-franchise-royalties-what-youre-paying-for`
+
+**Twitter/X Thread:**
+```
+Most buyers focus on the upfront franchise fee.
+
+The number that follows you for 10 years is the royalty. 🧵
+
+What a royalty is:
+
+A percentage of gross revenue paid to the franchisor — typically weekly or monthly — for the life of the agreement.
+
+Gross. Not profit. If you have a hard month, the royalty still runs.
+
+Typical range: 4–8% as of 2026.
+
+On $800K in annual revenue, 6% is $48,000 per year. Every year. For 10 years.
+
+What it's supposed to fund:
+
+National marketing. Training programs. Technology infrastructure. Field support. Legal compliance. Brand development.
+
+In strong systems, the royalty is how every franchisee benefits from central investment. In weak systems, it funds corporate overhead with minimal return.
+
+How to tell which you're in:
+
+Ask franchisees directly — at 18–24 months, not during the sales process — whether the support feels proportional to what they pay.
+
+Read Item 21 of the FDD: the franchisor's financials. Royalties are their primary revenue line. Where is it going?
+
+The rate isn't the point. The value for the rate is.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+The franchise fee is a one-time payment. The royalty is what you pay for the next decade.
+
+Most buyers spend more time analyzing the upfront number.
+
+A 6% royalty on $800,000 in annual revenue is $48,000 per year. Every year.
+
+In a strong franchise system, that buys you national brand investment, field support, technology infrastructure, ongoing training, legal compliance, and the collective buying power of the network. The royalty is how central investment reaches every franchisee.
+
+In a weak system, it funds corporate overhead and delivers minimal return.
+
+Two things that tell you which situation you're in:
+
+Ask franchisees at the 18–24 month mark whether support feels proportional to what they pay. Not during the sales process — after.
+
+Read Item 21 of the FDD. Royalties are the primary revenue line. Where is the money actually going?
+
+The rate matters less than what it buys. Full piece: [link]
+```
+
+---
+
+### Pet Care Franchises: A Category Built on Unconditional Demand
+**URL:** `/resources/pet-care-franchise-built-on-unconditional-demand`
+
+**Twitter/X Thread:**
+```
+Pet care spending in the US has grown every single year for over two decades.
+
+Through 2008. Through 2020. Past $150 billion annually as of 2024.
+
+Here's what the franchise category actually looks like. 🧵
+
+The demand side is real:
+
+Emotionally committed customers. Recurring services. Referrals that move fast in tight-knit local pet owner communities. Low churn when quality is consistent.
+
+Three very different models:
+
+Boarding and daycare: highest investment ($400K–$900K+), 24/7 operation, highest customer loyalty. Core risk: staffing at all hours, and animal incidents require communication protocols from day one.
+
+Mobile grooming: low capital ($80K–$150K), appointment-driven, scales by adding vehicles and technicians. Works best in suburban markets with above-average household income.
+
+In-home pet sitting/dog walking: lowest entry (under $50K), territory-based, grows by building and managing reliable hourly staff in a competitive labor market.
+
+Who succeeds:
+
+Strong people managers who build customer trust naturally. Operators who can handle the emotional complexity of commercial pet care with professionalism.
+
+Who struggles:
+
+Buyers who chose the category because they love animals — and found the business harder than they expected.
+
+Love of animals is not a disqualifier. It is also not a qualification.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+US pet spending has grown every year for over two decades — through 2008, through 2020, past $150 billion annually as of 2024.
+
+The franchise category built on that demand is worth understanding honestly.
+
+Three distinct models, three different operational profiles:
+
+Boarding and daycare: highest investment ($400K–$900K as of 2026), 24/7 staffing requirement, highest customer loyalty when quality is consistent. Customers don't switch facilities lightly once trust is established.
+
+Mobile grooming: low capital entry ($80K–$150K), appointment-driven, owner-dependent in early stages. Scales as you add technicians and vehicles. Works well in suburban markets with disposable income.
+
+In-home pet sitting/dog walking: lowest entry (under $50K), territory-based model. Growth comes from building a reliable hourly labor pool — which is the primary operational challenge.
+
+Who succeeds: people managers with natural customer relationship skills. The job is managing staff and building trust with emotionally invested clients, not animal expertise.
+
+Who struggles: buyers who entered for love of animals and found the commercial reality of pet care harder than they imagined.
+
+Full category breakdown: [link]
+```
+
+---
+
+### How to Sell a Franchise: Exit Strategy from Day One
+**URL:** `/resources/how-to-sell-a-franchise-exit-strategy`
+
+**Twitter/X Thread:**
+```
+Most franchise buyers don't think about exit until they're ready to leave.
+
+That's usually too late to maximize what the business is worth. 🧵
+
+Franchise resales typically price at 2–4x EBITDA as of 2026.
+
+The multiple isn't fixed. Here's what moves it:
+
+Revenue trend:
+
+Buyers price direction, not just the current number. Three years of consistent growth commands a meaningfully higher multiple than flat or declining revenue at the same absolute level.
+
+Remaining franchise term:
+
+Buyers want runway — ideally five years minimum. A short remaining term means they're pricing renewal risk into the offer.
+
+Lease quality:
+
+A stable lease with renewal options that transfer cleanly is an asset. A difficult landlord or short remaining term gets discounted.
+
+Staff stability:
+
+Will key employees stay through the transition? If the answer is unclear, it gets priced in.
+
+The biggest exit mistake:
+
+Owner-dependent revenue.
+
+If clients call your cell, deals close because of your relationships, and the business runs because of who you are — not the systems — the buyer discounts for that. Systems are transferable. The owner isn't.
+
+When to start preparing:
+
+Not when you're ready to leave. Three to five years out. That's when the revenue trend that determines your multiple is being built.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+Exit strategy is not something you prepare for when you're ready to leave a franchise.
+
+It's something you build throughout ownership.
+
+The multiple that determines what a healthy franchise unit is worth at sale — typically 2–4x EBITDA as of 2026 — is driven by variables you can influence from day one:
+
+Revenue trend: the last three years before a sale are what buyers price. Consistent growth commands a meaningfully higher multiple than flat revenue at the same current level.
+
+Transfer-readiness: a business where leads come through marketing channels, customers are managed through systems, and key staff are likely to stay is a business a buyer can step into. A business built on the owner's personal relationships is discounted accordingly.
+
+Franchise term and lease: buyers want runway. Renew your agreement and negotiate lease extensions before going to market.
+
+Franchisor relationship: a clean, positive relationship streamlines the transfer approval process considerably.
+
+Most franchisees who exit on strong terms started thinking about it five years before they sold.
+
+Full piece on building for a strong exit: [link]
+```

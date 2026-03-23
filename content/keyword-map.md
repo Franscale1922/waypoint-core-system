@@ -21,6 +21,7 @@
 | `one-unit-or-multi-unit-what-first-timers-get-wrong` | One Unit or Multi-Unit: What First-Timers Get Wrong | "multi-unit franchise ownership" / "how many franchise units to buy" | I | Low | ✅ Good |
 | `you-dont-need-to-love-your-franchise` | You Don't Need to Love Your Franchise | "do you have to be passionate about your franchise" | I | Low | ✅ Strong opinion hook |
 | `your-first-90-days-as-a-franchise-owner` | Your First 90 Days as a Franchise Owner | "what to expect first year franchise" / "new franchise owner tips" | I | Low | ✅ Good |
+| `understanding-franchise-royalties-what-youre-paying-for` | Understanding Franchise Royalties: What You're Actually Paying For | "franchise royalty fee" / "how do franchise royalties work" | I | Medium | ✅ Strong |
 
 ---
 
@@ -47,6 +48,9 @@
 | `b2b-franchise-opportunities-lower-risk-steadier-cash` | B2B Franchise Opportunities: Lower Risk, Steadier Cash | "B2B franchise" / "best B2B franchises" | I | Medium | ✅ Good |
 | `the-semi-absentee-franchise-real-talk` | The Semi-Absentee Franchise: Real Talk | "semi-absentee franchise" | I/C | Medium | ✅ Excellent — exact keyword match |
 | `recession-proof-franchise-categories` | Recession-Proof Franchise Categories | "recession proof franchise" | I | Medium | ✅ Strong |
+| `buying-an-existing-franchise-what-you-need-to-know` | Buying an Existing Franchise: What You're Actually Getting | "buying an existing franchise" / "franchise resale" | I | Medium | ✅ Strong |
+| `sba-loan-vs-robs-franchise-funding-comparison` | SBA Loan vs. ROBS: Which Franchise Funding Path Fits You | "SBA loan franchise" / "ROBS franchise funding" | I | Medium | ✅ Strong — comparison table article |
+| `how-to-sell-a-franchise-exit-strategy` | How to Sell a Franchise: Exit Strategy from Day One | "how to sell a franchise" / "franchise exit strategy" | I | Low | ✅ Good |
 
 ---
 
@@ -60,6 +64,8 @@
 | `fitness-franchise-comparison-what-the-numbers-say` | Fitness Franchise Comparison: What the Numbers Say | "fitness franchise" / "best fitness franchise to own" | I/C | High | ✅ Good — high volume category |
 | `health-wellness-franchises-fad-vs-durable-business` | Health & Wellness Franchises: Fad vs. Durable Business | "health and wellness franchise" | I/C | Medium | ✅ Good |
 | `senior-care-franchise-is-it-right-for-you` | Senior Care Franchise: Is It Right for You? | "senior care franchise" / "in-home care franchise" | I/C | Medium | ✅ Strong |
+| `food-and-beverage-franchise-what-it-actually-demands` | Food and Beverage Franchises: What the Category Actually Demands | "food franchise" / "restaurant franchise" | I/C | High | ✅ Strong |
+| `pet-care-franchise-built-on-unconditional-demand` | Pet Care Franchises: A Category Built on Unconditional Demand | "pet care franchise" / "pet franchise" | I/C | Medium | ✅ Good |
 
 ---
 

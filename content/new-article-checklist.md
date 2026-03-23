@@ -77,6 +77,12 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | restoration-franchises-the-disaster-proof-business | Industry Spotlights |
 | senior-care-franchise-is-it-right-for-you | Industry Spotlights |
 | should-you-buy-a-car-wash-franchise | Industry Spotlights |
+| buying-an-existing-franchise-what-you-need-to-know | Going Deeper |
+| sba-loan-vs-robs-franchise-funding-comparison | Going Deeper |
+| food-and-beverage-franchise-what-it-actually-demands | Industry Spotlights |
+| understanding-franchise-royalties-what-youre-paying-for | Getting Started |
+| pet-care-franchise-built-on-unconditional-demand | Industry Spotlights |
+| how-to-sell-a-franchise-exit-strategy | Going Deeper |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 

@@ -3,7 +3,7 @@ title: "Recession-Proof Franchise Categories (And What That Term Really Means)"
 relatedSlugs:
   - "home-services-franchises-most-overlooked-category"
   - "b2b-franchise-opportunities-lower-risk-steadier-cash"
-  - "restoration-franchises-the-disaster-proof-business"
+  - "pet-care-franchise-built-on-unconditional-demand"
 slug: "recession-proof-franchise-categories"
 date: "2025-09-23"
 category: "Getting Started"
