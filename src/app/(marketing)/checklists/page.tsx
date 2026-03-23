@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       "Free checklists for franchise candidates at every stage of evaluation. Pick the one that matches your industry and get started.",
     url: "https://www.waypointfranchise.com/checklists",
-    images: [{ url: "/og/og-resources.png", width: 1200, height: 630, alt: "Waypoint Franchise Checklists" }],
+    images: [{ url: "/og/og-checklists.png", width: 1200, height: 630, alt: "Waypoint Free Franchise Checklists" }],
   },
   alternates: { canonical: "https://www.waypointfranchise.com/checklists" },
 };
@@ -68,9 +68,86 @@ const CHECKLISTS: Checklist[] = [
   },
 ];
 
+const checklistsSchema = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://www.waypointfranchise.com/checklists",
+      url: "https://www.waypointfranchise.com/checklists",
+      name: "Free Franchise Checklists | Waypoint Franchise Advisors",
+      description:
+        "Download free franchise readiness checklists for every major category — food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
+      inLanguage: "en-US",
+      isPartOf: { "@id": "https://www.waypointfranchise.com/#website" },
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: "https://www.waypointfranchise.com" },
+        { "@type": "ListItem", position: 2, name: "Free Checklists", item: "https://www.waypointfranchise.com/checklists" },
+      ],
+    },
+    {
+      "@type": "ItemList",
+      name: "Franchise Evaluation Checklists",
+      description: "Six free franchise readiness checklists — one universal and five industry-specific — for serious franchise candidates.",
+      numberOfItems: 6,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Universal Franchise Readiness Checklist",
+          description: "The starting point for any serious franchise evaluation. Covers capital readiness, lifestyle fit, risk tolerance, and the questions to ask before you go further with any concept.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-universal",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Food & Beverage Franchise Checklist",
+          description: "Purpose-built for restaurant, fast casual, and QSR concepts. Covers build-out requirements, perishable inventory, staffing models, and the unit economics questions that matter most in food service.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-food-and-beverage",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Home Services Franchise Checklist",
+          description: "Covers cleaning, restoration, junk removal, landscaping, painting, pest control, and adjacent trades. Focuses on territory size, recurring revenue structure, and staffing model.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-home-services",
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: "Fitness & Wellness Franchise Checklist",
+          description: "Built for boutique studios, gyms, yoga, cycling, massage, and med spa concepts. Covers membership economics, staffing and certification requirements, and the real estate cost structure.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-fitness-wellness",
+        },
+        {
+          "@type": "ListItem",
+          position: 5,
+          name: "Senior Care Franchise Checklist",
+          description: "Covers home care, companion care, and assisted living franchises. Addresses licensing requirements by state, caregiver retention, and the referral network model that drives this category.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-senior-care",
+        },
+        {
+          "@type": "ListItem",
+          position: 6,
+          name: "B2B Franchise Checklist",
+          description: "For staffing, managed IT, fleet maintenance, logistics, and business consulting concepts. Focuses on client acquisition model, recurring contract structure, and the sales skills that make or break B2B operators.",
+          url: "https://www.waypointfranchise.com/checklists#checklist-b2b",
+        },
+      ],
+    },
+  ],
+};
+
 export default function ChecklistsPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(checklistsSchema) }}
+      />
       {/* Hero */}
       <section className="bg-[#0c1929] pt-20 pb-16 px-6">
         <div className="max-w-4xl mx-auto">

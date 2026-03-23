@@ -226,7 +226,7 @@ const faqs: { category: string; questions: FAQQuestion[] }[] = [
       {
         q: "How do I know when I am actually ready to move forward?",
         a: "A few signals usually line up at the same time: your liquid capital picture is clear and you know what you can deploy, you have a sense of what kind of work you want to be doing and what you want to step away from, and you have enough runway that the first 12 to 18 months of a new business building toward profitability is not a financial emergency. If those three things are in place, the remaining questions are about fit: which brand, which model, which territory. That is what the discovery process is designed to answer.",
-        link: { url: "/resources/w2-to-franchise-owner-when-youre-actually-ready", label: "W2 to franchise owner: when you're actually ready" },
+        link: { url: "/checklists", label: "Download a free franchise readiness checklist" },
       },
     ],
   },

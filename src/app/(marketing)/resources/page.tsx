@@ -57,6 +57,25 @@ export default function ResourcesPage() {
         <EmailCapture />
       </section>
 
+      {/* Checklists callout */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 pb-12">
+        <div className="border border-[#e2ddd2] rounded-xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-white">
+          <div className="flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-1">Free Downloads</p>
+            <p className="font-playfair text-lg text-[#0c1929] mb-1">Need a structured evaluation framework?</p>
+            <p className="text-sm text-[#5a5a4a] leading-relaxed">
+              Six free franchise checklists — one universal and five industry-specific. Pick the one that matches your category and get it in your inbox within minutes.
+            </p>
+          </div>
+          <Link
+            href="/checklists"
+            className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold tracking-wide text-white bg-[#0c1929] hover:bg-[#1a2f45] rounded-lg transition-all min-h-[44px]"
+          >
+            Get the Checklists
+          </Link>
+        </div>
+      </section>
+
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">The fastest way to get a real answer is a real conversation.</p>

@@ -22,7 +22,7 @@ Consulting services are 100% free to candidates. Franchise brands pay a referral
 
 ## Article Library
 
-Waypoint maintains 28+ educational articles on franchise buying. Full index available at:
+Waypoint maintains 34 educational articles on franchise buying. Full index available at:
 https://waypointfranchise.com/sitemap.xml
 https://waypointfranchise.com/resources
 
@@ -43,6 +43,7 @@ Topics covered: how to read an FDD, franchise cost structures, investment tiers,
 - /faq — Plain-language answers to common questions about cost, capital requirements, timeline, and how franchises work.
 - /book — Free 30-minute discovery call booking via TidyCal. No pitch, no agenda.
 - /scorecard — Franchise readiness quiz. 10 questions, produces a personalized readiness score and category breakdown.
+- /checklists — Free download hub. Six franchise evaluation checklists (universal plus five industry-specific: food and beverage, home services, fitness and wellness, senior care, B2B). Email capture delivers the checklist directly to the candidate.
 - /blog — Editorial content on franchising, business ownership, and related topics.
 - /privacy — Privacy policy.
 - /terms — Terms of service.
