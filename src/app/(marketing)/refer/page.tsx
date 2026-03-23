@@ -213,13 +213,13 @@ export default function ReferPage() {
           {/* The honest note */}
           <div className="mb-12 sm:mb-16 bg-[#0c1929] rounded-xl p-6 sm:p-8">
             <h2 className="text-lg font-semibold text-[#CC6535] mb-3">
-              A quick note on why I&apos;m asking
+              The part that usually surprises people
             </h2>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-4">
               More of my referrals come from people who decided not to buy a franchise than from people who did. That says something about how the process works.
             </p>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              When someone goes through it and realizes it&apos;s not the right fit, they don&apos;t walk away feeling sold to. They walk away with more clarity than they started with. And they tend to think of someone they know who&apos;d benefit from that same kind of honest conversation. If you know someone at that kind of crossroads, that&apos;s exactly who I&apos;m here for.
+              When someone goes through it and realizes it&apos;s not the right fit, they don&apos;t walk away feeling sold to. They walk away with a better read on where they actually stand. And they tend to think of someone they know who&apos;d benefit from that same kind of honest conversation. If you know someone at that kind of crossroads, that&apos;s exactly who I&apos;m here for.
             </p>
           </div>
 
