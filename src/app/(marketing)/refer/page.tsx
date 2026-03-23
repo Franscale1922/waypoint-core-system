@@ -216,10 +216,10 @@ export default function ReferPage() {
               A quick note on why I&apos;m asking
             </h2>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed mb-4">
-              I&apos;m not paying referral bonuses. There&apos;s no affiliate link, no tracking code, and nothing in it for you financially. I&apos;m asking because the best way for someone to find their way to a conversation with me is usually through someone who&apos;s already been through it.
+              More of my referrals come from people who decided not to buy a franchise than from people who did. That says something about how the process works.
             </p>
             <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-              If you think they&apos;d benefit from an honest, no-pressure conversation about whether franchise ownership makes sense for them, that&apos;s enough reason. And if it turns out it&apos;s not the right fit for them, I&apos;ll say so.
+              When someone goes through it and realizes it&apos;s not the right fit, they don&apos;t walk away feeling sold to. They walk away with more clarity than they started with. And they tend to think of someone they know who&apos;d benefit from that same kind of honest conversation. If you know someone at that kind of crossroads, that&apos;s exactly who I&apos;m here for.
             </p>
           </div>
 
