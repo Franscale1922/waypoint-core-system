@@ -75,13 +75,13 @@ Items ordered by **impact × effort ratio**.
 
 ### 🔴 Sprint 3 — Performance & Technical SEO
 
-#### 3.1 Migrate `<img>` Tags to Next.js `<Image>` Component
-**Files:** `page.tsx`, `about/page.tsx`, `process/page.tsx`
-**Why:** Automatic WebP conversion, responsive srcsets, LCP optimization — biggest remaining PageSpeed win.
-**Note:** CSS `background-image` divs stay as-is (can't use `<Image>` for those).
-**Expected impact:** Current hero JPEGs are 600KB–1.4MB. WebP conversion → ~200–400KB. Directly improves LCP score.
+#### ✅ 3.1 `<img>` → Next.js `<Image>` Component — COMPLETE
+All marketing pages already use `next/image` with proper `fill`, `priority`, `sizes`, and `width`/`height`. No raw `<img>` tags exist. Migration was done in a prior session.
 
-#### 3.2 FAQ Schema Markup (JSON-LD)
+#### ✅ 3.2 FAQ Schema Markup (JSON-LD) — COMPLETE
+`FAQPage` JSON-LD schema dynamically built from the `faqs` data array in `faq/page.tsx` (lines 235–257). All 30 questions included automatically. Injected as `<script type="application/ld+json">` in page head. Schema stays in sync with content by construction.
+
+#### 🔄 3.3 Page-Specific Open Graph Images — NEXT
 **File:** `src/app/(marketing)/faq/page.tsx`
 **Issue:** No structured data — missing FAQ rich results in Google SERP.
 **Fix:** Add `FAQPage` JSON-LD schema. Pattern already established on `/process` (HowTo schema). Extend the same approach.
