@@ -12,11 +12,13 @@ const prisma = new PrismaClient();
 
 export async function POST(
     _req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const { id } = await params;
+
         const lead = await prisma.lead.findUnique({
-            where: { id: params.id },
+            where: { id },
             select: { id: true, name: true },
         });
 
@@ -25,13 +27,14 @@ export async function POST(
         }
 
         await prisma.lead.update({
-            where: { id: params.id },
+            where: { id },
             // @ts-ignore — dmStatus/dmSentAt added via manual migration; Prisma client picks up on next generate
             data: { dmStatus: "SENT", dmSentAt: new Date() },
         });
 
-        console.log(`[dm-sent] Marked DM sent for ${lead.name} (${params.id})`);
-        return NextResponse.json({ ok: true, leadId: params.id });
+        console.log(`[dm-sent] Marked DM sent for ${lead.name} (${id})`);
+        return NextResponse.json({ ok: true, leadId: id });
+
     } catch (err) {
         console.error("[dm-sent]", err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
