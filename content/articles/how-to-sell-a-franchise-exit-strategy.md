@@ -43,7 +43,9 @@ The multiple is not fixed. It moves based on several variables you can affect:
 
 **Revenue trend.** A business with three years of growing revenue commands a higher multiple than one with flat or declining revenue, even at the same absolute level. Buyers and their advisors look at direction, not just the current number. The last two to three years before a sale set the narrative.
 
-**Remaining franchise term.** A buyer is purchasing the right to operate this business for the remaining length of the agreement. If there are only three years left before renewal, the buyer inherits renewal risk. Most buyers want to see at least five years remaining, ideally with renewal options clearly documented. If you're approaching the end of your initial term, renewing before going to market extends your sales runway.
+**Remaining franchise term.** The term structure in a resale depends on the franchisor. Some franchisors require the buyer to assume the remaining term of the existing agreement, which means a unit with three years left transfers with three years left. Others issue the new buyer a full, fresh franchise agreement, resetting the term entirely. Both approaches are used in the industry, and which one applies will be specified in your franchise agreement's transfer provisions.
+
+As a seller, this matters because buyers want runway. A unit with limited time left on a transferred agreement will generate more price resistance than one where the franchisor issues a fresh term to the new owner. If you're approaching the end of your initial term, find out which approach your franchisor takes before going to market, and if they'll issue a new agreement to the buyer, make that part of your positioning.
 
 **Lease quality.** The real estate situation matters almost as much as the business financials. A stable lease with renewal options and terms that transfer cleanly to a new owner is a significant asset. A short remaining lease, a difficult landlord, or a lease that requires franchisor co-signing adds complexity and risk that buyers price in.
 
