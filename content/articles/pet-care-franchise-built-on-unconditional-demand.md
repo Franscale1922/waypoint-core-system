@@ -12,7 +12,7 @@ relatedSlugs:
   - "the-semi-absentee-franchise-real-talk"
 faqs:
   - q: "What is a pet care franchise?"
-    a: "A pet care franchise is a licensed business that delivers services to pet owners under an established brand's systems and standards. The category includes pet boarding and daycare facilities, mobile grooming, in-home pet sitting and dog walking, veterinary services, retail pet supply, and training. Most franchise concepts in this space focus on one or two service lines rather than trying to cover the full range. The franchisor provides the brand, operating systems, and supplier relationships; the franchisee provides the capital, location or territory, and daily management."
+    a: "A pet care franchise is a licensed business that delivers services to pet owners under an established brand's systems and standards. The category includes pet boarding and daycare facilities, mobile grooming, in-home pet sitting and dog walking, pet training, veterinary services, and retail pet supply. Most franchise concepts in this space focus on one or two service lines rather than trying to cover the full range. The franchisor provides the brand, operating systems, and supplier relationships; the franchisee provides the capital, location or territory, and daily management."
   - q: "How much does a pet care franchise cost?"
     a: "Pet care franchise investment ranges significantly by model as of 2026. Brick-and-mortar boarding and daycare facilities are the most capital-intensive, typically requiring $400,000 to $900,000 in total investment depending on facility size, real estate market, and build-out requirements. Mobile grooming franchises are considerably lower, often $80,000 to $150,000 total investment, because the business operates from a vehicle rather than a fixed location. In-home pet sitting and dog walking concepts can enter below $50,000. All investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "Are pet care franchises recession-resistant?"
@@ -46,6 +46,10 @@ These concepts appeal to buyers who want a lower-investment entry into the categ
 
 **Retail pet supply.** The most competitive and lowest-margin segment within pet care franchising. National retail chains with substantial marketing budgets and supply chain advantages dominate this category. Franchised pet retail concepts are competing in a market with significant structural headwinds. Most franchise advisors steer buyers toward service-based pet concepts for this reason, services have natural protection against e-commerce displacement; products do not.
 
+**Pet training.** A smaller but growing segment with a distinct operational profile. Training concepts deliver structured obedience, behavior modification, and socialization programs, either in group class formats, private sessions, or in-home. Capital requirements are low relative to boarding or retail: training can operate from a leased class space, a mobile setup, or in partnership with a boarding or daycare facility.
+
+The constraint in pet training is talent. Quality training requires certified, skilled trainers, and that labor pool is limited in most markets. Franchisors that have built strong trainer development and certification pipelines have a meaningful advantage here. The buyer profile most suited to this model tends to have a background in education, coaching, or behavioral science, or is willing to invest seriously in the talent infrastructure from day one.
+
 ---
 
 ## What Actually Drives Customer Loyalty
@@ -66,10 +70,11 @@ As of 2026, approximate total investment ranges by sub-category:
 
 | Model | Total Investment Range |
 |---|---|
-| Boarding and daycare facility | $400,000–$900,000 |
-| Mobile grooming franchise | $80,000–$150,000 |
-| In-home pet sitting / dog walking | $30,000–$60,000 |
-| Combined services concept | $150,000–$350,000 |
+| Boarding and daycare facility | $400,000 to $900,000 |
+| Mobile grooming franchise | $80,000 to $150,000 |
+| In-home pet sitting / dog walking | $30,000 to $60,000 |
+| Pet training (class or mobile format) | $50,000 to $150,000 |
+| Combined services concept | $150,000 to $350,000 |
 
 All figures are estimates. Actual investment requirements are disclosed in the franchise disclosure document the franchisor is required to share with you before you sign.
 
@@ -93,7 +98,7 @@ If you're evaluating specific concepts in this category and want to pressure-tes
 
 **What is a pet care franchise?**
 
-A pet care franchise is a licensed business that delivers services to pet owners under an established brand's systems and standards. The category includes pet boarding and daycare facilities, mobile grooming, in-home pet sitting and dog walking, veterinary services, retail pet supply, and training. Most franchise concepts in this space focus on one or two service lines rather than trying to cover the full range. The franchisor provides the brand, operating systems, and supplier relationships; the franchisee provides the capital, location or territory, and daily management.
+A pet care franchise is a licensed business that delivers services to pet owners under an established brand's systems and standards. The category includes pet boarding and daycare facilities, mobile grooming, in-home pet sitting and dog walking, pet training, veterinary services, and retail pet supply. Most franchise concepts in this space focus on one or two service lines rather than trying to cover the full range. The franchisor provides the brand, operating systems, and supplier relationships; the franchisee provides the capital, location or territory, and daily management.
 
 **How much does a pet care franchise cost?**
 
