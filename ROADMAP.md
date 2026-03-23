@@ -105,11 +105,17 @@ Contextual links added to 5 pages (111 insertions):
 **Issue:** First FAQ answer may still reference "two-hour discovery conversation" as the first step — contradicts the new "30-minute intro call" framing on `/process`.
 **Fix:** *"We start with a short intro call — usually 20 to 30 minutes — to understand where you are and whether going deeper makes sense. If it does, we schedule the full discovery conversation from there."*
 
-#### 4.3 LinkedIn DM Queue (Cold Email Extension)
-**Status:** Stub exists in `src/inngest/functions.ts` (`linkedinDmQueue`). Not yet implemented.
-**Concept:** Automated LinkedIn DM follow-up for leads who open emails but don't reply.
+#### ✅ 4.3 LinkedIn DM Queue — COMPLETE
+**Built (March 2026):**
+- `/admin/linkedin` page — mirrors the Inngest query in real-time (SENT leads, 5+ days, top 20 by score)
+- Each lead card shows name/title/company/score, days since email, LinkedIn profile link, copy-paste DM script
+- "Mark DM Sent" and "Skip" buttons — call `/api/admin/leads/[id]/dm-sent` and `/api/admin/leads/[id]/dm-skip`
+- Done leads collapse to a separate section; queue refreshes in-place on action
+- `dmStatus` + `dmSentAt` fields added to `Lead` schema (auto-migrated via `prisma db push` on Vercel deploy)
+- "LinkedIn Queue" nav item added to admin sidebar
+- Inngest function (`linkedInDmQueue`) was already built and registered — Slack alerts continue to fire Mon–Fri 9 AM MT
 
----
+
 
 ### 🟢 Completed — For Reference
 
