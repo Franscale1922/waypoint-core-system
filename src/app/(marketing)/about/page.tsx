@@ -125,6 +125,17 @@ export default async function AboutPage() {
               <strong className="text-[#1b3a5f] font-semibold">That combination is why I can look you in the eye</strong>{" "}
               and tell you whether this is a good idea for you or not.
             </p>
+            <p className="mt-4 text-sm text-[#5a5a4a]">
+              Not sure where you stand yet?{" "}
+              <a href="/scorecard" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">
+                Take the 2-minute readiness quiz →
+              </a>{" "}
+              or{" "}
+              <a href="/process" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">
+                see exactly how the process works
+              </a>
+              .
+            </p>
           </div>
 
           {/* Credential block — AEO entity extraction target */}

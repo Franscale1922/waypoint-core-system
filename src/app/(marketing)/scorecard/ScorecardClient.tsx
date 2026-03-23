@@ -166,14 +166,38 @@ export default function ScorecardClient() {
               </a>
             </>
           ) : (
-            <div className="mt-6 sm:mt-8 space-y-3">
-              <a
-                href="/resources"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-xl shadow-lg transition-all press-effect min-h-[48px]"
-              >
-                Browse Franchise Resources
-              </a>
-              <p className="text-xs text-slate-400 mt-2">
+            <div className="mt-6 sm:mt-8 space-y-4 text-left max-w-lg mx-auto">
+              <p className="text-sm font-semibold text-[#1b3a5f] text-center mb-4">Here are the most useful places to start:</p>
+              {[
+                {
+                  href: "/resources/are-you-ready-to-own-a-franchise",
+                  label: "Are You Ready to Own a Franchise?",
+                  desc: "An honest self-assessment before you go further.",
+                },
+                {
+                  href: "/resources/w2-to-franchise-owner-when-youre-actually-ready",
+                  label: "W2 to Franchise Owner: When You're Actually Ready",
+                  desc: "The signals that tell you the timing is right.",
+                },
+                {
+                  href: "/resources/how-franchise-funding-actually-works",
+                  label: "How Franchise Funding Actually Works",
+                  desc: "Cash, ROBS, HELOC, SBA — what each path actually requires.",
+                },
+              ].map(({ href, label, desc }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="flex items-start gap-4 bg-white border border-[#e2ddd2] rounded-xl p-4 hover:border-[#CC6535]/50 hover:shadow-sm transition-all group"
+                >
+                  <span className="text-[#CC6535] mt-0.5 flex-shrink-0 text-lg leading-none">→</span>
+                  <div>
+                    <p className="text-sm font-semibold text-[#0c1929] group-hover:text-[#8E3012] transition-colors">{label}</p>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{desc}</p>
+                  </div>
+                </a>
+              ))}
+              <p className="text-xs text-slate-400 text-center mt-4">
                 Or <a href="/book" className="underline hover:text-slate-600" onClick={() => trackBookCallClicked("scorecard_results_low")}>book a call anyway</a>. Sometimes the honest conversation is the most useful one.
               </p>
             </div>

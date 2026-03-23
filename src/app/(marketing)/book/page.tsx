@@ -158,6 +158,31 @@ export default function BookPage() {
         </div>
       </section>
 
+      {/* Pre-call reading — optional context for curious visitors */}
+      <section className="border-t border-[#e8e0d0] bg-[#f7f5f1] py-10 px-4 sm:px-6">
+        <div className="max-w-4xl mx-auto">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Want to come prepared?</p>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {[
+              { href: "/process", label: "See how the process works", desc: "What happens from first call to final decision — step by step." },
+              { href: "/investment", label: "Understand the investment", desc: "What a franchise actually costs, from fee to first year." },
+              { href: "/scorecard", label: "Take the readiness quiz", desc: "A 2-minute score that tells you honestly where you stand." },
+            ].map(({ href, label, desc }) => (
+              <a
+                key={href}
+                href={href}
+                className="group block bg-white border border-[#e8e0d0] rounded-xl p-5 hover:shadow-sm hover:border-[#CC6535]/40 transition-all"
+              >
+                <div className="w-5 h-[2px] bg-[#CC6535] mb-3 group-hover:w-8 transition-all duration-300" />
+                <p className="text-sm font-semibold text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-1">{label}</p>
+                <p className="text-xs text-[#7a7a6a] leading-relaxed">{desc}</p>
+                <p className="mt-3 text-xs text-[#8E3012] font-medium">Read →</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+
     </main>
   );
 }

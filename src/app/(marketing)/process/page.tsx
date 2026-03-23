@@ -57,7 +57,14 @@ export const metadata: Metadata = {
   alternates: { canonical: "https://www.waypointfranchise.com/process" },
 };
 
-const steps = [
+const steps: {
+  number: string;
+  label: string;
+  headline: string;
+  outcome: string;
+  body: string[];
+  link?: { href: string; label: string };
+}[] = [
   {
     number: "01",
     label: "The Intro Call",
@@ -103,6 +110,7 @@ const steps = [
       "This is where you ask the questions that actually matter. What does a bad week look like? What does the support actually do? What do you wish you had known before you signed? Where does the brand fall short?",
       "These conversations are, in my opinion, the most valuable part of the entire process. You are not hearing from the marketing team. You are hearing from people who are doing the thing, in real markets, with their own money on the line.",
     ],
+    link: { href: "/resources/how-to-tell-if-a-franchisor-actually-cares", label: "How to tell if a franchisor actually cares →" },
   },
   {
     number: "05",
@@ -115,6 +123,7 @@ const steps = [
       "If franchising is not the right move, I will tell you that. About thirty percent of the candidates I talk with end up buying a franchise. I am not trying to move that number. I have the financial freedom to do this because I want to, not because I need a referral fee. A fit that is wrong for you is wrong for both of us.",
       "If it is the right move, you will feel it. The decision, when it comes, should feel more like excitement than fear.",
     ],
+    link: { href: "/checklists", label: "Download a free franchise readiness checklist →" },
   },
 ];
 
@@ -263,6 +272,14 @@ export default function ProcessPage() {
                     <span className="text-[#CC6535] font-semibold text-xs uppercase tracking-widest whitespace-nowrap mt-0.5">Walk away with:</span>
                     <p className="text-sm text-[#3a3a2e] leading-relaxed">{step.outcome}</p>
                   </div>
+                )}
+                {step.link && (
+                  <a
+                    href={step.link.href}
+                    className="mt-4 inline-flex items-center text-sm text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors"
+                  >
+                    {step.link.label}
+                  </a>
                 )}
               </div>
             </div>

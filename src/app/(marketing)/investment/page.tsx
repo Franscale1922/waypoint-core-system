@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import InvestmentTierToggle from "@/app/components/InvestmentTierToggle";
+import type { InvestmentTier } from "@/app/components/InvestmentTierToggle";
 
 const investmentGuideSchema = {
   "@context": "https://schema.org",
@@ -54,30 +56,34 @@ export const metadata: Metadata = {
   },
 };
 
-const investmentTiers = [
+const investmentTiers: InvestmentTier[] = [
   {
-    range: "$75K – $150K",
+    cashRange: "$50K – $75K",
+    investmentRange: "$75K – $150K",
     label: "Entry-level service franchises",
     description:
       "Home-based or van-based service models with low overhead. Common in home services, cleaning, pest control, and mobile categories. Minimal physical footprint, faster ramp-up, lower working capital requirements.",
     examples: ["Home-based service models", "Mobile service concepts", "B2B service franchises"],
   },
   {
-    range: "$150K – $300K",
+    cashRange: "$75K – $150K",
+    investmentRange: "$375K – $750K",
     label: "Light commercial or staffed service",
     description:
       "Small commercial space or staffed service model. Common in personal services, restoration, fitness (studio format), and senior care. Usually requires a small team from day one.",
     examples: ["Studio fitness concepts", "Restoration and remediation", "Senior in-home care", "Light retail"],
   },
   {
-    range: "$300K – $600K",
+    cashRange: "$150K – $300K",
+    investmentRange: "$750K – $1.5M",
     label: "Full brick-and-mortar",
     description:
       "Dedicated commercial space with build-out, signage, and equipment. Common in food service, auto-related services, and larger fitness concepts. Longer lead time before opening, higher working capital needed.",
     examples: ["Food service concepts", "Auto service franchises", "Full fitness facilities"],
   },
   {
-    range: "$600K+",
+    cashRange: "$300K+",
+    investmentRange: "$1.5M+",
     label: "Multi-unit or large-format",
     description:
       "Large-format retail, multi-territory deals, or capital-intensive concepts. Typically reserved for candidates with significant capital and prior business experience. Funding often requires a combination of direct capital, ROBS, and in some cases bank financing.",
@@ -216,38 +222,8 @@ export default function InvestmentPage() {
         </p>
       </section>
 
-      {/* Investment tiers */}
-      <section className="bg-[#0c1929] py-14 sm:py-20 px-5 sm:px-6">
-        <div className="max-w-4xl mx-auto">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-4">
-            Investment Tiers
-          </p>
-          <h2 className="font-playfair text-2xl sm:text-3xl text-white mb-4">
-            What your capital range opens up
-          </h2>
-          <p className="text-sm text-white/70 leading-relaxed mb-10 max-w-2xl">
-            Your available liquid capital determines which categories of franchise are accessible. Here is how the landscape breaks down by investment tier.
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {investmentTiers.map((tier) => (
-              <div key={tier.range} className="bg-[#0f2035] border border-[#1b3a5f] rounded-xl p-6">
-                <p className="text-[#CC6535] font-black text-xl mb-1">{tier.range}</p>
-                <p className="text-white font-semibold text-sm mb-3">{tier.label}</p>
-                <p className="text-white/60 text-sm leading-relaxed mb-4">{tier.description}</p>
-                <ul className="space-y-1">
-                  {tier.examples.map((ex) => (
-                    <li key={ex} className="text-xs text-white/50 flex items-start gap-2">
-                      <span className="text-[#CC6535] mt-0.5 flex-shrink-0">—</span>
-                      {ex}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Investment tiers — interactive toggle */}
+      <InvestmentTierToggle tiers={investmentTiers} />
 
       {/* Mid-page CTA — bridge between tiers and financing */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-10">
@@ -281,10 +257,13 @@ export default function InvestmentPage() {
         <div className="grid sm:grid-cols-2 gap-8">
           <div>
             <p className="text-sm text-[#4a4a3e] leading-relaxed mb-4">
-              Liquid capital is the money you can access without selling a house or liquidating a retirement account under penalty. It includes cash, brokerage accounts, and 401(k) or IRA balances that can be rolled into a business using a ROBS (Rollover for Business Startups) structure without triggering early withdrawal penalties.
+              Liquid capital is the money you can access without selling a house or liquidating a retirement account under penalty. It includes cash, brokerage accounts, and 401(k) or IRA balances that can be rolled into a business using a{" "}
+              <a href="/resources/how-franchise-funding-actually-works" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">ROBS (Rollover for Business Startups)</a>{" "}
+              structure without triggering early withdrawal penalties.
             </p>
             <p className="text-sm text-[#4a4a3e] leading-relaxed">
-              Most franchisors set a minimum liquid capital requirement in their FDD. This is the amount they expect you to have available before financing, not the total investment. The goal is to fund as much of the purchase as possible without borrowing — and to borrow only what you genuinely cannot cover otherwise.
+              Most franchisors set a minimum liquid capital requirement in their{" "}
+              <a href="/resources/fdd-decoded-what-actually-matters" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">FDD</a>. This is the amount they expect you to have available before financing, not the total investment. The goal is to fund as much of the purchase as possible without borrowing — and to borrow only what you genuinely cannot cover otherwise.
             </p>
           </div>
           <div>
@@ -378,11 +357,17 @@ export default function InvestmentPage() {
               {
                 q: "Does the cost of a franchise affect what I pay when I sell it?",
                 a: "Indirectly. Franchises are typically sold as businesses, and the purchase price often reflects a multiple of revenue or EBITDA rather than the original franchise fee. Your franchise agreement will also govern who approves the transfer and what fees apply. This is worth understanding early, especially if you plan to build toward an eventual exit.",
+                link: { href: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate", label: "What's actually negotiable in a franchise agreement →" },
               },
-            ].map(({ q, a }) => (
+            ].map(({ q, a, link }: { q: string; a: string; link?: { href: string; label: string } }) => (
               <div key={q} className="bg-white rounded-xl p-6 border border-[#e8e0d0]">
                 <h3 className="font-playfair text-lg text-[#0c1929] mb-3">{q}</h3>
                 <p className="text-sm text-[#4a4a3e] leading-relaxed">{a}</p>
+                {link && (
+                  <a href={link.href} className="mt-3 inline-flex items-center text-sm text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">
+                    {link.label}
+                  </a>
+                )}
               </div>
             ))}
           </div>
