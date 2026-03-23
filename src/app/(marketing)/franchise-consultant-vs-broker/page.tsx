@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     description:
       "Both are free to you. Both are paid by the brand. The difference is in how they work. And that difference matters a lot.",
     url: "https://www.waypointfranchise.com/franchise-consultant-vs-broker",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Consultant vs Broker" }],
+    images: [{ url: "/og/og-consultant-vs-broker.png", width: 1200, height: 630, alt: "Franchise Consultant vs Broker — There's a Real Difference | Waypoint" }],
   },
 };
 

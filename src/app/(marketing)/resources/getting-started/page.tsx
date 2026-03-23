@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description:
       "Practical guides for anyone who is new to franchising. Readiness, costs, FDD review, and how to find the right type of franchise.",
     url: "https://www.waypointfranchise.com/resources/getting-started",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Getting Started with Franchising" }],
+    images: [{ url: "/og/og-getting-started.png", width: 1200, height: 630, alt: "Getting Started with Franchising | Waypoint Franchise Advisors" }],
   },
 };
 

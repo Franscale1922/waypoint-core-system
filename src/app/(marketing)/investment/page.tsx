@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     description:
       "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and your real funding options — explained plainly.",
     url: "https://www.waypointfranchise.com/investment",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Investment Guide" }],
+    images: [{ url: "/og/og-investment.png", width: 1200, height: 630, alt: "Franchise Investment Guide — What It Actually Costs | Waypoint" }],
   },
 };
 

@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     description:
       "Two free assessments, franchise readiness and personality archetype, that tell you where you stand before committing to a conversation.",
     url: "https://www.waypointfranchise.com/tools",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Free Franchise Tools" }],
+    images: [{ url: "/og/og-tools.png", width: 1200, height: 630, alt: "Free Franchise Tools — Quizzes, Checklists, Resources | Waypoint" }],
   },
 };
 
