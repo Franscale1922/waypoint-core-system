@@ -51,6 +51,8 @@ model Lead {
   sentAt            DateTime?  // When status transitioned to SENT (set by senderProcess)
   repliedAt         DateTime?  // When first reply was received (set by replyGuardianProcess)
   bookedAt          DateTime?  // When lead booked a TidyCal consultation (set by tidycalBookingSync)
+  dmStatus          String?    // LinkedIn DM queue state: "QUEUED" | "SENT" | "SKIPPED"
+  dmSentAt          DateTime?  // When Kelsey manually sent the LinkedIn DM
   // instantlyLeadId: Instantly's internal ID for this lead — needed to join Instantly webhook events
   instantlyLeadId   String?
   // suppressionReason: why the lead was suppressed — enables suppression analysis
