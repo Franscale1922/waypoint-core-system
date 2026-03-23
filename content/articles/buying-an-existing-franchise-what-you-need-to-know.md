@@ -51,7 +51,7 @@ When you buy a resale, there are two.
 
 **You're vetting the existing business.** The price point, the P&L, the operational structure as it currently runs, the lease, the customer concentration, the staff retention outlook, the reason the seller is actually leaving. Every one of those factors is its own due diligence item, and you're negotiating a deal with the seller while you're working through all of them.
 
-**You're also vetting the franchise.** The franchisor still has to approve you as a buyer. Their system still has to be worth entering at this stage of its growth. The same questions you'd ask about the brand in a new unit situation still apply here: is the support real, does Item 20 show healthy retention, are the franchisees who opened five years ago still there?
+**You're also vetting the franchise.** The franchisor still has to approve you as a buyer. Their system still has to be worth entering at this stage of its growth. The same questions you'd ask about the brand in a new unit situation still apply here: is the support real, are the franchisees who opened five years ago still operating (or did they close or leave the system), and is the network growing or contracting?
 
 These two tracks run at the same time, but they're not the same process. One is a negotiation with the seller. The other is a qualification process with the franchisor. You have to move both forward simultaneously, and either one can fall apart independently.
 
