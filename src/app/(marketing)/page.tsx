@@ -54,6 +54,7 @@ export default function HomePage() {
           alt="Dark mountain lake at twilight with alpenglow peaks — Waypoint Franchise Advisors, Whitefish Montana"
           fill
           priority
+          fetchPriority="high"
           sizes="100vw"
           className="object-cover object-center"
         />
