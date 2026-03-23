@@ -11,7 +11,7 @@ relatedSlugs:
   - "how-franchise-funding-actually-works"
 faqs:
   - q: "What is a franchise royalty fee?"
-    a: "A franchise royalty fee is an ongoing payment made by the franchisee to the franchisor in exchange for the right to operate under the franchisor's brand, systems, and support. Royalties are typically calculated as a percentage of gross sales, not profit, and are paid weekly or monthly for the life of the franchise agreement. The royalty rate and structure are disclosed in Item 6 of the Franchise Disclosure Document."
+    a: "A franchise royalty fee is an ongoing payment made by the franchisee to the franchisor in exchange for the right to operate under the franchisor's brand, systems, and support. Royalties are typically calculated as a percentage of gross sales, not profit, and are paid weekly or monthly for the life of the franchise agreement. The royalty rate and structure are disclosed in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "What is a typical franchise royalty rate?"
     a: "Most franchise royalty rates fall between 4% and 8% of gross revenue as of 2026, though rates outside this range exist in both directions. Service-based franchises with high margins often carry higher royalty rates because the percentage represents a smaller share of the absolute value created. Capital-intensive concepts with tighter margins, food service, for example, tend to run lower royalty rates. The rate itself is less important than understanding what it leaves on the table after all operating costs."
   - q: "What does the royalty actually pay for?"
@@ -97,7 +97,7 @@ If you want to work through the royalty math on a specific concept you're evalua
 
 **What is a franchise royalty fee?**
 
-A franchise royalty fee is an ongoing payment made by the franchisee to the franchisor in exchange for the right to operate under the franchisor's brand, systems, and support. Royalties are typically calculated as a percentage of gross sales, not profit, and are paid weekly or monthly for the life of the franchise agreement. The royalty rate and structure are disclosed in Item 6 of the Franchise Disclosure Document.
+A franchise royalty fee is an ongoing payment made by the franchisee to the franchisor in exchange for the right to operate under the franchisor's brand, systems, and support. Royalties are typically calculated as a percentage of gross sales, not profit, and are paid weekly or monthly for the life of the franchise agreement. The royalty rate and structure are disclosed in the franchise disclosure document the franchisor is required to share before you sign.
 
 **What is a typical franchise royalty rate?**
 

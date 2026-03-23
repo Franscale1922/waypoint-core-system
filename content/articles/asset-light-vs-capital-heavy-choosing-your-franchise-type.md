@@ -117,7 +117,7 @@ Watch for saturation in specific categories. When a vertical gets hot, franchiso
 
 Once you know which quadrant fits your skills, your timeline, and your capital, you are not evaluating 4,000 brands. You are evaluating a much smaller set of concepts that fit your profile.
 
-From there the questions get more specific. How does this brand perform in markets like mine? What does Item 20 show about franchisee retention? What do the owners who are two to three years in say about it?
+From there the questions get more specific. How does this brand perform in markets like mine? What does the disclosure document show about franchisee retention? What do the owners who are two to three years in say about it?
 
 That is the kind of conversation I run with every candidate before we ever look at a specific brand. If you want to think through which quadrant fits you, let's talk.
 

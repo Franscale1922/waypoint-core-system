@@ -11,13 +11,13 @@ tier: 2
 excerpt: "Territory selection is one of the decisions that most franchise buyers spend the least time on. It is also one of the few decisions you cannot undo once you have signed."
 faqs:
   - q: "What is a franchise territory?"
-    a: "A franchise territory is a defined geographic area, typically by zip code, radius, or population threshold, within which a franchisee has exclusive or protected rights to operate. The specific terms governing your territory, including what competitors can operate nearby and whether your territory protections are exclusive, are defined in Item 12 of the Franchise Disclosure Document and in the franchise agreement itself."
+    a: "A franchise territory is a defined geographic area, typically by zip code, radius, or population threshold, within which a franchisee has exclusive or protected rights to operate. The specific terms governing your territory, including what competitors can operate nearby and whether your territory protections are exclusive, are defined in the franchise agreement and disclosed in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "How is franchise territory size determined?"
     a: "Franchisors determine territory size based on the business model's customer density requirements. Service-based and home services concepts typically define territory by zip codes or a population count sufficient to support the projected revenue model. Brick-and-mortar concepts typically use a radius-based protection zone around the physical location. B2B franchises sometimes define territory by industry segment or commercial square footage rather than geography."
   - q: "Can I change my franchise territory after signing?"
     a: "Generally, no. Territory is defined in the franchise agreement and is locked in at signing. Some systems allow franchisees to negotiate adjacent territory rights as a right of first refusal if they expand, but that is not guaranteed and varies by brand. This is one reason territory selection should be a deliberate research decision made before Discovery Day, not a convenience choice made under timeline pressure."
-  - q: "What does Item 20 tell me about territory performance in a franchise system?"
-    a: "Item 20 of the FDD lists all franchisee transfers, exits, and terminations in the system over the past three years, organized by state. It also includes a full contact list for all current franchisees. Reviewing Item 20 by region lets you identify whether any territories near your target market have been returned or terminated, which is an important signal about whether the market is viable for that concept."
+  - q: "How do I research whether a territory has worked for other franchisees in this system?"
+    a: "The franchise disclosure document lists all franchisee transfers, exits, and terminations in the system over the past three years, organized by state. It also includes a full contact list for all current franchisees. Reviewing that data by region lets you identify whether any territories near your target market have been returned or terminated, which is an important signal about whether the market is viable for that concept."
 ---
 Territory selection is one of the decisions that most franchise buyers spend the least time on. It is also one of the few decisions you cannot undo once you have signed.
 
@@ -45,11 +45,11 @@ The questions that matter when evaluating a specific territory:
 
 **1. What is the density of your target customer?** Every franchise has a customer profile. It is in the FDD and the training materials. For a kids enrichment concept, that is families with children under 12. For a B2B cleaning concept, that is commercial real estate square footage. Map the density of your actual target customer, not general population.
 
-**2. What does the competitive landscape look like?** Item 20 of the FDD shows where current and former franchisees are in the system. Check whether your territory has other operators nearby and whether any territories have been returned in the last three years. A high concentration of territory returns in a region is worth understanding before you commit.
+**2. What does the competitive landscape look like?** The franchise disclosure document shows where current and former franchisees are in the system. Check whether your territory has other operators nearby and whether any territories have been returned in the last three years. A high concentration of territory returns in a region is worth understanding before you commit.
 
 **3. Is the territory growing, stable, or declining?** Population trends matter over a 5-10 year ownership window. A suburban area at current capacity is a different bet from one seeing 3-4% annual household growth. Check local planning data. Approved developments, infrastructure projects, and population projections are public records.
 
-**4. What are existing operators in similar territories earning?** Item 19 of the FDD gives system-wide financial data. A good franchisor will also show you performance data for territories that look like yours: comparable population, density, and market type. Ask for it directly.
+**4. What are existing operators in similar territories earning?** The franchise disclosure document may include financial performance data for existing units. A good franchisor will also show you performance data for territories that look like yours: comparable population, density, and market type. Ask for it directly.
 
 ## The Mistake Most Buyers Make
 
@@ -71,7 +71,7 @@ An advisor who has worked with the franchisor knows how territory availability i
 
 ## The Bottom Line
 
-Good territory selection is a research project, not a gut call. The market data is available. Item 20 tells you what to look for in operator performance by region. Your franchisor should be a resource, not just a salesperson, on territory selection.
+Good territory selection is a research project, not a gut call. The market data is available. The franchise disclosure document tells you what to look for in operator performance by region. Your franchisor should be a resource, not just a salesperson, on territory selection.
 
 If you are getting close to a franchise decision and have not done this work yet, do it before Discovery Day, not after.
 

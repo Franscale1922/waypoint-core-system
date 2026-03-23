@@ -13,7 +13,7 @@ faqs:
   - q: "How do you calculate ROI on a franchise investment?"
     a: "A complete franchise ROI calculation includes three components: your capital investment (franchise fee, build-out, working capital), the ongoing cost of capital (debt service if financing, or foregone investment returns if paying cash), and the opportunity cost of your time (what you would earn deploying those hours in a corporate job or different business). The formula: annual profit minus opportunity cost of your time minus annual cost of capital equals actual return on investment. Most buyers calculate the first component but not the second or third."
   - q: "What is owner benefit (seller's discretionary earnings) in a franchise?"
-    a: "Owner benefit, also called seller's discretionary earnings, is the metric a buyer of your business would evaluate when you eventually sell: franchise profit plus owner compensation plus any non-cash charges such as depreciation. This number represents what the business actually generates for the owner. Some franchisors provide this in Item 19 of the FDD. Many do not. A franchise advisor can help you build a projection model using comparable operators in the system."
+    a: "Owner benefit, also called seller's discretionary earnings, is the metric a buyer of your business would evaluate when you eventually sell: franchise profit plus owner compensation plus any non-cash charges such as depreciation. This number represents what the business actually generates for the owner. Some franchisors provide this level of detail in their financial performance disclosures in the FDD. Many do not. A franchise advisor can help you build a projection model using comparable operators in the system."
   - q: "What is debt service on an SBA franchise loan and how does it affect ROI?"
     a: "Debt service is the total monthly principal and interest payment on your loan. On a $250,000 SBA loan at rates comparable to those as of 2026, monthly debt service runs approximately $3,300 per month, roughly $40,000 per year before you pay yourself a dollar. This is a real operating cost that must be modeled into your ROI calculation. A franchise that looks profitable before debt service may look materially different after it."
   - q: "How does adding franchise units change the return on time?"
@@ -53,7 +53,7 @@ The franchise model creates the leverage. The strategy about how many units and 
 
 ## Three Numbers to Know Before You Invest
 
-**Item 19 median gross revenue.** This is what the average unit in the system generates. Median is more reliable than average, since a few high performers can inflate the average significantly. Gross revenue is not profit. Know what it becomes after royalties, rent, and labor are applied.
+**Franchisee system revenue median.** This is what the typical unit in the system generates in revenue. Median is more reliable than average, since a few high performers can inflate the average significantly. Gross revenue is not profit. Know what it becomes after royalties, rent, and labor are applied.
 
 **Owner benefit (also called seller's discretionary earnings).** This is the number a buyer of the business would evaluate: profit plus owner compensation plus any non-cash charges. Some franchisors provide this number; many don't. Your advisor can help you build a projection model based on similar businesses in the system.
 

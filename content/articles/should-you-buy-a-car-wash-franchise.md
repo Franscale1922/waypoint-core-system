@@ -53,9 +53,9 @@ The more relevant question for most buyers is whether they have access to the ca
 
 Two specific places to look when you receive any car wash franchise FDD:
 
-**Item 19:** Average unit revenue broken down by length of time in operation. Year-one averages will look different from year-five averages. Be sure you understand the breakdown, not just the headline number.
+**Financial performance data for existing units:** Average unit revenue broken down by length of time in operation. Year-one averages will look different from year-five averages. Be sure you understand the breakdown, not just the headline number.
 
-**Item 20:** How many franchisees left the system in the last three years and why. A growing brand with high franchisee turnover is a signal worth investigating before the glossy sales deck convinces you otherwise.
+**Franchisee departure data:** How many franchisees left the system in the last three years and why. A growing brand with high franchisee turnover is a signal worth investigating before the glossy sales deck convinces you otherwise.
 
 Also ask about the membership penetration rate across the system. What percentage of monthly washes come from members versus retail customers? If the franchisor doesn't track this or won't share it, that tells you something.
 

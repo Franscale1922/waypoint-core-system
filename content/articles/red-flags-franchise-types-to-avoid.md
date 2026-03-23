@@ -13,11 +13,11 @@ faqs:
   - q: "What are the biggest red flags in a franchise opportunity?"
     a: "The five most consistent red flags across franchise categories are: a franchisor whose primary business is elsewhere (you become an afterthought), franchise agreements that structure ownership as a job with no path to stepping back, unit economics that don't support a manager hire or produce a meaningful exit valuation, a franchisor who can't clearly articulate what the royalty is actually buying, and passion-driven founders whose primary mission is the product or cause rather than franchisee financial success."
   - q: "How do you know if a franchise will let you scale beyond one unit?"
-    a: "Read Items 6 and 9 of the Franchise Disclosure Document. Item 6 covers ongoing fees and royalty structure. Item 9 discloses restrictions on what you can and cannot do as a franchisee. Look specifically for clauses that restrict hiring an operator to manage day-to-day operations, limit your ability to purchase additional units or territories, or require franchisor approval on routine operational decisions. A system that restricts these things is structurally limiting your upside regardless of performance."
+    a: "Review the franchise disclosure document section on ongoing fees and the section describing operational restrictions on franchisees. For fees, look for royalty rate, marketing fund contribution, technology fees, and any variable fees tied to vendor purchasing. For restrictions, look specifically for clauses that restrict hiring an operator to manage day-to-day operations, limit your ability to purchase additional units or territories, or require franchisor approval on routine operational decisions. A system that restricts these things is structurally limiting your upside regardless of performance."
   - q: "What should a franchise royalty pay for?"
     a: "A franchise royalty should buy a specific, articulable advantage, including a proprietary product or service, brand recognition in your market, active business development support, technology infrastructure, training systems, or a combination of these. If the franchisor cannot clearly describe what the royalty provides beyond 'the right to use our name,' that is a significant concern. The royalty should replace or shorten a capability gap you would otherwise spend years building yourself."
   - q: "How can I tell if a franchisor is aligned with franchisee success?"
-    a: "Look at three things: how long franchisees stay in the system (Item 20 retention data), how the Item 2 leadership team talks about franchisees versus the brand or product, and what existing franchisees say when you ask directly whether corporate prioritizes their financial outcome. Then ask specifically: when the franchisor last made a system-wide decision that hurt individual franchisee unit economics, how did they handle it?"
+    a: "Look at three things: how long franchisees stay in the system (review franchisee departure and transfer data in the disclosure document), how the franchisor's leadership team talks about franchisees versus the brand or product, and what existing franchisees say when you ask directly whether corporate prioritizes their financial outcome. Then ask specifically: when the franchisor last made a system-wide decision that hurt individual franchisee unit economics, how did they handle it?"
 ---
 There are over 4,000 franchise brands in the United States. A significant number of them are not worth buying. Some are obvious traps. Others look fine until you're six months in and realize the economics will never work.
 
@@ -37,7 +37,7 @@ In any franchise relationship, the franchisee is the customer. You are paying a 
 
 Brands franchised as a primary business look different. There's a development team, a training program, active field support, and a corporate structure built around franchisee success. That's what you're paying for and what you should be getting.
 
-Before you go deep on any concept, ask: is this the main thing they do, or is it a side project? The answer is usually visible in the Item 2 leadership section of the FDD. Look at how many people are working on franchisee support.
+Before you go deep on any concept, ask: is this the main thing they do, or is it a side project? The answer is usually visible in the leadership section of the disclosure document. Look at how many people are working on franchisee support.
 
 ---
 
@@ -63,7 +63,7 @@ Two tests to run:
 
 **The manager test.** If your goal is to eventually step out of daily operations, you need enough room in the fee and cost structure to pay a qualified manager and still generate a return. Some franchise models are priced and royalty-structured in a way that makes that math impossible. The moment you try to hire yourself out of the job, the business breaks even at best. That is not a business. That is a position.
 
-**The exit test.** When you eventually sell, the business will be valued at a multiple of earnings. If the earnings are too thin to produce a meaningful valuation, you won't get your investment back. Run the exit math before you buy, not after. Item 19 of the FDD gives you financial performance data to work with. If they don't disclose anything in Item 19, that alone raises the question of why.
+**The exit test.** When you eventually sell, the business will be valued at a multiple of earnings. If the earnings are too thin to produce a meaningful valuation, you won't get your investment back. Run the exit math before you buy, not after. The financial performance data in the franchise disclosure document gives you revenue figures to work with. If the franchisor doesn't disclose any financial performance data, that alone raises the question of why.
 
 The price you paid to get in should be recoverable at exit in a realistic timeframe. If the economics don't support that, find a different concept.
 
@@ -91,7 +91,7 @@ A franchisor has one job: build a business model that enables franchisees to mak
 
 This shows up most often in smaller, founder-owned brands that want to scale through franchising without fully committing to the obligations that come with it. The product may be excellent. The culture may be great. But if the franchisor hasn't structurally committed to franchisee financial performance as the primary objective, that misalignment will surface.
 
-Look at how they talk about their franchisees versus how they talk about their brand. Listen for whether Item 2 leadership has franchise operations experience or just product experience. Talk to existing franchisees about how corporate makes decisions when franchisee financial outcomes conflict with brand preferences.
+Look at how they talk about their franchisees versus how they talk about their brand. Listen for whether the leadership team has franchise operations experience or just product experience. Talk to existing franchisees about how corporate makes decisions when franchisee financial outcomes conflict with brand preferences.
 
 ---
 

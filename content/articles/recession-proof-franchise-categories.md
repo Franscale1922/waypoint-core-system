@@ -15,7 +15,7 @@ faqs:
   - q: "Which franchise categories hold up best in a recession?"
     a: "The categories with documented durability through downturns include: in-home senior care (driven by demographics, not consumer confidence), essential home services like restoration and repair (triggered by necessity, not discretionary spending), and B2B service models with recurring contracts. Premium home services in high-income markets have also shown strong retention through 2008 and 2020 compared to middle-market consumer concepts."
   - q: "How do I verify if a franchise survived the last recession?"
-    a: "Look at Item 20 of the Franchise Disclosure Document. Item 20 includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or were transferred during those periods. Ask the franchisor directly for franchisee retention rates from those years. Then call franchisees from Item 20's contact list who opened before 2008 or 2019 and are still operating. Their experience is the real data."
+    a: "Review the franchise disclosure document's franchisee departure and transfer data. The disclosure document includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or were transferred during those periods. Ask the franchisor directly for franchisee retention rates from those years. Then call franchisees from the contact list in the disclosure document who opened before 2008 or 2019 and are still operating. Their experience is the real data."
   - q: "Are home services franchises recession-resistant?"
     a: "Essential home services, specifically restoration (water damage, fire damage), plumbing, and electrical, have shown strong recession resistance because they are triggered by necessity rather than consumer choice. Discretionary home services (landscaping, decorative upgrades, non-urgent improvements) are more exposed to consumer confidence. The key is distinguishing between services customers choose and services they have no choice but to address."
 ---
@@ -81,7 +81,7 @@ Not every popular category earns the recession-proof label it gets marketed with
 
 If a franchisor or broker describes a concept as recession-proof, run it through these questions:
 
-Who is the specific customer, and what is their income level? What does Item 20 show about franchisee performance coming out of 2008 and 2020? Are there units that opened in 2007 or 2019 still operating today? What is the franchisee retention rate in those cohorts?
+Who is the specific customer, and what is their income level? What does the franchise disclosure document show about franchisee performance coming out of 2008 and 2020? Are there units that opened in 2007 or 2019 still operating today? What is the franchisee retention rate in those cohorts?
 
 That data exists. It is in the FDD, in franchisee conversations, and in public records. The brands that survived both downturns with low unit turnover have a different story than brands telling you why their category is different this time.
 

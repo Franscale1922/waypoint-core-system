@@ -15,7 +15,7 @@ faqs:
   - q: "What are the most common mistakes in the first 90 days of franchise ownership?"
     a: "Treating training as a prerequisite to 'real work' and mentally racing ahead to customer acquisition. Skipping frontline employee coaching in month two, since your staff is the product. Stepping back from the business too early before systems are stable and the team is trained. And waiting until month six to identify your primary operational constraint instead of finding it by month three."
   - q: "How do you know if your franchise is performing well in the first 90 days?"
-    a: "At the 90-day mark, you should have a clear picture of four things: whether you are tracking ahead of, at, or behind the Item 19 system average; what your top operational bottleneck is; whether your staffing is stable or still in a rebuild cycle; and what the next 90 days need to look like to hit the end-of-year targets you built during due diligence. If the numbers are soft, what matters is whether you understand specifically why and have a defined response, not just optimism."
+    a: "At the 90-day mark, you should have a clear picture of four things: whether you are tracking ahead of, at, or behind the system average for franchisees at your stage; what your top operational bottleneck is; whether your staffing is stable or still in a rebuild cycle; and what the next 90 days need to look like to hit the end-of-year targets you built during due diligence. If the numbers are soft, what matters is whether you understand specifically why and have a defined response, not just optimism."
   - q: "How involved should a franchise owner be in the first 90 days?"
     a: "More involved than most buyers anticipate. Even franchise concepts marketed as 'semi-absentee' require close owner attention in the first 60 to 90 days before systems are stable and staff is trained. The owners who struggle in year one are most often those who stepped back too early, treating opening day as the end of the hard part rather than the beginning of a different kind of hard part. The right time to step back is once you have clean data, a stable team, and repeatable systems."
 ---
@@ -37,7 +37,7 @@ Before your doors open, you should know:
 - The three operational metrics your franchisor's top performers track obsessively
 - What your first marketing spend looks like and what it's supposed to produce
 
-Your FDD's Item 19 gave you the system average. Your job in month one is understanding what the top quartile does to get there.
+The franchisor's financial performance data for existing units gave you the system average. Your job in month one is understanding what the top quartile does to get there.
 
 ## Month Two: Get Your First Customers
 
@@ -62,7 +62,7 @@ Every franchise has a constraint, the one thing that, if fixed, would move the r
 Identify your constraint by month three, not month six. The operators who find it early and fix it early are the ones who build momentum into year two instead of spending it catching up.
 
 At the 90-day mark, you should have a clear picture of:
-1. Whether you're tracking ahead of, at, or behind the Item 19 average
+1. Whether you're tracking ahead of, at, or behind the system average
 2. What your top operational bottleneck is
 3. Whether your staffing is stable or still in a rebuild cycle
 4. What the next 90 days need to look like to hit the end-of-year targets you projected during due diligence

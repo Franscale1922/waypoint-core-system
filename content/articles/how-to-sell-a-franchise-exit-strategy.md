@@ -81,7 +81,7 @@ There is no universal answer, but two principles hold consistently:
 
 **Sell from strength, not necessity.** The best exits happen when the business is performing well and the seller is ready, not when the seller is burned out and the revenue trend is declining. Buyers sense desperation and distress, and they price it heavily. If you know you're going to want out in the next three to five years, begin preparing now.
 
-**Align your exit with system momentum.** A franchise system that is growing, adding units, and generating strong franchisee validation is a system where buyers want to enter. If the system's momentum is declining (fewer new sales, higher closure rates, poor Item 20 numbers), your individual unit is harder to sell regardless of its performance. Awareness of the system's trajectory is part of managing your asset.
+**Align your exit with system momentum.** A franchise system that is growing, adding units, and generating strong franchisee validation is a system where buyers want to enter. If the system's momentum is declining (fewer new sales, higher closure rates, franchisees leaving the system at a higher rate than normal), your individual unit is harder to sell regardless of its performance. Awareness of the system's trajectory is part of managing your asset.
 
 If you're thinking about franchise ownership in the context of a five-to-ten year horizon and want to understand how the exit math works, that's worth discussing alongside the entry economics.
 

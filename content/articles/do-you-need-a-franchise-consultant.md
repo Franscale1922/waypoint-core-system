@@ -77,7 +77,7 @@ The test: does this person feel like a teacher or a salesperson? A teacher gives
 
 **Experience on both sides of the table.** A consultant who has owned franchises themselves brings a different kind of context than one who has only worked on the advisory side. They know what the first year feels like. They know what support actually matters versus what sounds good in the pitch.
 
-**A willingness to say no.** The best franchise consultants will tell you if your profile doesn't fit what you're looking at, if the timing isn't right, or if the concept you're excited about has red flags in its Item 20 data. If a consultant agrees with every instinct you have and never pushes back, they're not adding value.
+**A willingness to say no.** The best franchise consultants will tell you if your profile doesn't fit what you're looking at, if the timing isn't right, or if the concept you're excited about has red flags in how many franchisees have left the system recently. If a consultant agrees with every instinct you have and never pushes back, they're not adding value.
 
 **Honesty about what they don't know.** The franchise industry is broad. No single consultant has deep knowledge of every vertical. A good one knows their area of expertise and is clear about where they're drawing on general knowledge versus specific experience.
 

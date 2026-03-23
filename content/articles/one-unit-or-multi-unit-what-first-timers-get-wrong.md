@@ -110,7 +110,7 @@ Before you decide on unit count, two questions drive everything:
 
 1. **What are your long-term goals with this investment?** Are you building something to run, or something to sell? Buying to build equity for a sale in 7–10 years leads to a different unit strategy than buying to generate income starting in year two.
 
-2. **What does the franchise model's unit economics say?** Some concepts are genuinely built for multi-unit operators, with fee and cost structures that only make sense at scale. Others work perfectly well as single-unit businesses. Item 19 of the FDD shows you the financials, and an advisor can pull the relevant comparisons from the system's existing operators.
+2. **What does the franchise model's unit economics say?** Some concepts are genuinely built for multi-unit operators, with fee and cost structures that only make sense at scale. Others work perfectly well as single-unit businesses. The franchise disclosure document shows you the financials for existing operators, and an advisor can pull the relevant comparisons from the system's existing operators.
 
 The cap on multi-unit only really kicks in at true scale, when you're adding supervision layers and administrative overhead that erode profit. Two to five units for a first-time buyer is well below that ceiling in almost every franchise category.
 

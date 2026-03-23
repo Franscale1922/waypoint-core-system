@@ -11,13 +11,13 @@ tier: 2
 excerpt: "Fast growth in a franchise brand is a signal that the model is working well enough that buyers and the franchisor both want more of it. Slow growth is a signal that something isn't working. Here is how to evaluate the difference."
 faqs:
   - q: "Is fast franchise growth a good sign or a red flag?"
-    a: "Fast growth is generally a positive signal. It means qualified buyers want in and the franchisor has a working model. The more useful data point is attrition, not growth rate. A system adding 80 units per year while losing 60 has a churn problem underneath the surface growth. Check Item 20 of the FDD for franchisee exits alongside the new unit additions."
-  - q: "What does Item 20 of the FDD show about franchise growth?"
-    a: "Item 20 of the Franchise Disclosure Document discloses transfers, terminations, and closures of franchise units over the past three years, along with new unit openings. It lets you calculate the net change in the system and compare how many franchisees left voluntarily versus how many were terminated. A healthy system shows strong new unit additions alongside high franchisee retention."
+    a: "Fast growth is generally a positive signal. It means qualified buyers want in and the franchisor has a working model. The more useful data point is attrition, not growth rate. A system adding 80 units per year while losing 60 has a churn problem underneath the surface growth. Check the franchise disclosure document's franchisee departure data for exits alongside the new unit additions."
+  - q: "What franchisee departure data should I look for when evaluating franchise growth?"
+    a: "The franchise disclosure document includes a section disclosing transfers, terminations, and closures of franchise units over the past three years, along with new unit openings. It lets you calculate the net change in the system and compare how many franchisees left voluntarily versus how many were terminated. A healthy system shows strong new unit additions alongside high franchisee retention."
   - q: "What is a healthy franchisee retention rate in a growing system?"
     a: "There is no universal benchmark, but the best-run systems combine strong new unit additions with low voluntary attrition. If most departures are transfers to other franchisees rather than closures, the system has internal demand. If a meaningful percentage of departures are terminations or conversions back to corporate, that is worth examining in your validation calls."
   - q: "How do I evaluate whether a fast-growing franchise brand is stable?"
-    a: "Look at three data points in order: the attrition rate in Item 20, the geographic distribution of new unit openings (regional density matters more than raw count), and validation responses from franchisees in years 2 to 4. These are the operators who chose the brand during a growth phase and are now living with the support structure. Their experience is the most relevant signal for a buyer entering the system today."
+    a: "Look at three data points in order: the franchisee attrition rate as reported in the disclosure document, the geographic distribution of new unit openings (regional density matters more than raw count), and validation responses from franchisees in years 2 to 4. These are the operators who chose the brand during a growth phase and are now living with the support structure. Their experience is the most relevant signal for a buyer entering the system today."
 ---
 When a franchise is opening 50 new locations per year, the first instinct for most buyers is suspicion. It feels reckless. It sounds like corners are being cut. That instinct is understandable, and usually wrong.
 
@@ -95,7 +95,7 @@ A stagnant system isn't building the scale required to invest in infrastructure,
 
 A brand that's losing market share to competitors who are expanding isn't holding its position. It's retreating. In franchise categories where speed of expansion matters, anything dependent on local brand awareness or network density, a stagnant system hands ground to competitors permanently.
 
-When you look at Item 20 data for a slow-growing system, pay attention not just to the closure rate but to the tenure distribution. If most franchisees are in years 5–10 but the brand isn't growing, that means the experienced operators aren't buying more and there aren't enough new buyers to replace normal attrition.
+When you look at franchisee departure data for a slow-growing system, pay attention not just to the closure rate but to the tenure distribution. If most franchisees are in years 5 to 10 but the brand isn't growing, that means the experienced operators aren't buying more and there aren't enough new buyers to replace normal attrition.
 
 ---
 
@@ -107,7 +107,7 @@ The questions that matter more:
 
 **Where is the growth happening?** A brand adding 50 units per year all in one geographic region is proving the model in a specific market. A brand adding 50 units scattered across 30 states with no regional density is not building the same kind of compounding advantage.
 
-**What is the attrition rate?** Check Item 20. How many franchisees left the system in the last three years? A system can be adding 80 units per year while losing 60. That's a net growth of 20, but a churn problem underneath. The best-run systems combine strong new unit additions with high franchisee retention.
+**What is the attrition rate?** Check the franchise disclosure document. How many franchisees left the system in the last three years? A system can be adding 80 units per year while losing 60. That's a net growth of 20, but a churn problem underneath. The best-run systems combine strong new unit additions with high franchisee retention.
 
 **What do franchisees in years 2–4 say?** These are the people who chose the brand during a growth phase and are now living with what the system delivers. Validation calls with this group tell you whether the growth is producing satisfied operators or overwhelmed ones.
 

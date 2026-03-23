@@ -107,11 +107,11 @@ In a franchise resale, the tangible assets (equipment, inventory, furniture, lea
 
 ## The Due Diligence Process for an Existing Unit
 
-For a new franchise unit, the FDD Item 19 and franchisee validation calls give you the benchmark. For a resale, you need both of those plus a clean look at the specific unit's financials.
+For a new franchise unit, the franchisor's financial performance data and franchisee validation calls give you the benchmark. For a resale, you need both of those plus a clean look at the specific unit's financials.
 
 **Minimum three years of P&L statements.** Look for revenue trend (growing, flat, declining), gross margin trajectory, and any unusual expense items. A single strong year surrounded by weak ones is a warning sign.
 
-**Item 19 comparison.** How does this unit perform versus the system average disclosed in Item 19? If it's materially below average, understand why. If it's above average, understand whether that outperformance will survive the transition.
+**Financial performance data comparison.** How does this unit perform versus the system average for existing franchisees? If it's materially below average, understand why. If it's above average, understand whether that outperformance will survive the transition.
 
 **Tax returns.** P&L statements can be dressed up. Tax returns are harder to manipulate. Request three years of business tax returns and verify they match the P&L.
 

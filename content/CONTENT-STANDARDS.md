@@ -158,6 +158,8 @@ Before any article is considered complete, verify all of the following:
 - [ ] Each section passes the Island Test — it can be read alone without the rest of the article (Section 7)
 - [ ] Any article comparing two or more options includes a comparison table (Section 8)
 - [ ] Article with 3+ factual claims uses a `faqs:` frontmatter block with 4 questions (Section 9)
+- [ ] No FDD item numbers appear anywhere in the article — concepts only, never labels (Section 10)
+- [ ] No em dashes (—) anywhere in the article body, FAQs, or excerpt (Section 11)
 
 ---
 
@@ -226,26 +228,72 @@ Include at minimum 4 dimensions. Use rows that highlight trade-offs, not rows th
 
 ---
 
-## Section 9 — FAQ Frontmatter Requirement
+## Section 10 — No FDD Item Numbers
 
-Every Tier 1 article and any article covering a high-query topic must include a `faqs:` array in its YAML frontmatter. This drives two outputs simultaneously:
+**This is a hard rule with no exceptions.**
 
-1. A `FAQPage` JSON-LD schema block in the page's `<head>` (emitted by the article page template)
-2. A visible "## Common Questions" section in the article body
+Waypoint content must never reference Franchise Disclosure Document sections by their numbered labels (Item 1, Item 6, Item 7, Item 19, Item 20, Item 21, etc.). Franchise candidates — the actual audience for this content — do not know what these labels mean. Using them creates friction, signals insider jargon, and fails the Island Test.
 
-### Frontmatter format
+### The rule
 
-```yaml
-faqs:
-  - q: "Question exactly as a searcher would phrase it?"
-    a: "Complete, self-contained answer. No references to 'see above' or 'as discussed.' Each answer must pass the Island Test."
-```
+Do not name the item. Explain the concept.
 
-### FAQ content rules
+**Every FDD item has a plain-language equivalent. Use that instead:**
 
-- Use 4 questions minimum per article
-- Each question should target a distinct search intent (definition, comparison, process, timing)
-- Open with the broadest definition question first
-- Ensure at least one question addresses a "should I / do I need to" decision-stage query
-- Answers must be 2–5 sentences. Short enough to be scanned. Long enough to be complete.
-- Do NOT hedge inside FAQ answers with "it depends" as the only response. Give the direct answer, then qualify.
+| Never use | Use instead |
+|---|---|
+| Item 6 | the franchise fee and royalty structure |
+| Item 7 | the total investment range (what it costs to open) |
+| Item 19 | the financial performance data franchisors may disclose for existing units |
+| Item 20 | how many franchisees have left the system, and how recently |
+| Item 21 | the franchisor's audited financial statements |
+| "the FDD" as shorthand for everything | "the franchise disclosure document" (spell it out on first use) |
+
+### Examples
+
+- ❌ "Item 19 disclosures show average unit revenue of $450,000."
+- ✅ "Franchisors that disclose financial performance data for existing units show average unit revenue of $450,000."
+
+- ❌ "Check Item 20 before deciding on a brand."
+- ✅ "Before choosing a brand, find out how many franchisees have left the system in the last three years and why."
+
+- ❌ "Investment figures are disclosed in Item 7 of the FDD."
+- ✅ "Investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign."
+
+### Why this rule exists
+
+The reader is evaluating franchise ownership for the first time. They have not read an FDD. They do not know what Item 19 means. When we use item numbers, we are writing for insiders, not for the person who actually needs this content. The content fails them. It also fails AI extraction, because AI systems cannot substitute a plain-language explanation when it finds only a numbered label.
+
+### Exception
+
+**`fdd-decoded-what-actually-matters.md` is the only article exempt from this rule.** That article is a structural guide to the Franchise Disclosure Document itself. It uses item numbers as navigation landmarks because the entire purpose of the article is to explain what each section of the FDD contains. Item numbers are the subject matter, not jargon. All other articles must follow the no-item-numbers rule without exception.
+
+---
+
+## Section 11 — No Em Dashes
+
+**This is a hard rule with no exceptions.**
+
+Em dashes (—) are prohibited in all Waypoint article content: body copy, headings, excerpts, FAQ answers, and frontmatter.
+
+### Why
+
+Em dashes create sentence structures that are harder to parse, harder for AI systems to extract cleanly, and easier to overuse in ways that interrupt reading flow. They are also a common marker of AI-generated content, which signals to readers and search engines that the content may not be human.
+
+### What to do instead
+
+- If the em dash is separating a parenthetical thought, use parentheses or restructure into two sentences.
+- If the em dash is introducing a list or elaboration, use a colon or start a new sentence.
+- If the em dash is connecting two independent clauses, use a period or a comma with a conjunction.
+
+**Examples:**
+
+- ❌ "The royalty — which is taken from gross revenue — applies every month."
+- ✅ "The royalty is taken from gross revenue and applies every month."
+
+- ❌ "The decision is straightforward — start with fit, then model the financials."
+- ✅ "The decision is straightforward: start with fit, then model the financials."
+
+### Verification
+
+Before committing any article, run: `grep -c "—" filename.md` and confirm the result is 0.

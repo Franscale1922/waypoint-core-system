@@ -13,7 +13,7 @@ faqs:
   - q: "What is a pet care franchise?"
     a: "A pet care franchise is a licensed business that delivers services to pet owners under an established brand's systems and standards. The category includes pet boarding and daycare facilities, mobile grooming, in-home pet sitting and dog walking, veterinary services, retail pet supply, and training. Most franchise concepts in this space focus on one or two service lines rather than trying to cover the full range. The franchisor provides the brand, operating systems, and supplier relationships; the franchisee provides the capital, location or territory, and daily management."
   - q: "How much does a pet care franchise cost?"
-    a: "Pet care franchise investment ranges significantly by model as of 2026. Brick-and-mortar boarding and daycare facilities are the most capital-intensive, typically requiring $400,000–$900,000 in total investment depending on facility size, real estate market, and build-out requirements. Mobile grooming franchises are considerably lower, often $80,000–$150,000 total investment, because the business operates from a vehicle rather than a fixed location. In-home pet sitting and dog walking concepts can enter below $50,000. All investment figures are disclosed in Item 7 of the brand's Franchise Disclosure Document."
+    a: "Pet care franchise investment ranges significantly by model as of 2026. Brick-and-mortar boarding and daycare facilities are the most capital-intensive, typically requiring $400,000 to $900,000 in total investment depending on facility size, real estate market, and build-out requirements. Mobile grooming franchises are considerably lower, often $80,000 to $150,000 total investment, because the business operates from a vehicle rather than a fixed location. In-home pet sitting and dog walking concepts can enter below $50,000. All investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "Are pet care franchises recession-resistant?"
     a: "Pet spending has grown through every major economic downturn in the modern era, including 2008–2009 and the 2020 contraction. Total US pet industry spending exceeded $150 billion as of 2024 and has not posted a decline in more than two decades. That said, recession-resistance varies within the category: boarding and daycare depend on owners traveling, which slows when consumer budgets tighten. Grooming and veterinary care tend to hold more consistently. Buyers should evaluate specific service lines and price points, not assume the category as a whole is immune to downturns."
   - q: "What kind of owner succeeds in a pet care franchise?"
@@ -70,7 +70,7 @@ As of 2026, approximate total investment ranges by sub-category:
 | In-home pet sitting / dog walking | $30,000–$60,000 |
 | Combined services concept | $150,000–$350,000 |
 
-All figures are estimates. Actual investment requirements are disclosed in Item 7 of each franchisor's FDD.
+All figures are estimates. Actual investment requirements are disclosed in the franchise disclosure document the franchisor is required to share with you before you sign.
 
 ---
 
@@ -96,7 +96,7 @@ A pet care franchise is a licensed business that delivers services to pet owners
 
 **How much does a pet care franchise cost?**
 
-Pet care franchise investment ranges significantly by model as of 2026. Brick-and-mortar boarding and daycare facilities typically require $400,000–$900,000 in total investment. Mobile grooming franchises are considerably lower, often $80,000–$150,000. In-home pet sitting and dog walking concepts can enter below $50,000. All investment figures are disclosed in Item 7 of the brand's Franchise Disclosure Document.
+Pet care franchise investment ranges significantly by model as of 2026. Brick-and-mortar boarding and daycare facilities typically require $400,000 to $900,000 in total investment. Mobile grooming franchises are considerably lower, often $80,000 to $150,000. In-home pet sitting and dog walking concepts can enter below $50,000. All investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign.
 
 **Are pet care franchises recession-resistant?**
 

@@ -31,7 +31,7 @@ By this point in the process, you've already:
 - Read the FDD cover to cover (or had an attorney walk through it with you)
 - Called and interviewed franchisees, including some who had hard first years
 - Defined your territory and the number of units you're pursuing
-- Confirmed that the unit economics in Item 19 support your financial targets
+- Confirmed that the financial performance data for existing units supports your financial targets
 
 Discovery day is not where due diligence happens. If you walk in still trying to figure out whether this is the right brand, you're behind.
 

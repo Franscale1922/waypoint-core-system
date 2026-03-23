@@ -13,7 +13,7 @@ faqs:
   - q: "What is a food and beverage franchise?"
     a: "A food and beverage franchise is a licensed business that produces and sells food or drink products under an established brand's systems, recipes, and standards. The category covers a wide range, from quick-service restaurants and fast casual concepts to coffee shops, dessert concepts, food trucks, and specialty beverage brands. The franchisor provides the brand, the menu, the supplier relationships, and the operating systems. The franchisee provides the capital, the location, the staff, and the daily execution."
   - q: "How much does it cost to open a food franchise?"
-    a: "Total investment in food and beverage franchising varies dramatically by concept as of 2026. Quick-service restaurant units typically require $300,000–$1,000,000+ in total investment depending on build-out, equipment, and territory. Fast casual concepts often run $400,000–$800,000. Smaller footprint concepts, coffee kiosks, food trucks, or counter-service dessert concepts, can enter in the $100,000–$300,000 range. All investment figures are disclosed in Item 7 of the Franchise Disclosure Document."
+    a: "Total investment in food and beverage franchising varies dramatically by concept as of 2026. Quick-service restaurant units typically require $300,000 to $1,000,000 or more in total investment depending on build-out, equipment, and territory. Fast casual concepts often run $400,000 to $800,000. Smaller footprint concepts, coffee kiosks, food trucks, or counter-service dessert concepts, can enter in the $100,000 to $300,000 range. All investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "Why is food franchising considered high-risk?"
     a: "Food franchising carries higher operational complexity than most other franchise categories. Staff turnover in food service averages 75% annually in the US as of 2026, among the highest of any industry. Margins are compressed by food cost, labor cost, and royalties operating simultaneously. Hours are typically long, especially in the first year. And location risk is significant: a poorly located food unit rarely recovers, regardless of how well it's operated. These are not reasons to avoid the category, but they are facts that buyers need to weigh honestly before committing."
   - q: "Are food franchises recession-proof?"
@@ -73,7 +73,7 @@ The profiles that struggle most are buyers who chose food because they love food
 
 If you're seriously evaluating a food concept, these are the questions worth spending real time on:
 
-- What is the average unit volume for this brand's existing franchisees (from Item 19)?
+- What is the average unit volume for this brand's existing franchisees (ask the franchisor for financial performance data)?
 - What is the franchise system's closure rate for units opened in the last five years?
 - What do the lease terms look like for available locations in your target market?
 - What is the staffing model, and what are realistic labor costs in your target area?
@@ -104,7 +104,7 @@ A food and beverage franchise is a licensed business that produces and sells foo
 
 **How much does it cost to open a food franchise?**
 
-Total investment in food and beverage franchising varies dramatically by concept as of 2026. Quick-service restaurant units typically require $300,000–$1,000,000+ in total investment depending on build-out, equipment, and territory. Fast casual concepts often run $400,000–$800,000. Smaller footprint concepts, coffee kiosks, food trucks, or counter-service dessert concepts, can enter in the $100,000–$300,000 range. All investment figures are disclosed in Item 7 of the Franchise Disclosure Document.
+Total investment in food and beverage franchising varies dramatically by concept as of 2026. Quick-service restaurant units typically require $300,000 to $1,000,000 or more in total investment depending on build-out, equipment, and territory. Fast casual concepts often run $400,000 to $800,000. Smaller footprint concepts, coffee kiosks, food trucks, or counter-service dessert concepts, can enter in the $100,000 to $300,000 range. All investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign.
 
 **Why is food franchising considered high-risk?**
 

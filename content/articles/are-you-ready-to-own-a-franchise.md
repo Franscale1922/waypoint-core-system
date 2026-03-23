@@ -47,7 +47,7 @@ This sounds soft. It isn't.
 
 The answer to this question shapes everything. Two people with identical capital and identical industries they're interested in might end up in completely different franchises because their goals are different.
 
-If you want to build something and sell it in five to seven years, you need a brand with real resale demand and strong Item 19 numbers. If you want to step into an executive role and eventually remove yourself from the day-to-day, you need something that scales well with management layers. If you want to own multiple units and build a portfolio over time, the first unit needs to be designed for that. Some franchises aren't.
+If you want to build something and sell it in five to seven years, you need a brand with real resale demand and franchisees who are genuinely performing well financially. If you want to step into an executive role and eventually remove yourself from the day-to-day, you need something that scales well with management layers. If you want to own multiple units and build a portfolio over time, the first unit needs to be designed for that. Some franchises aren't.
 
 And if your answer is "I want passive income," I'll tell you the same thing I tell everyone: you're not ready yet. Franchise ownership is not passive. Not in the first year. Probably not in the second year. You're going to be learning systems, hiring people, putting out fires, and working harder than you expected. If you do it right, you build something that eventually gives you more autonomy and more control over your time. But that's the other side of the mountain. You have to get there first.
 

@@ -11,7 +11,7 @@ tier: 3
 excerpt: "Junk removal is one of the most financially predictable service franchise categories: reasonable entry cost, quick revenue ramp, durable demand, low fixed overhead. Here is what the economics actually look like and what the honest trade-offs are."
 faqs:
   - q: "How much does a junk removal franchise cost?"
-    a: "Most established junk removal franchise systems require a total initial investment of $150,000 to $350,000 as of 2026, with liquid capital requirements typically starting around $80,000 to $100,000. Investment figures are disclosed in Item 7 of the brand's Franchise Disclosure Document. The investment level is relatively accessible compared to brick-and-mortar franchise categories with similar revenue potential."
+    a: "Most established junk removal franchise systems require a total initial investment of $150,000 to $350,000 as of 2026, with liquid capital requirements typically starting around $80,000 to $100,000. Investment figures are disclosed in the franchise disclosure document the franchisor is required to share before you sign. The investment level is relatively accessible compared to brick-and-mortar franchise categories with similar revenue potential."
   - q: "How fast can a junk removal franchise ramp to revenue?"
     a: "Junk removal franchise systems typically generate revenue much faster than relationship-dependent business models. Unlike senior care or B2B consulting, where months of relationship-building precede revenue, junk removal services are immediately understandable, immediately needed, and immediately bookable. Most systems have structured presale and launch protocols designed to generate revenue in the first 30 to 60 days of operation."
   - q: "Is a junk removal franchise semi-absentee?"
@@ -39,7 +39,7 @@ A few structural advantages drive the economics:
 
 The investment range for franchised junk removal is meaningful but accessible relative to other service categories. Most established systems fall in the $150,000–$350,000 range for total initial investment as of 2026, with liquid capital requirements typically starting around $80,000–$100,000.
 
-What distinguishes junk removal from many franchise categories at the same investment level is the ratio between what you put in and the revenue potential that franchise systems disclose in their Item 19 data. Look closely at how long franchisees have been operating when reviewing those figures. Revenue at year one versus year three or four are meaningfully different numbers, and the better systems separate those cohorts in their disclosures.
+What distinguishes junk removal from many franchise categories at the same investment level is the ratio between what you put in and the revenue potential that franchise systems disclose for their existing units. Look closely at how long franchisees have been operating when reviewing those figures. Revenue at year one versus year three or four are meaningfully different numbers, and the better systems separate those cohorts in their disclosures.
 
 Royalty structures across established junk removal systems typically run 7–8% of gross revenue. That's within the standard range, and in a model with low fixed overhead, your operating leverage improves as volume grows.
 
@@ -83,7 +83,7 @@ It's not the right fit for buyers who want a passive or semi-absentee business f
 
 ## Bottom Line
 
-Junk removal earns its reputation as a strong entry-point franchise because the numbers are straightforward: reasonable entry cost, strong revenue potential supported by Item 19 disclosures, quick ramp, and durable demand. The market is growing, the model is simple, and the operating systems have been validated across hundreds of locations.
+Junk removal earns its reputation as a strong entry-point franchise because the numbers are straightforward: reasonable entry cost, strong revenue potential supported by what existing franchisees report, quick ramp, and durable demand. The market is growing, the model is simple, and the operating systems have been validated across hundreds of locations.
 
 If you like the idea of building a real operational business with a team behind you and don't need the category to be flashy, this one delivers.
 

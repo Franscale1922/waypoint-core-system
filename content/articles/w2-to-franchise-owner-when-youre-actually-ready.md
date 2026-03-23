@@ -15,7 +15,7 @@ faqs:
   - q: "What is the biggest risk of leaving a W-2 job to buy a franchise?"
     a: "The biggest structural risk is personal guarantee liability. Unlike a corporate job, where the worst outcome is being laid off, a poorly selected franchise can leave you with personal guarantee obligations that follow you long after closing the business. This is one reason why the quality of the due diligence process, not the category or the brand name, is the most important factor in franchise decision-making."
   - q: "How long until a franchise replaces a W-2 income?"
-    a: "Year one of franchise ownership typically means more hours for less cash than most W-2 jobs. The leverage builds in years three through five, not months two through four. How quickly a franchise reaches stable cash flow depends on the category, the market, the operator's execution, and how well the working capital was structured at launch. Item 19 of the FDD provides system-level financial performance data, but individual results are shaped by local market conditions."
+    a: "Year one of franchise ownership typically means more hours for less cash than most W-2 jobs. The leverage builds in years three through five, not months two through four. How quickly a franchise reaches stable cash flow depends on the category, the market, the operator's execution, and how well the working capital was structured at launch. Franchisors may disclose system-level financial performance data in the franchise disclosure document, but individual results are shaped by local market conditions."
   - q: "What is the readiness test for leaving a corporate job for a franchise?"
     a: "The most predictive readiness question is not about capital or credit score. It is this: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job before the business stabilizes, and does that prospect excite you or terrify you? People who need certainty before they act are typically better served staying in the W-2 model. People who are energized by building something, with calculated uncertainty built into the plan, tend to make better franchise operators."
 ---
@@ -63,7 +63,7 @@ There are two ways people get this wrong:
 
 **Running away from the job, not toward ownership.** If the primary driver is escaping something miserable, the franchise becomes your next miserable situation in a different form. You need to want to build something, not just escape something.
 
-**Waiting for certainty that doesn't exist.** The certainty you want from a franchise decision isn't available. Item 19 gives you systems-level average performance. Your own results depend on your market, your team, your timing, and your execution. People who need certainty before they move never move.
+**Waiting for certainty that doesn't exist.** The certainty you want from a franchise decision isn't available. The financial performance data in the disclosure document gives you systems-level averages. Your own results depend on your market, your team, your timing, and your execution. People who need certainty before they move never move.
 
 ## What the Timing Depends On
 

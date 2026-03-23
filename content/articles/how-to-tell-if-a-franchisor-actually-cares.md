@@ -12,10 +12,10 @@ excerpt: "Your incentives and your franchisor's incentives are not automatically
 faqs:
   - q: "What is franchise incentive misalignment?"
     a: "Incentive misalignment occurs when a franchisor's financial structure rewards behaviors that do not necessarily benefit individual franchisees. The clearest example: franchisors collect royalties as a percentage of gross revenue, so they benefit from higher top-line volume. Individual franchisees make money on cash flow after costs. A franchisor who pushes volume or discounted pricing to increase royalty revenue may be optimizing for their income at the expense of franchisee unit economics."
-  - q: "What does Item 20 retention rate tell a buyer about a franchisor?"
-    a: "Item 20 of the FDD discloses every franchisee who left the system in the past three years, through transfer, termination, or other exit. A high retention rate across a large system is the clearest evidence that the system works for operators. When most departures are transfers to other franchisees rather than closures or corporate buyouts, it signals internal demand and operator satisfaction. Low retention with high termination rates is a significant warning sign."
+  - q: "What does franchisee retention rate tell a buyer about a franchisor?"
+    a: "The franchise disclosure document discloses every franchisee who left the system in the past three years, through transfer, termination, or other exit. A high retention rate across a large system is the clearest evidence that the system works for operators. When most departures are transfers to other franchisees rather than closures or corporate buyouts, it signals internal demand and operator satisfaction. Low retention with high termination rates is a significant warning sign."
   - q: "What questions should I ask franchisees during validation calls?"
-    a: "Four questions consistently surface the most useful information: First, if you had a difficult month and needed to talk to someone at corporate, what happened? Second, has corporate ever made a decision that hurt your location's revenue or unit economics, and how did they handle it? Third, would you buy this franchise again knowing what you know now, and what would change? Fourth, what do you wish you had asked before you signed? Ask these to franchisees you select from Item 20's contact list yourself, not the success stories the franchisor refers you to."
+    a: "Four questions consistently surface the most useful information: First, if you had a difficult month and needed to talk to someone at corporate, what happened? Second, has corporate ever made a decision that hurt your location's revenue or unit economics, and how did they handle it? Third, would you buy this franchise again knowing what you know now, and what would change? Fourth, what do you wish you had asked before you signed? Ask these to franchisees you select yourself from the full contact list in the disclosure document, not the success stories the franchisor refers you to."
   - q: "What is a franchisee advisory council and why does it matter?"
     a: "A franchisee advisory council (or review board) is a formal structure that gives franchisees collective input into major system decisions, including pricing changes, new product introductions, operational adjustments, and marketing fund spending. When this structure exists and is genuinely used, it signals that the franchisor has built the relationship for the long term. When it's cosmetic or ignored, that tells you something different. Ask specifically: when did the council last influence a franchisor decision, and what was it?"
 ---
@@ -53,11 +53,11 @@ This doesn't mean every franchisor is misaligned. Most aren't. But the incentive
 
 **Franchisee advisory councils.** When the franchisor has a formal mechanism for franchisees to provide input on major decisions, that is structural alignment. It exists because the relationship is built for the long term. Ask: when did the council last actually influence a franchisor decision?
 
-**The Item 20 retention rate.** Item 20 requires the franchisor to disclose every franchisee who has left the system in the last three years, including whether they transferred, terminated, or exited another way. A high retention rate across a large system is the clearest evidence that the system works for operators.
+**Franchisee retention rate.** The franchise disclosure document requires the franchisor to disclose every franchisee who has left the system in the last three years, including whether they transferred, terminated, or exited another way. A high retention rate across a large system is the clearest evidence that the system works for operators.
 
 ## How to Find Out Before You Sign
 
-Validation calls, conversations with current franchisees you choose yourself from Item 20's contact list, are where you learn this. Not the success stories the franchisor points you to. The ones who had a rough second year.
+Validation calls, conversations with current franchisees you choose yourself from the full contact list in the disclosure document, are where you learn this. Not the success stories the franchisor points you to. The ones who had a rough second year.
 
 Questions that surface alignment:
 - "If you had a bad month and needed to talk to someone at corporate, what happened?"
