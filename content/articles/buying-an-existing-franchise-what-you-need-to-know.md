@@ -4,7 +4,7 @@ slug: "buying-an-existing-franchise-what-you-need-to-know"
 date: "2026-03-22"
 category: "Going Deeper"
 tier: 2
-excerpt: "When you enter franchising, you're choosing between two paths: build it from scratch or buy an existing unit. Both are legitimate. Each comes with a different set of trade-offs, and knowing which one fits your situation requires understanding what you're actually taking on with each."
+excerpt: "Buying an existing franchise unit has a real appeal: skip the startup phase, inherit the cash flow, and get moving faster. What most buyers don't realize is how rarely a resale actually fits them, and why that matters more than the income that's already there."
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "the-franchise-agreement-what-you-can-and-cant-negotiate"
@@ -56,6 +56,24 @@ When you buy a resale, there are two.
 These two tracks run at the same time, but they're not the same process. One is a negotiation with the seller. The other is a qualification process with the franchisor. You have to move both forward simultaneously, and either one can fall apart independently.
 
 That's the complexity the resale path adds that the new unit path doesn't have. It's not a reason to avoid resales. It's a reason to go in with clear eyes.
+
+---
+
+## The Problem with Holding Out for a Resale
+
+Here's something buyers don't hear often enough: waiting for the right resale to come along is usually a mistake.
+
+When you buy a resale, you are primarily buying cash flow. The existing revenue is the asset. That's how sellers price it, that's what brokers present, and that's what the due diligence process focuses on. But cash flow and fit are very different things.
+
+Think about what it would take for a resale to truly check every box. You'd need a franchise that fits your skills and personality naturally. It would need to be available in your market. The financials would need to be clean and priced fairly. The seller would need to be exiting for a legitimate reason. The remaining franchise term would need to be long enough to matter. The staff would need to be stable. The relationship with the franchisor would need to be in good standing.
+
+That combination, available, affordable, clean, and a good fit for who you actually are, is rare. Very rare. Which means buyers who hold out for a resale often wait a long time, and then, when something finally appears, they compromise on fit because the cash flow looks appealing.
+
+That's the trap. You can end up in a business that generates revenue but wasn't built for your personality, your lifestyle, or your goals. You inherited someone else's operation, someone else's culture, someone else's customer base, and now you're running a business that doesn't feel like yours and may never.
+
+This is why we believe most buyers are better served by prioritizing fit first. Find the franchise that's built for how you work, how you want to spend your time, and what kind of business you want to own. Then figure out the funding. Starting a new location means starting from zero on revenue, but it means starting from a blank page on everything that actually matters: your culture, your team, your systems, your standards.
+
+If a resale opportunity presents itself that also happens to be a genuine fit, that's worth exploring carefully. But "it's already making money" is not a substitute for fit. Cash flow that doesn't fit your life is a job with extra steps.
 
 ---
 
@@ -121,9 +139,9 @@ A good resale starts with a real reason to sell, backed by clean financials, a r
 
 The price should reflect documented performance, not projected performance or the seller's optimism about what the business could become under better management.
 
-If you find those conditions, buying an existing unit can be one of the most efficient paths into franchise ownership. You are buying a running engine, not building one. Just make sure the engine has been well-maintained.
+But before any of that: make sure the business actually fits you. The financials won't tell you whether you'd enjoy running it. The P&L won't tell you if the day-to-day aligns with how you want to work. Ask those questions first. Let them drive the evaluation. A well-priced unit that isn't a fit is still the wrong decision.
 
-If you want help evaluating a specific resale opportunity, what to look for, what to ask the franchisor, and whether the price is defensible, that is exactly the kind of conversation I have with buyers.
+If you want to talk through whether a specific resale makes sense for your situation, or how to think about fit vs. cash flow in your evaluation, that's exactly the kind of conversation worth having before you're under contract.
 
 *[Book a call →](/book)*
 
@@ -137,7 +155,7 @@ Buying an existing franchise means purchasing a unit that is already open and op
 
 **Is buying an existing franchise better than starting a new one?**
 
-It depends on what you're buying. An existing unit with a real customer base, documented revenue history, and trained staff removes a lot of early-stage risk. But a unit sold because it was underperforming, poorly located, or mismanaged transfers those problems to the next buyer. The resale path is only better when you verify what you're actually buying.
+Not necessarily, and often no. A resale offers existing cash flow, which sounds appealing, but you are also inheriting the previous owner's culture, staff habits, and operational decisions. Finding a resale that genuinely fits your personality, skills, and goals, while also being financially sound and available in your market, is difficult. Most buyers are better served by prioritizing fit through a new unit and building from a foundation that's theirs.
 
 **How do you value an existing franchise unit?**
 
