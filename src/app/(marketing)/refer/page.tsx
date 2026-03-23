@@ -130,7 +130,7 @@ export default function ReferPage() {
             </p>
             <h1 className="font-playfair text-3xl sm:text-4xl md:text-5xl text-white leading-tight">
               Referrals mean the world to me
-              <span className="block">and to your friends.</span>
+              <span className="block">And your friends</span>
             </h1>
             <p className="mt-5 sm:mt-6 text-base sm:text-lg text-white/75 leading-relaxed">
               Point them this way. That&apos;s really all it takes.
