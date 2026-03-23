@@ -8,94 +8,113 @@ slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"
 tier: 2
-checklistSlug: "universal"
-excerpt: "Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move."
+excerpt: "Before you fill out a loan application, inventory what you actually have. Most buyers are closer to a clean funding solution than they realize — and the SBA, while useful, is the most painful path available."
 faqs:
-  - q: "What is the most common way to finance a franchise?"
-    a: "SBA 7(a) loans are the most common financing path for franchise buyers. The Small Business Administration guarantees up to 75% of the loan, which lowers the bank's lending risk. As of 2026, buyers typically put in 15–20% as a down payment, with repayment over 10 years. ROBS (Rollover for Business Startups) is the second most common approach for buyers who have significant retirement savings and want to avoid debt."
+  - q: "What is the best way to finance a franchise?"
+    a: "The best funding path is the one that requires the least borrowing. Start by taking honest stock of liquid savings, accessible investment accounts, home equity, and retirement account balances. Cash or near-cash covers the purchase cleanly. A ROBS structure avoids debt entirely for buyers with retirement savings. A HELOC provides lower-rate borrowing without bank underwriting. SBA financing is useful when no other option fits — but it is the most documentation-heavy, slowest, and most banker-involved path available. It is a last resort, not a starting point."
   - q: "What is a ROBS and how does it work for franchise financing?"
     a: "A ROBS (Rollover for Business Startups) lets you invest funds from a 401(k) or traditional IRA into your franchise without triggering early withdrawal penalties or a taxable event. A ROBS provider sets up a C-Corp, which sells stock to your retirement account. The proceeds go into the business. The result is no loan, no debt service, and no monthly payment, but your retirement savings are the investment and carry the risk."
   - q: "Can you use a 401(k) to buy a franchise?"
-    a: "Yes, through a ROBS structure. A ROBS lets you roll 401(k) or IRA funds into a C-Corp that then buys your franchise. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. ROBS closes in days rather than months and requires no credit score qualification. The trade-off is that your retirement savings are directly at risk if the business underperforms."
+    a: "Yes, through a ROBS structure. A ROBS lets you roll 401(k) or IRA funds into a C-Corp that then buys your franchise. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. ROBS closes in weeks rather than months and requires no credit score qualification. The trade-off is that your retirement savings are directly at risk if the business underperforms."
   - q: "What credit score do you need for an SBA franchise loan?"
-    a: "As of 2026, most SBA lenders require a minimum credit score around 680, though stronger scores (700+) will get better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion typically equal to 10% of the loan amount held in unencumbered cash or equivalent."
+    a: "As of 2026, most SBA lenders require a minimum credit score around 680, though stronger scores (700+) will get better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion typically equal to 10% of the loan amount held in unencumbered cash or equivalent. Beyond the score, expect to provide 2–3 years of personal tax returns, a business plan, financial projections, and a full collateral evaluation. The documentation burden alone is significant, which is why SBA is best treated as a last resort rather than a first call."
 ---
-Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's not how this works.
+Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's a fine mental model — but it starts the funding conversation in the wrong place.
 
-Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move. If you're in the funding research phase and it feels overwhelming, it probably shouldn't. Most buyers use one of these two tools. Everything else is a footnote.
+Before you call a lender, take stock of what you already have. The best funding path is almost always the one that requires the least borrowing. The SBA exists for situations where no cleaner option fits. It is not where you should start.
 
-## The Two Paths That Matter
+## Start Here Before You Call a Lender
+
+The right sequence is to inventory your options in order of how clean and simple they are:
+
+1. **Liquid savings and cash** — The cleanest path. No debt, no complexity, no external parties. If you have enough liquid capital to fund the investment outright, that is almost always the right answer.
+
+2. **Proceeds from asset monetization** — Sale of investment accounts, a property, or other assets you can free up. If you have assets you have been planning to sell, timing that with a franchise purchase can eliminate the need to borrow entirely.
+
+3. **HELOC (Home Equity Line of Credit)** — If you have meaningful equity in your home, you can borrow against it at lower rates than a business loan, without the bank underwriting process that SBA requires. Your home is the collateral, which is a real risk, but the process is faster and less burdensome than SBA.
+
+4. **ROBS (Rollover for Business Startups)** — For buyers with retirement savings, this is often the best structured path. No debt, no monthly payment, no credit score qualification required. Closes in weeks.
+
+5. **SBA financing** — The path of last resort. Powerful when you genuinely need it, but the most documentation-heavy, slowest, and most banker-involved option available. Best reserved for situations where no other path provides enough capital.
+
+## The Full Funding Picture
 
 <div className="overflow-x-auto my-8">
   <table className="w-full text-sm border-collapse">
     <thead>
       <tr className="border-b-2 border-[#0c1929]">
         <th className="py-3 pr-4 text-left font-semibold text-[#0c1929]"></th>
-        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">SBA 7(a) Loan</th>
-        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">ROBS</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">Cash / Savings</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">HELOC</th>
+        <th className="py-3 px-4 text-left font-semibold text-[#0c1929]">ROBS</th>
+        <th className="py-3 pl-4 text-left font-semibold text-[#0c1929]">SBA 7(a)</th>
       </tr>
     </thead>
     <tbody>
       <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">How you're funded</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">Bank loan with SBA guarantee</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">Retirement funds invested into a C-Corp</td>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Type</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Direct equity</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Secured loan against home</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Retirement funds into C-Corp</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Bank loan with SBA guarantee</td>
       </tr>
       <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">Capital access</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">Up to $5.5M (as of 2026)</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">Limited to your retirement account balance</td>
-      </tr>
-      <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">Out-of-pocket cost</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">15–20% down payment (as of 2026)</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">No down payment, full purchase from retirement funds</td>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Monthly obligation</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Yes — interest on draw</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Fixed payments for 10 years</td>
       </tr>
       <tr className="border-b border-[#e8e0d0]">
         <td className="py-3 pr-4 font-medium text-[#0c1929]">Time to close</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">60–90 days, sometimes longer</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">Days, not months</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Immediate</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">2–4 weeks</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">3–4 weeks</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">60–90 days, often longer</td>
       </tr>
       <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">Credit requirement</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">680+ score, collateral, personal guarantee</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Credit required</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Standard mortgage credit</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">680+ score, collateral, personal guarantee</td>
       </tr>
       <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">Monthly debt obligation</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">Fixed payments for 10 years</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">None</td>
-      </tr>
-      <tr className="border-b border-[#e8e0d0]">
-        <td className="py-3 pr-4 font-medium text-[#0c1929]">Retirement savings at risk</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">No</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">Yes, directly</td>
+        <td className="py-3 pr-4 font-medium text-[#0c1929]">Documentation burden</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">None</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Standard home equity process</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">C-Corp setup, retirement plan administration</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Tax returns, business plan, projections, collateral evaluation, personal guarantee</td>
       </tr>
       <tr>
         <td className="py-3 pr-4 font-medium text-[#0c1929]">Best for</td>
-        <td className="py-3 px-4 text-[#5a5a4a]">Buyers who want to preserve liquidity and spread cost over time</td>
-        <td className="py-3 pl-4 text-[#5a5a4a]">Buyers with $100K+ in retirement savings who want to avoid debt</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Anyone with enough capital</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Buyers with home equity and limited liquid savings</td>
+        <td className="py-3 px-4 text-[#5a5a4a]">Buyers with $100K+ in retirement savings who want to avoid debt</td>
+        <td className="py-3 pl-4 text-[#5a5a4a]">Buyers who have exhausted cleaner options and have strong credit</td>
       </tr>
     </tbody>
   </table>
 </div>
 
-**SBA Loans** are the most common route for first-time franchise buyers. The Small Business Administration doesn't lend you money directly. It guarantees up to 75% of the loan, which lowers the bank's risk and makes it easier for qualified buyers to get financing.
+## Cash and Direct Capital: The Cleanest Path
 
-A typical SBA loan setup as of 2026: you put in 10–30% as a down payment (most buyers land at 15–20%), the bank covers the rest, and you repay over 10 years. For a franchise costing $300,000, that might mean $45,000–$60,000 out of pocket at the start, with monthly payments spread over a decade.
+If you have sufficient liquid savings, accessible investment accounts, or proceeds from asset sales, this is where the conversation should start. No banker, no application, no monthly payment, no personal guarantee. You deploy capital, you own equity, and the business cash flow is entirely yours from day one.
 
-What SBA does well:
-- Access to real capital (up to $5.5M as of 2026)
-- Long repayment terms that keep monthly payments manageable
-- Your retirement savings stay where they are
+Many buyers who assume they need to borrow haven't fully inventoried what they actually have. A brokerage account, a second property, a retirement account that could support a ROBS — these are all worth understanding before you walk into a bank.
 
-What SBA costs you:
-- A credit score above 680 as of 2026, collateral, and a liquidity cushion (typically 10% of the loan amount, unencumbered)
-- 60–90 days to close, sometimes longer
-- A personal guarantee, meaning your personal assets back the loan
-- Fixed monthly payments whether the business has a good month or a bad one
+## HELOC: The Underused Middle Path
 
-That last point matters more than people think. When you have a fixed debt payment, you lose flexibility. The business has to generate enough cash to cover that payment before you take anything home.
+If most of your capital is tied up in your home, a HELOC gives you access to it without the machinery of a business loan. You borrow against existing equity at rates that are typically lower than business financing, and without the 60–90 day underwriting cycle SBA requires.
+
+What a HELOC costs you:
+- Your home is collateral — if the business underperforms, that obligation is real
+- Requires good credit and sufficient equity in the property
+- Interest begins on what you draw, so cash flow planning still matters
+
+For buyers who have home equity but limited liquid savings, a HELOC is often a better first move than jumping straight to SBA.
+
+## ROBS: The Preferred Path for Buyers with Retirement Savings
 
 **ROBS (Rollover for Business Startups)** is the path for buyers who have meaningful retirement savings and want to avoid debt entirely.
 
@@ -105,42 +124,53 @@ The result: you own your franchise with no monthly debt payments.
 
 What ROBS does well:
 - No loan, no interest, no fixed monthly obligation
-- Closes in days, not months
+- Closes in 3–4 weeks, not 60–90 days
 - No credit score or collateral required
 
 What ROBS costs you:
 - Your retirement savings are the investment, and so is the risk
-- Ongoing compliance and administrative costs (a good ROBS provider handles this, but it's a real expense)
+- Ongoing compliance and administrative costs (a good ROBS provider handles this, typically $1,500–$3,000/year)
 - You're limited to what's in your retirement account, so ROBS can't scale the way an SBA loan can
 
-The right question isn't "which is better?" It's "what lets my business succeed, and what lets me sleep?"
+## SBA: The Last Resort
 
-## The Alternatives Worth Knowing
+> **The SBA is not a bad tool. It is a necessary one when no cleaner path exists. But it is also the most painful path available — the most documentation-heavy, the slowest, and the one with a banker in the middle of every decision.**
 
-There are a few other options that come up, and they're legitimate in the right circumstances:
+**SBA Loans** are widely used for franchise financing, but "common" is not the same as "preferred." The Small Business Administration doesn't lend money directly. It guarantees up to 75% of a bank loan, which lowers the bank's risk — but the process, the paperwork, and the timeline are squarely on you.
 
-**HELOC (Home Equity Line of Credit):** If most of your wealth is in your home, you can borrow against it. Lower interest rate, no credit score cliff. But your house is collateral.
+A typical SBA loan setup as of 2026: 15–20% down payment, bank covers the rest, 10-year repayment. For a $300,000 franchise, that's $45,000–$60,000 out of pocket, plus a fixed monthly payment starting well before your business has fully ramped.
 
-**SBLOC (Securities-Backed Line of Credit):** Same concept, but against your investment portfolio. More volatile collateral, so there's more risk if markets move against you.
+What SBA does provide:
+- Access to real capital (up to $5.5M as of 2026)
+- Long repayment terms that keep monthly payments manageable
+- Your retirement savings stay where they are
 
-**Asset-Backed Loan (ABL):** Worth knowing if you're buying a capital-heavy franchise where a single asset makes up most of the cost. Lenders give better terms when the loan is backed by something they can repossess.
+What SBA costs you:
+- A credit score above 680, collateral, and a personal guarantee
+- 2–3 years of personal tax returns, a business plan, financial projections, and a full collateral inventory
+- 60–90 days to close — often longer if there are complications
+- Fixed monthly payments that run regardless of how the business is performing
+- A personal guarantee that puts your personal assets on the line for the life of the loan
 
-**Cash:** No debt, no fixed payments, complete flexibility. If you can do it without wiping yourself out, it's the cleanest option.
+That last point matters more than people think. A fixed debt payment creates a cash floor the business has to clear before you take anything home. When you are still ramping, that floor can create real pressure.
 
 ## What This Means for You
 
-Before you get to a financing conversation with a lender, there are three numbers you need to know about yourself:
+The right starting question is not "what loan can I get?" It is "what do I actually have?"
 
-1. **Your liquid capital:** what you have available without touching retirement accounts or home equity
-2. **Your credit score:** if it's below 700, SBA is going to be harder and slower
-3. **Your retirement account balance:** this determines whether ROBS is even on the table
+Before you talk to a lender, know:
 
-Most franchise consultants can tell you which funding path makes sense for your situation in the first conversation. The numbers aren't complicated. The personal trade-offs take some thinking through.
+1. **Your liquid capital:** what's available without penalties or new obligations
+2. **Your home equity:** is there accessible capital there?
+3. **Your retirement account balance:** is ROBS a viable option?
+4. **Your credit score:** if it's below 700 and SBA ends up being necessary, expect a harder and slower process
+
+Most franchise candidates are closer to a clean funding solution than they assume. That's worth knowing before you default to years of fixed debt service.
 
 ## The Bottom Line
 
-Two main paths. SBA if you want to preserve liquidity and spread the investment over time. ROBS if you have retirement savings and want to avoid debt. Everything else depends on your specific asset picture.
+Work down the list in order. Cash or liquid assets first. HELOC if home equity is available. ROBS if retirement savings can cover it. SBA if you've exhausted other options and have the credit and documentation to qualify. The path of least friction is almost always the right one for a business that still has a ramp-up period ahead of it.
 
-If you want to talk through what fits your numbers, that's a conversation we have with every candidate before they go anywhere near a franchise agreement.
+If you want to talk through what fits your specific numbers, that's a conversation we have with every candidate before they go anywhere near a franchise agreement.
 
 *[Schedule 30 minutes →](/book)*

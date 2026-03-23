@@ -78,17 +78,15 @@ export async function POST(req: Request) {
       from: FROM,
       to: TO,
       replyTo: email,
-      subject: `New checklist download — ${checklistLabel} (${name || email})`,
+      subject: `Checklist download — ${checklistLabel}`,
       text: [
-        `New checklist download`,
-        ``,
-        `Name: ${name || "Not provided"}`,
-        `Email: ${email}`,
+        `Name:      ${name || "Not provided"}`,
+        `Email:     ${email}`,
         `Checklist: ${checklistLabel}`,
-        `Article: ${articleSlug || source || "resources"}`,
         ``,
-        `---`,
-        `Sent from waypointfranchise.com`,
+        `Article: ${articleSlug || "resources page"}`,
+        ``,
+        `Hit reply to follow up directly.`,
       ].join("\n"),
     });
 
