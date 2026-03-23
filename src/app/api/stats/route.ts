@@ -1,25 +1,27 @@
 import { NextResponse } from "next/server";
 
-export const revalidate = 3600; // re-fetch at most once per hour
+export const revalidate = 3600;
 
-// Public CSV export of the franchise map / owners sheet
-// Same sheet that powers the homepage map — no auth required
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1nUQaiUoZ6yB67O5U2DgR07If1GBUf9vSGbFTJKLhlM4/export?format=csv";
 
-// Fallback values (true historical count) used if fetch fails
 const FALLBACK = { ownersHelped: 146, statesServed: 35 };
 
-/**
- * Parse a CSV string into an array of row arrays.
- * Handles quoted fields and CRLF/LF line endings.
- */
-function parseCSVRows(csv: string): string[][] {
-  return csv
-    .split(/\r?\n/)
-    .map((line) => line.split(",").map((cell) => cell.replace(/^"|"$/g, "").trim()))
-    .filter((row) => row.some((cell) => cell.length > 0));
+/** Split a CSV line into cells, respecting quoted fields */
+function splitCSVLine(line: string): string[] {
+  const cells: string[] = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (ch === '"') { inQuotes = !inQuotes; continue; }
+    if (ch === "," && !inQuotes) { cells.push(current.trim()); current = ""; continue; }
+    current += ch;
+  }
+  cells.push(current.trim());
+  return cells;
 }
+
 
 export async function GET() {
   try {
@@ -27,19 +29,18 @@ export async function GET() {
     if (!res.ok) return NextResponse.json(FALLBACK);
 
     const csv = await res.text();
-    const rows = parseCSVRows(csv);
+    const lines = csv.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
 
-    if (rows.length < 2) return NextResponse.json(FALLBACK);
+    if (lines.length < 2) return NextResponse.json(FALLBACK);
 
-    const headers = rows[0].map((h) => h.toLowerCase());
-    const dataRows = rows.slice(1);
+    const headers = splitCSVLine(lines[0]).map((h: string) => h.toLowerCase());
+    const dataRows = lines.slice(1).map((l) => splitCSVLine(l));
 
-    // Count total owners = number of data rows
+    // Total owners = number of data rows
     const ownersHelped = dataRows.length;
 
-    // Try to find a "state" column — if found, count distinct values
-    // Falls back to FALLBACK.statesServed if no state column exists
-    const stateColIndex = headers.findIndex((h) =>
+    // Find the "state" column and count distinct values
+    const stateColIndex = headers.findIndex((h: string) =>
       ["state", "st", "state/province", "province"].includes(h)
     );
 
@@ -47,7 +48,7 @@ export async function GET() {
       stateColIndex !== -1
         ? new Set(
             dataRows
-              .map((r) => (r[stateColIndex] ?? "").trim())
+              .map((r: string[]) => (r[stateColIndex] ?? "").trim().toUpperCase())
               .filter(Boolean)
           ).size
         : FALLBACK.statesServed;

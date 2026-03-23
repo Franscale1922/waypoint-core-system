@@ -3,11 +3,19 @@ import { NextResponse } from "next/server";
 const SHEET_CSV_URL =
   "https://docs.google.com/spreadsheets/d/1nUQaiUoZ6yB67O5U2DgR07If1GBUf9vSGbFTJKLhlM4/export?format=csv";
 
-function parseCSV(csv: string): string[] {
-  return csv
-    .split(/\r?\n/)
-    .map((line) => line.replace(/^"|"$/g, "").trim())
-    .filter((line) => line.length > 0);
+/**
+ * Extract the first column from a CSV line, handling quoted fields.
+ * Supports both single-column (legacy) and two-column (City | State) formats.
+ * e.g. `"Alpharetta, GA",GA` → `Alpharetta, GA`
+ *      `Nashville, TN`        → `Nashville, TN`
+ */
+function extractFirstColumn(line: string): string {
+  if (line.startsWith('"')) {
+    const closeQuote = line.indexOf('"', 1);
+    return closeQuote >= 0 ? line.slice(1, closeQuote).trim() : line.slice(1).trim();
+  }
+  // Unquoted — return the whole line (single-column, no internal commas)
+  return line.trim();
 }
 
 export async function GET() {
@@ -17,7 +25,10 @@ export async function GET() {
       return NextResponse.json({ cities: [], error: "Failed to fetch sheet" }, { status: 502 });
     }
     const csv = await res.text();
-    const cities = parseCSV(csv);
+    const cities = csv
+      .split(/\r?\n/)
+      .map(extractFirstColumn)
+      .filter((city) => city.length > 0 && city.toLowerCase() !== "city"); // skip header row
     return NextResponse.json({ cities });
   } catch {
     return NextResponse.json({ cities: [], error: "Internal error" }, { status: 500 });
