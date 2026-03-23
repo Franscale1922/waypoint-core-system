@@ -103,6 +103,25 @@ model SystemSettings {
   updatedAt      DateTime @updatedAt
 }
 
+// ── Scorecard Submissions ───────────────────────────────────────────────────
+// Tracks each scorecard completion for nurture sequencing + unsubscribe support.
+// Isolated from ChecklistDownload — different lead source, different nurture flow.
+model ScorecardSubmission {
+  id                  String    @id @default(uuid())
+  email               String
+  name                String
+  score               Int
+  primaryDriver       String?   // e.g. \"Financial independence\", \"Tired of corporate\"
+  biggestFear         String?   // e.g. \"Losing my savings\", \"Won't work in Montana\"
+  // ── Nurture sequence tracking ──────────────────────────────────────────────
+  unsubscribed        Boolean   @default(false)
+  unsubscribedAt      DateTime?
+  nurtureStep         Int       @default(0)  // 0=none, 1=Email 1 sent, 2=Day 3, 3=Day 7
+  nurtureCompletedAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
 // ── Checklist Downloads ─────────────────────────────────────────────────────
 // Separate model from Lead — checklist captures are inbound content leads,
 // not cold outreach prospects. Kept isolated to avoid polluting LeadStatus enum.

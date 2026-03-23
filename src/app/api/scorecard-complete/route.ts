@@ -1,9 +1,8 @@
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
+import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
-import { followUpDay2Html, followUpDay2Text } from "@/app/emails/follow-up-day2";
-import { followUpDay5Html, followUpDay5Text } from "@/app/emails/follow-up-day5";
 import { ScorecardSchema } from "@/app/lib/schemas";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -46,7 +45,19 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 2. Fire Email 1 immediately ───────────────────────────────────────────
+    // ── 2. Create ScorecardSubmission for nurture tracking ────────────────────
+    const submission = await (prisma as any).scorecardSubmission.create({
+      data: {
+        email,
+        name,
+        score,
+        primaryDriver: primaryDriver ?? null,
+        biggestFear: biggestFear ?? null,
+        nurtureStep: 1, // Email 1 (results) is sent immediately below
+      },
+    });
+
+    // ── 3. Send Email 1 immediately (scorecard results) ───────────────────────
     await resend.emails.send({
       from: FROM,
       to: email,
@@ -56,39 +67,21 @@ export async function POST(req: Request) {
       tags: [{ name: "sequence", value: "scorecard-email-1" }],
     });
 
-
-    // ── 3. Schedule Email 2 (Day 2) via Resend Scheduled ─────────────────────
-    // Resend supports "scheduledAt" on the email send payload
-    const day2 = new Date();
-    day2.setDate(day2.getDate() + 2);
-
-    await resend.emails.send({
-      from: FROM,
-      to: email,
-      subject: `The 3 questions most people forget to ask before buying a franchise`,
-      html: followUpDay2Html(name),
-      text: followUpDay2Text(name),
-      scheduledAt: day2.toISOString(),
-      tags: [{ name: "sequence", value: "scorecard-email-2" }],
-    });
-
-    // ── 4. Schedule Email 3 (Day 5) ───────────────────────────────────────────
-    const day5 = new Date();
-    day5.setDate(day5.getDate() + 5);
-
-    await resend.emails.send({
-      from: FROM,
-      to: email,
-      subject: `Still thinking about it, ${name.split(" ")[0]}?`,
-      html: followUpDay5Html(name, score),
-      text: followUpDay5Text(name, score),
-      scheduledAt: day5.toISOString(),
-      tags: [{ name: "sequence", value: "scorecard-email-3" }],
+    // ── 4. Fire Inngest nurture — handles Day 3 + Day 7 with unsubscribe gating
+    await inngest.send({
+      name: "nurture/scorecard.complete",
+      data: {
+        submissionId: submission.id,
+        email,
+        name,
+        score,
+      },
     });
 
     return NextResponse.json({
       success: true,
       leadId: lead.id,
+      submissionId: submission.id,
       sequenceStarted: true,
     });
   } catch (err: unknown) {

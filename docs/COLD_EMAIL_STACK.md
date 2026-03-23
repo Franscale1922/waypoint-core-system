@@ -58,22 +58,26 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → BOOKED status
 ---
 
 ### 2. Lead Export & Import — Evaboot
-**What:** Evaboot Chrome extension adds an "Extract with Evaboot" button inside Sales Navigator. Extracts and cleans Sales Navigator search results into a structured CSV, including emails at ~60–70% match rate.  
-**Why:** Preserves LinkedIn behavioral signals at the list level (OpenToWork badge, "Posted 30 days" filter). Ban-safe — uses Kelsey's own LinkedIn session, respects LinkedIn's 2,500 lead/day cap. Cheaper than the fully-manual workflow when volume is consistent at 15–20/day.  
-**Cost:** ~$29–39/mo (Entry/Starter tier — sufficient for 400–500 leads/month at current volume. $79/mo Growth tier is not needed until 50+/day sends.)  
-**Setup status:** ⏳ Not yet purchased — activate when ready to launch (see §Lead Sourcing Decision below)
+**What:** Evaboot Chrome extension adds an "Extract with Evaboot" button inside Sales Navigator. Extracts and cleans Sales Navigator search results into a structured CSV, including emails with built-in server verification.  
+**Why:** Preserves LinkedIn behavioral signals at the list level (OpenToWork badge, "Posted 30 days" filter). Ban-safe — uses Kelsey's own LinkedIn session. Critically: Evaboot verifies email format against the actual mail server before export — unlike Clay's waterfall which pattern-guesses and can produce wrong formats for executive accounts.  
+**Cost:** Paid subscription — active  
+**Setup status:** ✅ Active — Chrome extension installed
 
 **How it works:**
 1. In Sales Navigator: run filtered search (seniority, company size, OpenToWork, Posted 30d, function)
-2. Click "Extract with Evaboot" → Evaboot exports and cleans the list, deduplicates, and finds emails
-3. Download CSV → upload via `ImportLeadForm.tsx`
-4. Leads enter database as `RAW` status and trigger `leadHunterProcess` via Inngest event
+2. Click "Extract with Evaboot" → Evaboot exports and cleans the list, deduplicates, and verifies emails
+3. **Export with "safe emails only"** — do NOT include riskier (catch-all) emails during warmup phase
+4. Download CSV → upload via `ImportLeadForm.tsx` or directly into Instantly
+5. Leads enter database as `RAW` status and trigger `leadHunterProcess` via Inngest event
 
-**Email match rate:** ~60–70%. For 500 Sales Nav leads pulled/month → ~300–350 usable email addresses → well above 20 sends/day × 22 days = 440 sends/month needed.
+**Email status tiers:**
+- `safe` — server confirmed the email exists (97% deliverability) ✅ Use these
+- `riskier` — catch-all server, cannot be verified without sending (~83% deliverability) ⚠️ Max 30% of list, post-warmup only
+- no email — Evaboot couldn't find one → send to Clay for enrichment fallback
 
-**What Evaboot preserves that manual export cannot:**
-- The exact Sales Nav filter set is encoded in the export — you can re-run the same search reproducibly
-- Evaboot flags and excludes high-bounce-risk emails during extraction (freshness scoring)
+**Confirmed bounce prevention:** March 2026 — Evaboot found `dharris@revspring.com` (verified safe) for Daniel Harris. Clay's waterfall guessed `daniel.harris@revspring.com` (wrong format) — that email bounced. Evaboot's server verification catches format mismatches that pattern-guessing tools miss.
+
+**Email match rate:** ~60–70% at safe tier. For leads with no email: pass to Clay enrichment (Findymail waterfall) as fallback.
 
 **Do NOT use:**
 - Apify `curious_coder` actor — community actor with ToS risk, not purchased, don't start
@@ -81,62 +85,59 @@ TidyCal booking → Inngest: tidycalBookingSync → lead → BOOKED status
 
 ---
 
-### 3. Apollo.io (Email Enrichment — Primary)
-**What:** B2B contact database with 275M+ contacts, used as the programmatic email enrichment layer.  
-**Why:** Highest email accuracy of the three options evaluated (independent tests: ~85–90% vs SuperSearch's lower accuracy and Hunter.io free tier's 25/mo cap). Apollo replaces both Hunter.io and SuperSearch as the enrichment engine. Has a backup discovery DB in case a Evaboot miss needs a fallback lookup.  
-**Cost:** $49/mo Basic plan (2,500 credits/mo — covers 440 lookups/mo with strong buffer)  
-**Setup status:** ⏳ Not yet purchased — activate when ready to launch
+### 3. Clay.com — Email Enrichment Fallback (Active)
+**What:** Clay Launch plan ($185/mo, 15,000 actions/mo, 2,500 data credits/mo). Used as the enrichment fallback for leads where Evaboot did not find an email. Clay's waterfall queries Findymail and other built-in sources using Clay's own data credits — **no standalone Hunter or Apollo accounts exist or are needed.**  
+**Setup status:** ✅ Active — Clay Launch plan, "Cold Email Test 1" table (103 leads)  
 
-**How it works in the pipeline:**
-- Evaboot extraction produces ~65% email match rate on Sales Nav leads
-- For the ~35% with no email from Evaboot: `leadHunterProcess` calls the Apollo enrichment API by name + company domain → returns verified email + confidence score
-- Leads with verified emails pass the 70-point gate; unverified leads are capped and suppressed
+> ⚠️ **NOTE: No standalone Hunter.io or Apollo.io subscriptions.** References elsewhere in this doc to Hunter API keys or Apollo API keys are legacy planning notes. The actual enrichment in production uses Clay's built-in data credit waterfall (Findymail primary).
 
-**Code change required — swap Hunter.io for Apollo:**
-```typescript
-// In leadHunterProcess (functions.ts) — replace Hunter.io block with Apollo People Enrichment API:
-// GET https://api.apollo.io/v1/people/match?first_name=...&last_name=...&domain=...
-// Returns: email, email_status ("verified" | "guessed" | "unavailable")
-// Map email_status === "verified" → confidence 95, "guessed" → confidence 60
-```
+**Current table setup — "Cold Email Test 1" (audited March 2026):**
+| Column | Source | Status |
+|---|---|---|
+| `email` | Evaboot import | ✅ Primary source |
+| `Email Status` | Evaboot import | ✅ safe / riskier / blank |
+| `work email` | Formula: `{{email}}` | ⚠️ Only mirrors Evaboot — does NOT use Findymail fallback |
+| `Email (3)` | Formula: `{{email}}` | ⚠️ Same — only mirrors Evaboot |
+| `Find Work Email` | Findymail | ⚠️ Runs enrichment but output is SILOED — not used in export column |
+| `Find work email (2)` | Findymail (duplicate) | ⚠️ Redundant — wasting data credits |
+| ZeroBounce verify | — | ❌ NOT SET UP — available in Clay Tools at 0.1 credits/row |
 
-**Gate thresholds to update in `functions.ts`:**
-```typescript
-// Change from Hunter.io confidence < 60 gate:
-if (!foundEmail || emailConfidence < 60) {
-// Change to Apollo confidence gate:
-if (!foundEmail || emailConfidence < 90) {  // "verified" = 95, passes; "guessed" = 60, blocked
-```
-```typescript
-score = Math.min(score, 50); // unverified email cannot clear 70-point gate
-```
+**Three critical issues found in Clay audit (March 2026):**
+1. **Broken waterfall:** Findymail finds emails for ~30% of Evaboot misses, but its output column is never used in `work email` or `Email (3)`. Those export columns only mirror the Evaboot `email` column. Leads where Evaboot found nothing export with a blank email.
+2. **Duplicate enrichment:** Two Findymail columns running the same enrichment — wasting ~30 data credits/run. Remove `Find work email (2)`.
+3. **No verification step:** ZeroBounce is available in Clay Tools (0.1 credits/row) but not added. Without it, Clay-enriched emails are pattern-guessed and unverified — root cause of the March 2026 bounce problem.
 
-**Env vars to add:**
-```
-APOLLO_API_KEY=    ⏳ not yet set — add to Vercel before launch
-```
+**Required Clay table fixes:**
+- [ ] Update `work email` formula to waterfall: `{{email}} OR {{Find Work Email result}}`
+- [ ] Delete `Find work email (2)` — duplicate of `Find Work Email`
+- [ ] Add ZeroBounce "Verify Email" column after `work email` is populated
+- [ ] Add filter on export/Google Sheet action: only export rows where ZeroBounce status = `valid`
+- [ ] Rename `Email (3)` → `Final Email` and wire to verified email output
 
-**Retire these when Apollo is live:**
-- `HUNTER_API_KEY` — superseded by Apollo (can leave in Vercel as inert; remove from enrichment code path)
-- SuperSearch enrichment manual step — no longer needed as primary enrichment
+**Credit cost for verification:** 103 leads × 0.1 credits = ~10 data credits. Negligible on Launch plan.
+
+**Env var:**
+```
+CLAY_WEBHOOK_SECRET=  ⚠️ Must set in Vercel AND as Script Property in Apps Script
+```
 
 ---
 
 ### 3b. Instantly SuperSearch (Sending Layer — Backup Only)
 **What:** Built-in B2B contact database inside Instantly.ai. Already paid for (Growth Credits tier).  
-**Role in current stack:** Demoted to backup/convenience use only — NOT the primary enrichment engine.  
+**Role in current stack:** Backup/convenience use only — NOT a primary enrichment engine.  
 **Cost:** $47/mo Growth Credits tier (1,500 credits) — already active  
-**Setup status:** ✅ Purchased March 2026 — Growth Credits active. Role changed to backup.
+**Setup status:** ✅ Purchased March 2026 — Growth Credits active.
 
 **Why SuperSearch is backup, not primary:**  
-Multiple independent reviews flag data accuracy concerns (outdated emails, wrong titles, elevated bounce rates for executive-level contacts). A long-form review aggregating 100+ user reports rates SuperSearch lead quality ~3/5 and recommends pairing with a dedicated provider (Apollo/ZoomInfo) when data accuracy is critical. For a 15–20/day precision executive program, even a modest increase in bounce rate is a meaningful deliverability risk.
+Multiple independent reviews flag data accuracy concerns (outdated emails, wrong titles, elevated bounce rates for executive-level contacts). Pattern-guesses email formats for executive accounts — the same root cause as the March 2026 bounce issue. For a 15–20/day precision executive program, even a modest bounce rate increase is a meaningful deliverability risk.
 
 **Remaining valid uses for SuperSearch credits:**
 - Quick segment tests (new geography, new function — before committing a full Evaboot run)
-- Occasional gap-fill when Apollo returns `unavailable` and you need a second attempt
 - Discovery of low-risk supplemental lists (broad ICP, not primary executive targets)
+- Do NOT use as a gap-fill for leads Clay couldn't enrich — unverified guesses will bounce
 
-**SuperSearch has no public API** — dashboard-only. Any enrichment via SuperSearch remains a manual step.
+**SuperSearch has no public API** — dashboard-only. Any use of SuperSearch remains a manual step.
 
 ---
 

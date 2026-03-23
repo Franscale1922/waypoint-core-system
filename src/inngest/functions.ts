@@ -1844,3 +1844,268 @@ export const checklistNurtureProcess = inngest.createFunction(
         return { status: "Sequence complete", downloadId };
     }
 );
+
+// ─── Scorecard Nurture Sequence ───────────────────────────────────────────────
+// Triggered from /api/scorecard-complete after Email 1 (immediate results) is sent.
+// Sends 2 timed follow-ups: Day 3 and Day 7.
+// Unsubscribe is checked from DB before every send — honours mid-sequence opt-outs.
+
+import { buildUnsubscribeUrl as buildScorecardUnsubscribeUrl } from "@/lib/nurture-emails";
+
+const SCORECARD_FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+const SCORECARD_REPLY_TO = "kelsey@waypointfranchise.com";
+
+export const scorecardNurtureProcess = inngest.createFunction(
+    { id: "scorecard-nurture-process", retries: 2 },
+    { event: "nurture/scorecard.complete" },
+    async ({ event, step }) => {
+        const { submissionId, email, name, score } = event.data as {
+            submissionId: string;
+            email: string;
+            name: string;
+            score: number;
+        };
+
+        const firstName = name ? name.split(" ")[0] : "there";
+
+        // Reuse the HMAC token helper — we pass submissionId as the identifier.
+        // The unsubscribe endpoint at /api/scorecard-unsubscribe validates this same token.
+        const unsubscribeUrl = buildScorecardUnsubscribeUrl(submissionId).replace(
+            "/api/unsubscribe?",
+            "/api/scorecard-unsubscribe?"
+        );
+
+        const unsubscribeHeaders = {
+            "List-Unsubscribe": `<${unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        };
+
+        const plainFooter = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            `To stop receiving these notes: ${unsubscribeUrl}`,
+        ].join("\n");
+
+        // Helper: check unsubscribed flag before each send
+        async function isUnsubscribed(): Promise<boolean> {
+            const record = await (prisma as any).scorecardSubmission.findUnique({
+                where: { id: submissionId },
+                select: { unsubscribed: true },
+            });
+            return record?.unsubscribed ?? false;
+        }
+
+        // Helper: track nurture progress
+        async function markStep(stepNum: number, completed = false) {
+            await (prisma as any).scorecardSubmission.update({
+                where: { id: submissionId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                },
+            });
+        }
+
+        // ── Email 2 — Day 3: "The 3 questions most people forget to ask" ────────
+        await step.sleep("wait-for-scorecard-email-2", "3d");
+
+        await step.run("send-scorecard-email-2", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            const subject = `The 3 questions most people forget to ask before buying a franchise`;
+
+            const htmlBody = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background:#FAF8F4;font-family:Georgia,'Times New Roman',serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="margin-bottom:32px;">
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#8E3012;">
+        WAYPOINT FRANCHISE ADVISORS
+      </p>
+    </div>
+    <h1 style="margin:0 0 20px;font-size:26px;font-weight:700;color:#1a1a1a;line-height:1.3;">
+      ${firstName}, the 3 questions most people forget to ask before they buy a franchise.
+    </h1>
+    <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      I've been through a lot of franchise discovery processes, as a franchisor, as a franchisee, and now as an advisor. The people who make good decisions almost always ask the same three things. Most people don't ask any of them.
+    </p>
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">01</p>
+      <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"What does a bad week look like?"</p>
+      <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
+        Everyone talks to the brand's success stories. Ask to talk to a franchisee who had a rough first year. What went wrong? What did they wish they'd known? The brand will tell you how great things can be. The franchisees will tell you what it actually takes.
+      </p>
+    </div>
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">02</p>
+      <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"What's the real reason people leave the system?"</p>
+      <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
+        The FDD tells you how many units closed last year. It doesn't tell you why. Was it underperformance? Retirement? Conflict with the franchisor? The difference matters enormously. If you're buying a system, you're betting on how well it retains owners.
+      </p>
+    </div>
+    <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
+      <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">03</p>
+      <p style="margin:0 0 8px;font-size:18px;font-weight:700;color:#1a1a1a;">"How does the brand make money when I'm struggling?"</p>
+      <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
+        Royalties are a percentage of top-line revenue, so the brand gets paid whether you're profitable or not. Understanding the real numbers at the median owner level, not the best case, is everything.
+      </p>
+    </div>
+    <p style="margin:28px 0;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      These are the conversations I have with every person I work with before we ever look at a brand list. If you want to have that conversation now, my calendar is open.
+    </p>
+    <a href="https://waypointfranchise.com/book"
+       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
+      Book a Free 30-Min Call
+    </a>
+    <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
+        <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+            const textBody = [
+                `${firstName},`,
+                "",
+                subject,
+                "",
+                `01. "What does a bad week look like?"`,
+                `Talk to a franchisee who had a rough first year, not just the success stories.`,
+                "",
+                `02. "What's the real reason people leave the system?"`,
+                `The FDD tells you how many units closed. It doesn't tell you why.`,
+                "",
+                `03. "How does the brand make money when I'm struggling?"`,
+                `Royalties come off the top. Understand the median unit economics, not the best case.`,
+                "",
+                `These are the conversations I have with every person before we look at a single brand.`,
+                "",
+                `Book a free call: https://waypointfranchise.com/book`,
+                plainFooter,
+            ].join("\n");
+
+            await resend.emails.send({
+                from: SCORECARD_FROM,
+                to: email,
+                replyTo: SCORECARD_REPLY_TO,
+                subject,
+                html: htmlBody,
+                text: textBody,
+                headers: unsubscribeHeaders,
+                tags: [{ name: "sequence", value: "scorecard-email-2" }],
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3 — Day 7 (4 more days after Email 2): Soft close ─────────────
+        await step.sleep("wait-for-scorecard-email-3", "4d");
+
+        await step.run("send-scorecard-email-3", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            const subject = `Still thinking about it, ${firstName}?`;
+
+            const htmlBody = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${subject}</title>
+</head>
+<body style="margin:0;padding:0;background:#FAF8F4;font-family:Georgia,'Times New Roman',serif;">
+  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
+    <div style="margin-bottom:32px;">
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#8E3012;">
+        WAYPOINT FRANCHISE ADVISORS
+      </p>
+    </div>
+    <h1 style="margin:0 0 20px;font-size:26px;font-weight:700;color:#1a1a1a;line-height:1.3;">
+      ${firstName}, still thinking about it?
+    </h1>
+    <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      A few days ago you scored ${score}/100 on the Franchise Readiness Quiz. I haven't heard from you since, and that's completely fine. This is a big decision and it deserves time.
+    </p>
+    <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      I want to be straightforward with you: I'm not going to send you a dozen emails. This is the last one unless you reach out. I don't believe in pushing people toward something this significant.
+    </p>
+    <p style="margin:0 0 24px;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      What I can offer is 30 minutes where I'll tell you exactly what I think, whether that's "here are three concepts worth exploring" or "honestly, now isn't the right time." Either answer is useful. Neither costs you anything.
+    </p>
+    <div style="background:#0c1929;border-radius:12px;padding:24px 28px;margin:32px 0;">
+      <p style="margin:0 0 8px;font-size:22px;color:#FFFFFF;line-height:1.4;">
+        &ldquo;The worst outcome is making a $300K decision on incomplete information.&rdquo;
+      </p>
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
+        — Something I say in every first call
+      </p>
+    </div>
+    <p style="margin:0 0 28px;font-size:16px;color:#4a4a4a;line-height:1.7;">
+      If the timing still isn't right, no hard feelings. Bookmark the link and come back when it is.
+    </p>
+    <a href="https://waypointfranchise.com/book"
+       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
+      Book a Free Call When You're Ready
+    </a>
+    <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">This is the last email in this series.</p>
+      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
+        <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>`;
+
+            const textBody = [
+                `${firstName},`,
+                "",
+                `Still thinking about it?`,
+                "",
+                `A few days ago you scored ${score}/100 on the Franchise Readiness Quiz.`,
+                "",
+                `I'm not going to send you a dozen emails. This is the last one unless you reach out.`,
+                "",
+                `What I can offer is 30 minutes where I'll tell you exactly what I think, whether that's "here are three concepts worth exploring" or "honestly, now isn't the right time." Either answer is useful.`,
+                "",
+                `"The worst outcome is making a $300K decision on incomplete information."`,
+                "",
+                `Book a free call when you're ready: https://waypointfranchise.com/book`,
+                "",
+                `This is the last email in this series.`,
+                plainFooter,
+            ].join("\n");
+
+            await resend.emails.send({
+                from: SCORECARD_FROM,
+                to: email,
+                replyTo: SCORECARD_REPLY_TO,
+                subject,
+                html: htmlBody,
+                text: textBody,
+                headers: unsubscribeHeaders,
+                tags: [{ name: "sequence", value: "scorecard-email-3" }],
+            });
+
+            await markStep(3, true);
+            return { sent: true, step: 3 };
+        });
+
+        return { status: "Scorecard nurture complete", submissionId };
+    }
+);
+
