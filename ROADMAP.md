@@ -84,29 +84,13 @@ All marketing pages already use `next/image` with proper `fill`, `priority`, `si
 #### ✅ 3.3 Page-Specific Open Graph Images — COMPLETE
 Generated and deployed unique OG images for: glossary, investment, tools, franchise-consultant-vs-broker, resources/getting-started. All stored in `/public/og/`. Pages still using default: `resources/going-deeper`, `resources/industry-spotlights`, `quizzes` (low priority — thin pages).
 
-#### 🔄 3.4 Internal Linking Audit — NEXT
-**File:** `src/app/(marketing)/faq/page.tsx`
-**Issue:** No structured data — missing FAQ rich results in Google SERP.
-**Fix:** Add `FAQPage` JSON-LD schema. Pattern already established on `/process` (HowTo schema). Extend the same approach.
-```json
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [{ "@type": "Question", "name": "...", "acceptedAnswer": { "@type": "Answer", "text": "..." } }]
-}
-```
-
-#### 3.3 Page-Specific Open Graph Images
-**Current:** `/about`, `/process`, `/faq`, `/scorecard` still use the default OG image.
-**Fix:** Generate unique 1200×630px OG images for each. Text overlay on relevant photo. Save to `/public/og/[page].jpg`. Update each page's `metadata.openGraph.images`.
-**Note:** `/checklists` and article pages already have unique OG images — pattern is established.
-
-#### 3.4 Internal Linking Audit
-**Current:** Some pages still siloed.
-**Priority links still missing:**
-- FAQ answers referencing "the process" → link to `/process`
-- `/about` → link to `/scorecard`
-- `/process` Step 4 (Validation Calls) → link to relevant articles
+#### ✅ 3.4 Internal Linking Audit — COMPLETE
+Contextual links added to 5 pages (111 insertions):
+- **`/process`**: Step 4 → validation article, Step 5 → `/checklists`
+- **`/scorecard`**: Low-score path now returns 3 targeted resource cards instead of generic browse
+- **`/about`**: Inline scorecard + process nudge added mid-body
+- **`/book`**: "Want to come prepared?" section linking to process, investment, scorecard
+- **`/investment`**: Inline ROBS → funding article, FDD → FDD article, FAQ exit → agreement article
 
 ---
 
