@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import prisma from "../../../lib/prisma";
 import fs from "fs";
 import path from "path";
+import { inngest } from "@/inngest/client";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
@@ -59,8 +60,9 @@ export async function POST(req: Request) {
     const checklistLabel = CHECKLIST_LABELS[slug] ?? "Franchise Readiness";
 
     // Write a lead record — ChecklistDownload is separate from the cold-outreach Lead model
+    let downloadId: string | null = null;
     try {
-      await prisma.checklistDownload.create({
+      const record = await prisma.checklistDownload.create({
         data: {
           email,
           name: name || null,
@@ -68,9 +70,30 @@ export async function POST(req: Request) {
           checklistType: slug,
         },
       });
+      downloadId = record.id;
     } catch (dbErr) {
       // Log but don't block email delivery if DB write fails
       console.error("[capture-email] DB write failed:", dbErr);
+    }
+
+    // Fire the nurture sequence — fire-and-forget, does not block checklist delivery
+    // Skip for Kelsey's own address (test submissions)
+    if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
+      try {
+        await inngest.send({
+          name: "nurture/checklist.download",
+          data: {
+            downloadId,
+            email,
+            name: name || null,
+            checklistType: slug,
+            articleSlug: articleSlug || null,
+          },
+        });
+      } catch (nurtureErr) {
+        // Non-fatal — checklist delivery succeeds regardless
+        console.error("[capture-email] Nurture trigger failed:", nurtureErr);
+      }
     }
 
     // Notify Kelsey

@@ -105,10 +105,15 @@ model SystemSettings {
 // Separate model from Lead — checklist captures are inbound content leads,
 // not cold outreach prospects. Kept isolated to avoid polluting LeadStatus enum.
 model ChecklistDownload {
-  id             String   @id @default(uuid())
-  email          String
-  name           String?
-  articleSlug    String?  // which article the widget was shown on
-  checklistType  String   // e.g. "universal" | "food-and-beverage" | "home-services"
-  createdAt      DateTime @default(now())
+  id                  String    @id @default(uuid())
+  email               String
+  name                String?
+  articleSlug         String?   // which article the widget was shown on
+  checklistType       String    // e.g. "universal" | "food-and-beverage" | "home-services"
+  createdAt           DateTime  @default(now())
+  // ── Nurture sequence tracking ──────────────────────────────────────────────
+  unsubscribed        Boolean   @default(false)
+  unsubscribedAt      DateTime?
+  nurtureStep         Int       @default(0)  // last email sent: 0=none, 1=delivery, 2–5=sequence
+  nurtureCompletedAt  DateTime?
 }

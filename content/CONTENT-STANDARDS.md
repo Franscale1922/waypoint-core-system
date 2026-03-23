@@ -274,7 +274,7 @@ The reader is evaluating franchise ownership for the first time. They have not r
 
 **This is a hard rule with no exceptions.**
 
-Em dashes (—) are prohibited in all Waypoint article content: body copy, headings, excerpts, FAQ answers, and frontmatter.
+Em dashes (—) are prohibited in **all Waypoint copy**: article body copy, headings, excerpts, FAQ answers, frontmatter, UI component text, success/error messages, email copy, button labels, and any other public-facing or agent-generated text.
 
 ### Why
 

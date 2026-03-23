@@ -90,7 +90,7 @@ export default function EmailCapture({
         </div>
         <p className="font-playfair text-xl text-[#0c1929] mb-2">You&apos;re all set.</p>
         <p className="text-sm text-[#5a5a4a] leading-relaxed">
-          Check your inbox — the checklist is on its way. If you have questions before we talk, reply to that email directly.
+          Check your inbox. The checklist is on its way. If you have questions before we talk, reply to that email directly.
         </p>
       </div>
     );
@@ -176,7 +176,7 @@ export default function EmailCapture({
             </p>
           )}
           <p className="text-[10px] text-[#9a9a8a] leading-relaxed">
-            No newsletter. Just the checklist. Unsubscribe anytime.
+            You'll get the checklist. I may follow up with a few relevant notes. Unsubscribe anytime.
           </p>
         </form>
       </div>

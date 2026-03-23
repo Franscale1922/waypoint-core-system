@@ -1683,3 +1683,148 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
         return { status: "Posted", generatedAt: stats.generatedAt };
     }
 );
+
+// ─── Checklist Nurture Sequence ───────────────────────────────────────────────
+// Triggered when a checklist is downloaded via /api/capture-email.
+// Sends 4 timed follow-up emails (Days 3, 7, 14, 21) after the delivery email.
+// Email 2 and 3 have category-specific copy; Email 4 and 5 are universal.
+// Unsubscribe is checked from DB before every send — honouring mid-sequence opt-outs.
+
+import {
+    buildUnsubscribeUrl,
+    buildNurtureFooter,
+    NURTURE_EMAIL_2,
+    NURTURE_EMAIL_3,
+    NURTURE_EMAIL_4,
+    NURTURE_EMAIL_5,
+} from "@/lib/nurture-emails";
+
+const NURTURE_FROM = "Waypoint Franchise Advisors <noreply@mail.waypointfranchise.com>";
+const NURTURE_REPLY_TO = "kelsey@waypointfranchise.com";
+
+export const checklistNurtureProcess = inngest.createFunction(
+    { id: "checklist-nurture-process", retries: 2 },
+    { event: "nurture/checklist.download" },
+    async ({ event, step }) => {
+        const { downloadId, email, name, checklistType } = event.data as {
+            downloadId: string;
+            email: string;
+            name: string | null;
+            checklistType: string;
+            articleSlug: string | null;
+        };
+
+        const firstName = name ? name.split(" ")[0] : "there";
+        const unsubscribeUrl = buildUnsubscribeUrl(downloadId);
+        const footer = buildNurtureFooter(unsubscribeUrl);
+
+        // Helper: reload record and gate on unsubscribed flag
+        async function isUnsubscribed(): Promise<boolean> {
+            // @ts-ignore — unsubscribed added to schema; Prisma client regenerates on deploy
+            const record = await prisma.checklistDownload.findUnique({
+                where: { id: downloadId },
+                // @ts-ignore
+                select: { unsubscribed: true },
+            }) as any;
+            return record?.unsubscribed ?? false;
+        }
+
+        // Helper: update nurtureStep after a successful send
+        async function markStep(stepNum: number, completed = false) {
+            // @ts-ignore — nurtureStep / nurtureCompletedAt added to schema; Prisma client regenerates on deploy
+            await prisma.checklistDownload.update({
+                where: { id: downloadId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                } as any,
+            });
+        }
+
+        // ── Email 2 — Day 3 ─────────────────────────────────────────────────
+        await step.sleep("wait-for-email-2", "3d");
+
+        await step.run("send-email-2", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            // Fall back to universal copy if checklistType key is missing
+            const em2 = NURTURE_EMAIL_2[checklistType] ?? NURTURE_EMAIL_2["universal"];
+            const body = [`Hi ${firstName},`, "", em2.body, footer].join("\n");
+
+            await resend.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: em2.subject,
+                text: body,
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3 — Day 7 (4 more days after Email 2) ─────────────────────
+        await step.sleep("wait-for-email-3", "4d");
+
+        await step.run("send-email-3", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            const em3 = NURTURE_EMAIL_3[checklistType] ?? NURTURE_EMAIL_3["universal"];
+            const body = [`Hi ${firstName},`, "", em3.body, footer].join("\n");
+
+            await resend.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: em3.subject,
+                text: body,
+            });
+
+            await markStep(3);
+            return { sent: true, step: 3 };
+        });
+
+        // ── Email 4 — Day 14 (7 more days after Email 3) ────────────────────
+        await step.sleep("wait-for-email-4", "7d");
+
+        await step.run("send-email-4", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            const body = [`Hi ${firstName},`, "", NURTURE_EMAIL_4.body, footer].join("\n");
+
+            await resend.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: NURTURE_EMAIL_4.subject,
+                text: body,
+            });
+
+            await markStep(4);
+            return { sent: true, step: 4 };
+        });
+
+        // ── Email 5 — Day 21 (7 more days after Email 4) ────────────────────
+        await step.sleep("wait-for-email-5", "7d");
+
+        await step.run("send-email-5", async () => {
+            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+
+            // Email 5 has a built-in sign-off so we omit the "Hi firstName" greeting
+            const body = [NURTURE_EMAIL_5.body, footer].join("\n");
+
+            await resend.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: NURTURE_EMAIL_5.subject,
+                text: body,
+            });
+
+            await markStep(5, true); // mark sequence complete
+            return { sent: true, step: 5 };
+        });
+
+        return { status: "Sequence complete", downloadId };
+    }
+);
