@@ -224,7 +224,7 @@ export default function ReferPage() {
           </div>
 
           {/* CTA */}
-          <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-6 sm:p-8">
+          <div className="bg-white border border-[#e2ddd2] rounded-xl p-6 sm:p-8 shadow-sm">
             <h2 className="text-lg sm:text-xl font-bold text-[#1b3a5f] mb-3">
               Ready to make an intro?
             </h2>
