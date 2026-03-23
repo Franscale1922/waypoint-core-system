@@ -2,13 +2,16 @@
 
 > **Purpose:** Tracks all conversion rate optimization and design improvements identified in the March 2026 full-site audit. Standalone document — does not replace the existing `ROADMAP.md` (technical sprints) or `TECH_STACK.md`.
 >
-> **Legend:** `[ ]` not started · `[/]` in progress · `[x]` done · `[-]` deferred
->
 > **Goal:** Increase the rate at which franchise candidates call, book, or text Kelsey directly.
 
 ---
 
 ## Audit Context (March 2026)
+> **Last Updated:** March 2026 — Full audit completed. All sprints A–I confirmed implemented.
+>
+> **Legend:** `[ ]` not started · `[/]` in progress · `[x]` done · `[-]` deferred
+>
+> **Status:** All conversion-critical items are live. Remaining items are Sprint J (content/growth — some require Kelsey action, some are future scope).
 
 A full site crawl and source code review was conducted across all pages of `waypointfranchise.com`. The site has an elite aesthetic and an unusually honest voice — improvements here are surgical, not a rebuild. The primary conversion gaps identified:
 
