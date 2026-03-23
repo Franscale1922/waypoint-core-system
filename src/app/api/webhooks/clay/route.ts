@@ -55,6 +55,17 @@ export async function POST(req: NextRequest) {
         companyNewsEvent,
         careerTrigger,
         yearsInCurrentRole,
+        // ── Sales Navigator Attribute Fields (Intelligence Layer) ─────────────
+        // These come from Clay enrichment columns or Evaboot export data.
+        // Each field is optional — Clay may not return all of them for every lead.
+        companySizeRange,   // e.g. "51-200" | "201-500" | "501-1000" etc.
+        industryVertical,   // e.g. "Manufacturing" | "Financial Services"
+        functionArea,       // e.g. "Operations" | "Finance" | "Sales"
+        seniorityLevel,     // e.g. "VP" | "Director" | "C-Suite"
+        isOpenToWork,       // boolean — OpenToWork badge detected
+        wasRecentlyPromoted, // boolean — promoted < 6 months ago
+        yearsAtCompany,     // total years at company (vs. yearsInCurrentRole = years in title)
+        geoMarket,          // US region bucket
     } = body as {
         linkedinUrl?: string;
         email?: string;
@@ -62,6 +73,14 @@ export async function POST(req: NextRequest) {
         companyNewsEvent?: string;
         careerTrigger?: string;
         yearsInCurrentRole?: number | string;
+        companySizeRange?: string;
+        industryVertical?: string;
+        functionArea?: string;
+        seniorityLevel?: string;
+        isOpenToWork?: boolean;
+        wasRecentlyPromoted?: boolean;
+        yearsAtCompany?: number | string;
+        geoMarket?: string;
     };
 
     if (!linkedinUrl) {
@@ -178,6 +197,24 @@ export async function POST(req: NextRequest) {
         : yearsInCurrentRole;
     if (tenure && !isNaN(tenure) && !lead.yearsInCurrentRole) {
         updateData.yearsInCurrentRole = tenure;
+    }
+
+    // ── Sales Navigator Attribute Fields ─────────────────────────────────────
+    // Write each field only if Clay provided a non-empty value.
+    // Pattern: never overwrite existing data for string attributes — first write wins.
+    if (companySizeRange)               updateData.companySizeRange   = String(companySizeRange).trim();
+    if (industryVertical)               updateData.industryVertical    = String(industryVertical).trim();
+    if (functionArea)                   updateData.functionArea        = String(functionArea).trim();
+    if (seniorityLevel)                 updateData.seniorityLevel      = String(seniorityLevel).trim();
+    if (typeof isOpenToWork === "boolean")      updateData.isOpenToWork      = isOpenToWork;
+    if (typeof wasRecentlyPromoted === "boolean") updateData.wasRecentlyPromoted = wasRecentlyPromoted;
+    if (geoMarket)                      updateData.geoMarket           = String(geoMarket).trim();
+
+    const tenureAtCompany = typeof yearsAtCompany === "string"
+        ? parseInt(yearsAtCompany, 10)
+        : yearsAtCompany;
+    if (tenureAtCompany && !isNaN(tenureAtCompany)) {
+        updateData.yearsAtCompany = tenureAtCompany;
     }
 
     // ── Update lead and advance through the pipeline hold state ───────────────

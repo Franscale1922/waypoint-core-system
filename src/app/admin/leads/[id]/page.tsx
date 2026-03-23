@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, Newspaper, MessageSquare } from "lucide-react";
+import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, Newspaper, MessageSquare, BarChart2, Target, Building2 } from "lucide-react";
 import { EmailBlock } from "@/components/EmailBlock";
 import { RegenerateButton } from "@/components/RegenerateButton";
 import { SendNowButton } from "@/components/SendNowButton";
@@ -163,6 +163,109 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
             {lead.careerTrigger && (
                 <Section icon={<TrendingUp className="w-4 h-4 text-slate-400" />} title="Career Trigger">
                     <p className="text-sm text-slate-700">{lead.careerTrigger}</p>
+                </Section>
+            )}
+
+            {/* Intelligence Layer — Outcome Attribution + Sales Nav Attributes */}
+            {/* Only renders if any intelligence data has been captured for this lead */}
+            {((lead as any).signalType || (lead as any).sentAt || (lead as any).suppressionReason || (lead as any).companySizeRange || (lead as any).seniorityLevel) && (
+                <Section icon={<BarChart2 className="w-4 h-4 text-indigo-500" />} title="Intelligence Layer">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {/* Outcome Attribution */}
+                        <div className="space-y-2">
+                            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Outcome Attribution</p>
+                            {(lead as any).signalType && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Target className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                    <span className="text-slate-500">Signal:</span>
+                                    <span className="font-medium text-slate-800">{(lead as any).signalType}</span>
+                                </div>
+                            )}
+                            {(lead as any).ctaUsed && (
+                                <div className="flex items-start gap-2 text-sm">
+                                    <MessageSquare className="w-3.5 h-3.5 text-indigo-400 shrink-0 mt-0.5" />
+                                    <span className="text-slate-500">CTA:</span>
+                                    <span className="font-medium text-slate-800 italic">&ldquo;{(lead as any).ctaUsed}&rdquo;</span>
+                                </div>
+                            )}
+                            {(lead as any).sentAt && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Clock className="w-3.5 h-3.5 text-green-400 shrink-0" />
+                                    <span className="text-slate-500">Sent:</span>
+                                    <span className="text-slate-700">{new Date((lead as any).sentAt).toLocaleDateString()}</span>
+                                    {(lead as any).repliedAt && (
+                                        <span className="text-slate-400 text-xs">
+                                            → replied {Math.round((new Date((lead as any).repliedAt).getTime() - new Date((lead as any).sentAt).getTime()) / 86400000)}d later
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+                            {(lead as any).bookedAt && (lead as any).sentAt && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <Clock className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                    <span className="text-slate-500">SENT→BOOKED:</span>
+                                    <span className="font-semibold text-emerald-700">
+                                        {Math.round((new Date((lead as any).bookedAt).getTime() - new Date((lead as any).sentAt).getTime()) / 86400000)}d
+                                    </span>
+                                </div>
+                            )}
+                            {(lead as any).suppressionReason && (
+                                <div className="flex items-center gap-2 text-sm">
+                                    <span className="text-slate-500">Suppression reason:</span>
+                                    <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-700 text-xs font-semibold">{(lead as any).suppressionReason}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Sales Navigator Attributes */}
+                        {((lead as any).companySizeRange || (lead as any).seniorityLevel || (lead as any).industryVertical || (lead as any).functionArea) && (
+                            <div className="space-y-2">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Sales Nav Profile</p>
+                                {(lead as any).seniorityLevel && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Building2 className="w-3.5 h-3.5 text-blue-400 shrink-0" />
+                                        <span className="text-slate-500">Seniority:</span>
+                                        <span className="text-slate-800">{(lead as any).seniorityLevel}</span>
+                                    </div>
+                                )}
+                                {(lead as any).companySizeRange && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <Building2 className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                        <span className="text-slate-500">Company size:</span>
+                                        <span className="text-slate-800">{(lead as any).companySizeRange} employees</span>
+                                    </div>
+                                )}
+                                {(lead as any).industryVertical && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="text-slate-500">Industry:</span>
+                                        <span className="text-slate-800">{(lead as any).industryVertical}</span>
+                                    </div>
+                                )}
+                                {(lead as any).functionArea && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="text-slate-500">Function:</span>
+                                        <span className="text-slate-800">{(lead as any).functionArea}</span>
+                                    </div>
+                                )}
+                                {(lead as any).geoMarket && (
+                                    <div className="flex items-center gap-2 text-sm">
+                                        <span className="text-slate-500">Market:</span>
+                                        <span className="text-slate-800">{(lead as any).geoMarket}</span>
+                                    </div>
+                                )}
+                                {(lead as any).isOpenToWork && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 text-green-700 text-xs font-semibold">
+                                        #OpenToWork
+                                    </span>
+                                )}
+                                {(lead as any).wasRecentlyPromoted && (
+                                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold">
+                                        Recently promoted
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </Section>
             )}
 

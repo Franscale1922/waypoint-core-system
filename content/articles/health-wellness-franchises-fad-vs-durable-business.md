@@ -8,6 +8,7 @@ slug: "health-wellness-franchises-fad-vs-durable-business"
 date: "2026-02-18"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "fitness-wellness"
 excerpt: "Wellness franchises fall into two distinct categories: single-modality concepts that carry significant trend risk, and diversified models built for durability. Here is how to tell the difference before you invest."
 faqs:
   - q: "Are health and wellness franchises a good investment?"

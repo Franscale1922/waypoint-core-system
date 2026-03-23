@@ -134,12 +134,14 @@ export default async function ArticlePage({ params }: Props) {
         <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
       <RelatedArticles articles={related} />
-      {/* B-6: Email capture — research mode readers */}
-      <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
-        <div className="max-w-3xl mx-auto">
-          <EmailCapture variant="article" />
-        </div>
-      </section>
+      {/* Before You Go: only shown on articles with checklistSlug in frontmatter */}
+      {meta.checklistSlug && (
+        <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
+          <div className="max-w-3xl mx-auto">
+            <EmailCapture variant="article" checklistSlug={meta.checklistSlug} articleSlug={slug} />
+          </div>
+        </section>
+      )}
       {/* Archetype quiz callout */}
       <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">
         <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">

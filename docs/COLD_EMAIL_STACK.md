@@ -546,7 +546,7 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 - "Get person's professional posts" → `Recent Post Summary` column (`posts[0].text`)
 - Company News waterfall: PredictLeads primary → Google News fallback → `Company News` column
 
-**Bridge to pipeline:** Clay's HTTP API action column requires a paid plan upgrade. Use the Google Sheets bridge instead:
+**Bridge to pipeline:** Clay's native "Add row to Google Sheet" action (available on free tier) exports enriched data to the Google Sheet. Apps Script then POSTs each row to the webhook.
 1. Clay "Add row to Google Sheet" action exports enriched data to [Cold Email Test 1 Sheet](https://docs.google.com/spreadsheets/d/1YF73at-vjjXPvfYuUEmiP7NeGI7Ku4G3gskJcUSr-ko/edit)
 2. Google Apps Script (`Code.gs` attached to sheet) POSTs each row to `POST /api/webhooks/clay`
 3. Auth: `x-clay-secret` header = `CLAY_WEBHOOK_SECRET` env var (stored as Script Property in Apps Script)
@@ -563,9 +563,21 @@ GDPR: US-to-US by default. If targeting EU/UK, document a Legitimate Interest As
 | G | Country | Clay `Country` |
 | H | Recent Post Summary | Clay `Recent Post Summary` |
 | I | Company News Event | Clay `Company News` |
-| J | Years in Position | Clay native `Years in Position` enrichment (no formula column needed) |
+| J | Years in Position | Clay native `Years in Position` enrichment |
+| K | Company Size Range | Clay `Company Headcount` → bucket manually or via formula (see note below) |
+| L | Industry Vertical | Clay `Industry` |
+| M | Function Area | Clay `Department` |
+| N | Seniority Level | Clay `Seniority` |
+| O | Is Open To Work | Clay `Open To Work` (boolean — "TRUE"/"FALSE") |
+| P | Was Recently Promoted | Clay formula: `=IF(DATEDIF(start_date, TODAY(), "M") < 6, "TRUE", "FALSE")` |
 
-> **Clay note:** The `Years in Position` enrichment output stores values as quoted strings (`"5"` instead of `5`). The Apps Script strips these quotes before sending to the webhook — no Clay formula column is needed.
+> **Company Size Range note:** Clay returns raw headcount numbers. Add a formula column in the Sheet to bucket them:
+> `=IF(D2="","",IF(D2<=10,"1-10",IF(D2<=50,"11-50",IF(D2<=200,"51-200",IF(D2<=500,"201-500",IF(D2<=1000,"501-1000",IF(D2<=5000,"1001-5000",IF(D2<=10000,"5001-10000","10000+"))))))))`
+> Reference whichever column Clay exports headcount to.
+
+> **Clay native columns available on free tier (no HTTP API add-on needed):** `Company Headcount`, `Industry`, `Department/Function`, `Seniority`, `Open To Work`. These are enriched directly in Clay and exported to Columns K–P via the "Add row to Google Sheet" action.
+
+> **`Years in Position` note:** Clay outputs values as quoted strings (`"5"` instead of `5`). The Apps Script strips these quotes before sending to the webhook.
 
 **Scoring for `yearsInCurrentRole`:** ≥8 years = +20 pts | ≥5 years = +10 pts
 
@@ -590,15 +602,36 @@ function postAllRows() {
 }
 
 function postRow(sheet, row, secret) {
-  // A:First Name  B:Last Name  C:LinkedIn URL  D:Email  E:Title  F:Company
-  // G:Country  H:Recent Post Summary  I:Company News  J:Years in Position
-  const values = sheet.getRange(row, 1, 1, 10).getValues()[0];
+  // Column map (A=0 index):
+  // A:First Name  B:Last Name     C:LinkedIn URL      D:Email     E:Title
+  // F:Company     G:Country       H:Recent Post       I:Company News
+  // J:Years in Position
+  // K:Company Size Range  L:Industry Vertical  M:Function Area
+  // N:Seniority Level     O:Is Open To Work    P:Was Recently Promoted
+  const values = sheet.getRange(row, 1, 1, 16).getValues()[0];
   const linkedinUrl = (values[2] || "").toString().trim();
   if (!linkedinUrl) return;
 
   // Strip literal quotes from Years in Position ("5" → 5)
   const rawTenure = String(values[9]).replace(/[^0-9]/g, "");
   const tenure = rawTenure ? parseInt(rawTenure, 10) : undefined;
+
+  // Parse boolean-like strings from Clay ("TRUE"/"FALSE"/true/false/1/0)
+  function parseBool(val) {
+    if (typeof val === "boolean") return val;
+    const s = String(val).trim().toUpperCase();
+    return s === "TRUE" || s === "1" || s === "YES";
+  }
+
+  // Only include Sales Nav attributes if Clay populated them
+  const companySizeRange   = (values[10] || "").toString().trim() || undefined;
+  const industryVertical   = (values[11] || "").toString().trim() || undefined;
+  const functionArea       = (values[12] || "").toString().trim() || undefined;
+  const seniorityLevel     = (values[13] || "").toString().trim() || undefined;
+  const rawOpenToWork      = values[14];
+  const rawRecentlyPromoted = values[15];
+  const isOpenToWork       = rawOpenToWork      !== "" && rawOpenToWork      !== null ? parseBool(rawOpenToWork)      : undefined;
+  const wasRecentlyPromoted = rawRecentlyPromoted !== "" && rawRecentlyPromoted !== null ? parseBool(rawRecentlyPromoted) : undefined;
 
   const payload = {
     firstName:          values[0],
@@ -611,6 +644,14 @@ function postRow(sheet, row, secret) {
     recentPostSummary:  values[7],
     companyNewsEvent:   values[8],
     yearsInCurrentRole: tenure,
+    // ── Sales Navigator Attribute Fields (Intelligence Layer) ─────────────
+    // Only included if Clay populated the column — webhook ignores undefined/null
+    ...(companySizeRange    ? { companySizeRange }    : {}),
+    ...(industryVertical    ? { industryVertical }    : {}),
+    ...(functionArea        ? { functionArea }        : {}),
+    ...(seniorityLevel      ? { seniorityLevel }      : {}),
+    ...(isOpenToWork       !== undefined ? { isOpenToWork }       : {}),
+    ...(wasRecentlyPromoted !== undefined ? { wasRecentlyPromoted } : {}),
   };
 
   const body = JSON.stringify(payload);
@@ -618,7 +659,7 @@ function postRow(sheet, row, secret) {
     method: "post",
     contentType: "application/json",
     payload: body,
-    headers: { "x-clay-secret": secret },  // raw secret — webhook uses direct string comparison
+    headers: { "x-clay-secret": secret },
     muteHttpExceptions: true,
   };
 
@@ -626,6 +667,7 @@ function postRow(sheet, row, secret) {
   Logger.log(`Row ${row} → ${res.getResponseCode()} ${res.getContentText()}`);
 }
 ```
+
 
 
 

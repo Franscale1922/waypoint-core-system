@@ -9,6 +9,7 @@ export type Article = {
   category: string;
   tier: number;
   excerpt: string;
+  checklistSlug?: string;
 };
 
 const articlesDir = nodePath.join(process.cwd(), "content", "articles");
@@ -26,6 +27,7 @@ export function getAllArticles(): Article[] {
         category: data.category as string,
         tier: data.tier as number,
         excerpt: data.excerpt as string,
+        checklistSlug: (data.checklistSlug as string | undefined) ?? undefined,
       };
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -36,7 +38,7 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
   if (!fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
-    meta: { slug, title: data.title, date: data.date, category: data.category, tier: data.tier, excerpt: data.excerpt },
+    meta: { slug, title: data.title, date: data.date, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined },
     content,
     relatedSlugs: (data.relatedSlugs as string[]) ?? [],
     faqs: (data.faqs as { q: string; a: string }[] | undefined) ?? undefined,

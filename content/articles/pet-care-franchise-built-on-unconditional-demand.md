@@ -4,6 +4,7 @@ slug: "pet-care-franchise-built-on-unconditional-demand"
 date: "2026-03-22"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "universal"
 excerpt: "Americans spend more on their pets every year regardless of economic conditions. The pet care franchise category sits on top of that demand, with recurring services, emotionally committed customers, and business models that range from boarding facilities to mobile grooming. Here's what the category actually looks like to own."
 relatedSlugs:
   - "recession-proof-franchise-categories"

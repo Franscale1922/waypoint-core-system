@@ -4,6 +4,7 @@ slug: "sba-loan-vs-robs-franchise-funding-comparison"
 date: "2026-03-22"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Most people assume they'll need a bank loan to fund a franchise. ROBS is often the better answer. It's faster, simpler, and doesn't saddle you with debt payments before your business has found its footing. Here's how to think through both options."
 relatedSlugs:
   - "how-franchise-funding-actually-works"

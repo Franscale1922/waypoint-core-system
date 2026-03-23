@@ -8,6 +8,7 @@ slug: "recession-proof-franchise-categories"
 date: "2025-09-23"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "No franchise is truly recession-proof. The more useful question is which businesses serve customers who keep spending when the economy slows, and how to verify that before you sign."
 faqs:
   - q: "What makes a franchise recession-proof?"

@@ -8,6 +8,7 @@ slug: "fdd-decoded-what-actually-matters"
 date: "2025-09-11"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "The FDD, or Franchise Disclosure Document, is the legally mandated document every franchise candidate receives and almost nobody reads correctly. Here is what to focus on and why most buyers get it wrong."
 faqs:
   - q: "What is an FDD (Franchise Disclosure Document)?"

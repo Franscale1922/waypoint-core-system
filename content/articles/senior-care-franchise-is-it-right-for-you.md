@@ -8,6 +8,7 @@ slug: "senior-care-franchise-is-it-right-for-you"
 date: "2026-03-11"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "senior-care"
 excerpt: "Senior care is one of the most recession-resistant franchise categories, and one of the most commonly misunderstood. There are three meaningfully different business models in this space, and picking the wrong one for your personality and skills is how good candidates end up miserable."
 faqs:
   - q: "What are the different types of senior care franchises?"

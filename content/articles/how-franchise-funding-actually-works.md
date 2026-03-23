@@ -8,6 +8,7 @@ slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Franchise funding has two dominant paths: SBA loans and ROBS. Knowing which one fits your situation will determine how much you pay, how much risk you carry, and how fast you can move."
 faqs:
   - q: "What is the most common way to finance a franchise?"

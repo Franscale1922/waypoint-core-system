@@ -20,6 +20,11 @@ export const leadHunterProcess = inngest.createFunction(
             // Non-serviceable markets (add more as needed)
             const nonServiceableMarkets = ["India", "Philippines", "Pakistan", "Nigeria", "Bangladesh"];
             if (lead.country && nonServiceableMarkets.some(m => lead.country!.includes(m))) {
+                // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { status: "SUPPRESSED", suppressionReason: "non_serviceable_market" } as any,
+                });
                 return { email: null, rawScore: 0 };
             }
 
@@ -49,6 +54,11 @@ export const leadHunterProcess = inngest.createFunction(
             if (!titleMatched) {
                 if (/\b(founder|co-founder|business owner|co-owner)\b/i.test(title) ||
                     /\bfreelance\b|\bindependent\s+(consultant|writer|contractor|professional|advisor|coach|creator)\b/i.test(title)) {
+                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                    await prisma.lead.update({
+                        where: { id: lead.id },
+                        data: { status: "SUPPRESSED", suppressionReason: "title_suppressed" } as any,
+                    });
                     return { email: null, rawScore: 0 };
                 }
             }
@@ -199,7 +209,8 @@ Reply with ONLY the numeric tier — nothing else.
             await step.run("mark-suppressed-or-ignored", async () => {
                 await prisma.lead.update({
                     where: { id: lead.id },
-                    data: { status: "SUPPRESSED", score: rawScore, email }
+                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                    data: { status: "SUPPRESSED", score: rawScore, email, suppressionReason: "low_score" }
                 });
             });
             return { status: "Skipped - Score too low", score: rawScore };
@@ -532,15 +543,25 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
 
         });
 
+        // Intelligence Layer: persist signalType and ctaUsed for outcome attribution analytics.
+        // ctaUsed is computed here (outer scope) so it's accessible in save-draft-email step below.
+        // It matches exactly what was injected into the GPT prompt inside generate-personalized-email.
+        const ctaUsed = CLOSING_CTAS[
+            lead.name.split("").reduce((acc, ch) => acc + ch.charCodeAt(0), 0) % CLOSING_CTAS.length
+        ];
+
         // Save to DB and update status
         // CAN-SPAM footer appended here — deterministically, not by the AI
         await step.run("save-draft-email", async () => {
             await prisma.lead.update({
                 where: { id: lead.id },
+                // @ts-ignore — signalType, ctaUsed added to schema; Prisma client regenerates on deploy
                 data: {
                     draftEmail: draftEmail + CAN_SPAM_FOOTER,
-                    status: "SEQUENCED"
-                }
+                    status: "SEQUENCED",
+                    signalType,  // "Priority A" | "Priority B" | "Priority C"
+                    ctaUsed,     // exact CTA string deterministically selected
+                } as any
             });
         });
 
@@ -614,10 +635,22 @@ export const senderProcess = inngest.createFunction(
         });
 
         // Update CRM status to SENT
+        // Intelligence Layer: record sentAt timestamp and Instantly's internal lead ID.
+        // sentAt is a dedicated column because updatedAt gets overwritten on every status change.
+        // instantlyLeadId enables joining future Instantly webhook events back to our DB lead.
         await step.run("mark-as-sent", async () => {
+            // Instantly v2 API returns the lead's internal ID in response data
+            const instantlyId = sendResult.response?.id
+                ?? sendResult.response?.leads?.[0]?.id
+                ?? null;
             await prisma.lead.update({
                 where: { id: lead.id },
-                data: { status: "SENT" }
+                // @ts-ignore — sentAt, instantlyLeadId added to schema; Prisma client regenerates on deploy
+                data: {
+                    status: "SENT",
+                    sentAt: new Date(),
+                    ...(instantlyId ? { instantlyLeadId: String(instantlyId) } : {}),
+                } as any
             });
         });
 
@@ -664,6 +697,7 @@ Output ONLY the category name.`;
         });
 
         await step.run("update-reply-and-lead", async () => {
+            // First update the Reply record with the classification
             await prisma.reply.update({
                 where: { id: replyId },
                 data: { classification }
@@ -672,14 +706,31 @@ Output ONLY the category name.`;
             // Update Lead status based on reply
             // @ts-ignore
             let newStatus = "REPLIED";
-            if (classification === "Unsubscribe" || classification === "Not a fit") {
+            let newSuppressionReason: string | undefined;
+            if (classification === "Unsubscribe") {
                 newStatus = "SUPPRESSED";
+                newSuppressionReason = "unsubscribe";
+            } else if (classification === "Not a fit") {
+                newStatus = "SUPPRESSED";
+                newSuppressionReason = "not_a_fit";
+            }
+
+            // Intelligence Layer: record repliedAt timestamp on first reply received.
+            // Only write repliedAt if not already set — first reply wins.
+            const leadRecord = replyData.lead!;
+            const replyTimestamps: Record<string, unknown> = {};
+            if (!(leadRecord as any).repliedAt) {
+                replyTimestamps.repliedAt = new Date();
             }
 
             await prisma.lead.update({
                 where: { id: leadId },
-                // @ts-ignore
-                data: { status: newStatus as any }
+                // @ts-ignore — repliedAt, suppressionReason added to schema; Prisma client regenerates on deploy
+                data: {
+                    status: newStatus as any,
+                    ...replyTimestamps,
+                    ...(newSuppressionReason ? { suppressionReason: newSuppressionReason } : {}),
+                } as any
             });
         });
 
@@ -1201,10 +1252,12 @@ export const tidycalBookingSync = inngest.createFunction(
                         return { matched: false, email, reason: `already ${lead.status}` };
                     }
 
+                    // Intelligence Layer: record bookedAt timestamp for SENT→BOOKED velocity analysis.
+                    // bookedAt is a dedicated column because updatedAt is overwritten on every status change.
                     await prisma.lead.update({
                         where: { id: lead.id },
                         // @ts-ignore — BOOKED added to schema; migration runs on next Vercel deploy
-                        data: { status: "BOOKED" as any },
+                        data: { status: "BOOKED" as any, bookedAt: new Date() },
                     });
 
                     console.log(`[tidycal-sync] ✅ Booking synced: ${lead.name} (${email})`);
@@ -1424,5 +1477,209 @@ export const ghostRecoveryAlert = inngest.createFunction(
         });
 
         return { status: "Sent", count: ghostedLeads.length };
+    }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Weekly Intelligence Digest
+// Runs every Monday at 8 AM Mountain Time — before the daily send cron fires.
+// Queries outcome attribution data and posts a structured Slack summary:
+//   • Funnel overview (sent → replied → booked, all-time)
+//   • Signal effectiveness (Priority A/B/C reply + booking rates, last 30 days)
+//   • Score band validation (are high scorers actually booking at higher rates?)
+//   • CTA performance breakdown (last 30 days)
+//   • Suppression reasons (all-time — shows where the pipeline is leaking)
+//   • Booked lead attribute profiles (Sales Nav attributes of converted leads)
+//   • Scoring model health flag (auto-detects if weighting needs review)
+//
+// Surface: Slack → #waypoint-hot-replies. Zero new dashboard UI needed.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const weeklyIntelligenceDigest = inngest.createFunction(
+    { id: "weekly-intelligence-digest", retries: 1 },
+    { cron: "0 14 * * 1" }, // Monday 8 AM Mountain Time (UTC-6)
+    async ({ step }) => {
+        const stats = await step.run("gather-intelligence-stats", async () => {
+            const now = new Date();
+            const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+            // All-time funnel counts
+            const [totalSent, totalReplied, totalBooked, totalSuppressed] = await Promise.all([
+                prisma.lead.count({ where: { sentAt: { not: null } } as any }),
+                prisma.lead.count({ where: { status: "REPLIED" } }),
+                prisma.lead.count({ where: { status: "BOOKED" } }),
+                prisma.lead.count({ where: { status: "SUPPRESSED" } }),
+            ]);
+
+            // Signal effectiveness — last 30 days
+            const signalKeys = ["Priority A", "Priority B", "Priority C"];
+            const signalSent = await Promise.all(
+                signalKeys.map(async sig => ({
+                    sig,
+                    count: await prisma.lead.count({
+                        where: { signalType: sig, sentAt: { not: null, gte: thirtyDaysAgo } } as any,
+                    }),
+                }))
+            );
+            const signalReplied = await Promise.all(
+                signalKeys.map(async sig => ({
+                    sig,
+                    count: await prisma.lead.count({
+                        where: { signalType: sig, sentAt: { not: null, gte: thirtyDaysAgo }, status: { in: ["REPLIED", "BOOKED"] } } as any,
+                    }),
+                }))
+            );
+            const signalBooked = await Promise.all(
+                signalKeys.map(async sig => ({
+                    sig,
+                    count: await prisma.lead.count({
+                        where: { signalType: sig, sentAt: { not: null, gte: thirtyDaysAgo }, status: "BOOKED" } as any,
+                    }),
+                }))
+            );
+
+            // Score band validation (all-time)
+            const scoreBands = [
+                { label: "80-100", min: 80, max: 100 },
+                { label: "65-79",  min: 65, max: 79  },
+                { label: "50-64",  min: 50, max: 64  },
+            ];
+            const scoreBandData = await Promise.all(
+                scoreBands.map(async ({ label, min, max }) => {
+                    const [sent, replied, booked] = await Promise.all([
+                        prisma.lead.count({ where: { sentAt: { not: null }, score: { gte: min, lte: max } } as any }),
+                        prisma.lead.count({ where: { sentAt: { not: null }, score: { gte: min, lte: max }, status: { in: ["REPLIED", "BOOKED"] } } as any }),
+                        prisma.lead.count({ where: { sentAt: { not: null }, score: { gte: min, lte: max }, status: "BOOKED" } as any }),
+                    ]);
+                    return { label, sent, replied, booked };
+                })
+            );
+
+            // CTA performance (last 30 days)
+            const ctaKeys = [
+                "Worth a conversation?",
+                "Would it be worth 15 minutes to find out?",
+                "Curious if that's even a thought?",
+            ];
+            const ctaData = await Promise.all(
+                ctaKeys.map(async cta => {
+                    const [sent, replied] = await Promise.all([
+                        prisma.lead.count({ where: { ctaUsed: cta, sentAt: { not: null, gte: thirtyDaysAgo } } as any }),
+                        prisma.lead.count({ where: { ctaUsed: cta, sentAt: { not: null, gte: thirtyDaysAgo }, status: { in: ["REPLIED", "BOOKED"] } } as any }),
+                    ]);
+                    return { cta, sent, replied };
+                })
+            );
+
+            // Suppression reasons (all-time)
+            const suppressionReasons = ["low_score", "title_suppressed", "non_serviceable_market", "unsubscribe", "not_a_fit", "bounce"];
+            const suppressionCounts = await Promise.all(
+                suppressionReasons.map(async reason => ({
+                    reason,
+                    count: await prisma.lead.count({ where: { status: "SUPPRESSED", suppressionReason: reason } as any }),
+                }))
+            );
+
+            // Booked lead attribute profiles
+            const bookedLeads = await prisma.lead.findMany({
+                where: { status: "BOOKED" },
+                select: { seniorityLevel: true, companySizeRange: true, industryVertical: true, functionArea: true, score: true, signalType: true } as any,
+                orderBy: { updatedAt: "desc" },
+                take: 10,
+            });
+
+            return {
+                totalSent, totalReplied, totalBooked, totalSuppressed,
+                signalSent, signalReplied, signalBooked,
+                scoreBandData,
+                ctaData,
+                suppressionCounts,
+                bookedLeads,
+                generatedAt: now.toISOString(),
+            };
+        });
+
+        // Format and post to Slack
+        await step.run("post-to-slack", async () => {
+            const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+            if (!slackWebhook) {
+                console.warn("[intelligence-digest] No SLACK_WEBHOOK_URL set — skipping Slack post");
+                return;
+            }
+
+            const pct = (n: number, d: number) => (d === 0 ? "N/A" : `${Math.round(n * 100 / d)}%`);
+
+            const signalLines = ["Priority A", "Priority B", "Priority C"].map(sig => {
+                const sent = stats.signalSent.find(s => s.sig === sig)?.count ?? 0;
+                const rep  = stats.signalReplied.find(s => s.sig === sig)?.count ?? 0;
+                const book = stats.signalBooked.find(s => s.sig === sig)?.count ?? 0;
+                const desc = sig === "Priority A" ? "company news" : sig === "Priority B" ? "LinkedIn post" : "ICP fallback";
+                const letter = sig.split(" ")[1];
+                return `• *${letter}* (${desc}): ${sent} sent, ${rep} replied (${pct(rep, sent)}), ${book} booked (${pct(book, sent)})`;
+            });
+
+            const scoreBandLines = stats.scoreBandData.map(b =>
+                `• *${b.label}:* ${b.sent} sent, ${b.replied} replied (${pct(b.replied, b.sent)}), ${b.booked} booked (${pct(b.booked, b.sent)})`
+            );
+
+            const ctaLines = stats.ctaData
+                .filter(c => c.sent > 0)
+                .map(c => `• _"${c.cta}"_ — ${c.sent} sent, ${c.replied} replied (${pct(c.replied, c.sent)})`);
+            if (ctaLines.length === 0) ctaLines.push("• No data yet — CTA tracking is live from this deploy forward");
+
+            const suppressionLines = stats.suppressionCounts
+                .filter(s => s.count > 0)
+                .sort((a, b) => b.count - a.count)
+                .map(s => `• ${s.reason}: ${s.count}`);
+            if (suppressionLines.length === 0) suppressionLines.push("• No categorized suppressions yet");
+
+            const bookedAttrLines = (stats.bookedLeads as any[]).slice(0, 5).map((l: any) =>
+                `• ${l.seniorityLevel ?? "?"} | ${l.companySizeRange ?? "? size"} | ${l.industryVertical ?? "? industry"} | signal: ${l.signalType ?? "pre-capture"} | score: ${l.score}`
+            );
+            if (bookedAttrLines.length === 0) bookedAttrLines.push("• No bookings yet — add Sales Navigator columns in Clay to populate attributes");
+
+            const high = stats.scoreBandData.find(b => b.label === "80-100");
+            const low  = stats.scoreBandData.find(b => b.label === "50-64");
+            const scoringFlag = (low?.sent ?? 0) > 10 && (low?.booked ?? 0) > (high?.booked ?? 0)
+                ? "WARNING Scoring flag: Leads scoring 50-64 are booking more than 80-100 scorers. Review weights in leadHunterProcess."
+                : stats.totalBooked === 0
+                    ? "Scoring note: No bookings yet. Model needs 15+ bookings before insights are statistically meaningful."
+                    : "Scoring model: High-score leads are converting as expected.";
+
+            const weekDate = new Date(stats.generatedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+            await fetch(slackWebhook, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    text: `Weekly Pipeline Intelligence — ${weekDate}`,
+                    blocks: [
+                        { type: "header", text: { type: "plain_text", text: `Weekly Pipeline Intelligence — ${weekDate}` } },
+                        {
+                            type: "section",
+                            text: {
+                                type: "mrkdwn",
+                                text: `*All-time funnel:* ${stats.totalSent} sent, ${stats.totalReplied} replied (${pct(stats.totalReplied, stats.totalSent)}), ${stats.totalBooked} booked (${pct(stats.totalBooked, stats.totalSent)}), ${stats.totalSuppressed} suppressed`,
+                            },
+                        },
+                        { type: "divider" },
+                        { type: "section", text: { type: "mrkdwn", text: `*Signal Effectiveness (last 30 days):*\n${signalLines.join("\n")}` } },
+                        { type: "section", text: { type: "mrkdwn", text: `*Score Band Validation (all-time):*\n${scoreBandLines.join("\n")}` } },
+                        { type: "section", text: { type: "mrkdwn", text: `*CTA Performance (last 30 days):*\n${ctaLines.join("\n")}` } },
+                        { type: "section", text: { type: "mrkdwn", text: `*Suppression Breakdown (all-time):*\n${suppressionLines.join("\n")}` } },
+                        { type: "section", text: { type: "mrkdwn", text: `*Booked Lead Profiles (most recent 5):*\n${bookedAttrLines.join("\n")}` } },
+                        { type: "section", text: { type: "mrkdwn", text: scoringFlag } },
+                        {
+                            type: "context",
+                            elements: [{ type: "mrkdwn", text: `Auto-generated ${weekDate} by Waypoint Intelligence Digest. Live data from Neon DB. Pre-deploy sends show as pre-capture and will clear after the next full send cycle.` }],
+                        },
+                    ],
+                }),
+            });
+
+            console.log(`[intelligence-digest] Slack report posted for ${weekDate}`);
+        });
+
+        return { status: "Posted", generatedAt: stats.generatedAt };
     }
 );

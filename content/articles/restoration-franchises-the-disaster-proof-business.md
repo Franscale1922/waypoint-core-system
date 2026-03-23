@@ -8,6 +8,7 @@ slug: "restoration-franchises-the-disaster-proof-business"
 date: "2026-03-07"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "home-services"
 excerpt: "Restoration franchises generate demand differently from most service businesses. Their revenue is driven by insurance claims and emergency calls, not marketing spend. That distinction produces a structurally different risk profile when consumer confidence softens."
 faqs:
   - q: "What is a restoration franchise?"

@@ -4,6 +4,7 @@ slug: "food-and-beverage-franchise-what-it-actually-demands"
 date: "2026-03-22"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "food-and-beverage"
 excerpt: "Food franchises dominate franchise searches. They're also the most operationally demanding category most buyers will consider. Here's an honest look at what the category requires, and who it's actually built for."
 relatedSlugs:
   - "you-dont-need-to-love-your-franchise"

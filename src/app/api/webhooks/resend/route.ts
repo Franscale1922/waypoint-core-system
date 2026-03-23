@@ -85,9 +85,10 @@ export async function POST(req: Request) {
                 });
 
                 if (lead) {
+                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
                     await prisma.lead.update({
                         where: { id: lead.id },
-                        data: { status: "SUPPRESSED" },
+                        data: { status: "SUPPRESSED", suppressionReason: reason } as any,
                     });
                     console.log(`[inbound-reply] Suppressed lead ${lead.name} (${normalized}) — reason: ${reason}`);
                 }

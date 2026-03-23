@@ -14,7 +14,7 @@ Most people who come to me with interest in food franchising are genuinely excit
 
 - [ ] Do you have liquid capital (cash or accessible funds, not including retirement accounts) of at least the franchise's required investment, plus 20% as a buffer?
 - [ ] Have you budgeted a cash reserve to cover debt service and personal living expenses for a minimum of 12 months while the unit ramps up?
-- [ ] Have you reviewed Item 7 of the franchise disclosure document and mapped every cost line, including build-out, equipment, initial inventory, grand opening marketing, and working capital?
+- [ ] Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open) and mapped every cost line, including build-out, equipment, initial inventory, grand opening marketing, and working capital?
 - [ ] Do you understand that your all-in investment is almost always higher than the low end of the FDD range, and have you planned for the midpoint or above?
 - [ ] If you are financing through an SBA loan or ROBS structure, have you spoken with a lender who specializes in franchise financing and confirmed you qualify?
 
@@ -23,7 +23,7 @@ Most people who come to me with interest in food franchising are genuinely excit
 ## Section 2: Understanding the Margin Structure
 
 - [ ] Do you understand that food cost and labor together typically consume 50 to 70 percent of revenue before you pay rent or royalty?
-- [ ] Have you reviewed Item 19 of the FDD for this specific brand and calculated realistic net revenue based on reported average unit volumes?
+- [ ] Have you reviewed Item 19 (the section where franchisors may voluntarily disclose financial performance data for existing units) for this specific brand and calculated realistic revenue based on reported average unit volumes?
 - [ ] Have you run a break-even analysis using the franchisor's average unit volume, realistic food cost and labor percentages for your market, and the royalty rate, not just the headline investment number?
 - [ ] Are you clear on the royalty structure, including whether it is a percentage of gross revenue or net revenue, and what marketing fund contributions are on top of that?
 - [ ] Have you confirmed what labor costs actually look like in your specific market, not a national average?
@@ -45,7 +45,7 @@ Most people who come to me with interest in food franchising are genuinely excit
 - [ ] Are you prepared to be present in the operation for the first six to twelve months, including opening and closing shifts?
 - [ ] Have you had an honest conversation with your family or partner about what the launch period will actually look like, including weekends, holidays, and evenings?
 - [ ] If you are currently employed full time, do you have a realistic transition plan, and have you confirmed with the franchisor whether absentee or semi-absentee ownership is actually achievable for this brand?
-- [ ] Do you understand the difference between a brand that is marketed as semi-absentee and one where that model is actually documented in item 19 and confirmed by existing franchisees?
+- [ ] Do you understand the difference between a brand that is marketed as semi-absentee and one where that model is actually documented in the financial performance section of the franchise disclosure document and confirmed by existing franchisees?
 - [ ] Are you physically comfortable with the environment, including long periods on your feet, kitchens, or food service settings?
 
 ---
@@ -73,11 +73,11 @@ Most people who come to me with interest in food franchising are genuinely excit
 ## Section 7: Franchisor Due Diligence
 
 - [ ] Have you read the full franchise disclosure document, not just the summary provided by the franchisor or their broker?
-- [ ] Have you reviewed Item 19 (financial performance representations) carefully, and do you understand what is and is not included in the numbers they are reporting?
-- [ ] Have you spoken directly with at least five existing franchisees of this brand, people you contacted from the FDD list rather than references handpicked by the franchisor?
+- [ ] Have you reviewed Item 19 (the section where franchisors may voluntarily disclose financial performance data for existing units) carefully, and do you understand what is and is not included in the numbers they are reporting?
+- [ ] Have you spoken directly with at least five existing franchisees of this brand, people you contacted from the disclosure document's franchisee list rather than references handpicked by the franchisor?
 - [ ] Have you asked those franchisees directly: "Would you buy this franchise again?"
-- [ ] Have you reviewed Item 20 to understand how many units have opened, transferred, or closed in the last three to five years, and does that trend concern you?
-- [ ] Have you spoken with a franchise attorney who reviewed this specific FDD before signing anything?
+- [ ] Have you reviewed Item 20 (the section that shows how many franchisees have left the system, and how recently) to understand how many units have opened, transferred, or closed in the last three to five years, and does that trend concern you?
+- [ ] Have you spoken with a franchise attorney who reviewed this specific franchise disclosure document before signing anything?
 
 ---
 

@@ -8,6 +8,7 @@ slug: "red-flags-franchise-types-to-avoid"
 date: "2025-10-02"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "There are over 4,000 franchise brands in the United States. A significant number of them are not worth buying. Here are the five types I tell every candidate to walk away from, and what they all have in common."
 faqs:
   - q: "What are the biggest red flags in a franchise opportunity?"

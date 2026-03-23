@@ -138,6 +138,45 @@ Writing guidelines:
 
 ---
 
+## Step 4b — Assign Checklist
+
+Every article must declare which checklist widget to show (or explicitly declare none). This is a **required** frontmatter field on all articles — set it before committing.
+
+Add `checklistSlug` to the article's frontmatter, immediately after the `tier:` line:
+
+```markdown
+tier: 1
+checklistSlug: "universal"
+```
+
+### Decision tree
+
+**If `category: "Industry Spotlights"`:**
+Check `content/downloads/` for a checklist matching the industry using this table:
+
+| Industry | `checklistSlug` | Checklist file |
+|----------|----------------|----------------|
+| Food / restaurant / fast casual / QSR | `"food-and-beverage"` | `food-franchise-readiness-checklist.md` |
+| Home services (cleaning, restoration, junk removal, landscaping, car wash, pest control, painting, etc.) | `"home-services"` | `home-services-franchise-readiness-checklist.md` |
+| Fitness / gym / boutique studio / yoga / cycling | `"fitness-wellness"` | `fitness-wellness-franchise-readiness-checklist.md` |
+| Wellness (massage, med spa, assisted stretch, chiropractic-adjacent) | `"fitness-wellness"` | `fitness-wellness-franchise-readiness-checklist.md` |
+| Senior care / home care / companion care | `"senior-care"` | `senior-care-franchise-readiness-checklist.md` |
+| B2B services (staffing, managed IT, fleet maintenance, logistics, business consulting) | `"b2b"` | `b2b-franchise-readiness-checklist.md` |
+| Any other industry without a dedicated checklist yet | `"universal"` | `universal-franchise-readiness-checklist.md` |
+
+If no dedicated checklist exists for the industry yet, use `"universal"` as a placeholder and add a comment in the PR description noting that an industry-specific checklist should be created before the article goes live.
+
+**If `category: "Getting Started"` or `"Going Deeper"`:**
+- Add `checklistSlug: "universal"` if the article covers: readiness, financial preparation, mindset, process overview, semi-absentee vs. owner-operator, funding, or general evaluation concepts.
+- **Omit `checklistSlug` entirely** (no field, no widget) if the article covers: Discovery Day, post-signing, managing an existing franchise,  exit/sale strategy, or is a deep tactical late-stage piece.
+
+### Content standards for assets
+All checklists and downloadable assets stored in `content/downloads/` must follow the rules in `content/CONTENT-STANDARDS.md`, specifically:
+- **Section 10** (No FDD Item Numbers) does NOT apply to downloads — items may use numbered labels
+- **Section 12** (FDD Item References in Downloadable Assets) DOES apply — every Item number must include an inline explanation
+
+---
+
 ## Step 5 — Back-link from existing articles
 
 Open `content/new-article-checklist.md` and review the article pool. Identify 1–3 existing articles where the new article is a genuinely better recommendation than one of their current `relatedSlugs`.

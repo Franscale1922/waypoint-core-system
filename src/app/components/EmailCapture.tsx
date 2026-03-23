@@ -3,19 +3,45 @@
 import { useState } from "react";
 
 /**
- * EmailCapture — B-6 CRO
+ * EmailCapture — Checklist lead magnet widget.
  *
- * Warm, low-pressure email capture for research-mode visitors.
- * Offers the "Franchise Readiness Checklist" as the deliverable.
- * Used on: /resources index, bottom of individual articles.
+ * Renders the "Before You Go" widget below articles that have a checklistSlug
+ * set in their frontmatter. The parent (article page) is responsible for
+ * deciding whether to render this component at all.
+ *
+ * Props:
+ *   checklistSlug  — which checklist to deliver (drives copy + API routing)
+ *   articleSlug    — the article's slug, recorded for attribution in the DB
+ *   variant        — "default" (resources index) | "article" (below article)
  *
  * On submit, posts to /api/capture-email.
  * Falls back gracefully if the API is unavailable.
  */
-export default function EmailCapture({ variant = "default" }: { variant?: "default" | "article" }) {
+
+const INDUSTRY_HEADLINES: Record<string, string> = {
+  "food-and-beverage": "The checklist I use before any first conversation about a food or restaurant franchise.",
+  "home-services": "The checklist I use before any first conversation about a home services franchise.",
+  "fitness-wellness": "The checklist I use before any first conversation about a fitness or wellness franchise.",
+  "senior-care": "The checklist I use before any first conversation about a senior care franchise.",
+  "b2b": "The checklist I use before any first conversation about a B2B franchise.",
+};
+
+export default function EmailCapture({
+  variant = "default",
+  checklistSlug = "universal",
+  articleSlug = "",
+}: {
+  variant?: "default" | "article";
+  checklistSlug?: string;
+  articleSlug?: string;
+}) {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+
+  const headline =
+    INDUSTRY_HEADLINES[checklistSlug] ??
+    "The checklist I actually use before any first conversation. If you can answer yes to most of these, we should talk. If you can't yet, it'll tell you what to work on first.";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,7 +52,13 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
       const res = await fetch("/api/capture-email", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, name, source: variant === "article" ? "article" : "resources" }),
+        body: JSON.stringify({
+          email,
+          name,
+          source: variant === "article" ? "article" : "resources",
+          checklistSlug,
+          articleSlug,
+        }),
       });
       if (res.ok) {
         setStatus("success");
@@ -74,7 +106,7 @@ export default function EmailCapture({ variant = "default" }: { variant?: "defau
           One thing worth having.
         </p>
         <p className="text-sm text-[#5a5a4a] leading-relaxed mb-6">
-          The checklist I actually use before any first conversation. If you can answer yes to most of these, we should talk. If you can&apos;t yet, it&apos;ll tell you what to work on first.
+          {headline}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">

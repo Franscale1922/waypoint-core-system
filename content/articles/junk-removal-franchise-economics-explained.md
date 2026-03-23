@@ -8,6 +8,7 @@ slug: "junk-removal-franchise-economics-explained"
 date: "2026-03-03"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "home-services"
 excerpt: "Junk removal is one of the most financially predictable service franchise categories: reasonable entry cost, quick revenue ramp, durable demand, low fixed overhead. Here is what the economics actually look like and what the honest trade-offs are."
 faqs:
   - q: "How much does a junk removal franchise cost?"

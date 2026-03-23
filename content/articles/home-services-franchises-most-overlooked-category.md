@@ -8,6 +8,7 @@ slug: "home-services-franchises-most-overlooked-category"
 date: "2026-02-25"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "home-services"
 excerpt: "Home services is a $29 billion industry, as of 2025, with no major franchised brand dominating most of its niches. Consumer-facing brands get the attention during franchise searches, but overlooked categories tend to have lighter competition, recurring demand, and lower entry costs."
 faqs:
   - q: "What is a home services franchise?"

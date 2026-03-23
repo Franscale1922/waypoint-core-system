@@ -40,7 +40,35 @@ model Lead {
   score             Int        @default(0)
   status            LeadStatus @default(RAW)
   draftEmail        String?
-  
+
+  // ── Outcome Attribution Fields (Intelligence Layer — added March 2026) ────
+  // These fields close the loop between what we sent and what converted.
+  // signalType: which personalization signal drove the email (A/B/C)
+  signalType        String?    // "Priority A" | "Priority B" | "Priority C"
+  // ctaUsed: which of the 3 approved closing questions was used
+  ctaUsed           String?    // "Worth a conversation?" | "Would it be worth 15 minutes to find out?" | "Curious if that's even a thought?"
+  // Lifecycle timestamps — updatedAt is auto-overwritten so these are dedicated columns
+  sentAt            DateTime?  // When status transitioned to SENT (set by senderProcess)
+  repliedAt         DateTime?  // When first reply was received (set by replyGuardianProcess)
+  bookedAt          DateTime?  // When lead booked a TidyCal consultation (set by tidycalBookingSync)
+  // instantlyLeadId: Instantly's internal ID for this lead — needed to join Instantly webhook events
+  instantlyLeadId   String?
+  // suppressionReason: why the lead was suppressed — enables suppression analysis
+  suppressionReason String?    // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed"
+
+  // ── Sales Navigator Attribute Fields (Intelligence Layer — added March 2026) ─
+  // These attributes come from Clay/Evaboot enrichment at import time.
+  // The goal: correlate Sales Navigator filter attributes with actual conversion outcomes
+  // to generate data-driven filter recommendations for future Sales Nav search sessions.
+  companySizeRange  String?    // "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1001-5000" | "5001-10000" | "10000+"
+  industryVertical  String?    // e.g. "Manufacturing" | "Financial Services" | "Healthcare" | "Technology" | "Retail" | "Defense"
+  functionArea      String?    // Normalized: "Operations" | "Finance" | "Sales" | "General Management" | "Technology" | "Marketing" | "HR"
+  seniorityLevel    String?    // Normalized: "C-Suite" | "VP" | "Director" | "Senior Manager" | "Manager"
+  isOpenToWork      Boolean?   // OpenToWork badge detected at export time
+  wasRecentlyPromoted Boolean? // Job change < 6 months at time of import (opposite of ICP — penalized in scoring)
+  yearsAtCompany    Int?       // Total tenure at current company (different from yearsInCurrentRole which is tenure in title)
+  geoMarket         String?    // US region: "Pacific NW" | "Mountain" | "Midwest" | "Southeast" | "Northeast" | "Southwest" | "Mid-Atlantic"
+
   // Relations
   replies           Reply[]
   
@@ -71,4 +99,16 @@ model SystemSettings {
   resendApiKey   String?
   maxSendsPerDay Int      @default(15) // Warmup phase target — raise to 30–50 after 4+ weeks clean metrics
   updatedAt      DateTime @updatedAt
+}
+
+// ── Checklist Downloads ─────────────────────────────────────────────────────
+// Separate model from Lead — checklist captures are inbound content leads,
+// not cold outreach prospects. Kept isolated to avoid polluting LeadStatus enum.
+model ChecklistDownload {
+  id             String   @id @default(uuid())
+  email          String
+  name           String?
+  articleSlug    String?  // which article the widget was shown on
+  checklistType  String   // e.g. "universal" | "food-and-beverage" | "home-services"
+  createdAt      DateTime @default(now())
 }

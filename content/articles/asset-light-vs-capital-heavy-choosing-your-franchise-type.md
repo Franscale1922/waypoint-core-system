@@ -8,6 +8,7 @@ slug: "asset-light-vs-capital-heavy-choosing-your-franchise-type"
 date: "2025-08-21"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "Before you look at any specific franchise brand, you need to answer a more fundamental question: what type of business do you want to own? How it operates, how it makes money, and how much capital it takes to open will define your experience more than which industry you pick."
 faqs:
   - q: "What is the difference between an asset-light and a capital-heavy franchise?"

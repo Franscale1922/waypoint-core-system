@@ -15,7 +15,7 @@ Go through each question honestly.
 - [ ] Do you have liquid capital available for the total investment plus at least 20% in reserve for ramp-up costs beyond the FDD estimate?
 - [ ] Have you budgeted reserves to cover personal living expenses for at least 12 months while the business is building its client base?
 - [ ] Do you understand that most home services franchises generate minimal revenue in months one through three as local market development takes hold?
-- [ ] Have you reviewed Item 7 of the FDD and mapped every cost line, including vehicle, equipment, initial marketing, and working capital?
+- [ ] Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open) and mapped every cost line, including vehicle, equipment, initial marketing, and working capital?
 - [ ] If financing is involved, have you confirmed with a franchise-specialist lender that you qualify?
 
 ---
@@ -62,10 +62,10 @@ Go through each question honestly.
 ## Section 6: Franchisor Due Diligence
 
 - [ ] Have you read the full franchise disclosure document for this brand, not just the summary provided by the franchisor?
-- [ ] Have you reviewed Item 19 and calculated realistic revenue based on actual franchisee-reported performance, not projected figures?
-- [ ] Have you spoken directly with at least five existing franchisees from the FDD list (not referrals selected by the franchisor)?
+- [ ] Have you reviewed Item 19 (the section where franchisors may voluntarily disclose financial performance data for existing units) and calculated realistic revenue based on actual franchisee-reported performance, not projected figures?
+- [ ] Have you spoken directly with at least five existing franchisees from the franchise disclosure document's franchisee list (not referrals selected by the franchisor)?
 - [ ] Have you asked those franchisees what the first twelve months of market development actually looked like?
-- [ ] Have you reviewed Item 20 to understand franchisee turnover and closure rates in the last three years?
+- [ ] Have you reviewed Item 20 (the section that shows how many franchisees have left the system, and how recently) to understand franchisee turnover and closure rates in the last three years?
 
 ---
 

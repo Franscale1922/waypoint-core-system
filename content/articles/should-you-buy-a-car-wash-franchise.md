@@ -8,6 +8,7 @@ slug: "should-you-buy-a-car-wash-franchise"
 date: "2026-03-13"
 category: "Industry Spotlights"
 tier: 3
+checklistSlug: "home-services"
 excerpt: "Car washes have existed for decades. What changed is how the best brands now generate revenue."
 ---
 ## What Changed: The Membership Model

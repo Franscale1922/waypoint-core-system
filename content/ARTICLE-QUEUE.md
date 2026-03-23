@@ -76,3 +76,57 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 - All industry spotlights can be drafted agentically from public franchise category knowledge once greenlit
 - Draft order suggestion: start with `[ ]` items that complement existing published articles (check `relatedSlugs` gaps in the current pool)
 - Every completed article must run the full workflow in `.agents/workflows/new-article.md`
+- **Every new article requires a `checklistSlug` frontmatter field.** See Step 4b in the workflow for the decision tree and lookup table.
+- **When building any checklist or downloadable asset**, read `content/CONTENT-STANDARDS.md` Section 12 before writing. FDD item numbers require inline explanations in downloadable assets.
+
+---
+
+## Checklist Assignments for Queued Industry Spotlights
+
+When these articles are drafted, use these `checklistSlug` values. If a dedicated checklist does not yet exist for the industry, use `"universal"` as a placeholder.
+
+| Working Title | `checklistSlug` |
+|---|---|
+| Pet Services Franchises | `universal` (no pet-specific checklist yet — create before publishing) |
+| Hair Care and Salon Service Franchises | `universal` |
+| Estate Sale Franchises | `universal` |
+| Child Enrichment Franchises | `universal` |
+| Swim School Franchises | `fitness-wellness` |
+| IT Services and MSP Franchises | `b2b` |
+| Large-Scale Storage Franchises | `universal` |
+| Sports Performance and Training Franchises | `fitness-wellness` |
+| Fleet Maintenance Franchises | `b2b` |
+| Mental Health Franchises | `universal` |
+| Chiropractic and Health Coaching Franchises | `fitness-wellness` |
+| Cost and Operational Efficiency Franchises | `b2b` |
+| Staffing Franchises | `b2b` |
+| Light Remodel Franchises | `home-services` |
+| Garage Transformation Franchises | `home-services` |
+| Glass Replacement Franchises | `home-services` |
+| On-Site Corporate Gym Franchises | `b2b` |
+| Sugar Waxing and Hair Removal Franchises | `fitness-wellness` |
+| Real Estate-Related Franchises | `universal` |
+| Assisted Stretch Franchises | `fitness-wellness` |
+| Montessori and Alternative Education Franchises | `universal` |
+| Driving School Franchises | `universal` |
+| Sweet Concept Franchises | `food-and-beverage` |
+| Laundromat Franchises | `universal` |
+| Maid and Residential Cleaning Franchises | `home-services` |
+| Weight Loss Franchises | `fitness-wellness` |
+| Mosquito Control Franchises | `home-services` |
+| Salon Suite Franchises | `universal` |
+| B2B Logistics Franchises | `b2b` |
+| Pilates Franchises | `fitness-wellness` |
+| Pet Waste Removal Franchises | `home-services` |
+| Entertainment and Destination Franchises | `universal` |
+| Furniture Franchises | `universal` |
+| Kids Sports Franchises | `universal` |
+| Butcher Shop Franchises | `food-and-beverage` |
+| Commercial Testing and Environmental Services Franchises | `b2b` |
+| Expanded B2B Services: Categories Worth Watching | `b2b` |
+| Turf Installation and Exterior Residential Franchises | `home-services` |
+| Music Education Franchises | `universal` |
+| Golf Simulator and Instruction Franchises | `universal` |
+| Med Spa Franchises | `fitness-wellness` |
+
+*Conceptual/Advisory articles:* Use `checklistSlug: "universal"` for all Getting Started and Going Deeper conceptual pieces.

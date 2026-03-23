@@ -8,6 +8,7 @@ slug: "you-dont-need-to-love-your-franchise"
 date: "2025-10-21"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "The most durable franchise businesses are rarely built by people who are passionate about the product. They are built by people who are passionate about building businesses. Here is what to care about instead, and why that distinction matters."
 faqs:
   - q: "Do you need to be passionate about a franchise to succeed in it?"

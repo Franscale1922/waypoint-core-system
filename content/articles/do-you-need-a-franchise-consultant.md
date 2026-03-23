@@ -8,6 +8,7 @@ slug: "do-you-need-a-franchise-consultant"
 date: "2025-09-02"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is. Here is what a good one does, what they cost, and how to tell the bad ones from the good ones quickly."
 faqs:
   - q: "How much does a franchise consultant cost?"

@@ -8,6 +8,7 @@ slug: "the-semi-absentee-franchise-real-talk"
 date: "2025-12-29"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Keeping your job while a franchise grows in the background sounds like the smart play. Nine times out of ten, it creates exactly the problem you were trying to avoid. Here is what that path really looks like and what actually works."
 faqs:
   - q: "What does semi-absentee franchise ownership mean?"

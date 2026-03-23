@@ -297,3 +297,41 @@ Em dashes create sentence structures that are harder to parse, harder for AI sys
 ### Verification
 
 Before committing any article, run: `grep -c "—" filename.md` and confirm the result is 0.
+
+---
+
+## Section 12 — FDD Item References in Downloadable Assets
+
+This rule applies to **checklists, guides, PDF-formatted documents, and any downloadable asset** stored in `content/downloads/`. It does not apply to articles (which follow Section 10).
+
+### The rule
+
+Downloadable assets may reference FDD items by their numbered label (Item 7, Item 19, Item 20, etc.), but every numbered reference must include an inline explanation in the same sentence or phrase. The label is permitted as navigation shorthand because a reader with the FDD in hand will be cross-referencing it directly. The explanation is required because the reader may not yet know what that item contains.
+
+**Required format:** `Item [N] (the section that [plain-language description])`
+
+### Reference table — use these explanations verbatim
+
+| Label | Required inline explanation |
+|-------|----------------------------|
+| Item 7 | the section of the franchise disclosure document that details the total estimated investment required to open |
+| Item 19 | the section where franchisors may voluntarily disclose financial performance data for existing units |
+| Item 20 | the section that shows how many franchisees have left the system, and how recently |
+| Item 21 | the section containing the franchisor's audited financial statements |
+| Item 6 | the section detailing the franchise fee, royalty rate, and ongoing required fees |
+
+### Examples
+
+- ❌ `Have you reviewed Item 7 of the FDD?`
+- ✅ `Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open)?`
+
+- ❌ `Look at Item 19 data before deciding.`
+- ✅ `Look at Item 19 (the section where franchisors may voluntarily disclose financial performance data for existing units) before deciding.`
+
+### Why this differs from articles
+
+Articles (Section 10) ban Item numbers entirely because the reader is a first-time visitor who does not have the FDD in front of them. A checklist reader is typically in or near the due diligence phase and may be using the checklist alongside the actual document. The label helps them navigate. The explanation ensures they are never left without context.
+
+### Applies to all asset types
+
+This rule applies to: checklists, buyer guides, one-pagers, email sequences, and any other non-article asset that contains instructional content about evaluating a franchise.

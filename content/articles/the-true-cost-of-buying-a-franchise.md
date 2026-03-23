@@ -8,6 +8,7 @@ slug: "the-true-cost-of-buying-a-franchise"
 date: "2025-10-10"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"
 excerpt: "The number most people see first is the franchise fee. It is almost never the number that matters. Here is how to think about the four different costs of franchise ownership before you evaluate a single concept."
 faqs:
   - q: "How much does it cost to buy a franchise?"
