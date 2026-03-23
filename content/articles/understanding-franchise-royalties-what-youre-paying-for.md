@@ -61,9 +61,9 @@ The royalty rate is not the number to optimize. What matters is what you're gett
 
 **Ask franchisees directly.** In your validation calls, ask existing owners one question: does the support from the franchisor feel proportional to what you're paying? The answers will be more informative than any disclosure document.
 
-**Look at the Item 21 financial statements.** Item 21 of the FDD contains the franchisor's audited financials. Royalties are the primary revenue source for most franchisors. How are they spending it? A franchisor spending most of its revenue on corporate salaries with minimal field support staff is telling you something about where your royalties go.
+**Look at the franchisor's audited financials.** Every franchise system is legally required to publish audited financial statements as part of its disclosure document. Royalties are the primary revenue source for most franchisors. How are they spending it? A franchisor spending most of its revenue on corporate salaries with minimal field support staff is telling you something about where your royalties actually go.
 
-**Compare royalty rates carefully across systems.** A 7% royalty from a franchisor with 300 units, strong Item 19 disclosures, and franchisees who renew consistently is a better deal than a 4% royalty from a system where half the units close before the agreement term ends. Rate alone is not the comparison.
+**Compare royalty rates carefully across systems.** A 7% royalty from a franchisor with 300 units, transparent financial performance data for franchisees, and owners who renew their agreements consistently is a better deal than a 4% royalty from a system where half the units close before the agreement term ends. Rate alone is not the comparison.
 
 **Model what the royalty does to your margins.** In your financial projections for any franchise, model the royalty as a fixed drag on every dollar of revenue, because that's what it is. At 6%, you need to generate $1.00 in revenue for every $0.06 that goes to the franchisor before any other cost is paid. That math has to work against what you know about the operating cost structure of the business.
 
@@ -77,7 +77,7 @@ A few royalty structures are worth scrutinizing carefully before you proceed:
 
 **Minimum royalties set well above average system revenue.** If the minimum monthly royalty assumes revenue levels that most existing franchisees haven't reached, that's a structural problem.
 
-**No transparency in how royalties are used.** Franchisors that can't or won't explain what royalties fund during the sales process are telling you something important. The Item 21 financial statements are public record, request them and read them.
+**No transparency in how royalties are used.** Franchisors that can't or won't explain what royalties fund during the sales process are telling you something important. Their audited financials are public record inside the disclosure document they're required to share. Request them and read them.
 
 ---
 
