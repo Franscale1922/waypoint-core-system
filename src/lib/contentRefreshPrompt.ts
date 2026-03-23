@@ -137,6 +137,20 @@ Update all existing "as of [year]" references to "as of ${currentYear}."
 
 ---
 
+### EDITORIAL RULE — FUNDING HIERARCHY (APPLIES ACROSS ALL ARTICLES)
+
+When any article discusses funding or financing options, the correct order to present them is:
+
+1. Cash / liquid savings — cleanest path, present first
+2. Asset monetization (sale of investments or property)
+3. HELOC (Home Equity Line of Credit)
+4. ROBS (Rollover for Business Startups)
+5. SBA loans — present LAST as the path of last resort
+
+SBA is common but not preferred. It has the highest documentation burden, the longest timeline (60–90 days minimum, often longer), requires a personal guarantee, and creates fixed monthly debt service. Always describe it with this friction language when it appears. Never describe it as "the most common path" without immediately qualifying that "common" and "best" are different things.
+
+---
+
 ### STANDARD 7 — THE ISLAND TEST
 
 Every section (every block between two H2 headings, and every FAQ Q&A) must pass the Island Test:
