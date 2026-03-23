@@ -8,6 +8,7 @@ slug: "one-unit-or-multi-unit-what-first-timers-get-wrong"
 date: "2025-12-09"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Most first-time franchise buyers have a strong instinct about how many units to buy, and most of them are wrong. Here is where the math actually lands and why the 2 to 5 unit range is where most advisors land with first-time buyers."
 faqs:
   - q: "Should a first-time franchise buyer start with one unit or multiple?"

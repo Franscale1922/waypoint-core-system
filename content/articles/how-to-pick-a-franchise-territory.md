@@ -8,6 +8,7 @@ slug: "how-to-pick-a-franchise-territory"
 date: "2025-11-22"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Territory selection is one of the decisions that most franchise buyers spend the least time on. It is also one of the few decisions you cannot undo once you have signed."
 faqs:
   - q: "What is a franchise territory?"

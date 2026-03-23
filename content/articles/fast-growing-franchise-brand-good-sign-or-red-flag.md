@@ -8,6 +8,7 @@ slug: "fast-growing-franchise-brand-good-sign-or-red-flag"
 date: "2025-11-05"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Fast growth in a franchise brand is a signal that the model is working well enough that buyers and the franchisor both want more of it. Slow growth is a signal that something isn't working. Here is how to evaluate the difference."
 faqs:
   - q: "Is fast franchise growth a good sign or a red flag?"

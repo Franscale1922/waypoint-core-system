@@ -31,7 +31,7 @@ export default function EmailCapture({
   checklistSlug = "universal",
   articleSlug = "",
 }: {
-  variant?: "default" | "article";
+  variant?: "default" | "article" | "card";
   checklistSlug?: string;
   articleSlug?: string;
 }) {
@@ -96,44 +96,80 @@ export default function EmailCapture({
     );
   }
 
+  // Card variant: always stacks vertically — used inside narrow grid cards
+  // where the viewport breakpoint (sm:flex-row) would trigger row mode but
+  // the card's inner width is too narrow to fit all three elements in one row.
+  const isCard = variant === "card";
+
   return (
-    <div className={`bg-[#f0ede8] border border-[#e2ddd2] rounded-xl ${variant === "article" ? "p-6" : "p-6 sm:p-10"}`}>
-      <div className="max-w-xl">
+    <div className={`bg-[#f0ede8] border border-[#e2ddd2] rounded-xl ${
+      isCard ? "p-5" : variant === "article" ? "p-6" : "p-6 sm:p-10"
+    }`}>
+      <div className={isCard ? "w-full" : "max-w-xl"}>
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-3">
           Before you go
         </p>
-        <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-2 leading-snug">
+        <p className={`font-playfair text-[#0c1929] mb-2 leading-snug ${isCard ? "text-lg" : "text-xl sm:text-2xl"}`}>
           One thing worth having.
         </p>
-        <p className="text-sm text-[#5a5a4a] leading-relaxed mb-6">
+        <p className="text-sm text-[#5a5a4a] leading-relaxed mb-5">
           {headline}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <input
-              type="text"
-              placeholder="First name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
-            />
-            <input
-              type="email"
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading"}
-              className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
-            >
-              {status === "loading" ? "Sending…" : "Send me the checklist"}
-            </button>
-          </div>
+          {isCard ? (
+            // Card context: all fields full-width, stacked vertically
+            <>
+              <input
+                type="text"
+                placeholder="First name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full px-3 py-2.5 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+              />
+              <input
+                type="email"
+                placeholder="Your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="w-full px-3 py-2.5 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="w-full inline-flex items-center justify-center px-4 py-3 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[44px]"
+              >
+                {status === "loading" ? "Sending…" : "Send me the checklist"}
+              </button>
+            </>
+          ) : (
+            // Default / article context: row layout on sm+ screens
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="First name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="flex-[0_0_auto] sm:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+              />
+              <input
+                type="email"
+                placeholder="Your email address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-white text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+              />
+              <button
+                type="submit"
+                disabled={status === "loading"}
+                className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
+              >
+                {status === "loading" ? "Sending…" : "Send me the checklist"}
+              </button>
+            </div>
+          )}
           {status === "error" && (
             <p className="text-xs text-red-600">
               Something went wrong. Try emailing kelsey@waypointfranchise.com directly.

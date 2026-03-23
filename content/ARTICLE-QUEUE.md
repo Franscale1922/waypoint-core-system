@@ -72,6 +72,8 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 
 ## Notes for Agents
 
+> **Before committing any article to the repo, check `content/CONTENT-CALENDAR.md`.** It defines the phased rollout plan, publish cadence (3/week), internal linking sequencing rules, and agent gate conditions. Do not publish articles out of phase order or in bulk.
+
 - Before drafting any `[~]` article, flag for Kelsey review or request the relevant source documents
 - All industry spotlights can be drafted agentically from public franchise category knowledge once greenlit
 - Draft order suggestion: start with `[ ]` items that complement existing published articles (check `relatedSlugs` gaps in the current pool)

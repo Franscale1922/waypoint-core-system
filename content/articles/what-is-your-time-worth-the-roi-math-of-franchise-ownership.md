@@ -8,6 +8,7 @@ slug: "what-is-your-time-worth-the-roi-math-of-franchise-ownership"
 date: "2026-01-14"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Most franchise buyers calculate capital investment and payback period. Few calculate the third number that determines whether the math actually works: the opportunity cost of their time."
 faqs:
   - q: "How do you calculate ROI on a franchise investment?"

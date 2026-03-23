@@ -8,6 +8,7 @@ slug: "the-franchise-agreement-what-you-can-and-cant-negotiate"
 date: "2025-12-18"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Franchise agreements are not like most business contracts. They are largely standardized, and most core terms, including royalties, brand standards, and exit terms, are not up for meaningful negotiation. Here is what that means for you and what areas actually do have room to move."
 faqs:
   - q: "Can you negotiate a franchise agreement?"

@@ -173,6 +173,11 @@ export default function MarketingLayout({
                   </Link>
                 </li>
                 <li>
+                  <Link href="/checklists" className="hover:text-white transition-colors inline-block py-1">
+                    Free Checklists
+                  </Link>
+                </li>
+                <li>
                   <Link href="/investment" className="hover:text-white transition-colors inline-block py-1">
                     Investment Guide
                   </Link>

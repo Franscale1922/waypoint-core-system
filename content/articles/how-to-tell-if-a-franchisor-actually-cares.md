@@ -8,6 +8,7 @@ slug: "how-to-tell-if-a-franchisor-actually-cares"
 date: "2025-12-01"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Your incentives and your franchisor's incentives are not automatically the same. Understanding the structural tension, and knowing what alignment looks like in practice, is one of the most important things you can do before you sign."
 faqs:
   - q: "What is franchise incentive misalignment?"

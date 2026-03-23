@@ -176,9 +176,9 @@ Items ordered by **impact × effort ratio** (highest first within each sprint).
 ### Sprint 4 — Content & Growth (Ongoing)
 
 #### 4.1 Publish Articles to /resources
-**Status:** Tier 1, 2, 3 articles all drafted and in repo.
+**Status:** Tier 1, 2, 3 articles all drafted and in repo. ~40 additional articles in queue.
 **Blocked on:** Sprint 2.3 content delivery decision.
-**Publishing priority:** Tier 1 first (broadest search intent), then Tier 2, then Tier 3.
+**Publishing priority:** See `content/CONTENT-CALENDAR.md` for the full phased rollout plan, cadence rules (3/week), and internal linking sequencing. Do not publish out of phase order or in bulk.
 
 #### 4.2 Email Nurture Sequence (Post-Scorecard)
 **Trigger:** Scorecard completion → name + email sent to `/api/scorecard-complete`

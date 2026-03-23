@@ -8,6 +8,7 @@ slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"
 tier: 2
+checklistSlug: "universal"
 excerpt: "Before you fill out a loan application, inventory what you actually have. Most buyers are closer to a clean funding solution than they realize — and the SBA, while useful, is the most painful path available."
 faqs:
   - q: "What is the best way to finance a franchise?"
