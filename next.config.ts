@@ -28,6 +28,15 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  images: {
+    // Extend next/image cache from default 1 day to 1 year.
+    // This eliminates the "Use efficient cache lifetimes" PageSpeed flag on processed images.
+    minimumCacheTTL: 31536000,
+  },
+  experimental: {
+    // Tree-shake large packages at build time — reduces unused JS in bundles.
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+  },
   async redirects() {
     return [
       // Canonical domain: non-www → www (permanent 301)
@@ -80,6 +89,14 @@ const nextConfig: NextConfig = {
         source: '/:og*.png',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=86400' },
+        ],
+      },
+      {
+        // Long-lived cache for next/image processed images (content-addressed URLs — safe to cache permanently).
+        // Fixes PageSpeed "Use efficient cache lifetimes" flag on /_next/image URLs.
+        source: '/_next/image(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
         ],
       },
     ];

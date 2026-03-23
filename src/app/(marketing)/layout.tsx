@@ -116,7 +116,7 @@ export default function MarketingLayout({
               </p>
             </div>
             <div>
-              <h3 className="text-[#8E3012] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-white/60 font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Navigate
               </h3>
               <ul className="space-y-3 text-sm">
@@ -163,7 +163,7 @@ export default function MarketingLayout({
               </ul>
             </div>
           <div>
-              <h3 className="text-[#8E3012] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-white/60 font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Guides &amp; Tools
               </h3>
               <ul className="space-y-3 text-sm">
@@ -195,7 +195,7 @@ export default function MarketingLayout({
               </ul>
             </div>
             <div>
-              <h3 className="text-[#8E3012] font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
+              <h3 className="text-white/60 font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Contact
               </h3>
               <a

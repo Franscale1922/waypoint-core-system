@@ -93,8 +93,8 @@ function TestimonialCard({ t }: { t: (typeof testimonials)[number] }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-sm font-semibold text-[#1a1a1a]">{t.name}</p>
-          <p className="text-xs text-[#7a7a7a] mt-0.5">{t.role}</p>
-          <p className="text-xs text-[#7a7a7a]">{t.location}</p>
+          <p className="text-xs text-[#555555] mt-0.5">{t.role}</p>
+          <p className="text-xs text-[#555555]">{t.location}</p>
         </div>
         <div className="shrink-0 text-right">
           <span className="inline-block text-[10px] font-medium text-[#8E3012] bg-[#fdf5e6] px-2 py-1 rounded-md tracking-wide">
@@ -128,8 +128,7 @@ export default function Testimonials() {
             <TestimonialCard t={testimonials[activeIndex]} />
           </div>
 
-          {/* Dot indicators */}
-          <div className="flex justify-center gap-2 mt-6" role="tablist" aria-label="Testimonials">
+          <div className="flex justify-center gap-1 mt-6" role="tablist" aria-label="Testimonials">
             {testimonials.map((_, i) => (
               <button
                 key={i}
@@ -137,12 +136,16 @@ export default function Testimonials() {
                 aria-selected={i === activeIndex}
                 aria-label={`Testimonial ${i + 1}`}
                 onClick={() => setActiveIndex(i)}
-                className={`rounded-full transition-all duration-300 ${
-                  i === activeIndex
-                    ? "w-6 h-2 bg-[#CC6535]"
-                    : "w-2 h-2 bg-[#CC6535]/25 hover:bg-[#CC6535]/50"
-                }`}
-              />
+                className="flex items-center justify-center w-11 h-11 rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#CC6535]"
+              >
+                <span
+                  className={`block rounded-full transition-all duration-300 ${
+                    i === activeIndex
+                      ? "w-6 h-2 bg-[#CC6535]"
+                      : "w-2 h-2 bg-[#CC6535]/25 hover:bg-[#CC6535]/50"
+                  }`}
+                />
+              </button>
             ))}
           </div>
 
