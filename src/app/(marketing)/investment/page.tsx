@@ -227,7 +227,7 @@ export default function InvestmentPage() {
 
       {/* Mid-page CTA — bridge between tiers and financing */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-10">
-        <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <div className="bg-white border border-[#d8d2c8] rounded-xl p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
             <p className="font-playfair text-xl sm:text-2xl text-[#0c1929] mb-2">
               Know roughly what tier fits your situation?

@@ -99,23 +99,23 @@ export default function MarketingLayout({
       {/* Footer */}
       <footer className="bg-[#0c1929] text-[#9a9a9a] py-12 sm:py-16">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 sm:gap-10">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 sm:gap-10 items-start">
             <div>
-              <Link href="/" className="inline-block mb-4">
+              <Link href="/" className="block mb-5">
                 <Image
                   src="/images/White WP Transparent.png"
                   alt="Waypoint Franchise Advisors"
-                  width={160}
-                  height={160}
-                  className="h-14 w-auto"
+                  width={320}
+                  height={320}
+                  className="w-[68%] h-auto"
                 />
               </Link>
-              <p className="text-sm leading-relaxed text-[#9a9a9a]">
+              <p className="text-base leading-relaxed text-[#b0b0a4]">
                 Guidance from Whitefish, Montana. Helping people find the
                 franchise that fits their life. Not the other way around.
               </p>
             </div>
-            <div>
+            <div className="pt-10">
               <h3 className="text-white/60 font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Navigate
               </h3>
@@ -162,7 +162,7 @@ export default function MarketingLayout({
                 </li>
               </ul>
             </div>
-          <div>
+          <div className="pt-10">
               <h3 className="text-white/60 font-medium text-xs mb-3 sm:mb-4 uppercase tracking-[0.2em]">
                 Guides &amp; Tools
               </h3>
