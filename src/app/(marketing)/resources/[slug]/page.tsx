@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
@@ -130,7 +131,7 @@ export default async function ArticlePage({ params }: Props) {
         <div className="w-full h-px bg-[#e8e0d0] mt-8" />
       </section>
       <article className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#8E3012] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
-        <MDXRemote source={content} />
+        <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
       <RelatedArticles articles={related} />
       {/* B-6: Email capture — research mode readers */}
