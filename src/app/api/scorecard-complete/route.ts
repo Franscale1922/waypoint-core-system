@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     await resend.emails.send({
       from: FROM,
       to: email,
-      subject: `Your Franchise Readiness Score: ${score}/100`,
+      subject: `Your Franchise Readiness Score: ${Math.min(score, 98)}/100`,
       html: scoreResultsHtml({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
       text: scoreResultsText({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
       tags: [{ name: "sequence", value: "scorecard-email-1" }],

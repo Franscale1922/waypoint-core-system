@@ -111,6 +111,7 @@ export default function ScorecardClient() {
   };
 
   const score = calculateScore();
+  const displayScore = Math.min(score, 98);
 
   if (submitted) {
     return (
@@ -122,7 +123,7 @@ export default function ScorecardClient() {
             </svg>
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1b3a5f]">
-            Your Readiness Score: {score}/100
+            Your Readiness Score: {displayScore}/100
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
             {score >= 80
