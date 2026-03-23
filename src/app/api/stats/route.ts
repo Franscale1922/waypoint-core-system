@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export const revalidate = 3600;
 
 const SHEET_CSV_URL =
-  "https://docs.google.com/spreadsheets/d/1nUQaiUoZ6yB67O5U2DgR07If1GBUf9vSGbFTJKLhlM4/export?format=csv";
+  "https://docs.google.com/spreadsheets/d/1olep7m7ZjCu_jpePBqEqMZo2rWyoiCo_RIzTlX3Hleo/export?format=csv";
 
 const FALLBACK = { ownersHelped: 146, statesServed: 35 };
 
