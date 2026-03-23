@@ -4,6 +4,7 @@ import prisma from "../../../lib/prisma";
 import fs from "fs";
 import path from "path";
 import { inngest } from "@/inngest/client";
+import { buildUnsubscribeUrl, buildNurtureFooter } from "@/lib/nurture-emails";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
@@ -115,6 +116,33 @@ export async function POST(req: Request) {
 
     // Send checklist to subscriber
     if (email.toLowerCase() !== TO.toLowerCase()) {
+      // Build compliance footer — includes P.O. Box + 1-click unsubscribe link.
+      // Falls back to plain footer if DB write failed and we have no downloadId.
+      let deliveryFooter: string;
+      if (downloadId) {
+        try {
+          const unsubscribeUrl = buildUnsubscribeUrl(downloadId);
+          deliveryFooter = buildNurtureFooter(unsubscribeUrl);
+        } catch {
+          // UNSUBSCRIBE_SECRET may not be set in dev — use plain footer
+          deliveryFooter = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            "To stop receiving emails from us, reply with \"unsubscribe\".",
+          ].join("\n");
+        }
+      } else {
+        deliveryFooter = [
+          "",
+          "---",
+          "Waypoint Franchise Advisors",
+          "P.O. Box 3421, Whitefish, MT 59937",
+          "To stop receiving emails from us, reply with \"unsubscribe\".",
+        ].join("\n");
+      }
+
       await resend.emails.send({
         from: FROM,
         to: email,
@@ -131,8 +159,7 @@ export async function POST(req: Request) {
           `Reply to this email if you have questions. I read everything.`,
           ``,
           `Kelsey`,
-          `Waypoint Franchise Advisors`,
-          `waypointfranchise.com`,
+          deliveryFooter,
         ].join("\n"),
       });
     }
