@@ -1699,7 +1699,7 @@ import {
     NURTURE_EMAIL_5,
 } from "@/lib/nurture-emails";
 
-const NURTURE_FROM = "Waypoint Franchise Advisors <noreply@mail.waypointfranchise.com>";
+const NURTURE_FROM = "Kelsey at Waypoint <noreply@mail.waypointfranchise.com>";
 const NURTURE_REPLY_TO = "kelsey@waypointfranchise.com";
 
 export const checklistNurtureProcess = inngest.createFunction(
@@ -1756,6 +1756,10 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: em2.subject,
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
                 text: body,
             });
 
@@ -1777,6 +1781,10 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: em3.subject,
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
                 text: body,
             });
 
@@ -1797,6 +1805,10 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: NURTURE_EMAIL_4.subject,
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
                 text: body,
             });
 
@@ -1818,6 +1830,10 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: NURTURE_EMAIL_5.subject,
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
                 text: body,
             });
 

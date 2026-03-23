@@ -4,11 +4,12 @@ import prisma from "../../../lib/prisma";
 import fs from "fs";
 import path from "path";
 import { inngest } from "@/inngest/client";
-import { buildUnsubscribeUrl, buildNurtureFooter } from "@/lib/nurture-emails";
+import { buildUnsubscribeUrl } from "@/lib/nurture-emails";
+import { parseChecklistMarkdown, buildChecklistEmail } from "@/lib/checklist-email";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
-const FROM = "Waypoint Website <noreply@mail.waypointfranchise.com>";
+const FROM = "Kelsey at Waypoint <noreply@mail.waypointfranchise.com>";
 
 /**
  * Maps a checklistSlug to its file in content/downloads/.
@@ -116,42 +117,36 @@ export async function POST(req: Request) {
 
     // Send checklist to subscriber
     if (email.toLowerCase() !== TO.toLowerCase()) {
-      // Build compliance footer — includes P.O. Box + 1-click unsubscribe link.
-      // Falls back to plain footer if DB write failed and we have no downloadId.
-      let deliveryFooter: string;
-      if (downloadId) {
-        try {
-          const unsubscribeUrl = buildUnsubscribeUrl(downloadId);
-          deliveryFooter = buildNurtureFooter(unsubscribeUrl);
-        } catch {
-          // UNSUBSCRIBE_SECRET may not be set in dev — use plain footer
-          deliveryFooter = [
-            "",
-            "---",
-            "Waypoint Franchise Advisors",
-            "P.O. Box 3421, Whitefish, MT 59937",
-            "To stop receiving emails from us, reply with \"unsubscribe\".",
-          ].join("\n");
-        }
-      } else {
-        deliveryFooter = [
-          "",
-          "---",
-          "Waypoint Franchise Advisors",
-          "P.O. Box 3421, Whitefish, MT 59937",
-          "To stop receiving emails from us, reply with \"unsubscribe\".",
-        ].join("\n");
-      }
+      // Build unsubscribe URL for the List-Unsubscribe header.
+      // Falls back gracefully if downloadId is null (DB write failed upstream).
+      const unsubUrl = downloadId
+        ? buildUnsubscribeUrl(downloadId)
+        : `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com"}/unsubscribe`;
+
+      // Build the branded HTML version from the parsed checklist markdown
+      const parsed = parseChecklistMarkdown(checklistContent);
+      const htmlBody = buildChecklistEmail({
+        firstName,
+        checklistLabel,
+        parsed,
+        unsubscribeUrl: unsubUrl,
+      });
 
       await resend.emails.send({
         from: FROM,
         to: email,
         replyTo: TO,
         subject: `Your ${checklistLabel} Checklist`,
+        headers: {
+          // RFC 8058 one-click unsubscribe — the #1 inbox provider trust signal
+          "List-Unsubscribe": `<${unsubUrl}>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
+        html: htmlBody,
         text: [
           `Hi ${firstName},`,
           ``,
-          `Here is the checklist I use before any first conversation in this category.`,
+          `Here is your ${checklistLabel} checklist. View this email in an HTML-capable mail client for the best experience.`,
           ``,
           checklistContent,
           ``,
@@ -159,7 +154,11 @@ export async function POST(req: Request) {
           `Reply to this email if you have questions. I read everything.`,
           ``,
           `Kelsey`,
-          deliveryFooter,
+          `Waypoint Franchise Advisors`,
+          `P.O. Box 3421, Whitefish, MT 59937`,
+          `waypointfranchise.com`,
+          ``,
+          `To unsubscribe: ${unsubUrl}`,
         ].join("\n"),
       });
     }
