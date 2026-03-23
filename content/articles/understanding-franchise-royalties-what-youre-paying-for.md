@@ -39,6 +39,14 @@ Franchise royalties come in two main forms, and the distinction matters more tha
 
 ## What the Royalty Is Supposed to Cover
 
+The royalty is the franchisor's revenue. That's the first thing to understand. When you write that check every month, you are funding a company — and a company that isn't funded doesn't survive.
+
+Part of what you bought when you entered the franchise is membership in a larger organization. You bought the leverage of group purchasing power, the credibility of an established brand, the systems, and the community of other owners operating under the same flag. None of those things maintain themselves. The franchisor needs operating capital to staff a real support team, negotiate national vendor contracts, defend the brand legally, develop new technology, and grow the system in a way that makes your individual location worth more over time.
+
+A franchisor that uses royalty revenue wisely builds something with real scale behind it: a national marketing presence, supplier relationships that reduce your costs, training infrastructure that makes your unit easier to run, and the organizational firepower to compete at a level no independent business owner could reach alone. That's the organization you bought into. The royalty is how it stays alive and keeps building.
+
+A franchisor that doesn't manage royalty revenue well doesn't have those things. That's the version worth avoiding, and it's identifiable before you sign.
+
 The franchise royalty is how the franchisor funds everything that makes the brand valuable beyond your individual unit.
 
 At a minimum, royalties should be funding:
@@ -83,9 +91,11 @@ A few royalty structures are worth scrutinizing carefully before you proceed:
 
 ## The Bottom Line
 
-The royalty is an ongoing business partnership cost. You are paying for a system, a brand, and support infrastructure. The value of that depends entirely on how strong those things actually are in practice.
+The royalty is not a tax on your success. It is the cost of belonging to an organization that, if it is run well, has significantly more reach and resources than you would have operating on your own.
 
-Evaluate the royalty against what you're getting, not just against what it costs. The franchisees who feel they pay their royalty gladly are usually in systems where the support, brand, and infrastructure make the unit economics work. That's the benchmark worth pursuing.
+The franchisees who feel they pay their royalty gladly are in systems where the franchisor is actually doing the work: building the brand, protecting it, investing in the platform, and creating conditions where the unit economics hold up over time. They are writing that check because they're getting something real back.
+
+The franchisees who resent the royalty are usually in systems where the fee has outpaced the value, where headquarters is well-funded but the field support is thin and the brand is stagnant. That's the version to avoid, and validation calls with existing owners will tell you which situation you're walking into before you sign.
 
 If you want to work through the royalty math on a specific concept you're evaluating, bring the numbers and we'll run them together.
 
