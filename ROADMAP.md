@@ -81,7 +81,10 @@ All marketing pages already use `next/image` with proper `fill`, `priority`, `si
 #### ✅ 3.2 FAQ Schema Markup (JSON-LD) — COMPLETE
 `FAQPage` JSON-LD schema dynamically built from the `faqs` data array in `faq/page.tsx` (lines 235–257). All 30 questions included automatically. Injected as `<script type="application/ld+json">` in page head. Schema stays in sync with content by construction.
 
-#### 🔄 3.3 Page-Specific Open Graph Images — NEXT
+#### ✅ 3.3 Page-Specific Open Graph Images — COMPLETE
+Generated and deployed unique OG images for: glossary, investment, tools, franchise-consultant-vs-broker, resources/getting-started. All stored in `/public/og/`. Pages still using default: `resources/going-deeper`, `resources/industry-spotlights`, `quizzes` (low priority — thin pages).
+
+#### 🔄 3.4 Internal Linking Audit — NEXT
 **File:** `src/app/(marketing)/faq/page.tsx`
 **Issue:** No structured data — missing FAQ rich results in Google SERP.
 **Fix:** Add `FAQPage` JSON-LD schema. Pattern already established on `/process` (HowTo schema). Extend the same approach.
