@@ -14,7 +14,8 @@ This is the checklist I use before any first conversation with someone seriously
 - [ ] Do you understand that senior care revenue scales gradually as each client relationship is established, and that early-stage cash flow is typically well below mature-unit levels?
 - [ ] Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open) and mapped every cost line, including licensing, insurance, bonding, uniforms, and territory fees?
 - [ ] Have you looked at Item 19 (the section where franchisors may voluntarily disclose financial performance data for existing units) and calculated realistic revenue based on reported caregiver hours per week at different stages of unit maturity?
-- [ ] If financing through SBA or another vehicle, have you confirmed you qualify with a lender who has funded senior care franchises before?
+- [ ] Have you inventoried all available capital sources before considering any loan: liquid savings, accessible investment accounts, home equity (HELOC), and retirement account balances (which may be usable via a ROBS structure)?
+- [ ] If you are using a borrowing vehicle to fund any portion of the investment (HELOC, ROBS, or SBA loan as a last resort), have you confirmed you qualify with a lender who has funded senior care franchises before?
 
 ---
 

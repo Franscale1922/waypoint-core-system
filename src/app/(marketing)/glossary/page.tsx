@@ -231,7 +231,7 @@ const terms = [
       {
         term: "Equity Injection",
         definition:
-          "The portion of a franchise investment contributed from personal funds rather than borrowed capital. SBA lenders typically require a 10%–20% equity injection of the total project cost. A $400,000 total investment would require $40,000–$80,000 in equity from the borrower. Equity injection demonstrates financial commitment to the lender and reduces the loan amount needed. It can come from liquid savings, a ROBS structure using retirement funds, or a family gift (with proper documentation).",
+          "The portion of a franchise investment contributed from personal funds rather than borrowed capital. The ideal equity injection comes from what you already have: liquid savings, proceeds from asset sales, a HELOC draw, or retirement funds via a ROBS structure. SBA lenders typically require a 10%–20% equity injection of the total project cost. A $400,000 total investment would require $40,000–$80,000 in equity from the borrower. The more of that you can cover from direct capital rather than additional borrowing, the cleaner your capital stack will be.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },
@@ -428,7 +428,7 @@ const terms = [
       {
         term: "HELOC (Home Equity Line of Credit)",
         definition:
-          "A revolving credit line borrowed against the equity in your home, sometimes used to fund part of a franchise purchase. HELOCs offer flexible access to capital at lower interest rates than unsecured loans, but they put your home at risk if the business underperforms. When used as an equity injection alongside an SBA loan, a HELOC can be an effective piece of a franchise financing stack, but it requires careful cash flow modeling to ensure both the business and the line can be serviced simultaneously.",
+          "A revolving credit line borrowed against the equity in your home, often used to fund part or all of a franchise purchase. HELOCs offer access to capital at lower interest rates than most business loans and without the 60-to-90-day underwriting process that an SBA loan requires. Your home is collateral — if the business underperforms, that obligation is real — but for buyers with meaningful home equity and limited liquid savings, a HELOC is frequently the faster and less burdensome path. When combined with direct capital or a ROBS structure, it can eliminate the need for an SBA loan entirely.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },
@@ -690,7 +690,7 @@ const terms = [
       {
         term: "SBA Loan (Small Business Administration)",
         definition:
-          "A federally backed loan program commonly used to finance franchise purchases. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost with lower down payments and longer repayment terms than conventional business loans. Approval depends on the borrower's credit, equity injection, and in some cases whether the franchise brand is already on the SBA's pre-approved Franchise Registry.",
+          "A federally backed loan program used to finance franchise purchases when no cleaner funding path covers the full capital need. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost. It is also the most demanding path available: it requires a credit score above 680, collateral, a personal guarantee, and a full documentation package including 2–3 years of personal tax returns, a business plan, and financial projections. The underwriting process typically takes 60 to 90 days, often longer. For buyers who have liquid savings, home equity, or retirement funds available, those options should be explored first. SBA is valuable as a last resort — when the capital need genuinely exceeds what those paths can cover.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },

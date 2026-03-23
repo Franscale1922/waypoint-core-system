@@ -13,10 +13,11 @@ Most people who come to me with interest in food franchising are genuinely excit
 ## Section 1: Financial Readiness
 
 - [ ] Do you have liquid capital (cash or accessible funds, not including retirement accounts) of at least the franchise's required investment, plus 20% as a buffer?
-- [ ] Have you budgeted a cash reserve to cover debt service and personal living expenses for a minimum of 12 months while the unit ramps up?
+- [ ] Have you budgeted a cash reserve to cover operating expenses and personal living expenses for a minimum of 12 months while the unit ramps up?
 - [ ] Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open) and mapped every cost line, including build-out, equipment, initial inventory, grand opening marketing, and working capital?
 - [ ] Do you understand that your all-in investment is almost always higher than the low end of the FDD range, and have you planned for the midpoint or above?
-- [ ] If you are financing through an SBA loan or ROBS structure, have you spoken with a lender who specializes in franchise financing and confirmed you qualify?
+- [ ] Have you inventoried all available capital sources before considering any loan: liquid savings, accessible investment accounts, home equity (HELOC), and retirement account balances (which may be usable via a ROBS structure)?
+- [ ] If you are using a borrowing vehicle to fund any portion of the investment (HELOC, ROBS, or SBA loan as a last resort), have you spoken with a lender who specializes in franchise financing and confirmed you qualify?
 
 ---
 

@@ -14,7 +14,8 @@ This is the checklist I use before any first conversation with someone seriously
 - [ ] Have you budgeted at least 12 to 18 months of personal living expenses as a reserve, given that fitness concepts typically take longer than most categories to reach stable membership levels?
 - [ ] Have you reviewed Item 7 (the section of the franchise disclosure document that details the total estimated investment required to open, typically $100,000 to $600,000 depending on format as of 2026) and mapped every line item, including build-out, equipment, deposits, and pre-opening marketing?
 - [ ] Do you understand that lease obligations in fitness are typically long-term commitments (5 to 10 years) that do not go away if membership growth is slower than projected?
-- [ ] If financing through SBA or another vehicle, have you confirmed qualification with a franchise-specialist lender?
+- [ ] Have you inventoried all available capital sources before considering any loan: liquid savings, accessible investment accounts, home equity (HELOC), and retirement account balances (which may be usable via a ROBS structure)?
+- [ ] If you are using a borrowing vehicle to fund any portion of the investment (HELOC, ROBS, or SBA loan as a last resort), have you confirmed qualification with a franchise-specialist lender?
 
 ---
 

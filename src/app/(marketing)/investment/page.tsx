@@ -34,7 +34,7 @@ const investmentGuideSchema = {
       name: "How much liquid capital do I need to buy a franchise?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, 401k that can be rolled). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Candidates with $250,000 or more in liquid capital can typically leverage SBA or other financing to access higher-investment concepts.",
+        text: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
       },
     },
   ],
@@ -43,12 +43,12 @@ const investmentGuideSchema = {
 export const metadata: Metadata = {
   title: "How Much Does a Franchise Cost? | Investment Guide | Waypoint Franchise Advisors",
   description:
-    "A plain-language guide to franchise investment costs: initial franchise fees ($20K–$60K), total investment ranges by category, royalty structures, working capital, and how SBA financing works. No sales pitch.",
+    "A plain-language guide to franchise investment costs: initial franchise fees ($20K–$60K), total investment ranges by category, royalty structures, working capital, and how franchise financing actually works. No sales pitch.",
   alternates: { canonical: "https://www.waypointfranchise.com/investment" },
   openGraph: {
     title: "Franchise Investment Guide | Waypoint Franchise Advisors",
     description:
-      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and SBA financing, explained plainly.",
+      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and your real funding options — explained plainly.",
     url: "https://www.waypointfranchise.com/investment",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Franchise Investment Guide" }],
   },
@@ -80,7 +80,7 @@ const investmentTiers = [
     range: "$600K+",
     label: "Multi-unit or large-format",
     description:
-      "Large-format retail, multi-territory deals, or capital-intensive concepts. Often funded via SBA or investor partnerships. Typically reserved for candidates with significant capital and prior business experience.",
+      "Large-format retail, multi-territory deals, or capital-intensive concepts. Typically reserved for candidates with significant capital and prior business experience. Funding often requires a combination of direct capital, ROBS, and in some cases bank financing.",
     examples: ["Multi-unit packages", "Large format retail", "Hotel and hospitality concepts"],
   },
 ];
@@ -284,33 +284,40 @@ export default function InvestmentPage() {
               Liquid capital is the money you can access without selling a house or liquidating a retirement account under penalty. It includes cash, brokerage accounts, and 401(k) or IRA balances that can be rolled into a business using a ROBS (Rollover for Business Startups) structure without triggering early withdrawal penalties.
             </p>
             <p className="text-sm text-[#4a4a3e] leading-relaxed">
-              Most franchisors set a minimum liquid capital requirement in their FDD. This is the amount they expect you to have available before financing, not the total investment. Think of it as the down payment threshold.
+              Most franchisors set a minimum liquid capital requirement in their FDD. This is the amount they expect you to have available before financing, not the total investment. The goal is to fund as much of the purchase as possible without borrowing — and to borrow only what you genuinely cannot cover otherwise.
             </p>
           </div>
           <div>
-            <h3 className="font-playfair text-lg text-[#0c1929] mb-6">Common financing paths</h3>
+            <h3 className="font-playfair text-lg text-[#0c1929] mb-6">Financing paths, in order of preference</h3>
             <div className="grid gap-4">
               {[
                 {
-                  title: "SBA 7(a) Loan",
-                  oneliner: "The most common financing path for franchise buyers.",
-                  range: "Up to 90% of total project cost",
-                  bestFor: "First-time buyers with good credit who want to keep cash reserves intact.",
-                  watchOut: "Personal guarantee required. Approval can take 60 to 90 days. Start the process early.",
+                  title: "Cash and Liquid Savings",
+                  oneliner: "The cleanest path. No debt, no banker, no monthly payment.",
+                  range: "Whatever you have available without penalties",
+                  bestFor: "Anyone with sufficient liquid capital. Start here before considering any loan.",
+                  watchOut: "Wiping yourself out of reserves is its own risk — keep 6–12 months of operating capital aside.",
                 },
                 {
                   title: "ROBS (Rollover for Business Startups)",
-                  oneliner: "Use your 401(k) or IRA to fund the business. No loan, no early withdrawal penalty.",
+                  oneliner: "Use your 401(k) or IRA to fund the business. No loan, no monthly payment, no credit score required.",
                   range: "Any qualified retirement balance; typically $50K+",
-                  bestFor: "Buyers with meaningful retirement savings who want to avoid taking on debt.",
-                  watchOut: "Requires a C-Corp and strict IRS compliance. Use a ROBS specialist, not a generalist accountant.",
+                  bestFor: "Buyers with meaningful retirement savings who want to avoid debt and close in weeks, not months.",
+                  watchOut: "Requires a C-Corp and strict IRS compliance. Retirement funds are directly at risk if the business underperforms.",
                 },
                 {
                   title: "Home Equity / HELOC",
-                  oneliner: "Draw against existing home equity to fund working capital or an equity injection.",
+                  oneliner: "Draw against existing home equity — lower rates than business loans, no SBA underwriting.",
                   range: "Depends on equity; typically $50K\u2013$250K",
-                  bestFor: "Supplementing an SBA loan or covering the down payment without liquidating investments.",
-                  watchOut: "Your home is on the line. Model both the business and the HELOC repayment before signing.",
+                  bestFor: "Buyers with home equity and limited liquid savings who want to avoid the SBA process.",
+                  watchOut: "Your home is on the line. Model both the business cash flow and the HELOC repayment before you draw.",
+                },
+                {
+                  title: "SBA 7(a) Loan",
+                  oneliner: "A government-backed bank loan. Useful when no other path covers the capital need — but the most demanding path available.",
+                  range: "Up to 90% of total project cost",
+                  bestFor: "Buyers who have exhausted cleaner options and have the credit, collateral, and documentation to qualify.",
+                  watchOut: "Personal guarantee required. Expect 60–90 days minimum for underwriting — often longer. Full documentation package: 2–3 years of tax returns, business plan, projections, and collateral evaluation.",
                 },
               ].map(({ title, oneliner, range, bestFor, watchOut }) => (
                 <div key={title} className="bg-white border border-[#e2ddd2] rounded-lg p-5">
@@ -412,7 +419,7 @@ export default function InvestmentPage() {
             <h3 className="font-playfair text-[0.95rem] leading-snug text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-3">
               How franchise funding actually works
             </h3>
-            <p className="text-xs text-[#7a7a6a] leading-relaxed">SBA loans, ROBS, HELOC, and franchisor financing. How buyers actually fund the deal.</p>
+            <p className="text-xs text-[#7a7a6a] leading-relaxed">Your real funding options, in order: cash, ROBS, HELOC, and when necessary, SBA. How buyers actually fund the deal.</p>
             <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read →</p>
           </Link>
 
