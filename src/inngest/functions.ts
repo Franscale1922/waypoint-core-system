@@ -1848,7 +1848,11 @@ export const checklistNurtureProcess = inngest.createFunction(
 // ─── Scorecard Nurture Sequence ───────────────────────────────────────────────
 // Triggered from /api/scorecard-complete after Email 1 (immediate results) is sent.
 // Sends 2 timed follow-ups: Day 3 and Day 7.
-// Unsubscribe is checked from DB before every send — honours mid-sequence opt-outs.
+// Before each send, checks:
+//   1. ScorecardSubmission.unsubscribed  — opt-out via unsubscribe link
+//   2. Lead.bookedAt                     — TidyCal booking received (highest intent)
+//   3. Lead.status === REPLIED           — reply detected via Instantly or manual log
+// Any of these stops the sequence immediately.
 
 import { buildUnsubscribeUrl as buildScorecardUnsubscribeUrl } from "@/lib/nurture-emails";
 
@@ -1888,13 +1892,26 @@ export const scorecardNurtureProcess = inngest.createFunction(
             `To stop receiving these notes: ${unsubscribeUrl}`,
         ].join("\n");
 
-        // Helper: check unsubscribed flag before each send
-        async function isUnsubscribed(): Promise<boolean> {
-            const record = await (prisma as any).scorecardSubmission.findUnique({
+        // Helper: determine if the sequence should stop before the next send.
+        // Returns { stop: true, reason } if any suppression condition is met.
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            // 1. Explicit unsubscribe via link
+            const submission = await (prisma as any).scorecardSubmission.findUnique({
                 where: { id: submissionId },
                 select: { unsubscribed: true },
             });
-            return record?.unsubscribed ?? false;
+            if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            // 2. Lead booked a call (TidyCal sync writes bookedAt)
+            // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                select: { status: true, bookedAt: true },
+            });
+            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
         }
 
         // Helper: track nurture progress
@@ -1912,7 +1929,8 @@ export const scorecardNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-scorecard-email-2", "3d");
 
         await step.run("send-scorecard-email-2", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const suppress2 = await shouldSuppress();
+            if (suppress2.stop) return { skipped: true, reason: suppress2.reason };
 
             const subject = `The 3 questions most people forget to ask before buying a franchise`;
 
@@ -2014,7 +2032,8 @@ export const scorecardNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-scorecard-email-3", "4d");
 
         await step.run("send-scorecard-email-3", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const suppress3 = await shouldSuppress();
+            if (suppress3.stop) return { skipped: true, reason: suppress3.reason };
 
             const subject = `Still thinking about it, ${firstName}?`;
 
