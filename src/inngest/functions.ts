@@ -1718,15 +1718,26 @@ export const checklistNurtureProcess = inngest.createFunction(
         const unsubscribeUrl = buildUnsubscribeUrl(downloadId);
         const footer = buildNurtureFooter(unsubscribeUrl);
 
-        // Helper: reload record and gate on unsubscribed flag
-        async function isUnsubscribed(): Promise<boolean> {
-            // @ts-ignore — unsubscribed added to schema; Prisma client regenerates on deploy
+        // Helper: check all suppression conditions before each send
+        // Stops the sequence if: unsubscribed, booked a call, or replied
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            // @ts-ignore — unsubscribed added to schema
             const record = await prisma.checklistDownload.findUnique({
                 where: { id: downloadId },
                 // @ts-ignore
                 select: { unsubscribed: true },
             }) as any;
-            return record?.unsubscribed ?? false;
+            if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            // Check if the lead booked a call or replied
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                select: { status: true, bookedAt: true } as any,
+            }) as any;
+            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
         }
 
         // Helper: update nurtureStep after a successful send
@@ -1745,7 +1756,8 @@ export const checklistNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-email-2", "3d");
 
         await step.run("send-email-2", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const s2 = await shouldSuppress();
+            if (s2.stop) return { skipped: true, reason: s2.reason };
 
             // Fall back to universal copy if checklistType key is missing
             const em2 = NURTURE_EMAIL_2[checklistType] ?? NURTURE_EMAIL_2["universal"];
@@ -1771,7 +1783,8 @@ export const checklistNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-email-3", "4d");
 
         await step.run("send-email-3", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const s3 = await shouldSuppress();
+            if (s3.stop) return { skipped: true, reason: s3.reason };
 
             const em3 = NURTURE_EMAIL_3[checklistType] ?? NURTURE_EMAIL_3["universal"];
             const body = [`Hi ${firstName},`, "", em3.body, footer].join("\n");
@@ -1796,7 +1809,8 @@ export const checklistNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-email-4", "7d");
 
         await step.run("send-email-4", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const s4 = await shouldSuppress();
+            if (s4.stop) return { skipped: true, reason: s4.reason };
 
             const body = [`Hi ${firstName},`, "", NURTURE_EMAIL_4.body, footer].join("\n");
 
@@ -1820,7 +1834,8 @@ export const checklistNurtureProcess = inngest.createFunction(
         await step.sleep("wait-for-email-5", "7d");
 
         await step.run("send-email-5", async () => {
-            if (await isUnsubscribed()) return { skipped: true, reason: "unsubscribed" };
+            const s5 = await shouldSuppress();
+            if (s5.stop) return { skipped: true, reason: s5.reason };
 
             // Email 5 has a built-in sign-off so we omit the "Hi firstName" greeting
             const body = [NURTURE_EMAIL_5.body, footer].join("\n");

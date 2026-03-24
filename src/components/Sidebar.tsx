@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Users, Inbox, Settings, Linkedin } from "lucide-react";
+import { LayoutDashboard, Users, Inbox, Settings, Linkedin, ClipboardList } from "lucide-react";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -13,6 +13,7 @@ function cn(...inputs: ClassValue[]) {
 const navItems = [
     { name: "Overview",        href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Leads Manager",   href: "/admin/leads",     icon: Users },
+    { name: "Scorecard",       href: "/admin/scorecard", icon: ClipboardList },
     { name: "LinkedIn Queue",  href: "/admin/linkedin",  icon: Linkedin },
     { name: "Inbox & Replies", href: "/admin/inbox",     icon: Inbox },
     { name: "Settings",        href: "/admin/settings",  icon: Settings },
