@@ -11,8 +11,6 @@ const navLinks = [
   { href: "/process", label: "How It Works" },
   { href: "/faq", label: "FAQ" },
   { href: "/resources", label: "Resources" },
-  { href: "/quizzes", label: "Quizzes" },
-  { href: "/refer", label: "Refer a Friend" },
   { href: "/contact", label: "Contact" },
 ];
 
