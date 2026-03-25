@@ -138,3 +138,20 @@ model ChecklistDownload {
   nurtureStep         Int       @default(0)  // last email sent: 0=none, 1=delivery, 2–5=sequence
   nurtureCompletedAt  DateTime?
 }
+
+// ── Corporate Escape Kit Downloads ─────────────────────────────────────────
+// Pre-decision lead magnet — "Financial Safety Nets of Franchising vs. W2".
+// Isolated from ChecklistDownload — different ICP stage, different nurture flow.
+// 3-email nurture sequence (Day 3, Day 7, Day 14).
+model EscapeKitDownload {
+  id                  String    @id @default(uuid())
+  email               String
+  name                String?
+  articleSlug         String?   // referral source — which page the form was on
+  unsubscribed        Boolean   @default(false)
+  unsubscribedAt      DateTime?
+  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7, 4=Day14
+  nurtureCompletedAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}

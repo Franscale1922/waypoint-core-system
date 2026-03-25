@@ -2143,3 +2143,201 @@ export const scorecardNurtureProcess = inngest.createFunction(
     }
 );
 
+// ─── Corporate Escape Kit Nurture Process ──────────────────────────────────────
+// Triggered by: nurture/escape-kit.download
+// 3-email sequence — shorter than checklist nurture, appropriate for a higher-intent
+// pre-decision audience that has already sought out detailed financial guidance.
+// Email cadence: Day 3, Day 7, Day 14.
+// Suppression: stops on unsubscribe, TidyCal booking, or REPLIED lead status.
+
+export const escapeKitNurtureProcess = inngest.createFunction(
+    { id: "escape-kit-nurture-process", retries: 2 },
+    { event: "nurture/escape-kit.download" },
+    async ({ event, step }) => {
+        const { downloadId, email, name } = event.data as {
+            downloadId: string;
+            email: string;
+            name: string | null;
+        };
+
+        const firstName = name ? name.split(" ")[0] : "there";
+        const unsubscribeUrl = (() => {
+            const secret = process.env.UNSUBSCRIBE_SECRET;
+            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            // Inline HMAC to avoid import issues — mirrors buildUnsubscribeUrl
+            const crypto = require("crypto");
+            const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
+            const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
+            return `${base}/api/escape-kit-unsubscribe?id=${downloadId}&token=${token}`;
+        })();
+
+        const footer = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            `To stop receiving these notes: ${unsubscribeUrl}`,
+        ].join("\n");
+
+        // Helper: check suppression conditions before each send
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            const record = await (prisma as any).escapeKitDownload.findUnique({
+                where: { id: downloadId },
+                select: { unsubscribed: true },
+            });
+            if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                select: { status: true, bookedAt: true } as any,
+            }) as any;
+            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
+        }
+
+        async function markStep(stepNum: number, completed = false) {
+            await (prisma as any).escapeKitDownload.update({
+                where: { id: downloadId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                },
+            });
+        }
+
+        // ── Email 2 — Day 3 ──────────────────────────────────────────────────────
+        // Re-engages the reader after they've had time to sit with the guide.
+        // Bridges to the scorecard as a natural next step — no direct ask to book.
+        await step.sleep("wait-for-ek-email-2", "3d");
+
+        await step.run("send-ek-email-2", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `Most people who read through that guide come away with one of two reactions.`,
+                "",
+                `The first is clarity. Something in there named a concern they'd been carrying around vaguely, and now it feels more concrete.`,
+                "",
+                `The second is more questions. Which is the right reaction when you're dealing with something that actually matters.`,
+                "",
+                `If you're in the second camp and want a sense of where you stand before any conversation with anyone, I'd point you to the readiness scorecard. It takes about four minutes and gives you a score that tells you something real about your situation.`,
+                "",
+                `waypointfranchise.com/scorecard`,
+                "",
+                `No email required. No pitch at the end. Just a number and some context.`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "the two reactions",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3 — Day 7 ──────────────────────────────────────────────────────
+        // Addresses the most common objection — "I don't know enough yet to have a
+        // conversation." Reframes what the first call actually is.
+        await step.sleep("wait-for-ek-email-3", "4d");
+
+        await step.run("send-ek-email-3", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `One thing I hear a lot: people hold off on having a conversation because they feel like they need to know more first.`,
+                "",
+                `That's backwards from how these conversations actually go.`,
+                "",
+                `The call isn't a test. You don't need to arrive with a question list or a preferred industry or a capital number. Most people come in with "I've been thinking about this for a while and I don't know where to start." That's the right starting point.`,
+                "",
+                `What the first call gives you is a cleaner picture of what your specific situation looks like — capital position, timeline, lifestyle constraints, risk tolerance — and whether any of that maps to something real.`,
+                "",
+                `If it doesn't, I'll tell you that. If it does, we keep going.`,
+                "",
+                `No cost. Nothing to prepare. Just reply here if you want to find a time.`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "what the first call actually is",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(3);
+            return { sent: true, step: 3 };
+        });
+
+        // ── Email 4 — Day 14 ─────────────────────────────────────────────────────
+        // Soft close. Makes the next step frictionless. Signals this is the last note.
+        await step.sleep("wait-for-ek-email-4", "7d");
+
+        await step.run("send-ek-email-4", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `This is the last note I'll send.`,
+                "",
+                `If the timing isn't right, that's completely fine. The guide is yours whenever you want to revisit it, and this isn't a decision that has a deadline.`,
+                "",
+                `If things change and you want to talk through your situation at some point, you can always reach me directly at kelsey@waypointfranchise.com or book a time at waypointfranchise.com/book.`,
+                "",
+                `Either way, I hope the guide was useful.`,
+                "",
+                `Take care,`,
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "last note",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(4, true);
+            return { sent: true, step: 4 };
+        });
+
+        return { status: "Escape Kit nurture complete", downloadId };
+    }
+);
