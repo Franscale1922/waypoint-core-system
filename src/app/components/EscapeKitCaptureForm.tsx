@@ -66,14 +66,14 @@ export default function EscapeKitCaptureForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3" id="escape-kit-form">
-      <div className="flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col md:flex-row gap-3">
         <input
           type="text"
           id="escape-kit-name"
           placeholder="First name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="flex-[0_0_auto] sm:w-40 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-[#FAF8F4] text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+          className="w-full md:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-[#FAF8F4] text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
         />
         <input
           type="email"
@@ -82,13 +82,13 @@ export default function EscapeKitCaptureForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-[#FAF8F4] text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
+          className="w-full md:flex-1 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-[#FAF8F4] text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
         />
         <button
           type="submit"
           id="escape-kit-submit"
           disabled={status === "loading"}
-          className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
+          className="w-full md:w-auto md:flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all disabled:opacity-70 min-h-[48px]"
         >
           {status === "loading" ? "Sending…" : "Send me the guide"}
         </button>
