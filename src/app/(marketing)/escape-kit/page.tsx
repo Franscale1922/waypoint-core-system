@@ -43,7 +43,7 @@ const SECTIONS = [
   {
     number: "01",
     title: "The W2 Safety Net Myth",
-    desc: "Why the stability most corporate professionals feel is more conditional than they think — and what a W2 actually guarantees.",
+    desc: "Why the stability most corporate professionals feel is more conditional than they think. What a W2 actually guarantees.",
   },
   {
     number: "02",
@@ -58,7 +58,7 @@ const SECTIONS = [
   {
     number: "04",
     title: "Three Questions for Year Five",
-    desc: "The questions every senior executive should answer before their runway narrows — and why the best candidates aren't people in crisis.",
+    desc: "The questions every senior executive should answer before their runway narrows. Why the best candidates aren't people in crisis.",
   },
   {
     number: "05",
@@ -86,7 +86,7 @@ export default function EscapeKitPage() {
           </h1>
           <p className="text-white/65 text-lg max-w-2xl leading-relaxed">
             Five sections on franchise economics, capital deployment, and what most corporate
-            professionals don&rsquo;t understand about their financial position — until they do the math.
+            professionals don&rsquo;t understand about their financial position until they do the math.
           </p>
         </div>
       </section>
@@ -129,7 +129,7 @@ export default function EscapeKitPage() {
           </div>
           <p className="text-sm text-[#3a3a3a] leading-relaxed">
             Waypoint advises VP, Director, and C-suite professionals exploring franchise ownership.
-            The advisory is <strong>free to candidates</strong> — Kelsey is compensated by franchise brands
+            The advisory is <strong>free to candidates</strong>. Kelsey is compensated by franchise brands
             only after a match is made, and only when she believes it&rsquo;s the right fit.
           </p>
         </div>

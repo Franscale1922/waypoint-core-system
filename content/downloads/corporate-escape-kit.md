@@ -11,7 +11,7 @@ Most corporate professionals feel safe. They have a paycheck. They have health i
 
 What they don't have is ownership of any of it.
 
-Your income, your role, and your schedule exist entirely at the discretion of someone else. A restructuring, a new CEO, a bad quarter — any of it can unwind what took you a decade to build.
+Your income, your role, and your schedule exist entirely at the discretion of someone else. A restructuring, a new CEO, a bad quarter. Any of it can unwind what took you a decade to build.
 
 That isn't a scare tactic. It's a structural reality that millions of people discovered when the pandemic hit, when tech layoffs swept through entire departments, and when WARN Act filings started filling the news in 2024 and 2025.
 
@@ -31,15 +31,15 @@ Most people don't lose their financial security in a market crash. They lose it 
 
 ## 2. How Franchise Economics Reduce Risk
 
-Every business carries risk. Franchising does not eliminate it — but it changes the nature of it in ways that matter enormously to a corporate professional.
+Every business carries risk. Franchising doesn't eliminate it. It changes the nature of it, and that distinction matters for how you evaluate the decision.
 
-**The salary that disappears vs. the asset that compounds.** A $180,000 salary replaces nothing if it disappears. A franchise that generates $90,000 in owner benefit in year one and scales from there compounds in a way employment income never does — because you own the asset, not just the output. One is a faucet someone else controls. The other is a reservoir you are building.
+**The salary that disappears vs. the asset that compounds.** A $180,000 salary replaces nothing if it disappears. A franchise that generates $90,000 in owner benefit in year one and scales from there compounds in a way employment income never does. You own the asset. Not just the output. One is a faucet someone else controls. The other is a reservoir you are building.
 
-**Known model, unknown execution.** A franchise comes with a proven operating system. You are not inventing the wheel — you are installing one that has already turned in 150 other markets. The failure modes are documented. The unit economics are disclosed. That transparency is not a marketing claim — it is a legal requirement under FTC franchise disclosure rules (the Franchise Disclosure Document, or FDD).
+**Known model, unknown execution.** A franchise comes with a proven operating system. You're not inventing the wheel. You're installing one that has already turned in 150 other markets. The failure modes are documented. The unit economics are disclosed. That transparency is not a marketing claim. It is a legal requirement under FTC franchise disclosure rules (the Franchise Disclosure Document, or FDD).
 
-**Capital efficiency.** Most franchise concepts are designed to generate positive cash flow within 12–24 months. Scale is not required. You are not raising a Series A. You are deploying known capital into a defined system and collecting the difference between revenue and cost.
+**Capital efficiency.** Most franchise concepts are designed to generate positive cash flow within 12 to 24 months. Scale is not required. You are not raising a Series A. You are deploying known capital into a defined system and collecting the difference between revenue and cost.
 
-**What the FDD tells you — and what it doesn't.** Item 19 of the FDD is the Earnings Claim section. Many franchisors publish it. Many don't. Those who do give you real data on average unit volume, top-quartile and bottom-quartile performance, and variance by market. This is the document I walk every client through before anything else.
+**What the FDD tells you, and what it doesn't.** Item 19 of the FDD is the Earnings Claim section. Many franchisors publish it. Many don't. Those who do give you real data on average unit volume, top-quartile and bottom-quartile performance, and variance by market. This is the document I walk every client through before anything else.
 
 ---
 
@@ -47,23 +47,23 @@ Every business carries risk. Franchising does not eliminate it — but it change
 
 The number one fear I hear from corporate professionals is: *"What if I lose everything?"*
 
-That fear is valid. It's also usually based on assumptions that crumble under honest examination.
+That fear is valid. It's also usually based on assumptions that don't hold up when you look at the actual numbers.
 
-**What you actually need — and how little goes at risk.** Most franchise concepts require between $75,000 and $250,000 in total investment, including working capital. The majority are SBA-eligible — which means you can finance 70–80% of the capital requirement through an SBA 7(a) or 504 loan. The actual out-of-pocket exposure on day one is typically $50,000–$80,000.
+**What you actually need, and how little goes at risk.** Most franchise concepts require between $75,000 and $250,000 in total investment, including working capital. The majority are SBA-eligible, which means you can finance 70 to 80% of the capital requirement through an SBA 7(a) or 504 loan. The actual out-of-pocket exposure on day one is typically $50,000 to $80,000.
 
-Here is what that looks like in practice. A $200,000 franchise investment financed through SBA at 75% requires $50,000 in cash from you. Your remaining $150,000 in liquid assets stays intact. You have not touched your retirement accounts. You have not pulled home equity. Your financial safety net is still there — and you now own an operating business.
+Here is what that looks like. A $200,000 franchise investment financed through SBA at 75% requires $50,000 in cash from you. Your remaining $150,000 in liquid assets stays intact. You have not touched your retirement accounts. You have not pulled home equity. Your financial safety net is still there. And you now own an operating business.
 
-**The severance calculation most people miss.** If you are a VP or Director at a company with over 500 employees and are separated without cause, the average severance package is 3–6 months of salary. At $175,000, that is $43,000–$87,000. That range overlaps almost exactly with the out-of-pocket capital requirement for most franchise concepts. Many of the professionals I work with could fund a franchise entirely from a severance package — without touching a single dollar of savings.
+**The severance calculation most people miss.** If you are a VP or Director at a company with over 500 employees and are separated without cause, the average severance package is 3 to 6 months of salary. At $175,000, that is $43,000 to $87,000. That range overlaps almost exactly with the out-of-pocket capital requirement for most franchise concepts. Many of the professionals I work with could fund a franchise entirely from a severance package without touching a single dollar of savings.
 
 **Liquid capital vs. total capital.** Not all of your net worth is deployable. Retirement accounts, home equity, and restricted stock have different risk profiles and different timelines. A responsible capital plan prioritizes liquid capital first and never requires liquidating long-term assets for an initial franchise investment.
 
 **The questions worth asking before anything else:**
 - What are my liquid assets outside retirement accounts?
-- How much of that am I willing to deploy into a venture with a 5–7 year time horizon?
-- What income do I need to replace in year one — and is that realistic for this concept in this market?
+- How much of that am I willing to deploy into a venture with a 5 to 7 year time horizon?
+- What income do I need to replace in year one, and is that realistic for this concept in this market?
 - What is the honest downside scenario, and can I absorb it?
 
-These are not questions a franchise salesperson will walk you through candidly. They are questions a fiduciary advisor — someone who does not earn more money based on which franchise you buy — should be asking before a single brand gets discussed.
+These are not questions a franchise salesperson will walk you through honestly. They are questions a fiduciary advisor, someone who does not earn more money based on which franchise you buy, should be asking before a single brand gets discussed.
 
 ---
 
@@ -73,13 +73,13 @@ If you have been in a senior corporate role for five or more years and haven't s
 
 **Question 1: What is my career ceiling, and when do I hit it?**
 
-Most senior corporate roles have a ceiling that becomes visible around year five to seven. It is not always a formal cap — it is the moment when the next promotion requires waiting for someone above you to leave, when the company's growth rate no longer matches your own ambitions, or when you realize the most ambitious path available is taking you further from the life you want, not closer to it.
+Most senior corporate roles have a ceiling that becomes visible around year five to seven. It is not always a formal cap. It is the moment when the next promotion requires waiting for someone above you to leave, when the company's growth rate no longer matches your own ambitions, or when you realize the most ambitious path available is taking you further from the life you want, not closer to it.
 
 Franchise candidates who convert at the highest rate are not people in crisis. They are people who see the ceiling clearly and are choosing to act while they still have runway to do it well.
 
 **Question 2: What would I do if my role disappeared tomorrow?**
 
-Not in a catastrophizing way — in a practical one. If your company was acquired, restructured, or simply decided your department was redundant, what is your actual plan? How many months of savings could you operate on comfortably? How long would it take to find a comparable role in your market at your level?
+Not in a panicked way. In a practical one. If your company was acquired, restructured, or simply decided your department was redundant, what is your actual plan? How many months of savings could you operate on comfortably? How long would it take to find a comparable role in your market at your level?
 
 The honest answer to that question tells you more about your real financial position than your current salary does.
 
@@ -87,25 +87,25 @@ The honest answer to that question tells you more about your real financial posi
 
 Twenty-five years in corporate America can produce a remarkable career and very little that you actually own. The skills, the relationships, the reputation — those are yours. The income, the platform, the title, the company — those belong to the organization.
 
-Franchise ownership is not the right path for everyone. But for the executive who sits with that question honestly, it is at minimum worth a clear-eyed evaluation.
+Franchise ownership is not the right path for everyone. But for the executive who sits with that question honestly, it is worth a clear-eyed look.
 
 ---
 
 ## 5. What I Advise Before Anyone Looks at a Single Brand
 
-I work with professionals who are considering franchise ownership. My service costs them nothing. Franchise brands compensate me only if a match is made and a franchise is awarded — and I only recommend a match when I believe it is genuinely the right fit for that person's situation, capital position, and life.
+I work with professionals who are considering franchise ownership. My service costs them nothing. Franchise brands compensate me only if a match is made and a franchise is awarded. I only recommend a match when I believe it is genuinely the right fit for that person's situation, capital position, and life.
 
 Here is what I tell every person before we open a single FDD:
 
 **First: understand your financial position clearly.** Not what you earn. What you own. What you can liquidate without consequence. What you can sustain for 18 months if revenue comes in below projection.
 
-**Second: define what you are optimizing for.** Not income alone — lifestyle. Flexibility. Geography. How many hours you want to be in the business versus working on it. Whether you want employees. Whether you want a physical location or a home-based model. These constraints eliminate most concepts before we ever evaluate one brand.
+**Second: define what you are optimizing for.** Not income alone. Lifestyle. Flexibility. Geography. How many hours you want to be in the business versus working on it. Whether you want employees. Whether you want a physical location or a home-based model. These constraints eliminate most concepts before we ever evaluate one brand.
 
-**Third: set a realistic timeline.** Most franchise purchases take 90–120 days from first conversation to signed agreement. Add another 3–6 months before doors open. A decision made under pressure is rarely a good one. The professionals who do best are the ones who start evaluating before they have to.
+**Third: set a realistic timeline.** Most franchise purchases take 90 to 120 days from first conversation to signed agreement. Add another 3 to 6 months before doors open. A decision made under pressure is rarely a good one. The professionals who do best are the ones who start evaluating before they have to.
 
 **If any of this resonates, I'm glad to compare notes.**
 
-There is no pitch in that conversation. No pressure. Most of the people I talk to are not ready to buy a franchise and may never be — and that is a completely fine outcome. The goal is clarity on whether ownership makes sense for your specific situation, on your timeline, at your actual risk tolerance.
+There is no pitch in that conversation. No pressure. Most of the people I talk to are not ready to buy a franchise and may never be. That is a completely fine outcome. The goal is clarity on whether ownership makes sense for your specific situation, on your timeline, at your actual risk tolerance.
 
 ---
 

@@ -2270,7 +2270,7 @@ export const escapeKitNurtureProcess = inngest.createFunction(
                 "",
                 `The call isn't a test. You don't need to arrive with a question list or a preferred industry or a capital number. Most people come in with "I've been thinking about this for a while and I don't know where to start." That's the right starting point.`,
                 "",
-                `What the first call gives you is a cleaner picture of what your specific situation looks like — capital position, timeline, lifestyle constraints, risk tolerance — and whether any of that maps to something real.`,
+                `What the first call gives you is a cleaner picture of your specific situation. Capital position, timeline, lifestyle constraints, risk tolerance. Whether any of that maps to something real.`,
                 "",
                 `If it doesn't, I'll tell you that. If it does, we keep going.`,
                 "",
