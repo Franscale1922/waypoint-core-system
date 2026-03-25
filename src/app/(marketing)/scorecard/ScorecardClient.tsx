@@ -157,6 +157,22 @@ export default function ScorecardClient() {
               <p className="mt-3 text-xs text-slate-400">
                 This call is free. Franchise brands pay the referral fee, not you.
               </p>
+              {/* Escape Kit — softer next step for not-yet-ready */}
+              <div className="mt-8 border border-[#e2ddd2] rounded-xl p-5 sm:p-6 text-left max-w-md mx-auto bg-[#FAF8F4]">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-2">Not ready to call yet?</p>
+                <p className="font-playfair text-lg text-[#0c1929] mb-2 leading-snug">Read the Corporate Escape Kit first.</p>
+                <p className="text-sm text-[#5a5a4a] leading-relaxed mb-4">
+                  Five sections on what franchise ownership actually costs, how SBA financing works,
+                  and what most corporate professionals don&apos;t understand about their financial position
+                  until they run the numbers.
+                </p>
+                <a
+                  href="/escape-kit"
+                  className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-[#0c1929] hover:bg-[#122640] rounded-lg transition-all min-h-[44px]"
+                >
+                  Get the Free Guide
+                </a>
+              </div>
               <p className="mt-6 text-sm text-slate-500 mb-3">Want to know what kind of franchise owner you are?</p>
               <a
                 href="/archetype"

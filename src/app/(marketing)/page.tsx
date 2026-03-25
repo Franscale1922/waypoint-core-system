@@ -412,7 +412,41 @@ export default function HomePage() {
           ============================================ */}
       <FranchiseMapWrapper />
 
-
+      {/* ============================================
+          ESCAPE KIT — Free guide CTA
+          Cream strip, breaks rhythm before final CTA
+          ============================================ */}
+      <section className="py-16 sm:py-20 bg-[#f2ede3] border-t border-b border-[#e2ddd2]">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="reveal flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-16">
+            <div className="flex-1 text-center lg:text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-3">
+                Free Guide
+              </p>
+              <h2 className="font-playfair text-2xl sm:text-3xl md:text-4xl text-[#0c1929] leading-tight mb-4">
+                The Financial Safety Nets<br className="hidden sm:block" /> of Franchising vs. W2
+              </h2>
+              <p className="text-sm sm:text-base text-[#5a5a4a] leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Five sections on what franchise ownership actually costs, how SBA financing works,
+                and the severance calculation most corporate professionals have never done.
+                No email wall. Download free.
+              </p>
+            </div>
+            <div className="flex-shrink-0 flex flex-col sm:flex-row lg:flex-col gap-3 items-center">
+              <Link
+                href="/escape-kit"
+                id="homepage-escape-kit-cta"
+                className="inline-flex items-center justify-center px-7 py-3.5 text-sm font-semibold tracking-wide text-white bg-[#0c1929] hover:bg-[#122640] rounded-lg transition-all press-effect min-h-[48px] whitespace-nowrap"
+              >
+                Get the Corporate Escape Kit
+              </Link>
+              <p className="text-xs text-[#9a9a8a] text-center">
+                Delivered to your inbox in minutes
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ============================================
           FINAL CTA — mountain lake background
