@@ -304,6 +304,17 @@ export const personalizerProcess = inngest.createFunction(
             "who's attending", "let's connect at", "find me at", "stop by our booth",
             "drop by and say hello", "heading to ", "will be in ",
             "i'll be at", "i'll be in ", "safe travels",
+            // institutional hire/welcome announcements — the prospect is speaking as an
+            // org representative about someone else joining; not their own career perspective.
+            // Example: "We are delighted to welcome Evan Bradds back home to Belmont as head coach."
+            "we are delighted to welcome", "we're delighted to welcome",
+            "pleased to welcome", "thrilled to welcome", "excited to welcome",
+            "please join me in welcoming", "please join us in welcoming",
+            "we are thrilled to announce", "we're thrilled to announce",
+            "we are excited to announce", "we're excited to announce",
+            "i am pleased to announce", "i'm pleased to announce",
+            "delighted to announce", "proud to announce",
+            "welcome to the team", "welcome aboard",
         ];
         // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
         const postLowercase = recentPostSummary.toLowerCase();
@@ -317,10 +328,18 @@ export const personalizerProcess = inngest.createFunction(
         // company she chooses to call home." — David is commenting about Karen, not himself.
         // If we email David referencing Karen, he has zero context for why a stranger is
         // mentioning Karen's name — it feels surveillance-like and confusing.
-        const postAboutThirdParty = /^[A-Z][a-z]+'s\s|\bshe('s|\s+is)\b|\bhe('s|\s+is)\b|\bthey('re|\s+are)\b/
-            .test(recentPostSummary.trim()) &&
-            /lucky company|call home|new chapter|next chapter|next role|new role|next opportunity/i
-            .test(recentPostSummary);
+        const postAboutThirdParty =
+            // Pattern 1: possessive opener + departure/next-chapter language
+            // e.g. "Karen's truly in a class all to herself..."
+            (/^[A-Z][a-z]+'s\s|\bshe('s|\s+is)\b|\bhe('s|\s+is)\b|\bthey('re|\s+are)\b/
+                .test(recentPostSummary.trim()) &&
+                /lucky company|call home|new chapter|next chapter|next role|new role|next opportunity/i
+                .test(recentPostSummary)) ||
+            // Pattern 2: institutional first-person-plural announcements
+            // e.g. "We are delighted to welcome Evan Bradds back home to Belmont as head coach."
+            // These are org-voice posts about someone else joining — not the prospect's career state.
+            /^(we are|we're|i am|i'm|please join (me|us)|our team is)\s+(delighted|pleased|thrilled|excited|proud|happy)\s+to\s+(welcome|announce)/i
+                .test(recentPostSummary.trim());
         const postLooksNonCareer = recentPostSummary
             ? (NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw)) || postTooShort || postAboutThirdParty)
             : false;
@@ -349,7 +368,14 @@ STRICT RULES for Priority C:
 
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
-            const firstName = lead.name.trim().split(/\s+/)[0];
+            // ── First name guard ───────────────────────────────────────────
+            // If the DB name starts with a single initial (e.g. "L Gregory Jones"),
+            // the split gives "L" — which produces "Hi L," in the email body.
+            // Use the second token instead whenever the first token is ≤ 2 characters.
+            const nameParts = lead.name.trim().split(/\s+/);
+            const firstName = nameParts[0].length <= 2 && nameParts.length > 1
+                ? nameParts[1]
+                : nameParts[0];
 
             // ── Deterministic CTA rotation ────────────────────────────────────
             // GPT anchors on "Curious if that's even a thought?" ~80% of the time.
@@ -536,6 +562,18 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             }
             // Remove any doubled blank lines left behind by the removal
             emailText = emailText.replace(/\n{3,}/g, "\n\n").trim();
+
+            // Rule 3: Strip GPT-generated sign-offs ("Kelsey" / "Kelsey," / "Kelsey.").
+            // GPT often ends the body with a standalone "Kelsey" sign-off before its own CTA.
+            // After the CTA strip above, that leaves an orphaned "Kelsey," line between the
+            // email body and the sanitizer-appended CTA, producing: "...your goals. Kelsey,
+            // Worth a conversation?" — which reads as if Kelsey is addressing herself.
+            // Strip all trailing sign-off variants deterministically before appending the CTA.
+            emailText = emailText
+                .replace(/\n+Kelsey[,.]?\s*$/i, "")  // trailing "Kelsey" / "Kelsey," / "Kelsey."
+                .replace(/\nKelsey\n/gi, "\n")         // mid-text orphan (edge case)
+                .trim();
+
             // Append the required CTA as a clean standalone line
             emailText = emailText + "\n" + requiredCTA;
             console.log(`[personalizer] Sanitizer enforced CTA: "${requiredCTA}"`);
