@@ -2,6 +2,13 @@
 // Renders the Corporate Escape Kit guide as a branded HTML email.
 // Design tokens: navy #122640, copper #CC6535, cream #F5F0E8.
 // All styles inline — Gmail/Outlook strip external CSS.
+//
+// Parser handles the guide's actual markdown format:
+//   ## N. Section Title       → section heading
+//   Plain paragraph text      → <p> blocks
+//   - **Bold label** text     → styled bullet rows (two-column: dot + text)
+//   *italic footer lines*     → skipped
+//   ---                       → paragraph flush / section boundary
 
 // ── HTML escape ────────────────────────────────────────────────────────────────
 function esc(s: string): string {
@@ -12,60 +19,126 @@ function esc(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
-// ── Section parser ──────────────────────────────────────────────────────────────
-// Parses the corporate-escape-kit.md file into sections with heading + paragraphs.
-interface EscapeKitSection {
-  heading: string;
-  paragraphs: string[];
+// ── Inline markdown → HTML ─────────────────────────────────────────────────────
+// Handles **bold** only — safe subset for email rendering.
+function inlineMarkdown(s: string): string {
+  return esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
 
+// ── Block types ─────────────────────────────────────────────────────────────────
+type Block =
+  | { type: "paragraph"; text: string }
+  | { type: "bullet"; label: string; body: string }
+  | { type: "bullet_plain"; text: string }    // bullet with no bold label
+  | { type: "question"; text: string };       // italic question sentences
+
+// ── Section ─────────────────────────────────────────────────────────────────────
+interface EscapeKitSection {
+  heading: string;
+  blocks: Block[];
+}
+
+// ── Parser ──────────────────────────────────────────────────────────────────────
 function parseEscapeKitMarkdown(markdown: string): EscapeKitSection[] {
   const lines = markdown.split("\n");
   const sections: EscapeKitSection[] = [];
   let current: EscapeKitSection | null = null;
-  let buf: string[] = [];
+  let paraBuf: string[] = [];
 
-  const flushBuf = () => {
-    if (current && buf.length > 0) {
-      const text = buf.join(" ").trim();
-      if (text) current.paragraphs.push(text);
-      buf = [];
+  const flushPara = () => {
+    if (!current || paraBuf.length === 0) { paraBuf = []; return; }
+    const text = paraBuf.join(" ").trim();
+    if (text) {
+      // Detect italic-only lines like *"What if I lose everything?"*
+      if (text.startsWith("*") && text.endsWith("*")) {
+        current.blocks.push({ type: "question", text: text.slice(1, -1) });
+      } else {
+        current.blocks.push({ type: "paragraph", text });
+      }
     }
+    paraBuf = [];
   };
 
   for (const raw of lines) {
     const line = raw.trim();
 
-    // Skip top-level title and subtitle
-    if (line.startsWith("# ") || line.startsWith("## ") && line.includes("Financial Safety")) continue;
-    // Skip horizontal rules
-    if (line === "---") { flushBuf(); continue; }
-    // Skip footer attribution lines
-    if (line.startsWith("*Kelsey Stuart") || line === "") {
-      flushBuf();
-      continue;
-    }
+    // Skip: top-level title, subtitle, horizontal rules, empty footer lines
+    if (line.startsWith("# ")) continue;
+    if (line === "---") { flushPara(); continue; }
+    if (line === "") { flushPara(); continue; }
+    // Skip attribution footer (*Kelsey Stuart…*)
+    if (line.startsWith("*Kelsey Stuart") || (line.startsWith("*") && line.includes("waypointfranchise"))) continue;
 
-    // Numbered section headings like "## 1. The W2 Safety Net Myth"
+    // Section heading: ## N. Title
     if (line.startsWith("## ")) {
-      flushBuf();
+      flushPara();
       if (current) sections.push(current);
-      current = { heading: line.slice(3).trim(), paragraphs: [] };
+      current = { heading: line.slice(3).trim(), blocks: [] };
       continue;
     }
 
-    // Collect paragraph text — strip leading bold markers for bullet-like lines
-    if (current) {
-      // Convert "**Label.** Body text." → "Label: Body text." for plain rendering
-      const cleaned = line.replace(/\*\*([^*]+)\*\*/g, "$1");
-      // Skip pure empty lines already handled above; append non-empty to buf
-      if (cleaned) buf.push(cleaned);
+    if (!current) continue;
+
+    // Bullet with bold label: "- **Label.** body text."
+    if (line.startsWith("- **")) {
+      flushPara();
+      const m = line.match(/^-\s+\*\*([^*]+)\*\*\s*(.*)$/);
+      if (m) {
+        current.blocks.push({ type: "bullet", label: m[1].replace(/\.$/, ""), body: m[2] });
+      } else {
+        current.blocks.push({ type: "bullet_plain", text: line.slice(2) });
+      }
+      continue;
     }
+
+    // Plain bullet: "- text"
+    if (line.startsWith("- ")) {
+      flushPara();
+      current.blocks.push({ type: "bullet_plain", text: line.slice(2) });
+      continue;
+    }
+
+    // Everything else → accumulate into paragraph buffer
+    paraBuf.push(line);
   }
 
-  flushBuf();
+  flushPara();
   if (current) sections.push(current);
   return sections;
+}
+
+// ── Block → HTML ────────────────────────────────────────────────────────────────
+function renderBlock(block: Block): string {
+  switch (block.type) {
+    case "paragraph":
+      return `<p style="margin:0 0 14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3a3a3a;line-height:1.8;">${inlineMarkdown(block.text)}</p>`;
+
+    case "question":
+      return `<p style="margin:0 0 14px;font-family:Georgia,'Times New Roman',serif;font-size:14px;font-style:italic;color:#122640;line-height:1.8;">${esc(block.text)}</p>`;
+
+    case "bullet":
+      return `
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:10px;">
+          <tr>
+            <td width="6" valign="top" style="padding-top:3px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#CC6535;line-height:1;">&#8226;</td>
+            <td style="padding-left:8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3a3a3a;line-height:1.8;">
+              <strong style="color:#122640;">${esc(block.label)}.</strong>${block.body ? " " + esc(block.body) : ""}
+            </td>
+          </tr>
+        </table>`;
+
+    case "bullet_plain":
+      return `
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:8px;">
+          <tr>
+            <td width="6" valign="top" style="padding-top:3px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#CC6535;line-height:1;">&#8226;</td>
+            <td style="padding-left:8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3a3a3a;line-height:1.8;">${inlineMarkdown(block.text)}</td>
+          </tr>
+        </table>`;
+
+    default:
+      return "";
+  }
 }
 
 // ── HTML email builder ─────────────────────────────────────────────────────────
@@ -77,27 +150,20 @@ export function buildEscapeKitEmail(params: {
   const { firstName, guideMarkdown, unsubscribeUrl } = params;
   const sections = parseEscapeKitMarkdown(guideMarkdown);
 
-  const preHeader = "Your Corporate Escape Kit is inside. Five sections on the financial realities of franchising vs. W2.";
+  const preHeader = "Your Corporate Escape Kit is inside — five sections on the financial realities of franchising vs. W2.";
   const pad = Array(60).fill("\u200C\u00A0").join("");
-
   const bookUrl = "https://www.waypointfranchise.com/book";
 
   const sectionsHtml = sections
     .map((sec, i) => {
-      const parasHtml = sec.paragraphs
-        .map(
-          (p) =>
-            `<p style="margin:0 0 14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#3a3a3a;line-height:1.75;">${esc(p)}</p>`
-        )
-        .join("");
+      const blocksHtml = sec.blocks.map(renderBlock).join("");
       return `
-      <tr><td style="padding:${i === 0 ? "28px" : "20px"} 40px 0;">
-        <p style="margin:0 0 6px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8E3012;">${esc(sec.heading)}</p>
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
-          <tr><td style="height:2px;background-color:#CC6535;border-radius:1px;margin-bottom:14px;font-size:0;line-height:0;">&nbsp;</td></tr>
+      <tr><td style="padding:${i === 0 ? "28px" : "24px"} 40px 4px;">
+        <p style="margin:0 0 4px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#8E3012;">${esc(sec.heading)}</p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-bottom:14px;">
+          <tr><td style="height:2px;background-color:#CC6535;font-size:0;line-height:0;">&nbsp;</td></tr>
         </table>
-        <div style="height:12px;"></div>
-        ${parasHtml}
+        ${blocksHtml}
       </td></tr>`;
     })
     .join("");
@@ -129,14 +195,14 @@ export function buildEscapeKitEmail(params: {
   <!-- HEADER -->
   <tr><td style="background-color:#122640;padding:28px 40px 24px;border-radius:8px 8px 0 0;">
     <p style="margin:0 0 8px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC6535;">WAYPOINT FRANCHISE ADVISORS</p>
-    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#FAF8F4;line-height:1.3;">The Corporate Escape Kit</p>
-    <p style="margin:6px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:13px;color:rgba(250,248,244,0.6);">Financial Safety Nets of Franchising vs. W2</p>
+    <p style="margin:0;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:normal;color:#FAF8F4;line-height:1.3;">The Financial Safety Nets of<br>Franchising vs. W2</p>
+    <p style="margin:8px 0 0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;color:rgba(250,248,244,0.5);letter-spacing:0.5px;">The Corporate Escape Kit</p>
   </td></tr>
 
   <!-- GREETING -->
   <tr><td class="mpad" style="background-color:#F5F0E8;padding:28px 40px 0;">
     <p style="margin:0 0 10px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:16px;color:#1a1a1a;">Hi ${esc(firstName)},</p>
-    <p style="margin:0 0 20px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#4a4a4a;line-height:1.75;">Here is the Corporate Escape Kit you requested. Five sections on the financial realities most people don't think through clearly before making any decision about ownership.</p>
+    <p style="margin:0 0 20px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:14px;color:#4a4a4a;line-height:1.8;">Here is the Corporate Escape Kit you requested. Five sections on the financial realities most people haven't thought through clearly before making any decision about business ownership.</p>
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
       <tr><td style="height:1px;background-color:#d99070;font-size:0;line-height:0;">&nbsp;</td></tr>
     </table>

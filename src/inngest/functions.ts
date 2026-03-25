@@ -2240,7 +2240,7 @@ export const escapeKitNurtureProcess = inngest.createFunction(
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
-                subject: "the two reactions",
+                subject: "one number worth knowing",
                 headers: {
                     "List-Unsubscribe": `<${unsubscribeUrl}>`,
                     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
@@ -2285,7 +2285,7 @@ export const escapeKitNurtureProcess = inngest.createFunction(
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
-                subject: "what the first call actually is",
+                subject: "the question I ask on every first call",
                 headers: {
                     "List-Unsubscribe": `<${unsubscribeUrl}>`,
                     "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
