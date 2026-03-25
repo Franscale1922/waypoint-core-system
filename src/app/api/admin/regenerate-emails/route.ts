@@ -71,10 +71,18 @@ export async function POST(req: Request) {
                 );
             }
 
-            // Clear the draft so the page shows "generating..." state immediately
+            // Clear the draft and reset status to SEQUENCED so personalizerProcess
+            // will accept the lead. personalizerProcess only processes ENRICHED or
+            // SEQUENCED leads — SENT leads are silently skipped. After regeneration
+            // completes, personalizerProcess will set status back to SEQUENCED, which
+            // is correct (the lead can still be re-sent via the Send Now button).
             await prisma.lead.update({
                 where: { id: body.leadId },
-                data: { draftEmail: null },
+                data: {
+                    draftEmail: null,
+                    // Only downgrade status if the lead is SENT — don't touch ENRICHED/SEQUENCED
+                    ...(lead.status === "SENT" ? { status: "SEQUENCED" } : {}),
+                },
             });
 
             // Fire the personalizer
