@@ -19,6 +19,7 @@ faqs:
     a: "Candidates who do well are people who follow systems, hire well, and can manage without needing to invent everything from scratch. They do not need to love the industry. They need operational discipline, patience to ramp up before cash flow stabilizes, and enough capital to survive that ramp-up period."
   - q: "What is the difference between a semi-absentee franchise and an owner-operated franchise?"
     a: "An owner-operated franchise means you work in the business full-time, often in a frontline role in the early months. A semi-absentee model is designed to be run by a hired manager so you can stay in your current job or oversee the business a few hours per week. Semi-absentee requires more working capital upfront because you are funding a manager's salary from day one."
+escapeKit: true
 ---
 Most people who reach out have already been thinking about this for a while. They've looked at a few brands online. Maybe they've talked to a friend who owns a franchise. They want to know what the process looks like.
 

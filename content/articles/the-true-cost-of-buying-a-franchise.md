@@ -19,6 +19,7 @@ faqs:
     a: "No. Most franchise buyers use a combination of liquid capital and financing. The two most common paths are SBA 7(a) loans (which typically require 15 to 20 percent down as of 2026) and ROBS, which lets you invest 401(k) or IRA funds into the business without triggering early withdrawal penalties. Having $100,000 in liquid capital opens up most serious franchise options when combined with financing."
   - q: "What is working capital in a franchise context?"
     a: "Working capital is the reserve you maintain to cover operating expenses until the business is cash-flow positive. Most franchise advisors recommend budgeting for at least three to six months of operating costs before revenue stabilizes. Underestimating working capital is one of the most common mistakes first-time franchise buyers make. It leads to cutting marketing spend or skipping hires at exactly the wrong moment."
+escapeKit: true
 ---
 The number most people see first is the franchise fee. It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters.
 

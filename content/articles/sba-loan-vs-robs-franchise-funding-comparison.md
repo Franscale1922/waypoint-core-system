@@ -19,6 +19,7 @@ faqs:
     a: "ROBS is legal. The IRS has published formal guidance on the structure and has reviewed it extensively. That said, ROBS must be set up correctly by a qualified administrator (usually a specialist firm), and the ongoing compliance requirements are real. The structure requires forming a C-Corporation, issuing stock, and maintaining the company retirement plan. Done correctly, it is a legitimate and widely used funding path. Done incorrectly, it creates significant tax and legal exposure."
   - q: "Can you use both SBA and ROBS to fund a franchise?"
     a: "Yes. Many buyers use a combined structure where ROBS covers the down payment requirement and an SBA loan provides the remainder. This eliminates the need for liquid personal savings for the down payment while keeping monthly debt service lower than a fully SBA-funded deal. The combined approach requires careful coordination between the ROBS administrator and the SBA lender."
+escapeKit: true
 ---
 Most buyers assume that funding a franchise means getting a bank loan. That assumption is worth examining before you fill out an application.
 

@@ -19,6 +19,7 @@ faqs:
     a: "Look for two things: experience on both sides of the table, ideally someone who has owned franchises themselves, and a willingness to say no. A consultant worth working with will tell you if the timing is wrong, if your profile does not fit a concept, or if they see red flags in the FDD data. If a consultant agrees with everything you think and never pushes back, they are not adding value."
   - q: "Do you need a franchise consultant, or can you go directly to a franchise brand?"
     a: "You do not need a consultant. You can go directly to franchise brands through their development teams. The difference is that a brand's development team works for the franchisor. Their job is to qualify you for their specific brand. A consultant's job is to figure out which franchise is right for you across hundreds of options, and the service is free either way. Using a consultant adds representation without adding cost."
+escapeKit: true
 ---
 The skepticism is fair. "Franchise consultant" sounds like a sales title, and in a lot of cases, it is.
 

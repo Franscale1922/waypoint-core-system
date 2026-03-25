@@ -19,6 +19,7 @@ faqs:
     a: "Yes, through a ROBS structure. A ROBS lets you roll 401(k) or IRA funds into a C-Corp that then buys your franchise. There is no early withdrawal penalty and no taxable event because the funds are invested, not distributed. ROBS closes in weeks rather than months and requires no credit score qualification. The trade-off is that your retirement savings are directly at risk if the business underperforms."
   - q: "What credit score do you need for an SBA franchise loan?"
     a: "As of 2026, most SBA lenders require a minimum credit score around 680, though stronger scores (700+) will get better terms and faster decisions. You will also need collateral, a personal guarantee, and a liquidity cushion typically equal to 10% of the loan amount held in unencumbered cash or equivalent. Beyond the score, expect to provide 2–3 years of personal tax returns, a business plan, financial projections, and a full collateral evaluation. The documentation burden alone is significant, which is why SBA is best treated as a last resort rather than a first call."
+escapeKit: true
 ---
 Most people looking at franchises picture one scenario: walking into a bank, asking for a business loan, and either getting it or not. That's a fine mental model — but it starts the funding conversation in the wrong place.
 

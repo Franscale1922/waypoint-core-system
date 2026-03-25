@@ -19,6 +19,7 @@ faqs:
     a: "Royalties fund the franchisor's ongoing operations: corporate staff, training programs, field support, technology infrastructure, legal compliance, brand marketing at the national or regional level, and ongoing system development. In strong franchise systems, the royalty is the mechanism that ensures every franchisee benefits from central investment in the brand and platform. In weaker systems, royalties fund corporate overhead with minimal return to franchisees. Validation calls with existing owners will tell you which situation you're looking at."
   - q: "Is the royalty fee negotiable?"
     a: "In most established franchise systems, the royalty rate is not negotiable. Franchisors set uniform rates across the system specifically to avoid disputes between franchisees who received different terms. Some emerging brands with fewer than 50 units may have more flexibility, but franchisors that negotiate royalties individually create long-term complications for their system. What is sometimes negotiable is the royalty structure, fixed vs. percentage, stepped rates for the first year, or a royalty reduction tied to volume thresholds. These terms are more common in newer systems."
+escapeKit: true
 ---
 When people calculate the cost of buying a franchise, they focus on the upfront franchise fee. It's a one-time payment, it's disclosed prominently, and it's the number most often cited in franchise comparisons.
 

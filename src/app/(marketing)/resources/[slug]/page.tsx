@@ -158,25 +158,27 @@ export default async function ArticlePage({ params }: Props) {
           </Link>
         </div>
       </section>
-      {/* Corporate Escape Kit callout — inline on all articles */}
-      <section className="border-t border-[#e8e0d0] bg-[#f2ede3] py-10 px-6">
-        <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
-          <div className="flex-1">
-            <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase mb-1">Free Guide</p>
-            <p className="font-playfair text-xl text-[#0c1929] mb-1">The Corporate Escape Kit</p>
-            <p className="text-sm text-[#5a5a4a] leading-relaxed">
-              The financial mechanics of franchising vs. W2 in five sections. What it actually costs,
-              how SBA financing works, and the severance calculation most people miss.
-            </p>
+      {/* Corporate Escape Kit callout — targeted early-journey articles only */}
+      {meta.escapeKit && (
+        <section className="border-t border-[#e8e0d0] bg-[#f2ede3] py-10 px-6">
+          <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="flex-1">
+              <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase mb-1">Free Guide</p>
+              <p className="font-playfair text-xl text-[#0c1929] mb-1">The Corporate Escape Kit</p>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed">
+                The financial mechanics of franchising vs. W2 in five sections. What it actually costs,
+                how SBA financing works, and the severance calculation most people miss.
+              </p>
+            </div>
+            <Link
+              href="/escape-kit"
+              className="shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-[#0c1929] hover:bg-[#122640] rounded-lg transition-all min-h-[44px] whitespace-nowrap"
+            >
+              Get the Guide →
+            </Link>
           </div>
-          <Link
-            href="/escape-kit"
-            className="shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-[#0c1929] hover:bg-[#122640] rounded-lg transition-all min-h-[44px] whitespace-nowrap"
-          >
-            Get the Guide →
-          </Link>
-        </div>
-      </section>
+        </section>
+      )}
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-xl sm:text-2xl text-white mb-4">Ready to talk through your situation?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">30 minutes. No pitch. Just an honest conversation about where you stand.</p>

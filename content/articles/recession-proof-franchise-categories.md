@@ -19,6 +19,7 @@ faqs:
     a: "Review the franchise disclosure document's franchisee departure and transfer data. The disclosure document includes unit counts, transfers, and closures going back several years. If the brand existed through 2008 or 2020, you can check how many units closed or were transferred during those periods. Ask the franchisor directly for franchisee retention rates from those years. Then call franchisees from the contact list in the disclosure document who opened before 2008 or 2019 and are still operating. Their experience is the real data."
   - q: "Are home services franchises recession-resistant?"
     a: "Essential home services, specifically restoration (water damage, fire damage), plumbing, and electrical, have shown strong recession resistance because they are triggered by necessity rather than consumer choice. Discretionary home services (landscaping, decorative upgrades, non-urgent improvements) are more exposed to consumer confidence. The key is distinguishing between services customers choose and services they have no choice but to address."
+escapeKit: true
 ---
 "Recession-proof" is one of the most misused terms in franchising. Franchisors use it as a selling point. Brokers use it to move deals. And buyers repeat it without checking whether it's true for the specific opportunity in front of them.
 

@@ -19,6 +19,7 @@ faqs:
     a: "Debt service is the total monthly principal and interest payment on your loan. On a $250,000 SBA loan at rates comparable to those as of 2026, monthly debt service runs approximately $3,300 per month, roughly $40,000 per year before you pay yourself a dollar. This is a real operating cost that must be modeled into your ROI calculation. A franchise that looks profitable before debt service may look materially different after it."
   - q: "How does adding franchise units change the return on time?"
     a: "Adding a second or third unit using cash flow from unit one creates revenue growth that does not require proportional increases in your time. Management infrastructure, marketing spend, and vendor relationships are shared across units. The franchise buyer who built three units of a home services concept and is running $1.2M in combined revenue by year four, drawing $180,000 and working 20 hours per week, is getting dramatically better return on time than the buyer who owns one unit and is still working 50 hours a week for $80,000 at year three."
+escapeKit: true
 ---
 When people evaluate franchise investments, they usually focus on the upfront number. What does it cost to get in? What's the payback period? They treat it like a savings account: put money in, money comes back.
 

@@ -19,6 +19,7 @@ faqs:
     a: "Year one of franchise ownership typically means more hours for less cash than most W-2 jobs. The leverage builds in years three through five, not months two through four. How quickly a franchise reaches stable cash flow depends on the category, the market, the operator's execution, and how well the working capital was structured at launch. Franchisors may disclose system-level financial performance data in the franchise disclosure document, but individual results are shaped by local market conditions."
   - q: "What is the readiness test for leaving a corporate job for a franchise?"
     a: "The most predictive readiness question is not about capital or credit score. It is this: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job before the business stabilizes, and does that prospect excite you or terrify you? People who need certainty before they act are typically better served staying in the W-2 model. People who are energized by building something, with calculated uncertainty built into the plan, tend to make better franchise operators."
+escapeKit: true
 ---
 A lot of people look at franchise ownership as an exit from corporate life. That framing usually leads to bad decisions.
 
