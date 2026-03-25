@@ -193,6 +193,20 @@ export default function MobileNav() {
           <p style={{ marginTop: 28, fontSize: 11, color: "rgba(255,255,255,0.25)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
             Whitefish, Montana
           </p>
+          <Link
+            href="/newsletter"
+            style={{
+              display: "block",
+              marginTop: 14,
+              fontSize: 11,
+              color: "rgba(255,255,255,0.35)",
+              textDecoration: "none",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+            }}
+          >
+            Free Newsletter →
+          </Link>
         </nav>
       </div>
     </>

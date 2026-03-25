@@ -6,6 +6,7 @@ import path from "path";
 import { inngest } from "@/inngest/client";
 import { buildUnsubscribeUrl } from "@/lib/nurture-emails";
 import { parseChecklistMarkdown, buildChecklistEmail } from "@/lib/checklist-email";
+import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
@@ -76,6 +77,11 @@ export async function POST(req: Request) {
     } catch (dbErr) {
       // Log but don't block email delivery if DB write fails
       console.error("[capture-email] DB write failed:", dbErr);
+    }
+
+    // Beehiiv subscriber sync — fire-and-forget, skipped for Kelsey's own address
+    if (email.toLowerCase() !== TO.toLowerCase()) {
+      subscribeToBeehiiv(email, name || undefined).catch(() => {});
     }
 
     // Fire the nurture sequence — fire-and-forget, does not block checklist delivery

@@ -1,5 +1,6 @@
 import { inngest } from "./client";
 import prisma from "@/lib/prisma";
+import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 export const leadHunterProcess = inngest.createFunction(
     { id: "lead-hunter-process" },
@@ -713,6 +714,13 @@ Output ONLY the category name.`;
             } else if (classification === "Not a fit") {
                 newStatus = "SUPPRESSED";
                 newSuppressionReason = "not_a_fit";
+            } else if (classification === "Not now") {
+                // Subscriber rescue: prospect isn't ready, but isn't opposed.
+                // Subscribe to newsletter so they stay warm without further cold outreach.
+                // Fire-and-forget — never blocks classification or suppression logic.
+                if (replyData.lead?.email) {
+                    subscribeToBeehiiv(replyData.lead.email, replyData.lead.name ?? undefined).catch(() => {});
+                }
             }
 
             // Intelligence Layer: record repliedAt timestamp on first reply received.

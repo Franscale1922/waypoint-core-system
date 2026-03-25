@@ -6,6 +6,7 @@ import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
+import NewsletterForm from "../../../components/NewsletterForm";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -134,6 +135,20 @@ export default async function ArticlePage({ params }: Props) {
         <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
       <RelatedArticles articles={related} />
+      {/* Newsletter subscribe callout — appears on every article */}
+      <section className="border-t border-[#e8e0d0] bg-white py-10 px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-5">
+            <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase">Free Newsletter</p>
+            <span className="hidden sm:inline text-[#d0c8b8] text-xs">·</span>
+            <p className="text-xs text-[#9a9a8a] tracking-wide">The Franchise Dispatch — honest takes, no pitch</p>
+          </div>
+          <p className="font-playfair text-lg sm:text-xl text-[#0c1929] mb-4 leading-snug">
+            Want the real numbers, not the brochure?
+          </p>
+          <NewsletterForm variant="inline" />
+        </div>
+      </section>
       {/* Before You Go: only shown on articles with checklistSlug in frontmatter */}
       {meta.checklistSlug && (
         <section className="border-t border-[#e8e0d0] bg-[#FAF8F4] py-10 px-6">

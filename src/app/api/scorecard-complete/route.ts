@@ -4,6 +4,7 @@ import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
 import { ScorecardSchema } from "@/app/lib/schemas";
+import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
@@ -46,6 +47,11 @@ export async function POST(req: Request) {
             status: "SEQUENCED",
           },
         });
+
+    // ── 1b. Beehiiv subscriber sync — fire-and-forget ─────────────────────────
+    // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
+    // Never throws — errors are caught inside subscribeToBeehiiv.
+    subscribeToBeehiiv(email, name).catch(() => {});
 
     // ── 2. Deduplicate: only start a new nurture sequence if none is active ───
     // "Active" = not completed and not unsubscribed. If a sequence is already

@@ -1,8 +1,8 @@
 # Newsletter Build — Waypoint Franchise Advisors
 
-> **Roadmap Section:** §5. 🎥 Content Ecosystem — `[ ] Beehiiv + LinkedIn Newsletters`
+> **Roadmap Section:** §5. 🎥 Content Ecosystem — `[/] Beehiiv + LinkedIn Newsletters`
 >
-> **Status:** Not started (March 2026). Build trigger: after cold email (§4) is generating active replies and the n8n workflow evaluation is complete.
+> **Status:** CRM sync live (March 25, 2026). `/newsletter` page live. Newsletter subscribe form on all 34+ article pages. Bulk backfill script ready. Next: activate Beehiiv paid plan → MCP early access → first issue.
 >
 > **Purpose:** Deep, SEO-optimized content distribution through beehiiv newsletter + LinkedIn newsletters. Feeds audience growth for Horizon 2 community/monetization (Skool).
 
@@ -100,11 +100,13 @@ Reasons:
 
 ## Build Sequence (When Ready)
 
-1. Activate beehiiv paid plan
-2. Request MCP early access + join Slack
-3. Configure signup flow (multi-step: recommendation modal → onboarding survey → welcome page)
-4. Connect beehiiv to CRM (HubSpot or direct Inngest webhook) for engagement-triggered lead routing
-5. Import/migrate any existing email list
-6. Launch first issue + enable referral program
-7. Wire MCP automations: Monday digest, Friday editorial brief, high-intent segment → consultation funnel
-8. Enable v2 write automations when available
+1. [x] **CRM auto-sync live** — all scorecard/checklist/escape-kit submissions auto-subscribe via `src/lib/beehiiv.ts` + 3 route hooks + Inngest "Not now" rescue
+2. [x] **`/newsletter` page built** — full landing page at `waypointfranchise.com/newsletter` with subscribe form, what-you-get section, persona targeting
+3. [x] **Newsletter form on all 34+ articles** — inline callout in `resources/[slug]/page.tsx` after related articles
+4. [x] **Backfill script ready** — `scripts/beehiiv-backfill.ts` dry-runs by default, `--live` flag to push all existing leads to Beehiiv
+5. [x] **Sitemap + MobileNav** — `/newsletter` registered in sitemap, link added to mobile nav footer
+6. [ ] **Activate Beehiiv paid plan** — required for MCP early access
+7. [ ] **Request MCP early access** — form at `beehiiv.com/mcp`
+8. [ ] **Run backfill script** (`npx ts-node scripts/beehiiv-backfill.ts --live`) to push existing leads
+9. [ ] **Launch first issue** + enable referral program
+10. [ ] **Wire MCP automations** when v2 ships: Monday digest, Friday editorial brief, high-intent segment → consultation funnel
