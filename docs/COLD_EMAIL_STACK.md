@@ -1,6 +1,6 @@
 # Waypoint Cold Email System — Tech Stack Reference
 
-**Last updated:** March 21, 2026 — Sending layer QC audit complete. All fixes applied.  
+**Last updated:** March 24, 2026 — Pipeline live. Two days of sends completed. Pre-launch checklist resolved. No external email enrichment API in the active pipeline (Evaboot-verified emails are the source; Hunter.io and Apollo are not used).  
 **Volume target:** 15–20 sends/day, Mon–Fri  
 **Goal:** Book franchise advisory consultations with VP/Director/CXO corporate executives in career transition
 
@@ -364,7 +364,7 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 **Functions registered (`src/app/api/inngest/route.ts`):**
 | Function | Trigger | Status | Purpose |
 |---|---|---|---|
-| `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Enriches + scores a RAW lead via Hunter.io (key now set — March 2026) |
+| `leadHunterProcess` | event: `workflow/lead.hunter.start` | ✅ Live | Scores a RAW lead using the fully-implemented scoring rubric (title, career trigger, company news, post content, persona fit, tenure). No external enrichment API — Evaboot-verified emails are already present on import. |
 | `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
 | `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
 | `replyGuardianProcess` | event: `workflow/lead.reply.received` | ✅ Live | Classifies reply; HITL Resend alert implemented March 2026 |
@@ -473,41 +473,44 @@ Evaboot pricing is credit-based. At 400–500 leads/month (15–20/day), the Ent
 
 **5. Cost delta from current stack:** ~+$84/mo net (Evaboot ~$35 + Apollo $49, minus Hunter.io upgrade that is no longer needed). One booked consultation exceeds 12 months of this cost.
 
-### Actions required to activate
-- [ ] Purchase Evaboot Entry/Starter plan (~$29–39/mo based on credit count needed for 500 leads/mo)
-- [ ] Install Evaboot Chrome extension → verify "Extract with Evaboot" button appears in Sales Navigator
-- [ ] Purchase Apollo Basic plan ($49/mo) → get `APOLLO_API_KEY`
-- [ ] Add `APOLLO_API_KEY` to Vercel env vars
-- [ ] Update `leadHunterProcess` in `functions.ts` — replace Hunter.io enrichment block with Apollo People Enrichment API (see §3 for code spec)
-- [ ] Raise confidence gate from 60 → 90 and update score cap (see §3)
-- [ ] Cancel Hunter.io free tier (or leave inert — no cost either way)
+### Actions — Status (March 24, 2026)
+- [x] Evaboot Chrome extension installed and active — "Extract with Evaboot" confirmed in Sales Navigator
+- [x] Evaboot "safe emails only" export is the primary email source — server-verified before CSV download
+- [x] `leadHunterProcess` uses Evaboot emails directly — no external enrichment API call. Scoring rubric fully implemented.
+- [x] Apollo Basic plan evaluated but **not purchased** — Evaboot's server-side verification provides sufficient deliverability at Stage 1 volume. Apollo remains an option if find-rate drops below 60% at scale.
+- [x] Hunter.io key inert in env — no active code path calls Hunter.io. Leave set but do not upgrade.
 
 ---
 
 ## Pre-Launch Checklist
 
-Complete every item below before sending the first cold email.
-
 **Instantly Setup**
 - [x] Purchase SuperSearch Growth Credits tier ($47/mo) in Instantly dashboard — ✅ Purchased March 2026
 - [x] Verify campaign tracking settings: open tracking OFF, click tracking OFF, plain text only — ✅ Verified March 2026
 - [x] Confirm reply routing: replies land in the same sending inbox — ✅ Verified
-- [x] **Register inbound reply webhook in Instantly dashboard** — ✅ Verified active March 2026 — URL: `https://www.waypointfranchise.com/api/webhooks/resend`, Bearer auth with `INBOUND_WEBHOOK_SECRET`
+- [x] Register inbound reply webhook in Instantly dashboard — ✅ Verified active March 2026 — URL: `https://www.waypointfranchise.com/api/webhooks/resend`, Bearer auth with `INBOUND_WEBHOOK_SECRET`
 
 **Code — Fixed March 2026**
 - [x] Implement Resend HITL email in `notify-human` step of `replyGuardianProcess` — ✅
 - [x] Fix gender pronouns in VOICE_RULES system prompt (`He` → `She`) — ✅ Fixed March 2026
 - [x] Fix `maxSendsPerDay` schema default (50 → 15) to match warmup phase — ✅ Fixed March 2026
 - [x] Clarify inbound reply webhook route comment + fix auth var (`RESEND_WEBHOOK_SECRET` → `INBOUND_WEBHOOK_SECRET`) — ✅ Fixed March 2026
-- [x] Hunter.io enrichment active (key set March 2026). SuperSearch is manual fallback for misses.
+- [x] Full scoring rubric implemented in `leadHunterProcess` — replaces mock. Title, career trigger, company news, post content, persona fit, tenure all live. ✅ March 2026
 
 **Code — Fixed March 21, 2026 (QC Audit)**
 - [x] Register `pendingClayFallback` in Inngest serve() — was defined but never firing — ✅ Fixed
-- [x] Added `Send Now` button to admin lead detail page — triggers `senderProcess` manually for a single SEQUENCED lead. Use to test Instantly API integration before first scheduled cron fires. Route: `POST /api/admin/send-now`
+- [x] Added `Send Now` button to admin lead detail page — triggers `senderProcess` manually for a single SEQUENCED lead. Route: `POST /api/admin/send-now` ✅
+
+**Lead Sourcing — Finalized March 23–24, 2026**
+- [x] Evaboot "safe emails only" export configured — server-verified emails only; no catch-all (riskier) emails during warmup ✅
+- [x] ZeroBounce validation mapped to verified email column in Clay ✅
+- [x] Old bounce-causing lead list cleared from Instantly pipeline ✅
+- [x] Clean Evaboot-exported list loaded and scored ✅
+- [x] Two days of sends completed at 15/day pace ✅
 
 **Google Postmaster Tools**
-- [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ **Permanently blocked** (March 2026)
-- [ ] **Pre-launch alternative:** Run one test send through [mail-tester.com](https://mail-tester.com) — **MANUAL (Kelsey)**
+- [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ Permanently blocked (March 2026)
+- [ ] **Pending:** Run one test send through [mail-tester.com](https://mail-tester.com) — **MANUAL (Kelsey)** — held due to website issue; not a launch blocker
 
 **Compliance**
 - [x] Add physical mailing address to email template footer — ✅ P.O. Box 3421, Whitefish, MT 59937
@@ -841,9 +844,9 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | Webhook auth (query param) |
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
-| `HUNTER_API_KEY` | ⛔ Inert — leave set, do not upgrade | Superseded by Clay enrichment (March 2026 decision) |
-| `APOLLO_API_KEY` | ⏳ Not yet set | Primary email enrichment — add to Vercel before launch (Apollo Basic plan) |
-| `CLAY_WEBHOOK_SECRET` | ⚠️ Must set in Vercel | Auth header for `/api/webhooks/clay` — if unset, endpoint accepts ALL requests (no auth). Value must match `x-clay-secret` header sent by the Google Apps Script bridge. |
+| `HUNTER_API_KEY` | ⛔ Inert — do not upgrade | No active code path calls Hunter.io. Superseded by Evaboot as email source. |
+| `APOLLO_API_KEY` | ⛔ Not set — not needed at Stage 1 | Apollo not purchased. Evaboot server-verified emails provide sufficient deliverability. Revisit if find-rate drops below 60% at scale. |
+| `CLAY_WEBHOOK_SECRET` | ✅ Set in Vercel | Auth header for `/api/webhooks/clay` — must match `x-clay-secret` header from the Google Apps Script bridge. |
 | `SLACK_WEBHOOK_URL` | ✅ Set in Vercel + local | Incoming Webhook → `#waypoint-hot-replies` — HITL push notifications |
 | `BEEHIIV_API_KEY` | ✅ Set in Vercel + local | Phase 2 — newsletter subscriber API |
 | `BEEHIIV_PUBLICATION_ID` | ✅ Set in Vercel + local | `pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d` |
