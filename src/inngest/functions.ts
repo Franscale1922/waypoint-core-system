@@ -344,7 +344,19 @@ export const personalizerProcess = inngest.createFunction(
             ? (NON_CAREER_SIGNAL_KEYWORDS.some(kw => postLowercase.includes(kw)) || postTooShort || postAboutThirdParty)
             : false;
 
-        if (companyNewsEvent) {
+        // ── companyNewsEvent validity guard ──────────────────────────────────────
+        // Clay occasionally bleeds yearsInCurrentRole into the companyNewsEvent field,
+        // producing bare numbers like "19", "7", "30". When GPT receives these as a
+        // "company news" signal, it hallucinates events — e.g. "19" becomes "TriStar Skyline
+        // reducing its workforce by 19%". This guard rejects values that are:
+        //   (a) purely numeric, or
+        //   (b) fewer than 10 characters (not a real news sentence).
+        // Rejected values are treated as missing → falls through to Priority B or C.
+        const companyNewsIsValid =
+            companyNewsEvent.length >= 10 &&               // minimum sentence length
+            !/^\d+(\.\d+)?%?$/.test(companyNewsEvent);     // not a bare number like "19" or "19%"
+
+        if (companyNewsEvent && companyNewsIsValid) {
             primarySignal = companyNewsEvent;
             signalType = "Priority A: company news event (macro, public — WARN Act, 8-K, reorg, layoffs)";
         } else if (recentPostSummary && !postLooksNonCareer) {
