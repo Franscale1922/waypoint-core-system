@@ -30,7 +30,7 @@
 | **Antigravity** | AI Coding Agent | Agentic AI coding assistant (this tool) for building, debugging, and managing codebases |
 | **NotebookLM** | AI Research | Google's AI notebook for synthesizing long documents, PDFs, and research sources |
 | **n8n** | Automation / Workflow | Low-code workflow automation platform connecting apps, webhooks, and APIs |
-| **Apify** | Web Scraping / Automation | Web scraping and data extraction automations for lead generation and research |
+| **Evaboot** | Lead Export / Email Find | Chrome extension for exporting Sales Navigator results into CSV with server-verified emails. Primary email source for cold email pipeline. |
 
 ---
 
@@ -99,7 +99,7 @@
 |------|----------|---------|
 | **Go High Level** | CRM / Marketing Platform | All-in-one sales and marketing platform for pipelines, funnels, email, SMS, and automation |
 | **Clay** | Lead Enrichment | AI-powered lead enrichment, data sourcing, and outreach personalization at scale |
-| **Apollo** | Lead Database / Outreach | B2B contact database and email/LinkedIn outreach sequencing |
+| **Apollo** | Lead Database | B2B contact database. Evaluated March 2026 — **not subscribed**. Evaboot server-verified emails sufficient at Stage 1 volume. |
 | **Instantly** | Cold Email Outreach | Cold email sending platform with deliverability optimization and campaign sequencing |
 | **Resend** | Transactional Email | Developer-friendly email API for sending transactional and automated emails |
 | **TidyCal** | Booking / Scheduling | Lightweight calendar booking tool for scheduling client discovery calls and consultations |
@@ -112,7 +112,7 @@
 Domain (Cloudflare)
     └── Web App (Vercel)
             └── Waypoint CRM (Custom Build)
-                    ├── Lead Pipeline → Apollo / Clay / Instantly
+                    ├── Lead Pipeline → Evaboot / Clay / Instantly
                     ├── Automation → n8n
                     ├── Booking → TidyCal
                     ├── Email → Resend
