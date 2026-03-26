@@ -1,7 +1,7 @@
 # Waypoint Cold Email System — Tech Stack Reference
 
-**Last updated:** March 24, 2026 — Pipeline live. Two days of sends completed. Pre-launch checklist resolved. No external email enrichment API in the active pipeline (Evaboot-verified emails are the source; Hunter.io and Apollo are not used).  
-**Volume target:** 15–20 sends/day, Mon–Fri  
+**Last updated:** March 25, 2026 — Pipeline live. Daily cap raised to 25/day. All QA issues resolved (March 25 session). Evaboot is the only email source; Hunter.io, Apollo, and Apify are not used and not subscribed.  
+**Volume target:** 25 sends/day, Mon–Fri  
 **Goal:** Book franchise advisory consultations with VP/Director/CXO corporate executives in career transition
 
 > This document is the source of truth for any AI session or developer working on the cold email pipeline. Read this before touching any code related to lead gen, outreach, or booking.
@@ -11,23 +11,37 @@
 ## Pipeline Overview
 
 ```
-Lead Discovery (Sales Navigator — behavioral signals: OpenToWork, Posted 30d)
+1. Sales Navigator — filter by seniority, company size, function, behavioral spotlights
     ↓
-Evaboot Chrome extension → "Extract with Evaboot" → CSV with emails (~65% match)
+2. Evaboot Chrome extension — "Extract with Evaboot" → CSV with server-verified emails
+   Export "safe emails only" during warmup phase
     ↓
-ImportLeadForm.tsx → DB (RAW status)
+3. Admin dashboard — ImportLeadForm → POST /api/leads → DB (PENDING_CLAY status)
     ↓
-Inngest: leadHunterProcess → enriches via Apollo API → scores (0–100)
+4. Clay — Evaboot CSV manually imported into Clay table for enrichment
+   Clay runs: recentPostSummary, companyNewsEvent, yearsInCurrentRole, company attributes
+    ↓
+5. Google Apps Script (Code.gs) — fires on Clay export to Google Sheet
+   POSTs each row to POST /api/webhooks/clay (auth: x-clay-secret header)
+    ↓
+6. Clay webhook — updates Lead record with enrichment signals → status: RAW
+   Fires Inngest event: workflow/lead.hunter.start
+    ↓
+7. Inngest: leadHunterProcess — scores (0–100) using enriched signals
+   No external email API — Evaboot email already present. Score < 70 → SUPPRESSED
     ↓ (gate: score ≥ 70)
-Inngest: personalizerProcess → GPT-4o writes email from 5 context fields
+8. Inngest: personalizerProcess — GPT-4o writes email → status: SEQUENCED
     ↓
-Instantly.ai campaign → lead added, email sent (SEQUENCED status)
+9. Inngest: warmupScheduler (8 AM MT, Mon–Fri) — fires top 25 SEQUENCED leads by score
+   senderProcess → Instantly v2 API → lead added to campaign → status: SENT
     ↓
-Inngest: replyGuardianProcess → classifies reply, alerts Kelsey
+10. Instantly sends email from sending domain (getwaypointfranchise.com / meetwaypointfranchise.com)
     ↓
-HITL: Kelsey reviews AI draft, sends reply, shares TidyCal link
+11. Inngest: replyGuardianProcess — classifies reply, Resend/Slack HITL alert to Kelsey
     ↓
-TidyCal booking → Inngest: tidycalBookingSync → lead → BOOKED status
+12. HITL: Kelsey replies, shares TidyCal link
+    ↓
+13. TidyCal booking → tidycalBookingSync cron → lead → BOOKED status
 ```
 
 ---
@@ -703,9 +717,10 @@ function postRow(sheet, row, secret) {
 | **HubSpot CRM** | ❌ Skip | Prisma DB is the CRM; duplicate data problem |
 | **EmailBison** | ❌ Skip | Grok-only recommendation, no consensus from other models |
 | **lemlist** | ❌ Skip | Already have Instantly for multi-channel; no second platform |
-| **Clay** | ⏳ Defer to Phase 2 | Enrichment waterfall across 50+ sources; minimum useful plan $149/mo. Overkill at 15/day sends. Re-evaluate when volume scales past 50+ sends/day and email find rate becomes measurable bottleneck. |
-| **Apollo.io** | ✅ Active — enrichment engine (March 2026 decision) | Basic plan ($49/mo, 2,500 credits). Primary programmatic email enrichment, replacing Hunter.io. Independent accuracy tests: ~85–90% on verified emails. Also serves as backup discovery DB. See §3. |
-| **Evaboot** | ✅ Active — extraction layer (March 2026 decision) | Entry/Starter tier ~$29–39/mo. Chrome extension extracts Sales Nav search results into clean CSV with emails (~65% match). Ban-safe. Preserves LinkedIn behavioral signals. See §2. |
+| **Clay** | ✅ Active — enrichment layer | Launch plan ($185/mo). Enriches recentPostSummary, companyNewsEvent, yearsInCurrentRole, and company attributes. Bridges to pipeline via Google Apps Script → /api/webhooks/clay. Not used for email finding — Evaboot is the email source. See §3. |
+| **Apollo.io** | ❌ Not subscribed | Evaluated March 2026 — not purchased. Evaboot server-verified emails at Stage 1 volume made Apollo unnecessary. Revisit if Evaboot find rate drops below 60% sustained. |
+| **Hunter.io** | ❌ Not subscribed | Key set in Vercel as legacy artifact — no active code path calls Hunter. Do not upgrade. Leave key in place but treat as inert. |
+| **Evaboot** | ✅ Active — extraction + email source | Chrome extension. Exports Sales Nav results into clean CSV with server-verified emails (~65% match at safe tier). Ban-safe. Preserves LinkedIn behavioral signals. See §2. |
 | **Slack** | ✅ Active — March 2026 | Incoming Webhook wired into `notify-human` step as instant push alert alongside Resend email. Channel: `#waypoint-hot-replies`. |
 | **Go High Level (GHL)** | ⏸ Removed — contingency only | All-in-one platform (CRM, email, SMS, funnels, booking). Fully duplicates the current stack — custom CRM, Instantly, TidyCal, Inngest, n8n all do their respective jobs better. Only SMS adds net-new capability, but cold SMS to VP/Director ICP carries TCPA risk and brand risk at this stage. **Reactivate if:** the custom Waypoint CRM cannot scale to pipeline needs and a CRM replacement is required — GHL would be the all-in-one migration path. |
 
