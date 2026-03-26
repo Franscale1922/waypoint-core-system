@@ -527,6 +527,61 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                 }
             }
 
+            // ── Priority C company-name fabrication guard ──────────────────────
+            // When GPT falls to Priority C (no valid signal), it frequently invents
+            // a plausible-sounding but unverified company-specific hook by reusing
+            // the company name from the user prompt. Examples observed in production:
+            //   "With Corporate Visions' recent restructuring underway..."
+            //   "With the current changes at Belmont, I bet strategic redirections..."
+            // This violates the Priority C rule: "NEVER fabricate a specific hook,
+            // event, or industry observation you cannot verify."
+            //
+            // Detection: extract the first body sentence (after the "Hi [Name]," line)
+            // and check if it contains the lead's company name. Company name matching
+            // is case-insensitive and strips common suffixes to reduce false negatives.
+            //
+            // If a fabricated opener is detected → single retry with an explicit
+            // prohibition added to the prompt. The retry uses the same systemPrompt
+            // (which already contains Priority C rules) so no new instructions are
+            // needed beyond the targeted correction note.
+            if (signalType.startsWith("Priority C") && lead.company) {
+                const companyNameNorm = lead.company
+                    .toLowerCase()
+                    // Strip common corporate suffixes so "Corporate Visions, Inc." → "corporate visions"
+                    .replace(/\b(inc|llc|ltd|corp|co|group|holdings|partners|associates|services|solutions|technologies|global|international)\b\.?/gi, "")
+                    .trim();
+
+                // Extract the first body sentence — the line immediately after the greeting
+                const emailLines = emailText.split("\n").map(l => l.trim()).filter(Boolean);
+                // Skip the greeting line ("Hi [Name],")
+                const firstBodyLine = emailLines.find(line =>
+                    !line.toLowerCase().startsWith("hi ") && line.length > 10
+                ) ?? "";
+
+                const firstBodyLower = firstBodyLine.toLowerCase();
+                const companyNameInOpener =
+                    companyNameNorm.length >= 4 &&                       // ignore very short names (noise risk)
+                    firstBodyLower.includes(companyNameNorm);
+
+                if (companyNameInOpener) {
+                    const fabricationRetryPrompt = userPrompt +
+                        `\n\n[SYSTEM NOTE: Your previous draft opened with a company-specific statement ` +
+                        `that references "${lead.company}" — a claim we cannot verify. ` +
+                        `For Priority C you MUST open with a UNIVERSAL golden handcuffs truth that applies ` +
+                        `to any corporate executive, with ZERO company-specific references in the first sentence. ` +
+                        `Do NOT use the company name, a fabricated restructuring, or any implied recent event. ` +
+                        `Start with the prospect's internal career reality (ceiling, ownership gap, building for others). ` +
+                        `Do not reference this note in your output.]`;
+                    const { text: fabricationRetryText } = await generateText({
+                        model: openai("gpt-4o"),
+                        system: systemPrompt,
+                        prompt: fabricationRetryPrompt,
+                    });
+                    emailText = fabricationRetryText;
+                    console.log(`[personalizer] Priority C fabrication retry fired — company name "${lead.company}" detected in opener.`);
+                }
+            }
+
             // ── Deterministic post-generation sanitizer ───────────────────────
             // Runs AFTER all GPT retries. GPT-triggered retries can themselves
             // produce em/en dashes — a single retry is not enough since the
