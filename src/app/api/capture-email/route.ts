@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import prisma from "../../../lib/prisma";
 import fs from "fs";
@@ -78,6 +79,14 @@ export async function POST(req: Request) {
       // Log but don't block email delivery if DB write fails
       console.error("[capture-email] DB write failed:", dbErr);
     }
+
+    // ── CRM sync — fire-and-forget ─────────────────────────────────────────
+    notifyCrm({
+      name: name || "Website Visitor",
+      email,
+      source: `Checklist Download — ${checklistLabel}`,
+      notes: articleSlug ? `Article: ${articleSlug}` : undefined,
+    });
 
     // Beehiiv subscriber sync — fire-and-forget, skipped for Kelsey's own address
     if (email.toLowerCase() !== TO.toLowerCase()) {

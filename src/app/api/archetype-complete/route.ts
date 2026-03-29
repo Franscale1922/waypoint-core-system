@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import prisma from "@/lib/prisma";
 import { ArchetypeSchema } from "@/app/lib/schemas";
@@ -39,7 +40,15 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 2. Send confirmation email ─────────────────────────────────────────────
+    // ── 2. CRM sync — fire-and-forget ─────────────────────────────────────────
+    notifyCrm({
+      name,
+      email,
+      source: "Franchise Archetype Quiz",
+      notes: `Archetype: ${archetypeName} | Strong fits: ${strongFits.slice(0, 3).join(", ")}`,
+    });
+
+    // ── 3. Send confirmation email ─────────────────────────────────────────────
     const strongFitsText = strongFits.join(", ");
     const weakFitsText = weakFits.join(", ");
 

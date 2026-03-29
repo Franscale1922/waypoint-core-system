@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -14,6 +15,15 @@ export async function POST(req: Request) {
     if (!name || !email || !message) {
       return NextResponse.json({ error: "Name, email, and message are required." }, { status: 400 });
     }
+
+    // ── CRM sync — fire-and-forget ─────────────────────────────────────────
+    notifyCrm({
+      name,
+      email,
+      phone: phone || undefined,
+      source: "Contact Form",
+      notes: message.slice(0, 500),
+    });
 
     const notifyResult = await resend.emails.send({
       from: FROM,

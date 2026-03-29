@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
@@ -48,7 +49,19 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 1b. Beehiiv subscriber sync — fire-and-forget ─────────────────────────
+    // ── 1b. CRM sync — fire-and-forget ───────────────────────────────────────
+    notifyCrm({
+      name,
+      email,
+      source: "Franchise Scorecard",
+      notes: [
+        `Score: ${score}/100`,
+        primaryDriver ? `Driver: ${primaryDriver}` : null,
+        biggestFear   ? `Fear: ${biggestFear}`     : null,
+      ].filter(Boolean).join(" | "),
+    });
+
+    // ── 1c. Beehiiv subscriber sync — fire-and-forget ─────────────────────────
     // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
     // Never throws — errors are caught inside subscribeToBeehiiv.
     subscribeToBeehiiv(email, name).catch(() => {});
