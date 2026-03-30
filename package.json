@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "gsc-report": "node scripts/gsc-report.mjs",
     "ai-citation-check": "node scripts/ai-citation-check.mjs",
-    "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs"
+    "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs",
+    "test": "node scripts/verify-links.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
