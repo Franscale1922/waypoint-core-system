@@ -5,12 +5,12 @@ import Testimonials from "../components/Testimonials";
 import FranchiseMapWrapper from "../components/FranchiseMapWrapper";
 
 export const metadata: Metadata = {
-  title: "Find the Franchise That Fits Your Life",
+  title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners across 35 states find the right franchise. No pitch, no pressure.",
   alternates: { canonical: "https://www.waypointfranchise.com" },
   openGraph: {
-    title: "Find the Franchise That Fits Your Life | Waypoint",
+    title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
     description:
       "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
     url: "https://waypointfranchise.com",

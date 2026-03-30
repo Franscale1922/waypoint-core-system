@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
   alternates: { canonical: "https://www.waypointfranchise.com/resources/industry-spotlights" },
   openGraph: {
-    title: "Franchise Industry Spotlights | Waypoint",
+    title: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
     description:
       "Category-specific analysis covering home services, senior care, fitness, B2B, restoration, and more, with honest reads on the economics and operator fit for each.",
     url: "https://www.waypointfranchise.com/resources/industry-spotlights",

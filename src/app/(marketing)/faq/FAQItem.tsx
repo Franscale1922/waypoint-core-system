@@ -33,34 +33,32 @@ export function FAQItem({
           {open ? "−" : "+"}
         </span>
       </button>
-      {open && (
-        <div className="pb-6 pr-8">
-          <p className="text-[#5a5a4a] leading-relaxed">
-            {a}
-            {link && (
-              <>
-                {" "}
-                <Link
-                  href={link.url}
-                  className="text-[#CC6535] hover:underline break-words"
-                >
-                  {link.label} →
-                </Link>
-              </>
-            )}
-          </p>
-          {cta && (
-            <div className="mt-4">
+      <div className={`pb-6 pr-8 ${open ? "block" : "hidden"}`}>
+        <p className="text-[#5a5a4a] leading-relaxed">
+          {a}
+          {link && (
+            <>
+              {" "}
               <Link
-                href={cta.href}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] px-5 py-2.5 rounded-lg transition-all"
+                href={link.url}
+                className="text-[#CC6535] hover:underline break-words"
               >
-                {cta.text} →
+                {link.label} →
               </Link>
-            </div>
+            </>
           )}
-        </div>
-      )}
+        </p>
+        {cta && (
+          <div className="mt-4">
+            <Link
+              href={cta.href}
+              className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] px-5 py-2.5 rounded-lg transition-all"
+            >
+              {cta.text} →
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -48,7 +48,7 @@ export const metadata: Metadata = {
   description:
     "Two hours before you see a single brand. Here is exactly what happens from your first conversation to the day you make a decision.",
   openGraph: {
-    title: "How the Waypoint Process Works",
+    title: "How the Waypoint Process Works | Waypoint Franchise Advisors",
     description:
       "Two hours before you see a single brand. A step-by-step look at how Kelsey guides candidates from curious to confident.",
     url: "https://www.waypointfranchise.com/process",

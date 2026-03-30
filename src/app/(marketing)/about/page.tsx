@@ -24,7 +24,7 @@ async function getVimeoThumbnail(videoId: string): Promise<string | undefined> {
 
 
 export const metadata: Metadata = {
-  title: "About Kelsey Stuart | Franchise Advisor, Whitefish MT",
+  title: "About Kelsey Stuart | Waypoint Franchise Advisors",
   description:
     "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life. Honest, no-pitch consulting.",
   alternates: { canonical: "https://www.waypointfranchise.com/about" },
@@ -41,6 +41,29 @@ export default async function AboutPage() {
   const thumbnailUrl = await getVimeoThumbnail(VIDEO_ID);
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Person",
+            "@id": "https://www.waypointfranchise.com/about#kelsey",
+            "name": "Kelsey Stuart",
+            "url": "https://www.waypointfranchise.com/about",
+            "jobTitle": "Franchise Advisor",
+            "worksFor": {
+              "@type": "Organization",
+              "name": "Waypoint Franchise Advisors",
+              "url": "https://waypointfranchise.com"
+            },
+            "description": "Former Bloomin\' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life.",
+            "image": "https://www.waypointfranchise.com/images/kelsey-trail-selfie.jpg",
+            "sameAs": [
+              "https://www.linkedin.com/in/kelsey-stuart-19b16120"
+            ]
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="relative pt-10 pb-36 sm:py-20 md:py-24 overflow-hidden">
         <Image
@@ -267,6 +290,22 @@ export default async function AboutPage() {
                 style={{ objectPosition: "center 70%", height: "280px" }}
               />
             </div>
+          </div>
+
+          {/* Compensation & Bias Block */}
+          <div className="mb-10 sm:mb-12 bg-white rounded-2xl p-6 sm:p-8 border border-[#e2ddd2] shadow-sm">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
+              How I Get Paid (And Why Bias Matters)
+            </h2>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+              Franchise consulting is free to you. If we find a fit and you buy a franchise, the franchisor pays me a referral fee out of their marketing budget. Your franchise fee is exactly the same whether you use me or go direct.
+            </p>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+              <strong className="text-[#1b3a5f] font-semibold">The elephant in the room: Does this make me biased?</strong> Yes, consultants are financially incentivized to make a match. That is the reality of the industry. This is why I have built my life in Montana with low overhead. I do not need to push a bad deal to make payroll. I decline to present brands with weak financials, and I explicitly block brands trying to offer higher bonus commissions.
+            </p>
+            <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+              My business model is simple: tell people the truth, lose the deals that shouldn&apos;t happen, and build a reputation where every placement succeeds. That&apos;s a much more profitable long-term strategy than selling you something you don&apos;t want.
+            </p>
           </div>
 
           {/* What I Am Not */}

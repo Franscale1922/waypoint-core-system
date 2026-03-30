@@ -10,6 +10,8 @@ import NewsletterForm from "../../../components/NewsletterForm";
 
 type Props = { params: Promise<{ slug: string }> };
 
+import InlineCapture from "../../../components/InlineCapture";
+
 export async function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }));
 }
@@ -127,13 +129,16 @@ export default async function ArticlePage({ params }: Props) {
         <div className="flex items-center gap-4 text-xs text-[#7a7a7a]">
           <span>Kelsey Stuart</span>
           <span>·</span>
-          <time dateTime={meta.date}>{new Date(meta.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</time>
+          <span>Published <time dateTime={meta.date}>{new Date(meta.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</time></span>
         </div>
         <div className="w-full h-px bg-[#e8e0d0] mt-8" />
       </section>
       <article className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#8E3012] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
         <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
+      <section className="max-w-3xl mx-auto px-6">
+        <InlineCapture />
+      </section>
       <RelatedArticles articles={related} />
       {/* Newsletter subscribe callout — appears on every article */}
       <section className="border-t border-[#e8e0d0] bg-white py-10 px-6">

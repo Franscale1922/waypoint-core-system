@@ -142,7 +142,7 @@ export default function ScorecardClient() {
                   onClick={() => trackBookCallClicked("scorecard_results")}
                   className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-sm font-semibold text-[#0c1929] bg-[#CC6535] hover:bg-[#D97545] rounded-xl shadow-md transition-all press-effect min-h-[52px]"
                 >
-                  Book a Free Call
+                  {score >= 80 ? "Let's Talk" : score >= 60 ? "Discuss Your Fit" : "Work Through Questions"}
                 </a>
                 <a
                   href="sms:+12149951062"
@@ -275,12 +275,12 @@ export default function ScorecardClient() {
         <div className="mb-8 sm:mb-10">
           <div className="flex justify-between text-xs text-slate-400 mb-2">
             <span>Question {currentStep + 1} of {questions.length}</span>
-            <span>{Math.round(((currentStep) / questions.length) * 100)}% complete</span>
+            <span>{Math.round(((currentStep + 1) / questions.length) * 100)}% complete</span>
           </div>
           <div className="h-2 sm:h-2.5 bg-slate-100 rounded-full overflow-hidden progress-shimmer">
             <div
               className="h-full bg-gradient-to-r from-[#1b3a5f] to-[#8E3012] rounded-full transition-all duration-700 ease-out"
-              style={{ width: `${((currentStep) / questions.length) * 100}%` }}
+              style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
             />
           </div>
         </div>

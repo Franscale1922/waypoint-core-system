@@ -26,6 +26,9 @@ function ArticleCard({ article }: { article: Article }) {
       <h3 className="font-playfair text-lg leading-snug text-[#0c1929] group-hover:text-[#CC6535] transition-colors mb-3">
         {article.title}
       </h3>
+      <p className="text-[11px] text-[#7a7a7a] mb-3 uppercase tracking-wider">
+        Published {new Date(article.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+      </p>
       <p className="text-sm text-[#5a5a4a] leading-relaxed">{article.excerpt}</p>
       <p className="mt-4 text-xs text-[#8E3012] font-medium tracking-wide">Read &rarr;</p>
     </Link>
@@ -130,6 +133,9 @@ export default function ResourcesGrid({
                   <h3 className="text-sm font-semibold text-white leading-snug mb-1 group-hover:text-[#CC6535] transition-colors">
                     {article.title}
                   </h3>
+                  <p className="text-[10px] text-white/50 mb-2">
+                    Published {new Date(article.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  </p>
                   <p className="text-xs text-white/60 leading-relaxed">{article.excerpt}</p>
                 </Link>
               ))}

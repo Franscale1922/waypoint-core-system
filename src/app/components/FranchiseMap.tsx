@@ -283,7 +283,7 @@ export default function FranchiseMap() {
         <div className="mt-8 sm:mt-12 text-center">
           <p className="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-lg mx-auto">
             Every pin is an owner who trusted me to get it right.
-            Across {uniqueStates} states and counting. This map updates live as new clients launch.
+            Across {uniqueStates > 0 ? uniqueStates : 35} states and counting. This map updates live as new clients launch.
           </p>
         </div>
       </div>
