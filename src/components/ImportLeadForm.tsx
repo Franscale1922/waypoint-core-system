@@ -4,27 +4,36 @@ import { useState, useRef } from "react";
 import { PlusCircle, Loader2, Upload, FileText, AlertCircle, CheckCircle2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-// ── Column name aliases from Sales Navigator CSV exports ──────────────────
+// ── Column name aliases from Sales Navigator & Evaboot CSV/TSV exports ───────
 const COLUMN_ALIASES: Record<string, string> = {
-    // name
+    // name — Evaboot exports "Full Name" as a combined column
     "full name": "name",
     "first name + last name": "name",
     "name": "name",
-    // linkedinUrl
+    // split name columns — Evaboot exports "First Name" + "Last Name" separately
+    "first name": "firstName",
+    "last name": "lastName",
+    // linkedinUrl — Evaboot uses "Linkedin URL Public"
     "linkedin url": "linkedinUrl",
+    "linkedin url public": "linkedinUrl",
+    "linkedin url unique id": "linkedinUrl",
     "profile url": "linkedinUrl",
     "linkedin profile url": "linkedinUrl",
     "url": "linkedinUrl",
-    // title
+    // email
+    "email": "email",
+    // title — Evaboot uses "Current Job"
     "title": "title",
     "job title": "title",
     "current title": "title",
-    // company
+    "current job": "title",
+    "position": "title",
+    // company — Evaboot uses "Company Name"
     "company": "company",
     "company name": "company",
     "current company": "company",
     "organization": "company",
-    // country
+    // country / location
     "country": "country",
     "location": "country",
     "geography": "country",
@@ -37,7 +46,7 @@ const COLUMN_ALIASES: Record<string, string> = {
     "careertrigger": "careerTrigger",
     "franchise angle": "franchiseAngle",
     "franchiseangle": "franchiseAngle",
-    // tenure — exported from Sales Navigator as "Years in Current Position"
+    // tenure — Evaboot exports "Years in Position"
     "years in current position": "yearsInCurrentRole",
     "years in position": "yearsInCurrentRole",
     "yearsincurrentposition": "yearsInCurrentRole",
@@ -48,6 +57,7 @@ const COLUMN_ALIASES: Record<string, string> = {
 type LeadRow = {
     name: string;
     linkedinUrl: string;
+    email?: string;
     title: string;
     company: string;
     country?: string;
@@ -60,35 +70,60 @@ type LeadRow = {
     _error?: string;
 };
 
+/** Splits a single line respecting RFC-4180 quoting. Works for both CSV (,) and TSV (\t). */
+function splitLine(line: string, delimiter: string): string[] {
+    const values: string[] = [];
+    let current = "";
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+                // Escaped quote inside a quoted field
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (ch === delimiter && !inQuotes) {
+            values.push(current.trim());
+            current = "";
+        } else {
+            current += ch;
+        }
+    }
+    values.push(current.trim());
+    return values;
+}
+
 function parseCSV(text: string): LeadRow[] {
     const lines = text.trim().split(/\r?\n/);
     if (lines.length < 2) return [];
 
+    // Auto-detect delimiter: if the first line has more tabs than commas, it's TSV
+    const firstLine = lines[0];
+    const tabCount = (firstLine.match(/\t/g) ?? []).length;
+    const commaCount = (firstLine.match(/,/g) ?? []).length;
+    const delimiter = tabCount > commaCount ? "\t" : ",";
+
     // Parse header — normalize to field keys via aliases
-    const rawHeaders = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim().toLowerCase());
+    const rawHeaders = splitLine(firstLine, delimiter).map(h => h.replace(/^"|"$/g, "").trim().toLowerCase());
     const headers = rawHeaders.map(h => COLUMN_ALIASES[h] ?? h);
 
     return lines.slice(1).map(line => {
-        // Simple CSV parse — handles quoted fields
-        const values: string[] = [];
-        let current = "";
-        let inQuotes = false;
-        for (const ch of line) {
-            if (ch === '"') { inQuotes = !inQuotes; }
-            else if (ch === "," && !inQuotes) { values.push(current.trim()); current = ""; }
-            else { current += ch; }
-        }
-        values.push(current.trim());
+        if (!line.trim()) return null; // skip blank lines
+        const values = splitLine(line, delimiter);
 
         const row: Record<string, string> = {};
         headers.forEach((h, i) => { row[h] = values[i] ?? ""; });
 
-        // Combine first + last name if split columns present
-        const name = row["name"] || [row["firstName"] || row["first name"], row["lastName"] || row["last name"]].filter(Boolean).join(" ");
+        // Combine first + last name if split columns present (COLUMN_ALIASES maps these to firstName/lastName)
+        const name = row["name"] || [row["firstName"], row["lastName"]].filter(Boolean).join(" ").trim();
 
         const lead: LeadRow = {
             name,
             linkedinUrl: row["linkedinUrl"] ?? "",
+            email: row["email"] || undefined,
             title: row["title"] ?? "",
             company: row["company"] ?? "",
             country: row["country"] || undefined,
@@ -104,7 +139,7 @@ function parseCSV(text: string): LeadRow[] {
         else if (!lead.linkedinUrl) { lead._valid = false; lead._error = "Missing LinkedIn URL"; }
 
         return lead;
-    }).filter(r => r.name || r.linkedinUrl); // drop empty rows
+    }).filter((r): r is LeadRow => r !== null && !!(r.name || r.linkedinUrl)); // drop empty rows
 }
 
 export function ImportLeadForm() {

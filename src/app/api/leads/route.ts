@@ -38,6 +38,8 @@ export async function POST(req: Request) {
                     recentPostSummary: leadData.recentPostSummary,       // Priority B
                     careerTrigger: leadData.careerTrigger,
                     franchiseAngle: leadData.franchiseAngle,
+                    // ── Scoring signals ──────────────────────────────────────
+                    ...(leadData.yearsInCurrentRole != null && { yearsInCurrentRole: leadData.yearsInCurrentRole }),
                     // Legacy blacklisted fields — kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
@@ -55,6 +57,8 @@ export async function POST(req: Request) {
                     recentPostSummary: leadData.recentPostSummary,       // Priority B
                     careerTrigger: leadData.careerTrigger,
                     franchiseAngle: leadData.franchiseAngle,
+                    // ── Scoring signals ──────────────────────────────────────
+                    ...(leadData.yearsInCurrentRole != null && { yearsInCurrentRole: leadData.yearsInCurrentRole }),
                     // Legacy blacklisted fields — kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,

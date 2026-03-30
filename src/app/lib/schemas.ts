@@ -14,6 +14,9 @@ export const LeadSchema = z.object({
   recentPostSummary: z.string().optional(),      // Priority B: paraphrase of post topic only
   careerTrigger: z.string().optional(),          // Signal type: layoff / burnout / opentowork
   franchiseAngle: z.string().optional(),         // Internal framing context — not sent in email
+  // Scoring signal — from Evaboot "Years in Position" or Sales Nav "Years in Current Position"
+  // +20 pts if ≥8 yrs, +10 pts if ≥5 yrs. NEVER referenced in email body.
+  yearsInCurrentRole: z.union([z.number(), z.string().transform(v => parseInt(v, 10))]).optional(),
   // Legacy blacklisted fields — kept for existing rows, not populated going forward
   pulledQuoteFromPost: z.string().optional(),
   specificProjectOrMetric: z.string().optional(),
