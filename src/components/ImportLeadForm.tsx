@@ -13,10 +13,11 @@ const COLUMN_ALIASES: Record<string, string> = {
     // split name columns — Evaboot exports "First Name" + "Last Name" separately
     "first name": "firstName",
     "last name": "lastName",
-    // linkedinUrl — Evaboot uses "Linkedin URL Public"
+    // linkedinUrl — Evaboot uses "Linkedin URL Public" (do NOT map "Linkedin URL Unique ID" —
+    // it comes after "Linkedin URL Public" in Evaboot's column order and would overwrite the
+    // clean public slug URL with an unreadable hash like ACwAAASP...)
     "linkedin url": "linkedinUrl",
     "linkedin url public": "linkedinUrl",
-    "linkedin url unique id": "linkedinUrl",
     "profile url": "linkedinUrl",
     "linkedin profile url": "linkedinUrl",
     "url": "linkedinUrl",
