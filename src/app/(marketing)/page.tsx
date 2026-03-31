@@ -50,7 +50,7 @@ export default function HomePage() {
           ============================================ */}
       <section className="relative min-h-screen flex items-end overflow-hidden">
         <Image
-          src="/images/hero-mountains-dark-lake.png"
+          src="/images/hero-mountains-dark-lake.webp"
           alt="Dark mountain lake at twilight with alpenglow peaks — Waypoint Franchise Advisors, Whitefish Montana"
           fill
           priority
@@ -162,11 +162,10 @@ export default function HomePage() {
             {/* Honest portrait — full width between headline and body text */}
             <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-12">
               <Image
-                src="/images/kelsey-honest-portrait.jpg"
+                src="/images/kelsey-honest-portrait.webp"
                 alt="Kelsey Stuart, franchise advisor"
                 width={1200}
                 height={380}
-                priority
                 sizes="(max-width: 768px) 100vw, 896px"
                 className="w-full object-cover"
                 style={{ objectPosition: "center 25%", height: "380px" }}
@@ -283,7 +282,7 @@ export default function HomePage() {
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
             <Image
-              src="/images/kelsey-process-conversation.jpg"
+              src="/images/kelsey-process-conversation.webp"
               alt="Kelsey Stuart leading the way down a forest trail"
               width={1200}
               height={380}
@@ -454,7 +453,7 @@ export default function HomePage() {
           ============================================ */}
       <section className="relative py-20 sm:py-28 md:py-36 overflow-hidden">
         <Image
-          src="/images/mountain-lake.jpg"
+          src="/images/mountain-lake-wide.webp"
           alt="Mountain lake in Montana"
           fill
           sizes="100vw"
