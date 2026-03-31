@@ -218,10 +218,10 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Update lead and advance through the pipeline hold state ───────────────
-    // PENDING_CLAY: Any Clay data (even email-only) is enough to unblock scoring.
-    //              Advance to RAW and fire the pipeline immediately.
-    // RAW/ENRICHED/SUPPRESSED: Only retrigger if a quality-gate signal arrived
-    //              (recentPostSummary or companyNewsEvent) — same as before.
+    // PENDING_CLAY: The webhook call itself is proof Clay processed this lead.
+    //              Advance to RAW unconditionally — even if Clay found no signals.
+    //              Scoring will run and may score low, but the lead won't be stuck.
+    // RAW/ENRICHED/SUPPRESSED: Only retrigger if a quality-gate signal arrived.
     // SENT/REPLIED/BOOKED: Update enrichment fields but never retrigger.
     const isPendingClay = lead.status === ("PENDING_CLAY" as any);
     // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
@@ -231,11 +231,16 @@ export async function POST(req: NextRequest) {
         updateData.companyNewsEvent
     );
 
-    if (Object.keys(updateData).length > 0) {
-        if (retriggerable && (isPendingClay || hasNewSignal)) {
-            updateData.status = "RAW"; // Advance to RAW — pipeline will score on next step
-        }
+    // Always advance PENDING_CLAY → RAW on any webhook call (even empty payload).
+    // Previously this only fired if updateData was non-empty — which silently
+    // stranded leads when Clay found no enrichment signals for a row.
+    if (isPendingClay) {
+        updateData.status = "RAW";
+    } else if (Object.keys(updateData).length > 0 && retriggerable && hasNewSignal) {
+        updateData.status = "RAW";
+    }
 
+    if (Object.keys(updateData).length > 0) {
         await prisma.lead.update({
             where: { id: lead.id },
             // @ts-ignore — companyNewsEvent / yearsInCurrentRole are in schema
@@ -243,9 +248,7 @@ export async function POST(req: NextRequest) {
         });
     }
 
-    // ── Re-trigger Inngest pipeline if we have a quality-gate signal ───────────
-    // Check updateData.status rather than lead.status — lead is the pre-update snapshot
-    // and would reflect the stale value before the DB write committed.
+    // ── Re-trigger Inngest pipeline ────────────────────────────────────────────
     if (updateData.status === "RAW") {
         await inngest.send({
             name: "workflow/lead.hunter.start",
@@ -262,8 +265,6 @@ export async function POST(req: NextRequest) {
         status: "updated",
         leadId: lead.id,
         fieldsUpdated: Object.keys(updateData),
-        note: hasNewSignal
-            ? "Lead not retriggered (status prevents it — already SENT/REPLIED/BOOKED)"
-            : "No quality-gate signal provided — lead not retriggered",
+        note: "Lead not retriggered (already past pipeline entry point)",
     });
 }
