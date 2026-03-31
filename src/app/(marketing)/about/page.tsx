@@ -51,15 +51,33 @@ export default async function AboutPage() {
             "name": "Kelsey Stuart",
             "url": "https://www.waypointfranchise.com/about",
             "jobTitle": "Franchise Advisor",
+            "description": "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life.",
+            "image": "https://www.waypointfranchise.com/images/kelsey-trail-selfie.jpg",
             "worksFor": {
               "@type": "Organization",
+              "@id": "https://www.waypointfranchise.com/#business",
               "name": "Waypoint Franchise Advisors",
-              "url": "https://waypointfranchise.com"
+              "url": "https://www.waypointfranchise.com"
             },
-            "description": "Former Bloomin\' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life.",
-            "image": "https://www.waypointfranchise.com/images/kelsey-trail-selfie.jpg",
             "sameAs": [
-              "https://www.linkedin.com/in/kelsey-stuart-19b16120"
+              "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
+              "https://www.franchoice.com/kelsey-stuart",
+              "https://www.facebook.com/kelsey.stuart.94",
+              "https://www.instagram.com/franchise_match_maker/",
+              "https://x.com/__Waypoint",
+              "https://www.youtube.com/@Waypoint-Franchise",
+              "https://www.tiktok.com/@waypoint007"
+            ],
+            "knowsAbout": [
+              "franchise consulting",
+              "franchise ownership",
+              "franchise due diligence",
+              "Franchise Disclosure Document (FDD)",
+              "franchise investment evaluation",
+              "home services franchises",
+              "restoration franchises",
+              "semi-absentee franchise ownership",
+              "SBA franchise financing"
             ]
           }),
         }}

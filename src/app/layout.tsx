@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import { localBusinessSchema, personSchema } from "./lib/structured-data";
+import { localBusinessSchema, personSchema, franchiseConsultingServiceSchema } from "./lib/structured-data";
 import { GA_ID } from "./lib/analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -89,6 +89,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(franchiseConsultingServiceSchema) }}
         />
       </head>
       <body

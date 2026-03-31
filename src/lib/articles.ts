@@ -6,6 +6,7 @@ export type Article = {
   slug: string;
   title: string;
   date: string;
+  updatedAt?: string;  // Optional — set in frontmatter when article is meaningfully revised
   category: string;
   tier: number;
   excerpt: string;
@@ -25,6 +26,7 @@ export function getAllArticles(): Article[] {
         slug,
         title: data.title as string,
         date: data.date as string,
+        updatedAt: (data.updatedAt as string | undefined) ?? undefined,
         category: data.category as string,
         tier: data.tier as number,
         excerpt: data.excerpt as string,
@@ -40,7 +42,7 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
   if (!fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
-    meta: { slug, title: data.title, date: data.date, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined, escapeKit: data.escapeKit ?? undefined },
+    meta: { slug, title: data.title, date: data.date, updatedAt: data.updatedAt ?? undefined, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined, escapeKit: data.escapeKit ?? undefined },
     content,
     relatedSlugs: (data.relatedSlugs as string[]) ?? [],
     faqs: (data.faqs as { q: string; a: string }[] | undefined) ?? undefined,

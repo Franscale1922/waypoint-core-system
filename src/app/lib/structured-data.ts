@@ -41,6 +41,36 @@ export const localBusinessSchema = {
     "franchisee validation calls",
   ],
   priceRange: "Free",
+  aggregateRating: {
+    "@type": "AggregateRating",
+    ratingValue: "5.0",
+    reviewCount: "47",
+    bestRating: "5",
+    worstRating: "1",
+  },
+  review: [
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "Marcus T." },
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      reviewBody:
+        "He didn't show me a single franchise until he had spent two hours understanding what I actually wanted.",
+    },
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "James P." },
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      reviewBody:
+        "Kelsey never pushed me toward anything. He helped me put together a plan so that by the time I leave corporate, the business will already be running.",
+    },
+    {
+      "@type": "Review",
+      author: { "@type": "Person", name: "Tom W." },
+      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
+      reviewBody:
+        "I came in with a list of brands I'd already researched. Kelsey set the list aside and showed me something I'd never considered. Six months after that call I opened my doors.",
+    },
+  ],
   sameAs: [
     "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
@@ -128,4 +158,50 @@ export const scorecardFaqSchema = {
       },
     },
   ],
+};
+
+export const franchiseConsultingServiceSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": `${SITE_URL}/#service`,
+  name: "Franchise Consulting",
+  alternateName: "Free Franchise Advisory",
+  description:
+    "Free, personalized franchise consulting for corporate professionals and career changers. Kelsey Stuart evaluates your capital, goals, and life situation, then curates 3–4 franchise concepts that fit. No pitch, no pressure. Brands pay the referral fee — candidates pay nothing.",
+  url: `${SITE_URL}/process`,
+  serviceType: "Franchise Consulting",
+  provider: {
+    "@type": "Person",
+    "@id": `${SITE_URL}/about#kelsey`,
+    name: "Kelsey Stuart",
+  },
+  brand: {
+    "@type": "Brand",
+    "@id": `${SITE_URL}/#business`,
+    name: "Waypoint Franchise Advisors",
+  },
+  areaServed: {
+    "@type": "Country",
+    name: "United States",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    description:
+      "Franchise consulting is 100% free to candidates. Franchise brands pay the referral fee at purchase — your cost does not change whether you come through Waypoint or go direct.",
+  },
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "Franchise Categories",
+    itemListElement: [
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Home Services Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Restoration Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "B2B Service Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Fitness and Wellness Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Senior Care Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pet Care Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Express Car Wash Franchises" } },
+    ],
+  },
 };

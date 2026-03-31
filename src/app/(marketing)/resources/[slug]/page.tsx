@@ -54,8 +54,8 @@ export default async function ArticlePage({ params }: Props) {
             headline: meta.title,
             description: meta.excerpt,
             datePublished: meta.date,
-            dateModified: meta.date,
-            image: "https://www.waypointfranchise.com/og/og-resources.png",
+            dateModified: meta.updatedAt ?? meta.date,
+            image: "https://www.waypointfranchise.com/og_default_1773343895292.png",
             author: {
               "@type": "Person",
               "@id": "https://www.waypointfranchise.com/about#kelsey",
@@ -127,7 +127,7 @@ export default async function ArticlePage({ params }: Props) {
         <p className="text-xs text-[#8E3012] tracking-[0.18em] uppercase font-medium mb-4">{meta.category}</p>
         <h1 className="font-playfair text-3xl sm:text-4xl md:text-5xl leading-tight mb-6">{meta.title}</h1>
         <div className="flex items-center gap-4 text-xs text-[#7a7a7a]">
-          <span>Kelsey Stuart</span>
+          <Link href="/about" className="hover:text-[#8E3012] transition-colors font-medium">Kelsey Stuart</Link>
           <span>·</span>
           <span>Published <time dateTime={meta.date}>{new Date(meta.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</time></span>
         </div>

@@ -23,8 +23,8 @@ Consulting services are 100% free to candidates. Franchise brands pay a referral
 ## Article Library
 
 Waypoint maintains 34 educational articles on franchise buying. Full index available at:
-https://waypointfranchise.com/sitemap.xml
-https://waypointfranchise.com/resources
+https://www.waypointfranchise.com/sitemap.xml
+https://www.waypointfranchise.com/resources
 
 Topics covered: how to read an FDD, franchise cost structures, investment tiers, territory selection, franchise categories (home services, restoration, fitness, senior care, B2B, car wash, junk removal), readiness assessment, semi-absentee ownership, multi-unit vs. single-unit decisions.
 
@@ -43,8 +43,16 @@ Topics covered: how to read an FDD, franchise cost structures, investment tiers,
 - /faq — Plain-language answers to common questions about cost, capital requirements, timeline, and how franchises work.
 - /book — Free 30-minute discovery call booking via TidyCal. No pitch, no agenda.
 - /scorecard — Franchise readiness quiz. 10 questions, produces a personalized readiness score and category breakdown.
+- /archetype — Franchise owner type quiz. 8 questions, identifies which industry categories match a candidate's working style.
 - /checklists — Free download hub. Six franchise evaluation checklists (universal plus five industry-specific: food and beverage, home services, fitness and wellness, senior care, B2B). Email capture delivers the checklist directly to the candidate.
-- /blog — Editorial content on franchising, business ownership, and related topics.
+- /escape-kit — Free guide: the financial mechanics of franchising vs. W2 employment. Covers true costs, SBA financing, and the severance calculation most corporate professionals miss. No email required.
+- /investment — Overview of capital requirements for franchise ownership, including liquid capital ranges, total investment categories, and SBA financing basics.
+- /glossary — Plain-English definitions of franchise industry terms (FDD, royalty, territory, Item 19, validation calls, discovery day, etc.).
+- /franchise-consultant-vs-broker — Explains the difference between franchise consultants and franchise brokers, and how to evaluate them.
+- /newsletter — The Franchise Dispatch. Kelsey's newsletter: honest takes on franchise trends, FDD red flags, and ownership economics.
+- /quizzes — Hub page for all Waypoint quizzes and assessment tools.
+- /resources — Full library of 34 educational articles organized by category: Getting Started, Going Deeper, Industry Spotlights.
+- /refer — Referral page. Lets existing contacts send candidates to Kelsey.
 - /privacy — Privacy policy.
 - /terms — Terms of service.
 
