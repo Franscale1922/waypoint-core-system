@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 import { ImportLeadForm } from "@/components/ImportLeadForm";
 import { RegenerateButton } from "@/components/RegenerateButton";
+import { DeleteLeadButton, BulkDeleteButton } from "@/components/DeleteLeadButton";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -23,6 +24,8 @@ export default async function LeadsManager() {
         take: 200,
     });
 
+    const pendingClayCount = leads.filter(l => l.status === "PENDING_CLAY").length;
+
     return (
         <div className="p-8 max-w-7xl mx-auto space-y-8">
             <div className="flex justify-between items-center">
@@ -33,6 +36,12 @@ export default async function LeadsManager() {
                     <p className="text-slate-500 mt-2">Click any lead to view score, draft email, and enrichment signals.</p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {pendingClayCount > 0 && (
+                        <BulkDeleteButton
+                            status="PENDING_CLAY"
+                            label={`Delete ${pendingClayCount} PENDING_CLAY`}
+                        />
+                    )}
                     <RegenerateButton mode="all" />
                     <ImportLeadForm />
                 </div>
@@ -47,12 +56,13 @@ export default async function LeadsManager() {
                             <th className="px-6 py-4">Status</th>
                             <th className="px-6 py-4">Score</th>
                             <th className="px-6 py-4 text-right">Added</th>
+                            <th className="px-6 py-4 w-12"></th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
                         {leads.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-8 text-center text-slate-400">
+                                <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
                                     No leads found in the database.
                                 </td>
                             </tr>
@@ -81,6 +91,9 @@ export default async function LeadsManager() {
                                     <Link href={`/admin/leads/${lead.id}`} className="block w-full">
                                         {new Date(lead.createdAt).toLocaleDateString()}
                                     </Link>
+                                </td>
+                                <td className="px-3 py-4">
+                                    <DeleteLeadButton id={lead.id} />
                                 </td>
                             </tr>
                         ))}

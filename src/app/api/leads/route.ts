@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { LeadSchema } from "@/app/lib/schemas";
+import { LeadStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
     try {
@@ -79,6 +80,31 @@ export async function POST(req: Request) {
         }
 
         return NextResponse.json({ processed: results.length, results }, { status: 200 });
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return NextResponse.json({ error: message }, { status: 500 });
+    }
+}
+
+// ── DELETE /api/leads?status=PENDING_CLAY — bulk delete by status ──────────
+// Used to clear bad imports before a clean re-import.
+// Pass ?status=PENDING_CLAY to wipe just that cohort, or ?status=ALL to delete everything.
+export async function DELETE(req: Request) {
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status");
+
+    if (!status) {
+        return NextResponse.json({ error: "?status= query param is required" }, { status: 400 });
+    }
+
+    try {
+        let deleted;
+        if (status === "ALL") {
+            deleted = await prisma.lead.deleteMany({});
+        } else {
+            deleted = await prisma.lead.deleteMany({ where: { status: status as LeadStatus } });
+        }
+        return NextResponse.json({ status: "deleted", count: deleted.count });
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return NextResponse.json({ error: message }, { status: 500 });
