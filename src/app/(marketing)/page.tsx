@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     description:
       "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
     url: "https://waypointfranchise.com",
-    images: [{ url: "/og/og-home.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors — Find the Franchise That Fits Your Life" }],
+    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors — Find the Franchise That Fits Your Life" }],
   },
 };
 
