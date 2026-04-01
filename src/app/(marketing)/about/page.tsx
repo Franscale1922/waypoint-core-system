@@ -66,7 +66,8 @@ export default async function AboutPage() {
               "https://www.instagram.com/franchise_match_maker/",
               "https://x.com/__Waypoint",
               "https://www.youtube.com/@Waypoint-Franchise",
-              "https://www.tiktok.com/@waypoint007"
+              "https://www.tiktok.com/@waypoint007",
+              "https://www.pinterest.com/waypointfranchise/"
             ],
             "knowsAbout": [
               "franchise consulting",

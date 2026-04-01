@@ -68,6 +68,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
   },
+  other: {
+    "p:domain_verify": "af42fa1c5c5c06ec96c10134550ea970",
+  },
 };
 
 export default function RootLayout({

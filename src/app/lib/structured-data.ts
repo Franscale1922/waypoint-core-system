@@ -79,6 +79,7 @@ export const localBusinessSchema = {
     "https://x.com/__Waypoint",
     "https://www.youtube.com/@Waypoint-Franchise",
     "https://www.tiktok.com/@waypoint007",
+    "https://www.pinterest.com/waypointfranchise/",
   ],
 };
 
@@ -108,6 +109,7 @@ export const personSchema = {
     "https://x.com/__Waypoint",
     "https://www.youtube.com/@Waypoint-Franchise",
     "https://www.tiktok.com/@waypoint007",
+    "https://www.pinterest.com/waypointfranchise/",
   ],
   knowsAbout: [
     "franchise consulting",
