@@ -3,7 +3,7 @@ title: "Home Services Franchises: The Most Overlooked Category"
 relatedSlugs:
   - "b2b-franchise-opportunities-lower-risk-steadier-cash"
   - "restoration-franchises-the-disaster-proof-business"
-  - "recession-proof-franchise-categories"
+  - "maid-and-residential-cleaning-franchises"
 slug: "home-services-franchises-most-overlooked-category"
 date: "2026-02-25"
 category: "Industry Spotlights"

@@ -67,6 +67,9 @@
 | `food-and-beverage-franchise-what-it-actually-demands` | Food and Beverage Franchises: What the Category Actually Demands | "food franchise" / "restaurant franchise" | I/C | High | ✅ Strong |
 | `pet-care-franchise-built-on-unconditional-demand` | Pet Care Franchises: A Category Built on Unconditional Demand | "pet care franchise" / "pet franchise" | I/C | Medium | ✅ Good |
 | `property-management-franchises` | Property Management Franchises: What the Category Actually Looks Like | "property management franchise" | I/C | Medium | ✅ Exact match keyword in title |
+| `maid-and-residential-cleaning-franchises` | Maid and Residential Cleaning Franchises: The Repeat Service Model | "residential cleaning franchise" / "maid service franchise" | I/C | Medium | ✅ Good |
+| `staffing-franchises` | Staffing Franchises: Margin Structure and B2B Revenue | "staffing franchise" | I/C | Medium | ✅ Good |
+| `garage-transformation-franchises` | Garage Transformation Franchises: High-Ticket, Project-Based Service | "garage franchise" | I/C | Medium | ✅ Good |
 
 ---
 

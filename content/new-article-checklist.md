@@ -84,6 +84,9 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | pet-care-franchise-built-on-unconditional-demand | Industry Spotlights |
 | how-to-sell-a-franchise-exit-strategy | Going Deeper |
 | property-management-franchises | Industry Spotlights |
+| maid-and-residential-cleaning-franchises | Industry Spotlights |
+| staffing-franchises | Industry Spotlights |
+| garage-transformation-franchises | Industry Spotlights |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 
