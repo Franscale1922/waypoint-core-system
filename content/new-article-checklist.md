@@ -83,6 +83,7 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | understanding-franchise-royalties-what-youre-paying-for | Getting Started |
 | pet-care-franchise-built-on-unconditional-demand | Industry Spotlights |
 | how-to-sell-a-franchise-exit-strategy | Going Deeper |
+| property-management-franchises | Industry Spotlights |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 

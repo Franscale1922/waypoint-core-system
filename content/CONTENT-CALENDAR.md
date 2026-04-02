@@ -43,9 +43,9 @@ Update this table after each article is published. This is the source of truth f
 
 | Phase | Article Slug | Publish Date | GSC Submitted | Indexed |
 |-------|--------------|--------------|---------------|---------|
-| 1 | *(see Phase 1 below)* | — | — | — |
+| 1 | `property-management-franchises` | 2026-04-01 | ⏳ Pending | ⏳ Pending |
 
-*Replace placeholder rows with actual entries as articles go live. "Indexed" = confirmed via URL Inspection in Search Console showing "URL is on Google".*
+*"Indexed" = confirmed via URL Inspection in Search Console showing "URL is on Google". Submit each new URL in GSC immediately after publish — do not wait for sitemap crawl.*
 
 ---
 
@@ -73,8 +73,11 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 | 10 | Weight Loss Franchises | `[ ]` Agent-ready | Industry Spotlights |
 | 11 | Pilates Franchises | `[ ]` Agent-ready | Industry Spotlights |
 | 12 | IT Services and MSP Franchises | `[ ]` Agent-ready | Industry Spotlights |
+| 13 | Property Management Franchises | `[x]` Published 2026-04-01 | Industry Spotlights |
 
 > **Note on `[~]` articles:** Flag these for Kelsey before drafting. The four Getting Started conceptual pieces (items 1–4) require Kelsey's direct input or source documents before an agent should write them. If Kelsey input is not yet available, skip to the agent-ready Industry Spotlights and return to the `[~]` items when source material is ready.
+
+> **Note on item 13 (Property Management):** Priority bump — social content already exists on this topic. This gap should close before Phase 2 begins. Agent-ready.
 
 ---
 
@@ -84,21 +87,28 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 
 | Priority | Working Title | Queue Status | Category |
 |----------|---------------|--------------|----------|
-| 13 | Hair Care and Salon Service Franchises | `[ ]` | Industry Spotlights |
-| 14 | Child Enrichment Franchises | `[ ]` | Industry Spotlights |
-| 15 | Sports Performance and Training Franchises | `[ ]` | Industry Spotlights |
-| 16 | Assisted Stretch Franchises | `[ ]` | Industry Spotlights |
-| 17 | Laundromat Franchises | `[ ]` | Industry Spotlights |
-| 18 | Salon Suite Franchises | `[ ]` | Industry Spotlights |
-| 19 | Light Remodel Franchises | `[ ]` | Industry Spotlights |
-| 20 | Glass Replacement Franchises | `[ ]` | Industry Spotlights |
-| 21 | Cost and Operational Efficiency Franchises | `[ ]` | Industry Spotlights |
-| 22 | Fleet Maintenance Franchises | `[ ]` | Industry Spotlights |
-| 23 | The Exploration Process Is a Practice Run | `[~]` Needs expansion | Getting Started |
-| 24 | Why Weekly Meetings Change Everything During Brand Exploration | `[~]` Needs Kelsey input | Going Deeper |
-| 25 | When a Candidate Says They're Pausing | `[~]` Needs Kelsey observations | Going Deeper |
-| 26 | On-Site Corporate Gym Franchises | `[ ]` | Industry Spotlights |
-| 27 | Sugar Waxing and Hair Removal Franchises | `[ ]` | Industry Spotlights |
+| 14 | Hair Care and Salon Service Franchises | `[ ]` | Industry Spotlights |
+| 15 | Child Enrichment Franchises | `[ ]` | Industry Spotlights |
+| 16 | Sports Performance and Training Franchises | `[ ]` | Industry Spotlights |
+| 17 | Assisted Stretch Franchises | `[ ]` | Industry Spotlights |
+| 18 | Laundromat Franchises | `[ ]` | Industry Spotlights |
+| 19 | Salon Suite Franchises | `[ ]` | Industry Spotlights |
+| 20 | Light Remodel Franchises | `[ ]` | Industry Spotlights |
+| 21 | Glass Replacement Franchises | `[ ]` | Industry Spotlights |
+| 22 | Cost and Operational Efficiency Franchises | `[ ]` | Industry Spotlights |
+| 23 | Fleet Maintenance Franchises | `[ ]` | Industry Spotlights |
+| 24 | The Exploration Process Is a Practice Run | `[~]` Needs expansion | Getting Started |
+| 25 | Why Weekly Meetings Change Everything During Brand Exploration | `[~]` Needs Kelsey input | Going Deeper |
+| 26 | When a Candidate Says They're Pausing | `[~]` Needs Kelsey observations | Going Deeper |
+| 27 | On-Site Corporate Gym Franchises | `[ ]` | Industry Spotlights |
+| 28 | Sugar Waxing and Hair Removal Franchises | `[ ]` | Industry Spotlights |
+| 29 | What Kind of Support Does a Franchisor Actually Provide? | `[~]` Needs Kelsey input | Going Deeper |
+| 30 | Franchising vs. Starting Your Own Business: An Honest Look at Both | `[ ]` Agent-ready | Going Deeper |
+| 31 | Betting on Yourself: How to Overcome Self-Doubt Before Buying a Franchise | `[~]` Needs Kelsey input | Mindset |
+
+> **Note on item 30 (Franchising vs. Starting a Business):** This article is the editorial backbone for a planned infographic asset — *"Franchise vs. Starting From Scratch."* Draft the article first, then the infographic pulls its core comparison points directly from the article content. See **Special Assets** section below.
+
+> **Note on item 31 (Betting on Yourself):** This is a high-trust, identity-level piece that requires Kelsey's voice and real personal story. Do not draft from research alone — needs Kelsey input on the emotional arc of making the leap, what self-doubt felt like, and what pushed him through it.
 
 ---
 
@@ -108,27 +118,48 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 
 | Priority | Working Title | Queue Status | Category |
 |----------|---------------|--------------|----------|
-| 28 | Swim School Franchises | `[ ]` | Industry Spotlights |
-| 29 | Montessori and Alternative Education Franchises | `[ ]` | Industry Spotlights |
-| 30 | Driving School Franchises | `[ ]` | Industry Spotlights |
-| 31 | Estate Sale Franchises | `[ ]` | Industry Spotlights |
-| 32 | Pet Waste Removal Franchises | `[ ]` | Industry Spotlights |
-| 33 | Large-Scale Storage Franchises | `[ ]` | Industry Spotlights |
-| 34 | B2B Logistics Franchises | `[ ]` | Industry Spotlights |
-| 35 | Turf Installation and Exterior Residential Franchises | `[ ]` | Industry Spotlights |
-| 36 | Music Education Franchises | `[ ]` | Industry Spotlights |
-| 37 | Golf Simulator and Instruction Franchises | `[ ]` | Industry Spotlights |
-| 38 | Mental Health Franchises | `[~]` Needs careful framing | Industry Spotlights |
-| 39 | Chiropractic and Health Coaching Franchises | `[~]` Needs Kelsey input | Industry Spotlights |
-| 40 | Med Spa Franchises | `[~]` Needs Kelsey input | Industry Spotlights |
+| 32 | Swim School Franchises | `[ ]` | Industry Spotlights |
+| 33 | Montessori and Alternative Education Franchises | `[ ]` | Industry Spotlights |
+| 34 | Driving School Franchises | `[ ]` | Industry Spotlights |
+| 35 | Estate Sale Franchises | `[ ]` | Industry Spotlights |
+| 36 | Pet Waste Removal Franchises | `[ ]` | Industry Spotlights |
+| 37 | Large-Scale Storage Franchises | `[ ]` | Industry Spotlights |
+| 38 | B2B Logistics Franchises | `[ ]` | Industry Spotlights |
+| 39 | Turf Installation and Exterior Residential Franchises | `[ ]` | Industry Spotlights |
+| 40 | Music Education Franchises | `[ ]` | Industry Spotlights |
+| 41 | Golf Simulator and Instruction Franchises | `[ ]` | Industry Spotlights |
+| 42 | Mental Health Franchises | `[~]` Needs careful framing | Industry Spotlights |
+| 43 | Chiropractic and Health Coaching Franchises | `[~]` Needs Kelsey input | Industry Spotlights |
+| 44 | Med Spa Franchises | `[~]` Needs Kelsey input | Industry Spotlights |
 
 > **Note on regulated categories:** Mental Health, Chiropractic, and Med Spa franchises involve licensing complexity and liability framing that requires Kelsey's review before publishing. Draft, but do not commit without sign-off.
 
 ---
 
+### Phase 3 — After You Buy Cluster (new category)
+
+**Goal:** Content for people who have signed or are close to signing — operational, team-building, and mindset articles that demonstrate Kelsey's depth of post-purchase knowledge. These also attract pre-purchase readers who want to understand what comes after the decision.
+
+> **Category note:** "After You Buy" is a new content category. These articles should link back to Getting Started and Going Deeper articles to create a full reader journey from consideration → decision → execution.
+
+| Priority | Working Title | Queue Status | Category |
+|----------|---------------|--------------|----------|
+| 45 | I Bought a Franchise. Now I Have to Build a Team. | `[~]` Needs Kelsey input | After You Buy |
+| 46 | What to Look for When Hiring People to Run Your Franchise With You | `[~]` Needs Kelsey input | After You Buy |
+| 47 | Five Mistakes New Franchisees Make in Year One | `[~]` Needs Kelsey input | After You Buy |
+| 48 | Why the Franchisees Who Ask for Help Outperform the Ones Who Don't | `[ ]` Agent-ready | After You Buy |
+| 49 | The Playbook Is There for a Reason: Why Improvising Early Costs You | `[ ]` Agent-ready | After You Buy |
+| 50 | The First-Year Emotional Arc: What Nobody Tells You Before You Sign | `[~]` Needs Kelsey input | After You Buy |
+
+> **Note on items 45–50:** These six articles form a cluster. Draft item 47 (Five Mistakes) first — it is the hub piece and the others (48, 49, 50) are explicit spinoffs that deepen individual mistakes into full articles. Items 45 and 46 (team building and hiring) are a paired cluster — draft together or in sequence.
+
+> **Note on item 47 (Five Mistakes):** The five mistakes should include at minimum: (1) not asking for help, (2) ignoring the playbook and improvising, (3) hiring too fast or with the wrong criteria, (4) underestimating the emotional difficulty of year one, (5) operating in isolation instead of leaning on the franchisee network. Each mistake in the hub article becomes its own full article in items 48–50.
+
+---
+
 ### Remaining Queue Items (No Phase Assigned Yet)
 
-The following articles from `ARTICLE-QUEUE.md` have not been phased. Assign them to a phase or create Phase 4 when Phase 3 is underway:
+The following articles have not been phased. Assign them to a phase or create Phase 4 when Phase 3 is underway:
 
 - Sweet Concept Franchises
 - Entertainment and Destination Franchises
@@ -138,7 +169,18 @@ The following articles from `ARTICLE-QUEUE.md` have not been phased. Assign them
 - Commercial Testing and Environmental Services Franchises
 - Expanded B2B Services: Categories Worth Watching
 - Real Estate-Related Franchises
-- Kids Sports Franchises
+
+---
+
+### Special Assets
+
+Non-article content tied to specific articles in the queue. Produce these alongside the paired article, not before it.
+
+| Asset | Type | Paired Article | Status |
+|-------|------|----------------|--------|
+| Franchise vs. Starting From Scratch | Infographic | Item 30 — *Franchising vs. Starting Your Own Business* | `[ ]` Pending article draft |
+
+> **Infographic production note:** Draft item 30 (the editorial article) first. The infographic should distill the article's core comparison points into a clean visual — key dimensions: upfront cost, time to revenue, ongoing support, risk profile, creative control, scalability. Once the article is committed, the infographic can be produced and embedded at the top of the article page and shared as a standalone social asset.
 
 ---
 

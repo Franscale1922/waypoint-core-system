@@ -764,14 +764,22 @@ Tools evaluated and deferred — good products, wrong timing for Stage 1.
 ---
 
 ### Clay — Lead Enrichment Waterfall
-**What:** Enrichment waterfall that queries Apollo, Hunter, LinkedIn, and 50+ sources in sequence until a verified email is found. Also includes AI personalization built in.  
-**Account:** Free tier exists (~100 credits).  
+**What:** Enrichment waterfall that queries Findymail, LinkedIn, PredictLeads, Google News and 50+ sources in sequence.  
+**Account:** Launch plan ($185/mo, 15,000 actions/mo, 2,500 data credits/mo).  
 **Reviewed:** March 2026  
-**Decision:** ⏳ Defer — re-evaluate at 50+ sends/day
+**Decision:** ✅ Complete — activated April 2026
 
-**Why deferred:** At 15/day sends, a single enrichment source (Hunter.io, now active) is sufficient. Clay's waterfall adds value only when single-source miss rates become a meaningful conversion bottleneck. Minimum useful plan ($149/mo) is not justified at current volume.
+**What was completed:**
+- Clay Launch plan active ($185/mo)
+- "Cold Email Test 1" table (103 leads) configured with Findymail enrichment waterfall
+- Broken waterfall fixed: `work email` formula now waterfalls `{{email}} OR {{Find Work Email result}}`
+- Duplicate `Find work email (2)` column deleted — was wasting data credits
+- ZeroBounce email verification added (0.1 credits/row); export filtered to `valid` only
+- `Email (3)` renamed to `Final Email`, wired to verified email output
+- Google Apps Script bridge live: Clay → Google Sheet → `/api/webhooks/clay`
+- `onRowAdded` trigger active — each new Clay row POSTs to pipeline automatically
 
-**Trigger to activate:** Email find rate from Hunter.io drops below 60% sustained over 2+ weeks of production sends.
+**See §3 in this document for full Clay setup detail.**
 
 ---
 

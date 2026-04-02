@@ -948,3 +948,78 @@ Getting this right before you look at brands is the difference between a search 
 
 Full model comparison: [link]
 ```
+
+---
+
+### Property Management Franchises: What the Category Actually Looks Like
+**URL:** `/resources/property-management-franchises`
+
+**Twitter/X Thread:**
+```
+Property management franchises are one of the most misunderstood entry points in the franchise world.
+
+Everyone knows someone who owns rental properties. Most of them don't want to manage them.
+
+That gap is the business. Here's how it actually works. 🧵
+
+1/ The model: you manage residential or commercial properties on behalf of owners who don't want to deal with tenants, maintenance calls, or lease admin.
+
+You collect a percentage of rent each month. Plus fees for leasing, renewals, and maintenance coordination.
+
+Recurring. Contractual. Stacks as you grow the portfolio.
+
+2/ Who this fits:
+
+People with a background in operations, finance, or client services.
+
+People comfortable managing multiple ongoing relationships and staying on top of the details.
+
+People who want a business that scales through adding managed units, not opening more locations.
+
+3/ The one thing most buyers don't research first:
+
+Licensing requirements.
+
+Many states require a real estate or property management license to operate legally.
+
+Some franchise systems let you operate under the franchisor's license while you get your own. Others require it before you sign.
+
+Know your state before you go further.
+
+4/ The owner acquisition question:
+
+Growth in property management comes from signing new property owners.
+
+Ask any franchisor you evaluate: how are you helping me find owners? Is there a marketing system? Referral partnerships? Or am I building that pipeline myself?
+
+This one question separates strong systems from weak ones.
+
+5/ Why the long-term demand picture is real:
+
+The US rental market has grown significantly over the past 15 years.
+
+A large share of rental properties are held by individual investors who actively do not want to be property managers.
+
+That gap isn't closing.
+
+Full piece: [link]
+```
+
+**LinkedIn Post:**
+```
+Property management franchises sit at an interesting intersection: real estate demand without real estate ownership risk.
+
+You do not own the properties. You manage them on behalf of owners who want the investment without the day-to-day headache.
+
+Revenue is recurring. It stacks as you grow the portfolio of managed units. The model scales without the capital intensity of opening additional locations.
+
+Two things most buyers don't dig into early enough:
+
+First, licensing. Many states require a specific license to manage properties legally. Some franchise systems handle this by letting you operate under the franchisor's license initially. Others require it before you sign. Know your state before you get too far in the conversation.
+
+Second, owner acquisition. Growth in this business comes from signing property owners, not advertising to tenants. Ask every franchisor specifically: what does your system do to help me find and close new owners? The answer tells you a lot about how the model actually works in practice.
+
+The long-term demand signal is real. Individual rental property investors are not a shrinking customer base, and most of them would rather not deal with the management side.
+
+Full breakdown of what the model actually looks like: [link]
+```
