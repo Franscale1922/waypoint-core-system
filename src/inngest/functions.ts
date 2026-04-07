@@ -192,6 +192,16 @@ Reply with ONLY the numeric tier — nothing else.
             // Cap at 100
             if (score > 100) score = 100;
 
+            // ── Open To Work signal (+10) ──────────────────────────────────────────
+            // Explicit career transition signal: lead has activated the Open To Work
+            // banner on LinkedIn — the clearest possible indicator of readiness.
+            // They've publicly acknowledged they're evaluating what comes next.
+            // Note: this is a scoring-only signal, never referenced in the email body.
+            const isOpenToWork = (lead as any).isOpenToWork as boolean | null | undefined;
+            if (isOpenToWork === true) score += 10;
+
+            if (score > 100) score = 100;
+
             // ── Email ─────────────────────────────────────────────────────────
             // Evaboot exports are email-verified, so lead.email is almost always set.
             // If not, construct a best-guess and cap score at 50 — it cannot clear
@@ -356,9 +366,79 @@ export const personalizerProcess = inngest.createFunction(
             companyNewsEvent.length >= 10 &&               // minimum sentence length
             !/^\d+(\.\d+)?%?$/.test(companyNewsEvent);     // not a bare number like "19" or "19%"
 
-        if (companyNewsEvent && companyNewsIsValid) {
+        // ── Stale news gate ──────────────────────────────────────────────────────
+        // Reject news events referencing years 2010-2023 — an 11-year-old acquisition
+        // (e.g. Belk/Sycamore 2015) or a 2-year-old press release is not a relevant
+        // career hook. Production audit: 1/10 emails used a 2015 signal and said
+        // "a few years back" (now a prohibited phrase) to mask the staleness.
+        const STALE_YEAR_RE = /\b(201[0-9]|202[0-3])\b/;
+        const companyNewsIsRecent = !STALE_YEAR_RE.test(companyNewsEvent);
+
+        // ── News instability classifier ───────────────────────────────────────────
+        // Priority A is reserved for genuine career-disruption signals: layoffs,
+        // leadership exits, M&A, restructuring, WARN Act filings, office closures.
+        // Product launches, new locations, awards, and expansion news are low-value
+        // hooks that generate implausible connections and weak email copy.
+        // Production audit: 3/10 emails used product launches as Priority A signals,
+        // producing non-sequitur openings ("SharePoint preview launch → buy a franchise").
+        //
+        // Instability detected → Priority A strong (disruption framing)
+        // No instability → Priority A soft (momentum framing, different template)
+        // Negation guard: "no layoffs planned" should NOT trigger disruption framing.
+        const INSTABILITY_KEYWORDS_RE = [
+            /\b(layoff|laid[\s-]?off|lay[\s-]?off)\b/i,
+            /\b(warn act|warn notice|warn filing)\b/i,
+            /\b(reduction in force|\brif\b|job cut|headcount reduction|workforce reduction)\b/i,
+            /\brestructur|\breorg|\breorganiz/i,
+            /\b(acqui|acquired by|sold to|sale to|merger|merging with)\b/i,
+            /\b(spin[\s-]?off|divest|divestiture)\b/i,
+            /\b(departed|departing|stepping down|steps down|resigned|resignation)\b/i,
+            /\bleft as (ceo|coo|cfo|cto|cmo|chief|president|vp|vice president)\b/i,
+            /\b(shut[\s-]?down|clos(?:e|ed|ing)\s+(?:office|plant|facilit|locat))\b/i,
+            /\b(bankrupt|chapter 11|insolvency)\b/i,
+        ];
+        // Negation guard: if an instability keyword is preceded by "no", "not", "never",
+        // "denies", "refutes", or similar within the same clause, treat as false positive.
+        // Example: "No layoffs planned at Boeing" should NOT trigger disruption framing.
+        const NEGATION_RE = /\b(no|not|never|denies?|refutes?|dismisses?|rules? out)\b[^.!?]{0,40}$/i;
+        const companyNewsIsInstabilitySignal = (() => {
+            if (!companyNewsEvent) return false;
+            const lower = companyNewsEvent.toLowerCase();
+            return INSTABILITY_KEYWORDS_RE.some(re => {
+                const match = re.exec(lower);
+                if (!match) return false;
+                // Check for negation in the clause immediately before the keyword
+                const textBefore = lower.slice(0, match.index);
+                const lastSentenceBreak = Math.max(
+                    textBefore.lastIndexOf("."),
+                    textBefore.lastIndexOf("!"),
+                    textBefore.lastIndexOf("?")
+                );
+                const precedingClause = textBefore.slice(lastSentenceBreak + 1);
+                return !NEGATION_RE.test(precedingClause);
+            });
+        })();
+
+        // ── Signal selection (Priority A strong > A soft > B > C) ─────────────────
+        if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
+            // Strong disruption signal — use Template A / E framing
             primarySignal = companyNewsEvent;
-            signalType = "Priority A: company news event (macro, public — WARN Act, 8-K, reorg, layoffs)";
+            signalType = `Priority A (strong): confirmed disruption event — layoff, leadership exit, M&A, restructuring, or WARN Act filing.
+Open directly with the event as context. Do NOT name specific individuals by name; reference the role or function instead (e.g. 'the leadership transition', 'the reorg underway') unless the departure is of a widely known public figure.
+Use Template A or Template E tone. Do NOT use disruption language if the signal is a positive event.`;
+        } else if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && !companyNewsIsInstabilitySignal) {
+            // Valid and recent news but NOT a disruption signal (product launch, new location, award, etc.)
+            // Prefer Priority B if available — a LinkedIn post is a stronger personal hook.
+            // Fall back to the soft A framing only if no post signal exists.
+            if (recentPostSummary && !postLooksNonCareer) {
+                primarySignal = recentPostSummary;
+                signalType = "Priority B: paraphrase of LinkedIn post TOPIC only (never verbatim, never name a third party if the post is about someone else).";
+            } else {
+                primarySignal = companyNewsEvent;
+                signalType = `Priority A (soft): company momentum news — product launch, new location, expansion, or award. This is NOT a disruption event.
+Do NOT use instability language ('mandates being redrawn', 'golden handcuffs stripped', 'rethinking direction under pressure').
+Instead: use Template A2 tone — many leaders use moments of company momentum to quietly take stock of what their longer-term path looks like. Keep the framing light, curious, and career-reflective rather than urgent or anxiety-driven.`;
+            }
         } else if (recentPostSummary && !postLooksNonCareer) {
             primarySignal = recentPostSummary;
             signalType = "Priority B: paraphrase of LinkedIn post TOPIC only (never verbatim, never name a third party if the post is about someone else).";
@@ -381,11 +461,17 @@ STRICT RULES for Priority C:
             if (!apiKey) throw new Error("Missing OpenAI API Key in Settings");
 
             // ── First name guard ───────────────────────────────────────────
-            // If the DB name starts with a single initial (e.g. "L Gregory Jones"),
-            // the split gives "L" — which produces "Hi L," in the email body.
-            // Use the second token instead whenever the first token is ≤ 2 characters.
+            // Handles three edge cases beyond the original length-<=2 check:
+            //   1. Single-letter initials: "L Gregory Jones" → "Gregory"
+            //   2. Initial with period: "L. Gregory Jones" → "Gregory"
+            //   3. Professional salutations: "Dr. Jane Smith" → "Jane"
+            //      "Mr. John Doe" → "John", "Prof. Sarah Lee" → "Sarah"
+            const SALUTATION_RE = /^(dr|mr|ms|mrs|prof|rev|capt|lt|col|gen|sgt|maj|sr|jr)\.?$/i;
+            const isInitialOrSalutation = (tok: string) =>
+                SALUTATION_RE.test(tok) ||
+                (/^[A-Z]\.?$/i.test(tok) && tok.replace(".", "").length === 1);
             const nameParts = lead.name.trim().split(/\s+/);
-            const firstName = nameParts[0].length <= 2 && nameParts.length > 1
+            const firstName = isInitialOrSalutation(nameParts[0]) && nameParts.length > 1
                 ? nameParts[1]
                 : nameParts[0];
 
@@ -619,15 +705,35 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                 .replace(/[\u2018\u2019\u201A\u201B]/g, "'")   // curly/smart single quotes → straight '
                 .replace(/[\u201C\u201D\u201E\u201F]/g, '"');   // curly/smart double quotes → straight "
 
+            // ── Fuzzy CTA deduplication ───────────────────────────────────────────
+            // GPT frequently rewrites approved CTAs with slight variations that slip
+            // through exact-match stripping. Production audit: Caren Lusk email ended
+            // with BOTH "Curious if that's a thought worth exploring?" AND "Worth a
+            // conversation?" — the GPT variant wasn't matched by the canonical string.
+            //
+            // Step 1: Exact-match strip (catches verbatim canonical CTAs)
             const approvedEndings = CLOSING_CTAS as readonly string[];
             for (const cta of approvedEndings) {
-                // Replace the CTA whether it appears mid-sentence (with trailing punctuation
-                // that may already be part of the string) or as a standalone line.
-                // Escape regex special chars in CTA.
                 const escaped = cta.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
                 emailText = emailText.replace(new RegExp(escaped, "gi"), "").trim();
             }
-            // Remove any doubled blank lines left behind by the removal
+            // Step 2: Fuzzy regex strip (catches GPT rewrites of approved CTAs)
+            // Ordered most-to-least specific to avoid over-stripping body copy.
+            const CTA_FUZZY_PATTERNS: RegExp[] = [
+                // "Curious if that's even a thought?" variants
+                /curious\s+if\s+that['''`]?s\s+(even\s+)?a\s+thought(\s+worth\s+exploring)?[?!.]?/gi,
+                // "Would it be worth 15 minutes to find out?" variants
+                /would\s+it\s+be\s+worth\s+(a\s+quick\s+)?\d*\s*minutes?\s+to\s+find\s+out[?!.]?/gi,
+                // "Worth a conversation?" variants
+                /is\s+that\s+worth\s+a\s+(quick\s+)?conversation[?!.]?/gi,
+                /worth\s+a\s+(quick\s+)?conversation[?!.]?/gi,
+                // Catch stray "worth 15 minutes" fragments left after partial removal
+                /worth\s+(a\s+)?15\s+minutes[?!.]?/gi,
+            ];
+            for (const pattern of CTA_FUZZY_PATTERNS) {
+                emailText = emailText.replace(pattern, "").trim();
+            }
+            // Collapse any doubled blank lines left behind by removal
             emailText = emailText.replace(/\n{3,}/g, "\n\n").trim();
 
             // Rule 3: Strip GPT-generated sign-offs ("Kelsey" / "Kelsey," / "Kelsey.").
@@ -2034,9 +2140,10 @@ export const scorecardNurtureProcess = inngest.createFunction(
             // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
             const lead = await prisma.lead.findFirst({
                 where: { email },
+                // @ts-ignore — bookedAt added to schema; Prisma client regenerates on deploy
                 select: { status: true, bookedAt: true },
             });
-            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if ((lead as any)?.bookedAt) return { stop: true, reason: "booked" };
             if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
 
             return { stop: false };

@@ -190,6 +190,31 @@ export const PROHIBITED_PHRASES = [
     "innovative",
     "it's clear",   // catches both "it's clear that" and "it's clear [X] is..."
     "sounds like you",  // flattery opener caught on Copeland Isaacson ("Sounds like you're creating significant value")
+    // AI vocabulary present in VOICE_RULES prompt but missing from server-side guard
+    // (confirmed by 10-lead production audit — "pivoting" appeared in O'Quinn email)
+    "pivoting",
+    "intersection",
+    "journey",
+    "unlock",
+    "transform",
+    "it's evident",
+    "in today's dynamic",
+    // Formulaic template echoes — overused across the 10-lead audit batch
+    // Adding to server-side guard forces GPT to find fresh phrasing every time
+    "tempting distraction",        // appeared in 5/10 emails; always paired with 'realistic alternative'
+    "in your position",            // appeared in 6/10 emails: "I help people in your position..."
+    "parallel plans",              // template echo — multiple emails used near-identical phrasing
+    "viable alternative",          // pairs with 'tempting distraction'; forces varied framing
+    // Salesperson/AI tells caught in 10-lead audit
+    "no strings attached",         // Michelle Horner email — salesy filler
+    "I assist",                    // Christy Hartmann — too formal vs. 'I help'
+    "like yourself",               // Safiyyah O'Quinn — stilted
+    "various plans",               // Safiyyah O'Quinn — vague
+    "out of curiosity or necessity", // Shelley Duran — 'necessity' implies financial desperation
+    "side consideration",          // Safiyyah O'Quinn — diminishes offer
+    "interesting idea",            // Whitney Reed — undervalues the pitch
+    "a few years back",            // Whitney Reed — stale-signal tell
+    "quietly exploring",           // template echo across Whitney/Brian emails
 ];
 
 
@@ -209,46 +234,51 @@ Waypoint Franchise Advisors | P.O. Box 3421, Whitefish, MT 59937`;
 // cognitive economy — the connection between signal and pitch is never stated.
 
 export const EMAIL_TEMPLATES = `
-### Template A – Company Event / WARN Act / Reorg (Priority A signal)
+### Template A – Company Disruption Event (Priority A: strong — layoff, leadership exit, M&A, WARN Act)
 Hi {{first_name}},
-With {{company_news_event}}, the mandates for a lot of operations leaders are getting redrawn right now. Usually when that happens, the directors and VPs who've been holding things together start quietly running parallel plans.
-I help people in your position figure out if franchise ownership is a realistic alternative — or just a tempting distraction. If that's even a 10% thought, worth a conversation.
+With {{company_news_event}}, a lot of the people who've been holding things together are starting to weigh their options. That kind of shift tends to compress the decision window.
+I help executives work out whether franchise ownership is a serious path for their situation — or one to cross off the list. If that's crossed your mind at all, worth a quick conversation.
 Kelsey
 
-### Template B – LinkedIn Post / Burnout / Leadership Signal (Priority B signal)
+### Template A2 – Company Momentum News (Priority A: soft — product launch, expansion, new location)
 Hi {{first_name}},
-{{post_topic_paraphrase}}. That's the inflection point I hear from most of the operations and finance leaders I work with right before they start taking franchise ownership seriously.
-I'm not a recruiter. My job is to help people figure out if owning something makes sense for their actual situation — or not. Worth a quick conversation to find out?
+With {{company_news_event}}, it's a busy stretch. Funny timing, maybe — but moments of company momentum are often when senior leaders first start mapping out what the next chapter actually looks like for them.
+I work with people who want to see the real math on franchise ownership before they decide anything. No commitment required.
+Kelsey
+
+### Template B – LinkedIn Post / Leadership Signal (Priority B signal)
+Hi {{first_name}},
+{{post_topic_paraphrase}}. That's the inflection point a lot of the leaders I work with hit right before they start taking ownership seriously as an actual option.
+I'm not a recruiter. My job is helping people figure out if owning something makes sense for their situation — or rule it out cleanly. Worth a conversation to find out?
 Kelsey
 
 ### Template C – Sales Leader / Comp Ceiling (Priority B signal)
 Hi {{first_name}},
-{{post_topic_paraphrase}}. Sounds like you've run the numbers on where your current trajectory tops out.
-I work with directors and VPs who want to understand what building equity in their own business would look like, starting from a realistic picture of their capital and risk tolerance. No pitch — just a real look at the math. Would that be useful?
+{{post_topic_paraphrase}}. Sounds like you've run the numbers on where the current trajectory tops out.
+I work with directors and VPs who want to understand what building equity looks like — starting from a real picture of their capital and risk tolerance. Worth 15 minutes to look at the math together?
 Kelsey
 
 ### Template D – Finance / Risk-Oriented (either signal, analytical framing)
 Hi {{first_name}},
-{{signal_reference}}. The people who end up working with me are usually the cautious ones — they want to see what the cash flows, downside, and exit actually look like before they decide anything.
-I can't promise no risk. But I can walk you through a few models in a way that would make sense to a finance brain. Worth 15 minutes to look at it together?
+{{signal_reference}}. The people who end up working with me are usually the cautious ones — they want to see what the cash flows, downside, and exit actually look like before deciding anything.
+I can't promise no risk. But I can walk through a few models in a way that would make sense to a finance brain. Worth 15 minutes?
 Kelsey
 
-### Template E – Layoff / Open to Work (Priority A: WARN or public announcement)
+### Template E – Layoff / Open to Work (Priority A: WARN Act or confirmed job loss)
 Hi {{first_name}},
-{{company_news_event}} strips away the golden handcuffs faster than anything else. Some of the people I work with used that window to seriously evaluate owning something for the first time.
-If you want a straight conversation about what that path actually looks like — no pressure, no decision needed — I'm happy to make time.
+{{company_news_event}} strips away the calculus faster than almost anything else. Some of the people I work with used that window to seriously evaluate owning something for the first time — with clear eyes and no pressure.
+If you want a straight conversation about what that actually looks like, I'm happy to make time.
 Kelsey
 
-### Template F – Role-Level Framing (Priority C fallback — no specific data)
+### Template F – Role-Level Framing (Priority C fallback — no external signal)
 Hi {{first_name}},
-After a long run in {{function}} leadership, most people have at least thought about what it would look like to run their own thing. The ones who end up working with me aren't reckless — they're the ones who want to see the real numbers before they decide.
-I run a one-hour exercise that maps three paths on one page: stay the course, make a strategic move, or step into ownership. Want to see what it looks like for your situation?
+Most executives at your stage have at least run the mental math on what it would look like to own something. The ones who end up working with me aren't impulsive — they want to see three paths mapped on one page before they commit to any of them.
+I do a one-hour exercise that does exactly that. Want to see what it looks like for your situation?
 Kelsey
 
-### Template G – Lead Magnet Offer (soft CTA — works with any signal, especially Priority C or low-confidence B)
-> Use when signal context is weaker or a lower-commitment first touch makes sense.
-> Offers a free resource instead of a conversation ask. Follow up with personalized context once they say yes.
+### Template G – Lead Magnet Offer (soft CTA — works with Priority C or weak B)
+> Use when signal is weaker or a lower-commitment first touch makes sense.
 Hi {{first_name}},
-{{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You" — based on the patterns I keep seeing across the executives I work with. Want me to send you a copy?
+{{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You" — based on patterns across the executives I work with. Want me to send you a copy?
 Kelsey
 `;
