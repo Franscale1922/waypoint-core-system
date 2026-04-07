@@ -18,10 +18,34 @@ const STATUS_STYLES: Record<string, string> = {
     SUPPRESSED:   "bg-red-100 text-red-800",
 };
 
-export default async function LeadsManager() {
+const ALL_STATUSES = ["SENT", "SEQUENCED", "ENRICHED", "PENDING_CLAY", "SUPPRESSED", "REPLIED", "BOOKED", "RAW"];
+
+// Map status → pill style for the filter buttons
+const FILTER_ACTIVE: Record<string, string> = {
+    SENT:         "bg-green-600 text-white border-green-600",
+    SEQUENCED:    "bg-indigo-600 text-white border-indigo-600",
+    ENRICHED:     "bg-blue-600 text-white border-blue-600",
+    PENDING_CLAY: "bg-yellow-500 text-white border-yellow-500",
+    SUPPRESSED:   "bg-red-600 text-white border-red-600",
+    REPLIED:      "bg-purple-600 text-white border-purple-600",
+    BOOKED:       "bg-emerald-600 text-white border-emerald-600",
+    RAW:          "bg-slate-600 text-white border-slate-600",
+};
+
+interface Props {
+    searchParams: Promise<{ status?: string }>;
+}
+
+export default async function LeadsManager({ searchParams }: Props) {
+    const { status } = await searchParams;
+    const activeStatus = ALL_STATUSES.includes(status ?? "") ? status : undefined;
+
     const leads = await prisma.lead.findMany({
+        where: activeStatus ? { status: activeStatus } : undefined,
         orderBy: { createdAt: "desc" },
-        take: 200,
+        // When filtered by status, return up to 500 so SENT leads are all visible.
+        // Unfiltered view keeps the original 200 cap to avoid slow loads on 1000+ rows.
+        take: activeStatus ? 500 : 200,
     });
 
     const pendingClayCount = leads.filter(l => l.status === "PENDING_CLAY").length;
@@ -47,6 +71,40 @@ export default async function LeadsManager() {
                 </div>
             </div>
 
+            {/* ── Status filter bar ─────────────────────────────────────────────── */}
+            {/* Click a status to filter; click "All" to clear. Persists in URL so  */}
+            {/* you can bookmark /admin/leads?status=SENT for recurring audits.      */}
+            <div className="flex flex-wrap items-center gap-2">
+                <Link
+                    href="/admin/leads"
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                        !activeStatus
+                            ? "bg-slate-800 text-white border-slate-800"
+                            : "bg-white text-slate-600 border-slate-300 hover:border-slate-500"
+                    }`}
+                >
+                    All ({leads.length}{activeStatus ? "" : " shown"})
+                </Link>
+                {ALL_STATUSES.map(s => (
+                    <Link
+                        key={s}
+                        href={`/admin/leads?status=${s}`}
+                        className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors ${
+                            activeStatus === s
+                                ? FILTER_ACTIVE[s]
+                                : "bg-white text-slate-600 border-slate-300 hover:border-slate-500"
+                        }`}
+                    >
+                        {s === activeStatus ? `✓ ${s}` : s}
+                    </Link>
+                ))}
+                {activeStatus && (
+                    <span className="ml-2 text-xs text-slate-500">
+                        Showing {leads.length} {activeStatus} leads — <Link href="/admin/leads" className="underline">clear filter</Link>
+                    </span>
+                )}
+            </div>
+
             <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                 <table className="w-full text-left text-sm text-slate-600">
                     <thead className="bg-slate-50 text-slate-900 font-semibold border-b border-slate-200">
@@ -63,7 +121,7 @@ export default async function LeadsManager() {
                         {leads.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-8 text-center text-slate-400">
-                                    No leads found in the database.
+                                    No leads found{activeStatus ? ` with status ${activeStatus}` : " in the database"}.
                                 </td>
                             </tr>
                         ) : leads.map((lead) => (
