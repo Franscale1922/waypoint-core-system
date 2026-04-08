@@ -106,6 +106,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${SITE_URL}/privacy`,
+      lastModified: new Date("2026-03-15"),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${SITE_URL}/terms`,
+      lastModified: new Date("2026-03-15"),
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       url: `${SITE_URL}/resources`,
       lastModified: new Date("2026-03-31"),
       changeFrequency: "weekly",

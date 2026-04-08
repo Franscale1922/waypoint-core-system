@@ -6,7 +6,8 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/"],
+        // Block private/internal routes — no SEO value and some contain sensitive UI
+        disallow: ["/admin", "/api/", "/inngest", "/emails"],
       },
     ],
     sitemap: "https://www.waypointfranchise.com/sitemap.xml",

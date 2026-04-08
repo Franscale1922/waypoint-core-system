@@ -1,8 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api
-Disallow: /inngest
-Disallow: /emails
-
-Sitemap: https://www.waypointfranchise.com/sitemap.xml
