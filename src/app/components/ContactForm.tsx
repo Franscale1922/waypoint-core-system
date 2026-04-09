@@ -130,6 +130,13 @@ export default function ContactForm() {
         {status === "submitting" ? "Sending..." : "Send Message"}
       </button>
 
+      <p className="text-xs text-center text-[#9a9a8a] leading-relaxed">
+        By submitting this form you agree to receive text messages from Waypoint Franchise
+        Advisors at the number provided. Message frequency varies. Message &amp; data rates may
+        apply. Reply STOP to opt out at any time. View our{" "}
+        <a href="/privacy" className="text-[#8E3012] hover:underline">Privacy Policy</a>.
+      </p>
+
       <p className="text-xs text-center text-[#9a9a8a]">
         Prefer to skip ahead?{" "}
         <a href="/book" className="text-[#8E3012] hover:underline">Book a call directly</a>
