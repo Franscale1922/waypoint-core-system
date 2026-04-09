@@ -43,7 +43,7 @@ Update this table after each article is published. This is the source of truth f
 
 | Phase | Article Slug | Publish Date | GSC Submitted | Indexed |
 |-------|--------------|--------------|---------------|---------|
-| 1 | `property-management-franchises` | 2026-04-01 | ⏳ Pending | ⏳ Pending |
+| 1 | `property-management-franchises` | 2026-04-01 | ✅ 2026-04-01 | ⏳ Pending |
 | 1 | `maid-and-residential-cleaning-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `staffing-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `garage-transformation-franchises` | 2026-04-02 | 2026-04-02 | — |

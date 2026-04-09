@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, LeadStatus } from "@prisma/client";
 import Link from "next/link";
 import { ImportLeadForm } from "@/components/ImportLeadForm";
 import { RegenerateButton } from "@/components/RegenerateButton";
@@ -38,7 +38,7 @@ interface Props {
 
 export default async function LeadsManager({ searchParams }: Props) {
     const { status } = await searchParams;
-    const activeStatus = ALL_STATUSES.includes(status ?? "") ? status : undefined;
+    const activeStatus = ALL_STATUSES.includes(status ?? "") ? (status as LeadStatus) : undefined;
 
     const leads = await prisma.lead.findMany({
         where: activeStatus ? { status: activeStatus } : undefined,
