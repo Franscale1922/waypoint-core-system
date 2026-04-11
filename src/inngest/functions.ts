@@ -420,8 +420,30 @@ export const personalizerProcess = inngest.createFunction(
         })();
 
         // ── Signal selection (Priority A strong > A soft > B > C) ─────────────────
-        if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
-            // Strong disruption signal — use Template A / E framing
+        //
+        // WARN Act routing exception:
+        // WARN Act filings are public records but employees are almost never told in advance.
+        // If we open with the layoff as a hook, we reveal knowledge the recipient doesn't have yet.
+        // That causes alarm, distrust, and spam complaints — not replies.
+        // WARN signals stay as scoring-only. The email uses golden handcuffs framing (Priority C).
+        // The lead still gets a high score; they just receive a universally-framed email.
+        const WARN_KEYWORDS_RE = /\b(warn act|warn notice|warn filing|warn act filing)\b/i;
+        const isWarnSourcedSignal = WARN_KEYWORDS_RE.test(companyNewsEvent || "");
+
+        if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal && isWarnSourcedSignal) {
+            // WARN-sourced disruption — scoring kept high, but email routes to golden handcuffs.
+            // Do NOT reference the event. Employee has almost certainly not been notified yet.
+            primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
+            signalType = `Priority C (WARN-routing): ICP-based outreach. A WARN Act filing was detected for this prospect's company but is NOT used as a hook — the employee likely has not been notified yet and referencing it would be alarming.
+Open with a golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure and may be at a natural career inflection point.
+STRICT RULES — same as Priority C:
+- NEVER fabricate a specific hook, event, or industry observation you cannot verify.
+- NEVER open with an excited or flattering statement.
+- NEVER assume their industry challenges without evidence.
+- NEVER reference the company's financial situation, news, or restructuring.
+- The ONLY safe openers are universal truths about corporate career trajectories.`;
+        } else if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
+            // Non-WARN strong disruption signal (public M&A, confirmed public layoff, leadership exit, etc.)
             primarySignal = companyNewsEvent;
             signalType = `Priority A (strong): confirmed disruption event — layoff, leadership exit, M&A, restructuring, or WARN Act filing.
 Open directly with the event as context. Do NOT name specific individuals by name; reference the role or function instead (e.g. 'the leadership transition', 'the reorg underway') unless the departure is of a widely known public figure.
@@ -1507,85 +1529,188 @@ export const tidycalBookingSync = inngest.createFunction(
 
 export const linkedInDmQueue = inngest.createFunction(
     { id: "linkedin-dm-queue", retries: 1 },
-    { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon–Fri
+    { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon-Fri
     async ({ step }) => {
-        const staleLeads = await step.run("find-stale-sent-leads", async () => {
-            const fiveDaysAgo = new Date();
-            fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+        // ── Step 1: Query each DM step bracket ────────────────────────────────
+        // Timing is anchored to sentAt (when the Instantly email fired), not updatedAt.
+        // DM touches land in gaps between Instantly email touches:
+        //   Day 5  — after Email 1 + follow-up have already landed
+        //   Day 9  — after Email 3 (Goldilocks) has landed
+        //   Day 15 — after Email 4 (last-chance) has landed
+        // dmStep tracks how far each lead has progressed through the DM sequence.
+        // Leads with dmStep >= 3 are permanently excluded — 3 touches is the ceiling.
+        const { step1Leads, step2Leads, step3Leads } = await step.run("find-dm-queue-leads", async () => {
+            const now = new Date();
+            const d5  = new Date(now.getTime() -  5 * 24 * 60 * 60 * 1000);
+            const d9  = new Date(now.getTime() -  9 * 24 * 60 * 60 * 1000);
+            const d15 = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000);
 
-            return prisma.lead.findMany({
-                where: {
-                    status: "SENT",
-                    updatedAt: { lte: fiveDaysAgo },
-                },
-                orderBy: { score: "desc" },
-                take: 20, // Cap at 20 per day to keep the list actionable
-                select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
-            });
+            const [step1, step2, step3] = await Promise.all([
+                // Step 1: emailed 5+ days ago, no DM ever surfaced
+                prisma.lead.findMany({
+                    where: { status: "SENT", sentAt: { lte: d5 },  dmStep: 0 } as any,
+                    orderBy: { score: "desc" },
+                    take: 10,
+                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
+                }),
+                // Step 2: emailed 9+ days ago, Step 1 already surfaced
+                prisma.lead.findMany({
+                    where: { status: "SENT", sentAt: { lte: d9 },  dmStep: 1 } as any,
+                    orderBy: { score: "desc" },
+                    take: 10,
+                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
+                }),
+                // Step 3: emailed 15+ days ago, Step 2 already surfaced
+                prisma.lead.findMany({
+                    where: { status: "SENT", sentAt: { lte: d15 }, dmStep: 2 } as any,
+                    orderBy: { score: "desc" },
+                    take: 10,
+                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
+                }),
+            ]);
+
+            return { step1Leads: step1, step2Leads: step2, step3Leads: step3 };
         });
 
-        if (staleLeads.length === 0) {
-            console.log("[linkedin-dm-queue] No stale SENT leads today.");
-            return { status: "No stale leads", count: 0 };
+        const totalLeads = step1Leads.length + step2Leads.length + step3Leads.length;
+
+        if (totalLeads === 0) {
+            console.log("[linkedin-dm-queue] No leads in any DM step today.");
+            return { status: "No leads", count: 0 };
         }
 
-        await step.run("post-linkedin-dm-queue-to-slack", async () => {
+        // ── Step 2: Build Slack payload and post ──────────────────────────────
+        await step.run("post-dm-queue-to-slack", async () => {
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (!slackWebhook) {
                 console.warn("[linkedin-dm-queue] No SLACK_WEBHOOK_URL — skipping alert");
                 return;
             }
 
-            const leadBlocks = staleLeads.map(lead => ({
-                type: "section",
-                text: {
-                    type: "mrkdwn",
-                    text: [
-                        `*${lead.name}* | ${lead.title || "N/A"} @ ${lead.company || "N/A"} | Score: ${lead.score}`,
-                        lead.linkedinUrl ? `LinkedIn: ${lead.linkedinUrl}` : "No LinkedIn URL",
-                        `📋 DM script: _"Hi ${lead.name.split(" ")[0]} — can I send you a free copy of my guide, "5 Things That Actually Determine If Franchise Ownership Makes Sense For You"?"_`,
-                    ].join("\n"),
+            // DM scripts — voice-guide compliant, no em dashes, one or two sentences.
+            // Step 1: low-commitment guide offer — easiest yes possible
+            // Step 2: career inflection angle — resonates with corporate plateau ICP
+            // Step 3: genuine final check-in — no pressure, closes the loop cleanly
+            const buildDmScript = (stepNum: number, firstName: string): string => {
+                if (stepNum === 1) {
+                    return `"Hi ${firstName}, could I send you a free copy of my guide? It is called 5 Things That Actually Determine If Franchise Ownership Makes Sense For You. No pitch attached."`;
+                }
+                if (stepNum === 2) {
+                    return `"Hi ${firstName}, I work with a lot of professionals at your career level who are quietly exploring what ownership could look like before making any decisions. Happy to share what that process looks like if it is ever on your radar."`;
+                }
+                return `"Hi ${firstName}, last note from me. If franchise ownership has never crossed your mind, completely fine. If it has, I am happy to talk through it with no agenda. Either way, hope things are going well."`;
+            };
+
+            type DmLead = { id: string; name: string; title: string | null; company: string | null; linkedinUrl: string | null; score: number };
+
+            const buildLeadBlocks = (leads: DmLead[], stepNum: number) =>
+                leads.map(lead => {
+                    const firstName = lead.name.trim().split(/\s+/)[0];
+                    const script = buildDmScript(stepNum, firstName);
+                    const profileLine = lead.linkedinUrl
+                        ? `<${lead.linkedinUrl}|Open LinkedIn Profile>`
+                        : "_No LinkedIn URL on file_";
+                    return {
+                        type: "section",
+                        text: {
+                            type: "mrkdwn",
+                            text: [
+                                `*${lead.name}* | ${lead.title || "N/A"} @ ${lead.company || "N/A"} | Score: ${lead.score} | Step ${stepNum} of 3`,
+                                profileLine,
+                                "",
+                                `*DM script (copy-paste):*`,
+                                script,
+                            ].join("\n"),
+                        },
+                    };
+                });
+
+            const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
+
+            const blocks: object[] = [
+                {
+                    type: "header",
+                    text: {
+                        type: "plain_text",
+                        text: `LinkedIn DM Queue — ${totalLeads} lead${totalLeads !== 1 ? "s" : ""} (${today})`,
+                    },
                 },
-            }));
+                {
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: "Each lead was contacted via email through Instantly. Copy-paste the DM script, open their LinkedIn, and send. Scripts are sequenced so each lead gets a different message at each stage.",
+                    },
+                },
+            ];
+
+            const stepSections: { label: string; leads: DmLead[]; num: number }[] = [
+                { label: "Step 1 — Guide Offer",      leads: step1Leads, num: 1 },
+                { label: "Step 2 — Career Inflection", leads: step2Leads, num: 2 },
+                { label: "Step 3 — Final Check-In",   leads: step3Leads, num: 3 },
+            ];
+
+            for (const { label, leads, num } of stepSections) {
+                if (leads.length === 0) continue;
+                blocks.push({ type: "divider" });
+                blocks.push({
+                    type: "section",
+                    text: {
+                        type: "mrkdwn",
+                        text: `*${label}* (${leads.length} lead${leads.length !== 1 ? "s" : ""})`,
+                    },
+                });
+                blocks.push(...buildLeadBlocks(leads, num));
+            }
+
+            blocks.push({
+                type: "context",
+                elements: [{
+                    type: "mrkdwn",
+                    text: "After a yes on the guide offer, personalize your follow-up from their LinkedIn profile. Qualify first, personalize second. Step 3 is the final touch for each lead.",
+                }],
+            });
 
             await fetch(slackWebhook, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    text: `📬 LinkedIn DM Queue — ${staleLeads.length} lead${staleLeads.length !== 1 ? "s" : ""} need a LinkedIn touch today`,
-                    blocks: [
-                        {
-                            type: "header",
-                            text: {
-                                type: "plain_text",
-                                text: `📬 LinkedIn DM Queue — ${staleLeads.length} lead${staleLeads.length !== 1 ? "s" : ""} (5+ days SENT, no reply)`,
-                            },
-                        },
-                        {
-                            type: "section",
-                            text: {
-                                type: "mrkdwn",
-                                text: "These leads were emailed 5+ days ago and haven't replied. Send each a 1-sentence LinkedIn DM using the script below each name. Copy-paste ready.",
-                            },
-                        },
-                        ...leadBlocks,
-                        {
-                            type: "context",
-                            elements: [
-                                {
-                                    type: "mrkdwn",
-                                    text: "After they say yes to the guide, personalize your follow-up based on their LinkedIn profile. Qualify first, personalize second.",
-                                },
-                            ],
-                        },
-                    ],
+                    text: `LinkedIn DM Queue — ${totalLeads} lead${totalLeads !== 1 ? "s" : ""} need a touch today`,
+                    blocks,
                 }),
             });
 
-            console.log(`[linkedin-dm-queue] Slack alert sent — ${staleLeads.length} leads queued`);
+            console.log(`[linkedin-dm-queue] Slack posted — ${totalLeads} leads (Step1: ${step1Leads.length}, Step2: ${step2Leads.length}, Step3: ${step3Leads.length})`);
         });
 
-        return { status: "Sent", count: staleLeads.length };
+        // ── Step 3: Increment dmStep for all surfaced leads ───────────────────
+        // Must happen AFTER the Slack post so a failed post doesn't advance the step.
+        await step.run("increment-dm-steps", async () => {
+            const allUpdates = [
+                ...step1Leads.map(l => ({ id: l.id, nextStep: 1 })),
+                ...step2Leads.map(l => ({ id: l.id, nextStep: 2 })),
+                ...step3Leads.map(l => ({ id: l.id, nextStep: 3 })),
+            ];
+
+            await Promise.all(
+                allUpdates.map(({ id, nextStep }) =>
+                    prisma.lead.update({
+                        where: { id },
+                        data: { dmStep: nextStep } as any,
+                    })
+                )
+            );
+
+            console.log(`[linkedin-dm-queue] dmStep incremented for ${allUpdates.length} leads`);
+        });
+
+        return {
+            status: "Sent",
+            total: totalLeads,
+            step1: step1Leads.length,
+            step2: step2Leads.length,
+            step3: step3Leads.length,
+        };
     }
 );
 

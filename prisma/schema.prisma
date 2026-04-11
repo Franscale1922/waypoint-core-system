@@ -53,6 +53,7 @@ model Lead {
   bookedAt          DateTime?  // When lead booked a TidyCal consultation (set by tidycalBookingSync)
   dmStatus          String?    // LinkedIn DM queue state: "QUEUED" | "SENT" | "SKIPPED"
   dmSentAt          DateTime?  // When Kelsey manually sent the LinkedIn DM
+  dmStep            Int        @default(0) // LinkedIn DM sequence position: 0=none surfaced, 1=Step1 done, 2=Step2 done, 3=complete (no more touches)
   // instantlyLeadId: Instantly's internal ID for this lead — needed to join Instantly webhook events
   instantlyLeadId   String?
   // suppressionReason: why the lead was suppressed — enables suppression analysis
