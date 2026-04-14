@@ -281,12 +281,12 @@ export default function HomePage() {
           <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
-            {/* Mobile: 4:3-ish crop — sign reads clearly, full head + breathing room above */}
+            {/* Mobile: sign fully readable, full head + body, open forest above */}
             <Image
               src="/images/kelsey-trail-mobile.jpg"
               alt="Kelsey Stuart walking down a forest trail past a wooden trail sign"
-              width={1200}
-              height={1160}
+              width={1500}
+              height={1310}
               sizes="100vw"
               className="w-full h-auto block sm:hidden"
             />
