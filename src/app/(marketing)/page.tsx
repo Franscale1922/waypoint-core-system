@@ -48,7 +48,7 @@ export default function HomePage() {
           HERO — Full-screen Montana, text overlaid
           Inspired by: Eleven Experience, Under Canvas
           ============================================ */}
-      <section className="relative min-h-screen flex items-end overflow-hidden">
+      <section className="relative min-h-[80vh] sm:min-h-screen flex items-center sm:items-end overflow-hidden">
         <Image
           src="/images/hero-mountains-dark-lake.webp"
           alt="Dark mountain lake at twilight with alpenglow peaks — Waypoint Franchise Advisors, Whitefish Montana"
@@ -287,7 +287,7 @@ export default function HomePage() {
               width={1200}
               height={380}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full object-cover aspect-[3/2] h-auto sm:aspect-auto sm:h-[380px]"
+              className="w-full object-cover aspect-video h-auto sm:aspect-auto sm:h-[380px]"
               style={{ objectPosition: "center 30%" }}
             />
           </div>
