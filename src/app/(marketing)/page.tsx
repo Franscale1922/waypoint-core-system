@@ -281,15 +281,16 @@ export default function HomePage() {
           <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
-            <Image
-              src="/images/kelsey-process-conversation.webp"
-              alt="Kelsey Stuart leading the way down a forest trail"
-              width={1200}
-              height={380}
-              sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full object-cover trail-img aspect-[3/2] h-auto sm:aspect-auto sm:h-[380px]"
-              style={{ objectPosition: "center 30%" }}
-            />
+            <div className="relative w-full h-[200px] sm:h-[380px]">
+              <Image
+                src="/images/kelsey-process-conversation.webp"
+                alt="Kelsey Stuart leading the way down a forest trail"
+                fill
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="object-cover"
+                style={{ objectPosition: "center 30%" }}
+              />
+            </div>
           </div>
 
           <div className="space-y-10 sm:space-y-16 md:space-y-0 md:grid md:grid-cols-12 md:gap-8">
