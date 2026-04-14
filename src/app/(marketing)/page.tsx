@@ -287,7 +287,7 @@ export default function HomePage() {
                 alt="Kelsey Stuart leading the way down a forest trail"
                 fill
                 sizes="(max-width: 1024px) 100vw, 1024px"
-                className="object-cover"
+                className="object-cover trail-img"
                 style={{ objectPosition: "center 30%" }}
               />
             </div>

@@ -336,6 +336,19 @@ a, button, [role="button"], input[type="submit"], .quiz-option {
 }
 
 /* ======================================
+   TRAIL IMAGE — responsive crop
+   Desktop: inline style handles (center 30%)
+   Mobile: override via !important to shift
+   focal point to lower-left (sign + path)
+   ====================================== */
+
+@media (max-width: 639px) {
+  .trail-img {
+    object-position: 15% 75% !important;
+  }
+}
+
+/* ======================================
    SCROLLBAR — subtle
    ====================================== */
 
