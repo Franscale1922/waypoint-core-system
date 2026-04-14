@@ -287,8 +287,7 @@ export default function HomePage() {
               width={1200}
               height={380}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full object-cover aspect-video h-auto sm:aspect-auto sm:h-[380px]"
-              style={{ objectPosition: "20% 65%" }}
+              className="w-full object-cover aspect-video h-auto sm:aspect-auto sm:h-[380px] object-[20%_65%] sm:object-[center_30%]"
             />
           </div>
 
