@@ -336,6 +336,35 @@ a, button, [role="button"], input[type="submit"], .quiz-option {
 }
 
 /* ======================================
+   TRAIL IMAGE — breakpoint-specific crop
+   Mobile (<640px):
+     220px tall, object-cover, anchored to
+     lower-left corner (0% 100%) so the
+     trail sign and foreground path are
+     always visible. At this height + scale,
+     the visible region is the leftmost 56%
+     of the original image — sign ✓ trail ✓.
+   Desktop (≥640px):
+     Natural h-auto proportional ratio.
+     No object-cover, no cropping.
+   ====================================== */
+
+.trail-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  object-position: 0% 100%;
+}
+
+@media (min-width: 640px) {
+  .trail-img {
+    height: auto;
+    object-fit: unset;
+    object-position: unset;
+  }
+}
+
+/* ======================================
    SCROLLBAR — subtle
    ====================================== */
 

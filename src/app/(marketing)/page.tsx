@@ -287,7 +287,7 @@ export default function HomePage() {
               width={1200}
               height={380}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full h-auto"
+              className="trail-img"
             />
           </div>
 
