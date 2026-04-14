@@ -167,8 +167,8 @@ export default function HomePage() {
                 width={1200}
                 height={380}
                 sizes="(max-width: 768px) 100vw, 896px"
-                className="w-full object-cover"
-                style={{ objectPosition: "center 25%", height: "380px" }}
+                className="w-full object-cover aspect-[3/2] h-auto sm:aspect-auto sm:h-[380px]"
+                style={{ objectPosition: "center 25%" }}
               />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
@@ -287,8 +287,8 @@ export default function HomePage() {
               width={1200}
               height={380}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="w-full object-cover"
-              style={{ objectPosition: "center 30%", height: "380px" }}
+              className="w-full object-cover aspect-[3/2] h-auto sm:aspect-auto sm:h-[380px]"
+              style={{ objectPosition: "center 30%" }}
             />
           </div>
 
