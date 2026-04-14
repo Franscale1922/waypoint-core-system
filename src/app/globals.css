@@ -365,3 +365,15 @@ input:focus-visible,
   outline-offset: 3px;
   border-radius: 4px;
 }
+
+/* ======================================
+   TRAIL IMAGE — responsive crop
+   Desktop keeps center 30% inline style.
+   Mobile overrides to show trail + sign
+   in the lower-left of the image.
+   ====================================== */
+@media (max-width: 639px) {
+  .trail-img {
+    object-position: 25% 70% !important;
+  }
+}
