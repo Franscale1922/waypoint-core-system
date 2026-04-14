@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Franchise royalties are the ongoing fee you pay the franchisor for the right to use their brand and systems. Most buyers focus on the upfront franchise fee, the royalty is what you pay forever. Here's what it covers, how it's structured, and what to look for before you sign."
+excerpt: "Franchise royalty rates typically run 4–8% of gross revenue — paid every month, for life, whether you're profitable or not. Here's what the royalty actually covers, how to evaluate whether it's worth it, and the red flags to watch for before you sign."
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "fdd-decoded-what-actually-matters"

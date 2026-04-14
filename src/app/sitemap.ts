@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const corePages: MetadataRoute.Sitemap = [
     {
       url: SITE_URL,
-      lastModified: new Date("2026-03-31"),
+      lastModified: new Date("2026-04-13"),
       changeFrequency: "weekly",
       priority: 1.0,
     },
@@ -88,6 +88,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/tools`,
+      lastModified: new Date("2026-03-15"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${SITE_URL}/refer`,
       lastModified: new Date("2026-03-15"),
       changeFrequency: "monthly",
@@ -119,7 +125,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
     {
       url: `${SITE_URL}/resources`,
-      lastModified: new Date("2026-03-31"),
+      lastModified: new Date("2026-04-13"),
       changeFrequency: "weekly",
       priority: 0.8,
     },

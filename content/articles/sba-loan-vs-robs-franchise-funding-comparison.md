@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Most buyers assume they'll need a bank loan to fund a franchise. Before you go that route, understand what's above it on the list. ROBS is often the better answer — faster, simpler, no debt. The SBA is valuable, but only after you've exhausted cleaner options."
+excerpt: "SBA loans create debt. ROBS creates equity from your retirement savings — no monthly payment, closes in 3–4 weeks, no bank required. Here's when to use each, and why ROBS often beats SBA for franchise buyers with retirement savings."
 relatedSlugs:
   - "how-franchise-funding-actually-works"
   - "the-true-cost-of-buying-a-franchise"

@@ -52,11 +52,7 @@ const nextConfig: NextConfig = {
         destination: '/resources/:path*',
         permanent: true,
       },
-      {
-        source: '/tools',
-        destination: '/quizzes',
-        permanent: true,
-      },
+
       // Suppress WordPress 404s from old bot crawls (GSC "Not found" errors)
       {
         source: '/wp-content/:path*',
