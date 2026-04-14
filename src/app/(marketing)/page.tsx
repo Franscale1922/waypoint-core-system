@@ -281,13 +281,23 @@ export default function HomePage() {
           <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
           {/* Process hero image — full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
+            {/* Mobile: 4:3 crop — sign reads clearly, trail + Kelsey visible */}
             <Image
-              src="/images/kelsey-process-conversation.webp"
-              alt="Kelsey Stuart leading the way down a forest trail"
+              src="/images/kelsey-trail-mobile.jpg"
+              alt="Kelsey Stuart walking down a forest trail past a wooden trail sign"
               width={1200}
-              height={380}
+              height={900}
+              sizes="100vw"
+              className="w-full h-auto block sm:hidden"
+            />
+            {/* Desktop: wide panoramic crop — full scene */}
+            <Image
+              src="/images/kelsey-trail-desktop.jpg"
+              alt="Kelsey Stuart leading the way down a forest trail"
+              width={2400}
+              height={760}
               sizes="(max-width: 1024px) 100vw, 1024px"
-              className="trail-img"
+              className="w-full h-auto hidden sm:block"
             />
           </div>
 
