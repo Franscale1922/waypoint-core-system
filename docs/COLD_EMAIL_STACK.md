@@ -387,7 +387,7 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 | `contentRefreshFunction` | cron: `0 14 1 * *` + event: `content/refresh.run` | ✅ Live | Rewrites stale articles via GPT-4o |
 | `tidycalBookingSync` | cron: `0 16 * * 1-5` (10 AM MT) | ✅ Live | Polls TidyCal API, syncs bookings to leads |
 | `pendingClayFallback` | cron: `0 13 * * 1-5` (7 AM MT) | ✅ Live (fixed March 21, 2026) | Advances PENDING_CLAY leads stuck >24h to RAW — safety net so no lead is lost if Clay doesn't enrich |
-| `linkedInDmQueue` | cron: `0 15 * * 1-5` (9 AM MT) | ✅ Live | Finds SENT leads with no reply after 5+ days; posts LinkedIn DM scripts to Slack |
+| `linkedInDmQueue` | cron: `0 15 * * 1-5` (9 AM MT) | ✅ Live | 4-step LinkedIn sequence: Step 0 (Day 1) connection request note → Step 1 (Day 5) follow-up DM → Step 2 (Day 10) guide resurface → Step 3 (Day 16) final check-in. dmStep incremented before Slack post (dedup fix, April 2026). |
 | `ghostRecoveryAlert` | cron: `0 16 * * 1` (10 AM MT, Mon) | ✅ Live | Finds REPLIED leads gone quiet 30+ days; posts ghost recovery scripts to Slack |
 
 **Env vars:**
