@@ -94,6 +94,20 @@ Contextual links added to 5 pages (111 insertions):
 
 ---
 
+### 🟢 Sprint 5 — SEO & GEO Execution (New Priority)
+> A comprehensive Generative Engine Optimization (GEO) and off-page SEO playbook has been built. The detailed, phased execution plan is stored at `docs/SEO_GEO_PLAYBOOK.md`.
+
+#### ✅ 5.1 Foundation & Trust Schema — COMPLETE
+Expanded `Organization`, `Person`, and `LocalBusiness` JSON-LD schema across the site. Added `memberOf` blocks connecting Kelsey Stuart and Waypoint to the **FranChoice** and **International Franchise Association (IFA)** networks for high-authority association. Configured as a Service Area Business (Whitefish, MT / National).
+
+#### ✅ 5.2 PR Automation Engine (Connectively) — COMPLETE
+Built an inbound webhook at `/api/webhooks/connectively` to process forwarded PR media lists. Uses Anthropic (`claude-3-haiku`) to filter for specific franchise/funding topics, draft a pitch according to the Voice Guide, and push the draft to the Slack admin channel automatically.
+
+#### 5.3 Implement Actionable Playbook Phases — PENDING
+Execute Phases 1-4 documented in `docs/SEO_GEO_PLAYBOOK.md` (Directory Claims, Atomic Content Restructuring, Geo-Targeting Pages, Original Data Extraction).
+
+---
+
 ### 🟡 Sprint 4 — Content & Growth (Ongoing)
 
 #### 4.1 Continue Article Publishing
