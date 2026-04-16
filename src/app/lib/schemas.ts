@@ -6,6 +6,7 @@ export const LeadSchema = z.object({
   name: z.string().min(1, "Name is required"),
   linkedinUrl: z.string().url("Must be a valid URL"),
   email: z.string().email().optional(),              // Captured from Evaboot CSV when available
+  emailStatus: z.enum(["safe", "riskier"]).optional(), // Evaboot tier — only "safe" is sent during warmup
   title: z.string().optional(),
   company: z.string().optional(),
   country: z.string().optional(),

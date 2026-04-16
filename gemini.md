@@ -35,7 +35,7 @@
 3. Clay table (Evaboot CSV imported manually) → enrichment runs
 4. Google Apps Script → fires on Clay export → POST /api/webhooks/clay
 5. Clay webhook → Lead to RAW → Inngest: leadHunterProcess → scoring
-6. Score ≥ 70 → ENRICHED → personalizerProcess → GPT-4o email → SEQUENCED
+6. Score ≥ 50 → ENRICHED → personalizerProcess → GPT-4o email → WARMING
 7. warmupScheduler (8 AM MT Mon–Fri) → senderProcess → Instantly campaign → SENT
 8. replyGuardianProcess → Resend + Slack HITL alert → Kelsey replies
 9. tidycalBookingSync cron → BOOKED

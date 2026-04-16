@@ -26,6 +26,10 @@ export const localBusinessSchema = {
     "@type": "Country",
     name: "United States",
   },
+  memberOf: [
+    { "@type": "Organization", name: "FranChoice" },
+    { "@type": "Organization", name: "International Franchise Association (IFA)" }
+  ],
   knowsAbout: [
     "franchise consulting",
     "franchise ownership",
@@ -101,6 +105,10 @@ export const personSchema = {
     addressCountry: "US",
   },
   worksFor: { "@id": `${SITE_URL}/#business` },
+  memberOf: [
+    { "@type": "Organization", name: "FranChoice" },
+    { "@type": "Organization", name: "International Franchise Association (IFA)" }
+  ],
   sameAs: [
     "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",

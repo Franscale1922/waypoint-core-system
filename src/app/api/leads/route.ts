@@ -34,6 +34,8 @@ export async function POST(req: Request) {
                     country: leadData.country,
                     // Only overwrite email if we have one and the lead doesn't yet
                     ...(leadData.email && { email: leadData.email.toLowerCase().trim() }),
+                    // Store emailStatus if provided — used to gate riskier emails in senderProcess
+                    ...(leadData.emailStatus && { emailStatus: leadData.emailStatus }),
                     // ── Personalization signals ──────────────────────────────
                     companyNewsEvent: leadData.companyNewsEvent,         // Priority A
                     recentPostSummary: leadData.recentPostSummary,       // Priority B
@@ -50,6 +52,7 @@ export async function POST(req: Request) {
                     name: leadData.name,
                     linkedinUrl: leadData.linkedinUrl,
                     email: leadData.email ? leadData.email.toLowerCase().trim() : undefined,
+                    emailStatus: leadData.emailStatus ?? null, // "safe" | "riskier" | null
                     title: leadData.title,
                     company: leadData.company,
                     country: leadData.country,

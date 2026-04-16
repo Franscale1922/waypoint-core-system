@@ -12,6 +12,7 @@ enum LeadStatus {
   PENDING_CLAY  // Waiting for Clay enrichment before scoring. Set on CSV import.
   RAW
   ENRICHED
+  WARMING
   SEQUENCED
   SENT
   REPLIED
@@ -37,6 +38,7 @@ model Lead {
   specificProjectOrMetric String?  // BLACKLISTED — removed from form and prompt
   placeOrPersonalDetail   String?  // BLACKLISTED — removed from form and prompt
   email             String?
+  emailStatus       String?    // Evaboot verification tier: "safe" | "riskier" | null. Gate: only "safe" allowed during warmup.
   score             Int        @default(0)
   status            LeadStatus @default(RAW)
   draftEmail        String?
@@ -51,13 +53,12 @@ model Lead {
   sentAt            DateTime?  // When status transitioned to SENT (set by senderProcess)
   repliedAt         DateTime?  // When first reply was received (set by replyGuardianProcess)
   bookedAt          DateTime?  // When lead booked a TidyCal consultation (set by tidycalBookingSync)
-  dmStatus          String?    // LinkedIn DM queue state: "QUEUED" | "SENT" | "SKIPPED"
-  dmSentAt          DateTime?  // When Kelsey manually sent the LinkedIn DM
-  dmStep            Int        @default(0) // LinkedIn DM sequence position: 0=none surfaced, 1=Step1 done, 2=Step2 done, 3=complete (no more touches)
+  socialUpdatedAt   DateTime?  // When Kelsey processed the latest social nurture step
+  socialNurtureStep Int        @default(0) // LinkedIn sequence position: 0=none, 1=View, 2=Engage1, 3=Engage2, 4=Follow, 5=Connect
   // instantlyLeadId: Instantly's internal ID for this lead — needed to join Instantly webhook events
   instantlyLeadId   String?
   // suppressionReason: why the lead was suppressed — enables suppression analysis
-  suppressionReason String?    // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed"
+  suppressionReason String?    // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed" | "riskier_email" | "fabricated_email"
 
   // ── Sales Navigator Attribute Fields (Intelligence Layer — added March 2026) ─
   // These attributes come from Clay/Evaboot enrichment at import time.

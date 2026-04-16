@@ -234,51 +234,51 @@ Waypoint Franchise Advisors | P.O. Box 3421, Whitefish, MT 59937`;
 // cognitive economy — the connection between signal and pitch is never stated.
 
 export const EMAIL_TEMPLATES = `
-### Template A – Company Disruption Event (Priority A: strong — layoff, leadership exit, M&A, WARN Act)
+### Template A - Company Disruption Event (Priority A: strong - layoff, leadership exit, M&A, WARN Act)
 Hi {{first_name}},
 With {{company_news_event}}, a lot of the people who've been holding things together are starting to weigh their options. That kind of shift tends to compress the decision window.
-I help executives work out whether franchise ownership is a serious path for their situation — or one to cross off the list. If that's crossed your mind at all, worth a quick conversation.
+I help executives work out whether franchise ownership is a serious path for their situation, or one to cross off the list. If that's crossed your mind at all, worth a quick conversation.
 Kelsey
 
-### Template A2 – Company Momentum News (Priority A: soft — product launch, expansion, new location)
+### Template A2 - Company Momentum News (Priority A: soft - product launch, expansion, new location)
 Hi {{first_name}},
-With {{company_news_event}}, it's a busy stretch. Funny timing, maybe — but moments of company momentum are often when senior leaders first start mapping out what the next chapter actually looks like for them.
+With {{company_news_event}}, it's a busy stretch. Funny timing, maybe, but moments of company momentum are often when senior leaders first start mapping out what the next chapter actually looks like for them.
 I work with people who want to see the real math on franchise ownership before they decide anything. No commitment required.
 Kelsey
 
-### Template B – LinkedIn Post / Leadership Signal (Priority B signal)
+### Template B - LinkedIn Post / Leadership Signal (Priority B signal)
 Hi {{first_name}},
 {{post_topic_paraphrase}}. That's the inflection point a lot of the leaders I work with hit right before they start taking ownership seriously as an actual option.
-I'm not a recruiter. My job is helping people figure out if owning something makes sense for their situation — or rule it out cleanly. Worth a conversation to find out?
+I'm not a recruiter. My job is helping people figure out if owning something makes sense for their situation, or rule it out cleanly. Worth a conversation to find out?
 Kelsey
 
-### Template C – Sales Leader / Comp Ceiling (Priority B signal)
+### Template C - Sales Leader / Comp Ceiling (Priority B signal)
 Hi {{first_name}},
 {{post_topic_paraphrase}}. Sounds like you've run the numbers on where the current trajectory tops out.
-I work with directors and VPs who want to understand what building equity looks like — starting from a real picture of their capital and risk tolerance. Worth 15 minutes to look at the math together?
+I work with directors and VPs who want to understand what building equity looks like, starting from a real picture of their capital and risk tolerance. Worth 15 minutes to look at the math together?
 Kelsey
 
-### Template D – Finance / Risk-Oriented (either signal, analytical framing)
+### Template D - Finance / Risk-Oriented (either signal, analytical framing)
 Hi {{first_name}},
-{{signal_reference}}. The people who end up working with me are usually the cautious ones — they want to see what the cash flows, downside, and exit actually look like before deciding anything.
+{{signal_reference}}. The people who end up working with me are usually the cautious ones - they want to see what the cash flows, downside, and exit actually look like before deciding anything.
 I can't promise no risk. But I can walk through a few models in a way that would make sense to a finance brain. Worth 15 minutes?
 Kelsey
 
-### Template E – Layoff / Open to Work (Priority A: WARN Act or confirmed job loss)
+### Template E - Layoff / Open to Work (Priority A: WARN Act or confirmed job loss)
 Hi {{first_name}},
-{{company_news_event}} strips away the calculus faster than almost anything else. Some of the people I work with used that window to seriously evaluate owning something for the first time — with clear eyes and no pressure.
+{{company_news_event}} strips away the calculus faster than almost anything else. Some of the people I work with used that window to seriously evaluate owning something for the first time, with clear eyes and no pressure.
 If you want a straight conversation about what that actually looks like, I'm happy to make time.
 Kelsey
 
-### Template F – Role-Level Framing (Priority C fallback — no external signal)
+### Template F - Role-Level Framing (Priority C fallback - no external signal)
 Hi {{first_name}},
-Most executives at your stage have at least run the mental math on what it would look like to own something. The ones who end up working with me aren't impulsive — they want to see three paths mapped on one page before they commit to any of them.
+Most executives at your stage have at least run the mental math on what it would look like to own something. The ones who end up working with me aren't impulsive - they want to see three paths mapped on one page before they commit to any of them.
 I do a one-hour exercise that does exactly that. Want to see what it looks like for your situation?
 Kelsey
 
-### Template G – Lead Magnet Offer (soft CTA — works with Priority C or weak B)
+### Template G - Lead Magnet Offer (soft CTA - works with Priority C or weak B)
 > Use when signal is weaker or a lower-commitment first touch makes sense.
 Hi {{first_name}},
-{{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You" — based on patterns across the executives I work with. Want me to send you a copy?
+{{signal_reference}}. I put together a short guide called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You", based on patterns across the executives I work with. Want me to send you a copy?
 Kelsey
 `;

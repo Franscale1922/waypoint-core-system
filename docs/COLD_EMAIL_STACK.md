@@ -28,8 +28,8 @@
    Fires Inngest event: workflow/lead.hunter.start
     ↓
 7. Inngest: leadHunterProcess — scores (0–100) using enriched signals
-   No external email API — Evaboot email already present. Score < 70 → SUPPRESSED
-    ↓ (gate: score ≥ 70)
+   No external email API — Evaboot email already present. Score < 50 → SUPPRESSED
+    ↓ (gate: score ≥ 50)
 8. Inngest: personalizerProcess — GPT-4o writes email → status: SEQUENCED
     ↓
 9. Inngest: warmupScheduler (8 AM MT, Mon–Fri) — fires top 25 SEQUENCED leads by score
@@ -382,12 +382,12 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 | `personalizerProcess` | event: `workflow/lead.personalize.start` | ✅ Live | GPT-4o writes email for scored lead |
 | `senderProcess` | event: `workflow/lead.send.start` | ✅ Live | Adds lead to Instantly campaign |
 | `replyGuardianProcess` | event: `workflow/lead.reply.received` | ✅ Live | Classifies reply; HITL Resend alert implemented March 2026 |
-| `monitorProcess` | cron: `0 9 * * *` | ⚠️ Mock | Pipeline health checks — bounce/complaint data is **mocked random values**. At Stage 1 volume (15/day), use Instantly inbox health dashboard (all 6 inboxes at 100%) as the real signal. Revisit at 50+/day. |
+| `monitorProcess` | cron: `0 9 * * *` | ✅ Live | Pulls real bounce/complaint data from Instantly v2 analytics API. Alerts Slack at warning (2%/0.08%) and critical (5%/0.3%) thresholds. Fixed April 2026 — was previously mocked with Math.random(). |
 | `warmupScheduler` | cron: `0 14 * * 1-5` (8 AM MT) | ✅ Live | Fires daily send events up to dailyCap |
 | `contentRefreshFunction` | cron: `0 14 1 * *` + event: `content/refresh.run` | ✅ Live | Rewrites stale articles via GPT-4o |
 | `tidycalBookingSync` | cron: `0 16 * * 1-5` (10 AM MT) | ✅ Live | Polls TidyCal API, syncs bookings to leads |
 | `pendingClayFallback` | cron: `0 13 * * 1-5` (7 AM MT) | ✅ Live (fixed March 21, 2026) | Advances PENDING_CLAY leads stuck >24h to RAW — safety net so no lead is lost if Clay doesn't enrich |
-| `linkedInDmQueue` | cron: `0 15 * * 1-5` (9 AM MT) | ✅ Live | 4-step LinkedIn sequence: Step 0 (Day 1) connection request note → Step 1 (Day 5) follow-up DM → Step 2 (Day 10) guide resurface → Step 3 (Day 16) final check-in. dmStep incremented before Slack post (dedup fix, April 2026). |
+| `socialNurtureQueue` | cron: `0 15 * * 1-5` (9 AM MT) | ✅ Live | Finds leads in WARMING status and advances them through the 2-week social proof sequence. Posts actionable Slack checklist. Advances to SEQUENCED when done. |
 | `ghostRecoveryAlert` | cron: `0 16 * * 1` (10 AM MT, Mon) | ✅ Live | Finds REPLIED leads gone quiet 30+ days; posts ghost recovery scripts to Slack |
 
 **Env vars:**
@@ -395,6 +395,41 @@ POSTGRES_URL_NON_POOLING=postgresql://neondb_owner:...@ep-silent-sky-...  ✅ se
 INNGEST_EVENT_KEY=    ✅ set in Vercel
 INNGEST_SIGNING_KEY=  ✅ set in Vercel
 ```
+
+**LinkedIn Connection Request Queue — script format (`linkedInDmQueue`):**
+
+These are the scripts Kelsey receives in Slack each morning (Mon–Fri, 9 AM MT) for leads in SENT status for 5+ days with no reply. Each lead shows two copy-paste-ready fields.
+
+**Why connection requests, not InMail:**
+- Sales Navigator Core provides only 20 InMail credits/month — insufficient at 20+ leads/day queue volume
+- Accepted connections compound: free DMs forever, feed presence, re-approach rights if they don't convert immediately
+- WARN Act / career-transition leads are more receptive to connecting with advisory professionals than to cold InMail
+
+**Voice principles (apply to all scripts):**
+- Pattern interrupt opener — acknowledge the situation honestly before making any ask
+- "Financial off-ramp through franchising" is the core value prop phrase — use it where natural
+- Permission-based offer — "could I send you" not "here is"
+- Curious close — "I am curious if you would find value in it" — removes pressure entirely
+- Short sentences, natural rhythm. No em dashes. No exclamation points. No corporate language.
+
+**Two-step flow:**
+
+**Step 1 — Connection request note** (paste into LinkedIn "Add a note" field — verified at 295 chars with a 5-letter first name, ~5 char buffer for longer names):
+> Hi [FirstName], I realize this is a random connection request. I help professionals build a financial off-ramp through franchising. Could I send you a copy of my guide? It is called "5 Things That Actually Determine If Franchise Ownership Makes Sense For You." I'm curious if you'd see value in it.
+
+Universal for all leads. No variation needed at this step — the pattern interrupt and offer are the hook.
+
+**Step 2 — Follow-up DM** (send only after they accept — free DM, no InMail credits):
+
+| Variant | Trigger | Message |
+|---|---|---|
+| **Owner / Founder** | Title: owner, founder, president, CEO, principal | Thanks for connecting, [FirstName]. Happy to send that guide over. It is a short read. I wrote it for people who have already built something and are evaluating what a different kind of ownership looks like. I am curious if any of it resonates with where you are right now. |
+| **Senior Executive** | Score >= 85, or title: VP, director, managing director | Thanks for connecting, [FirstName]. Happy to send that guide your way. I wrote it for people who have built real careers in corporate and are starting to evaluate what a different financial trajectory could look like. I am curious whether the framing applies to where you are at. |
+| **Strong ICP / Mid-level** | Score >= 75 | Thanks for connecting, [FirstName]. Happy to send the guide over. It covers the five things that actually determine whether franchise ownership makes sense for someone. I am curious what you think after reading it. |
+| **Broader ICP** | Score < 75 | Thanks for connecting, [FirstName]. Happy to drop that guide here if you are curious. It is a short read. It covers what most people never think to evaluate before making a decision like this. No obligation at all. |
+
+Rules: No em dashes in any script. No subject line needed (connection requests and DMs have no subject field). Each lead appears only once (`dmStatus` filter — SENT or SKIPPED leads are excluded from future alerts).
+
 
 ---
 
@@ -521,6 +556,9 @@ Evaboot pricing is credit-based. At 400–500 leads/month (15–20/day), the Ent
 - [x] Old bounce-causing lead list cleared from Instantly pipeline ✅
 - [x] Clean Evaboot-exported list loaded and scored ✅
 - [x] Two days of sends completed at 15/day pace ✅
+- [x] `emailStatus` field added to schema — gates `riskier` emails before Instantly push ✅ Fixed April 2026
+- [x] `senderProcess` now checks `SuppressionList` before pushing to Instantly ✅ Fixed April 2026
+- [x] Fabricated-email score cap lowered to 49 — leads with no verified email auto-suppress ✅ Fixed April 2026
 
 **Google Postmaster Tools**
 - [x] ~~Contact Instantly support to add TXT verification records~~ — ❌ Permanently blocked (March 2026)
@@ -605,72 +643,102 @@ CLAY_WEBHOOK_SECRET=  ⚠️ Must set in Vercel AND as Script Property in Apps S
 ```
 
 **Final Apps Script (paste into Extensions → Apps Script → Code.gs):**
+
+> ⚠️ This script reads column positions by **header name**, not by index — so it is immune to column reordering. It works with the full 64-column Evaboot sheet layout. Custom Clay enrichment columns (Recent Post Summary, Company News) must be present as columns in the sheet (Clay maps them via "Add row to Google Sheet" action).
+
 ```javascript
 const WEBHOOK_URL = "https://www.waypointfranchise.com/api/webhooks/clay";
 const SHEET_NAME = "Sheet1";
 
-function postAllRows() {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
-  const lastRow = sheet.getLastRow();
-  const secret = PropertiesService.getScriptProperties().getProperty("CLAY_WEBHOOK_SECRET");
-  for (let row = 2; row <= lastRow; row++) {
-    postRow(sheet, row, secret);
-    Utilities.sleep(800);
-  }
+// ── Column header → payload field mapping ────────────────────────────────────
+// Left side: exact header text in the Google Sheet (case-sensitive)
+// Right side: payload key sent to /api/webhooks/clay
+const COLUMN_MAP = {
+  "First Name":             "firstName",
+  "Last Name":              "lastName",
+  "Linkedin URL Public":    "linkedinUrl",       // primary match key — required
+  "Email":                  "email",
+  "Current Job":            "title",
+  "Company Name":           "company",
+  "Location":               "geoMarket",         // person's city/state → geoMarket
+  "Company Employee Range": "companySizeRange",
+  "Company Industry":       "industryVertical",
+  "Is Open To Work":        "isOpenToWork",       // boolean
+  "Has New Position":       "wasRecentlyPromoted",// boolean proxy for recently promoted
+  "Years in Position":      "yearsInCurrentRole", // numeric — strip quotes
+  "Years in Company":       "yearsAtCompany",     // numeric — strip quotes
+  // ── Clay enrichment columns (appended by Clay "Add row" action) ────────────
+  "Recent Post Summary":    "recentPostSummary",
+  "Company News":           "companyNewsEvent",
+};
+
+// Boolean fields — parsed from "TRUE"/"FALSE"/1/0/true/false
+const BOOL_FIELDS = new Set(["isOpenToWork", "wasRecentlyPromoted"]);
+
+// Numeric fields — strip quotes and parse as integer
+const NUMERIC_FIELDS = new Set(["yearsInCurrentRole", "yearsAtCompany"]);
+
+// ── Build header → column-index map from row 1 ───────────────────────────────
+function buildHeaderMap(sheet) {
+  const lastCol = sheet.getLastColumn();
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  const map = {};
+  headers.forEach((h, i) => {
+    if (h) map[h.toString().trim()] = i;
+  });
+  return map;
 }
 
-function postRow(sheet, row, secret) {
-  // Column map (A=0 index):
-  // A:First Name  B:Last Name     C:LinkedIn URL      D:Email     E:Title
-  // F:Company     G:Country       H:Recent Post       I:Company News
-  // J:Years in Position
-  // K:Company Size Range  L:Industry Vertical  M:Function Area
-  // N:Seniority Level     O:Is Open To Work    P:Was Recently Promoted
-  const values = sheet.getRange(row, 1, 1, 16).getValues()[0];
-  const linkedinUrl = (values[2] || "").toString().trim();
-  if (!linkedinUrl) return;
+// ── Parse boolean-like values from Clay ──────────────────────────────────────
+function parseBool(val) {
+  if (typeof val === "boolean") return val;
+  const s = String(val).trim().toUpperCase();
+  return s === "TRUE" || s === "1" || s === "YES";
+}
 
-  // Strip literal quotes from Years in Position ("5" → 5)
-  const rawTenure = String(values[9]).replace(/[^0-9]/g, "");
-  const tenure = rawTenure ? parseInt(rawTenure, 10) : undefined;
+// ── Parse numeric values — strip surrounding quotes Clay sometimes adds ───────
+function parseNum(val) {
+  const stripped = String(val).replace(/[^0-9.]/g, "");
+  const n = parseInt(stripped, 10);
+  return isNaN(n) ? undefined : n;
+}
 
-  // Parse boolean-like strings from Clay ("TRUE"/"FALSE"/true/false/1/0)
-  function parseBool(val) {
-    if (typeof val === "boolean") return val;
-    const s = String(val).trim().toUpperCase();
-    return s === "TRUE" || s === "1" || s === "YES";
+// ── Post a single row to the webhook ─────────────────────────────────────────
+function postRow(sheet, row, secret, headerMap) {
+  const lastCol = sheet.getLastColumn();
+  const values = sheet.getRange(row, 1, 1, lastCol).getValues()[0];
+
+  // linkedinUrl is the match key — skip row if missing
+  const linkedinIdx = headerMap["Linkedin URL Public"];
+  if (linkedinIdx === undefined) {
+    Logger.log(`Row ${row} → SKIPPED: "Linkedin URL Public" column not found in sheet`);
+    return;
+  }
+  const linkedinUrl = (values[linkedinIdx] || "").toString().trim();
+  if (!linkedinUrl) {
+    Logger.log(`Row ${row} → SKIPPED: empty LinkedIn URL`);
+    return;
   }
 
-  // Only include Sales Nav attributes if Clay populated them
-  const companySizeRange   = (values[10] || "").toString().trim() || undefined;
-  const industryVertical   = (values[11] || "").toString().trim() || undefined;
-  const functionArea       = (values[12] || "").toString().trim() || undefined;
-  const seniorityLevel     = (values[13] || "").toString().trim() || undefined;
-  const rawOpenToWork      = values[14];
-  const rawRecentlyPromoted = values[15];
-  const isOpenToWork       = rawOpenToWork      !== "" && rawOpenToWork      !== null ? parseBool(rawOpenToWork)      : undefined;
-  const wasRecentlyPromoted = rawRecentlyPromoted !== "" && rawRecentlyPromoted !== null ? parseBool(rawRecentlyPromoted) : undefined;
+  const payload = {};
 
-  const payload = {
-    firstName:          values[0],
-    lastName:           values[1],
-    linkedinUrl:        linkedinUrl,
-    email:              values[3],
-    title:              values[4],
-    company:            values[5],
-    country:            values[6],
-    recentPostSummary:  values[7],
-    companyNewsEvent:   values[8],
-    yearsInCurrentRole: tenure,
-    // ── Sales Navigator Attribute Fields (Intelligence Layer) ─────────────
-    // Only included if Clay populated the column — webhook ignores undefined/null
-    ...(companySizeRange    ? { companySizeRange }    : {}),
-    ...(industryVertical    ? { industryVertical }    : {}),
-    ...(functionArea        ? { functionArea }        : {}),
-    ...(seniorityLevel      ? { seniorityLevel }      : {}),
-    ...(isOpenToWork       !== undefined ? { isOpenToWork }       : {}),
-    ...(wasRecentlyPromoted !== undefined ? { wasRecentlyPromoted } : {}),
-  };
+  for (const [header, payloadKey] of Object.entries(COLUMN_MAP)) {
+    const colIdx = headerMap[header];
+    if (colIdx === undefined) continue;        // column not in sheet — skip
+    const raw = values[colIdx];
+    const isEmpty = raw === "" || raw === null || raw === undefined;
+    if (isEmpty) continue;                     // blank — omit from payload
+
+    if (BOOL_FIELDS.has(payloadKey)) {
+      payload[payloadKey] = parseBool(raw);
+    } else if (NUMERIC_FIELDS.has(payloadKey)) {
+      const n = parseNum(raw);
+      if (n !== undefined) payload[payloadKey] = n;
+    } else {
+      const str = raw.toString().trim();
+      if (str) payload[payloadKey] = str;
+    }
+  }
 
   const body = JSON.stringify(payload);
   const options = {
@@ -684,8 +752,45 @@ function postRow(sheet, row, secret) {
   const res = UrlFetchApp.fetch(WEBHOOK_URL, options);
   Logger.log(`Row ${row} → ${res.getResponseCode()} ${res.getContentText()}`);
 }
+
+// ── Manual run: post every data row (use to backfill existing rows) ───────────
+function postAllRows() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  const lastRow = sheet.getLastRow();
+  const secret = PropertiesService.getScriptProperties().getProperty("CLAY_WEBHOOK_SECRET");
+  const headerMap = buildHeaderMap(sheet);
+  for (let row = 2; row <= lastRow; row++) {
+    postRow(sheet, row, secret, headerMap);
+    Utilities.sleep(800);
+  }
+}
+
+// ── Installable trigger: fires automatically when Clay adds a new row ─────────
+// Set up: Apps Script → Triggers → Add Trigger → onRowAdded → Spreadsheet → On row added
+function onRowAdded(e) {
+  const sheet = e.source.getSheetByName(SHEET_NAME);
+  if (!sheet) return;
+  const row = e.range.getRow();
+  if (row < 2) return;  // skip header row
+  const secret = PropertiesService.getScriptProperties().getProperty("CLAY_WEBHOOK_SECRET");
+  const headerMap = buildHeaderMap(sheet);
+  postRow(sheet, row, secret, headerMap);
+}
 ```
 
+**Script Properties setup** (Extensions → Apps Script → Project Settings → Script Properties):
+| Property | Value |
+|---|---|
+| `CLAY_WEBHOOK_SECRET` | *(copy from Vercel env var of same name)* |
+
+**Trigger setup** (Extensions → Apps Script → Triggers → Add Trigger):
+| Setting | Value |
+|---|---|
+| Function | `onRowAdded` |
+| Event source | From spreadsheet |
+| Event type | On row added (installable) |
+
+> **Why installable trigger, not simple trigger:** Simple `onEdit` / `onChange` triggers cannot make external HTTP requests. The installable "On row added" trigger runs under your Google account permissions and has full `UrlFetchApp` access.
 
 
 

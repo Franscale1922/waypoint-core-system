@@ -16,7 +16,7 @@ export const leadHunterProcess = inngest.createFunction(
             return { status: "Skipped - Already Processed or Not Found" };
         }
 
-        const { email, rawScore } = await step.run("enrich-and-score", async () => {
+        const { email, rawScore, emailIsFabricated } = await step.run("enrich-and-score", async () => {
             // ── Hard suppression gates ─────────────────────────────────────────
             // Non-serviceable markets (add more as needed)
             const nonServiceableMarkets = ["India", "Philippines", "Pakistan", "Nigeria", "Bangladesh"];
@@ -26,7 +26,7 @@ export const leadHunterProcess = inngest.createFunction(
                     where: { id: lead.id },
                     data: { status: "SUPPRESSED", suppressionReason: "non_serviceable_market" } as any,
                 });
-                return { email: null, rawScore: 0 };
+                return { email: null, rawScore: 0, emailIsFabricated: false };
             }
 
             // ── Base score ────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ export const leadHunterProcess = inngest.createFunction(
                         where: { id: lead.id },
                         data: { status: "SUPPRESSED", suppressionReason: "title_suppressed" } as any,
                     });
-                    return { email: null, rawScore: 0 };
+                    return { email: null, rawScore: 0, emailIsFabricated: false };
                 }
             }
 
@@ -207,13 +207,17 @@ Reply with ONLY the numeric tier — nothing else.
             // If not, construct a best-guess and cap score at 50 — it cannot clear
             // the 70-pt gate and won't be sent. Clay upstream handles true enrichment.
             let foundEmail: string | null = lead.email || null;
+            let emailIsFabricated = false;
             if (!foundEmail) {
                 const nameParts = lead.name.trim().split(/\s+/);
                 foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
-                score = Math.min(score, 50);
+                emailIsFabricated = true;
+                // Cap at 49 so rawScore < 50 check suppresses this lead.
+                // A fabricated email has zero deliverability guarantee — never send.
+                score = Math.min(score, 49);
             }
 
-            return { email: foundEmail, rawScore: score };
+            return { email: foundEmail, rawScore: score, emailIsFabricated };
         });
 
         if (rawScore < 50) {
@@ -221,7 +225,12 @@ Reply with ONLY the numeric tier — nothing else.
                 await prisma.lead.update({
                     where: { id: lead.id },
                     // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
-                    data: { status: "SUPPRESSED", score: rawScore, email, suppressionReason: "low_score" }
+                    data: {
+                        status: "SUPPRESSED",
+                        score: rawScore,
+                        email,
+                        suppressionReason: (emailIsFabricated ? "fabricated_email" : "low_score"),
+                    }
                 });
             });
             return { status: "Skipped - Score too low", score: rawScore };
@@ -258,11 +267,10 @@ export const personalizerProcess = inngest.createFunction(
             return prisma.lead.findUnique({ where: { id: leadId } });
         });
 
-        // Allow both ENRICHED (normal pipeline path) and SEQUENCED (manual
-        // regeneration path — lead already passed scoring and had an email,
-        // but the email is being regenerated with the updated prompt).
-        if (!lead || (lead.status !== "ENRICHED" && lead.status !== "SEQUENCED")) {
-            return { status: "Skipped - Not Enriched or Not Found" };
+        // Allow ENRICHED (normal path), SEQUENCED (manual regeneration), 
+        // and WARMING (manual regeneration mid-cycle).
+        if (!lead || (lead.status !== "ENRICHED" && lead.status !== "SEQUENCED" && lead.status !== "WARMING")) {
+            return { status: "Skipped - Not Enriched/Sequenced/Warming" };
         }
 
         // ── Signal selection (Priority A > B > C) ────────────────────────────────
@@ -420,30 +428,8 @@ export const personalizerProcess = inngest.createFunction(
         })();
 
         // ── Signal selection (Priority A strong > A soft > B > C) ─────────────────
-        //
-        // WARN Act routing exception:
-        // WARN Act filings are public records but employees are almost never told in advance.
-        // If we open with the layoff as a hook, we reveal knowledge the recipient doesn't have yet.
-        // That causes alarm, distrust, and spam complaints — not replies.
-        // WARN signals stay as scoring-only. The email uses golden handcuffs framing (Priority C).
-        // The lead still gets a high score; they just receive a universally-framed email.
-        const WARN_KEYWORDS_RE = /\b(warn act|warn notice|warn filing|warn act filing)\b/i;
-        const isWarnSourcedSignal = WARN_KEYWORDS_RE.test(companyNewsEvent || "");
-
-        if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal && isWarnSourcedSignal) {
-            // WARN-sourced disruption — scoring kept high, but email routes to golden handcuffs.
-            // Do NOT reference the event. Employee has almost certainly not been notified yet.
-            primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
-            signalType = `Priority C (WARN-routing): ICP-based outreach. A WARN Act filing was detected for this prospect's company but is NOT used as a hook — the employee likely has not been notified yet and referencing it would be alarming.
-Open with a golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure and may be at a natural career inflection point.
-STRICT RULES — same as Priority C:
-- NEVER fabricate a specific hook, event, or industry observation you cannot verify.
-- NEVER open with an excited or flattering statement.
-- NEVER assume their industry challenges without evidence.
-- NEVER reference the company's financial situation, news, or restructuring.
-- The ONLY safe openers are universal truths about corporate career trajectories.`;
-        } else if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
-            // Non-WARN strong disruption signal (public M&A, confirmed public layoff, leadership exit, etc.)
+        if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
+            // Strong disruption signal — use Template A / E framing
             primarySignal = companyNewsEvent;
             signalType = `Priority A (strong): confirmed disruption event — layoff, leadership exit, M&A, restructuring, or WARN Act filing.
 Open directly with the event as context. Do NOT name specific individuals by name; reference the role or function instead (e.g. 'the leadership transition', 'the reorg underway') unless the departure is of a widely known public figure.
@@ -787,12 +773,16 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
         // Save to DB and update status
         // CAN-SPAM footer appended here — deterministically, not by the AI
         await step.run("save-draft-email", async () => {
+            // High-scoring leads (>=50) transition to WARMING for social sequence.
+            // Since leadHunterProcess drops leads <50, all leads here will go to WARMING.
+            const nextStatus = lead.score >= 50 ? "WARMING" : "SEQUENCED";
+
             await prisma.lead.update({
                 where: { id: lead.id },
                 // @ts-ignore — signalType, ctaUsed added to schema; Prisma client regenerates on deploy
                 data: {
                     draftEmail: draftEmail + CAN_SPAM_FOOTER,
-                    status: "SEQUENCED",
+                    status: nextStatus,
                     signalType,  // "Priority A" | "Priority B" | "Priority C"
                     ctaUsed,     // exact CTA string deterministically selected
                 } as any
@@ -820,7 +810,53 @@ export const senderProcess = inngest.createFunction(
             return { status: "Skipped - Not Sequenced, Missing Draft, or Missing Target Email" };
         }
 
-        // ── Push lead into Instantly campaign ──────────────────────────────────
+        // ── Email deliverability gates ──────────────────────────────────────────
+        // These run before any Instantly API call. A rejected lead is suppressed
+        // in the DB so it never re-enters the send queue.
+
+        // Gate 1: emailStatus — only "safe" (server-verified by Evaboot) during warmup.
+        // "riskier" = catch-all server, ~83% deliverability; too many bounces risk domain health.
+        // Null emailStatus means the lead predates this field and went through un-gated — allow
+        // but log so we can clean up the backlog manually.
+        const emailStatus = (lead as any).emailStatus as string | null | undefined;
+        if (emailStatus === "riskier") {
+            await step.run("suppress-riskier-email", async () => {
+                await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { status: "SUPPRESSED", suppressionReason: "riskier_email" } as any,
+                });
+            });
+            console.warn(`[senderProcess] Lead ${lead.id} suppressed — emailStatus is "riskier" (catch-all). Not sending during warmup.`);
+            return { status: "Suppressed — riskier email", leadId: lead.id };
+        }
+
+        // Gate 2: SuppressionList — check email address and sending domain.
+        // Catches previously opted-out contacts re-imported from a new Evaboot export.
+        const suppressionHit = await step.run("check-suppression-list", async () => {
+            if (!lead.email) return null;
+            const domain = lead.email.split("@")[1]?.toLowerCase() ?? "";
+            return prisma.suppressionList.findFirst({
+                where: {
+                    OR: [
+                        { email: lead.email.toLowerCase() },
+                        { domain },
+                    ],
+                },
+            });
+        });
+
+        if (suppressionHit) {
+            await step.run("suppress-suppression-list-hit", async () => {
+                await prisma.lead.update({
+                    where: { id: lead.id },
+                    data: { status: "SUPPRESSED", suppressionReason: "unsubscribe" } as any,
+                });
+            });
+            console.warn(`[senderProcess] Lead ${lead.id} suppressed — email/domain matched SuppressionList (reason: ${suppressionHit.reason ?? "unsubscribe"}).`);
+            return { status: "Suppressed — suppression list hit", leadId: lead.id };
+        }
+
+
         // Instantly handles warm-up rotation, sending windows, and deliverability.
         // The personalized draft from GPT-4o is injected as a custom variable
         // so the Instantly sequence template can use {{custom_email_body}}.
@@ -1228,24 +1264,91 @@ export const warmupScheduler = inngest.createFunction(
 
 export const monitorProcess = inngest.createFunction(
     { id: "monitor-process" },
-    { cron: "0 9 * * *" }, // Run every day at 9 AM
+    { cron: "0 9 * * *" }, // Run every day at 9 AM UTC
     async ({ step }) => {
-        const stats = await step.run("fetch-resend-stats", async () => {
-            // Mocking fetching domain reputation and bounce stats
-            // e.g. await resend.domains.get("waypointfranchising.com")
-            return {
-                bounceRate: Math.random() * 5, // mock 0-5%
-                complaintRate: Math.random() * 0.5, // mock 0-0.5%
-            };
+        // ── Fetch real campaign analytics from Instantly v2 API ───────────────────
+        // Replaces the previously mocked random bounce/complaint values.
+        // Instantly v2: GET /api/v2/campaigns/{id}/analytics
+        const stats = await step.run("fetch-instantly-analytics", async () => {
+            const apiKey = process.env.INSTANTLY_API_KEY;
+            const campaignId = process.env.INSTANTLY_CAMPAIGN_ID;
+
+            if (!apiKey || !campaignId) {
+                console.error("[monitorProcess] Missing INSTANTLY_API_KEY or INSTANTLY_CAMPAIGN_ID — skipping health check.");
+                return null;
+            }
+
+            try {
+                const res = await fetch(
+                    `https://api.instantly.ai/api/v2/campaigns/${campaignId}/analytics`,
+                    {
+                        method: "GET",
+                        headers: {
+                            Authorization: `Bearer ${apiKey}`,
+                            "Content-Type": "application/json",
+                        },
+                    }
+                );
+
+                if (!res.ok) {
+                    console.error(`[monitorProcess] Instantly analytics API returned ${res.status}: ${await res.text()}`);
+                    return null;
+                }
+
+                const data = await res.json();
+
+                // Instantly v2 analytics response shape:
+                // { emails_sent, bounced, replied, open_rate, bounce_rate, reply_rate, ... }
+                const sent = data.emails_sent ?? 0;
+                const bounced = data.bounced ?? 0;
+                const bounceRate = sent > 0 ? (bounced / sent) * 100 : 0;
+                // Spam complaints surfaced as "spam_count" in Instantly v2
+                const spamCount = data.spam_count ?? 0;
+                const complaintRate = sent > 0 ? (spamCount / sent) * 100 : 0;
+
+                return { bounceRate, complaintRate, sent, bounced, spamCount, raw: data };
+            } catch (err) {
+                console.error("[monitorProcess] Failed to fetch Instantly analytics:", err);
+                return null;
+            }
         });
 
+        if (!stats) {
+            return { status: "Skipped — analytics unavailable" };
+        }
+
         await step.run("evaluate-health", async () => {
-            if (stats.bounceRate > 2.0 || stats.complaintRate >= 0.3) {
-                // Alert Slack / Pause Sending
-                console.error(`[CRITICAL] Domain health failing! Bounce: ${stats.bounceRate.toFixed(1)}%, Complaints: ${stats.complaintRate.toFixed(2)}%`);
-                // Here we could update a Global Settings DB to pause the "senderProcess"
+            // Industry thresholds: bounce > 2% = warning, > 5% = pause immediately
+            // Complaint rate > 0.08% = at risk with Gmail, > 0.3% = critical
+            const bounceCritical    = stats.bounceRate >= 5.0;
+            const bounceWarning     = stats.bounceRate >= 2.0;
+            const complaintCritical = stats.complaintRate >= 0.3;
+            const complaintWarning  = stats.complaintRate >= 0.08;
+
+            const slackWebhook = process.env.SLACK_WEBHOOK_URL;
+
+            if (bounceCritical || complaintCritical) {
+                const msg = `🚨 *CRITICAL: Instantly domain health alert*\nBounce rate: *${stats.bounceRate.toFixed(2)}%* (threshold: 5%)\nComplaint rate: *${stats.complaintRate.toFixed(3)}%* (threshold: 0.3%)\nSent: ${stats.sent} | Bounced: ${stats.bounced} | Spam: ${stats.spamCount}\n*Action required: pause campaign and investigate immediately.*`;
+                console.error(`[monitorProcess] CRITICAL — ${msg}`);
+                if (slackWebhook) {
+                    await fetch(slackWebhook, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: msg }),
+                    });
+                }
+            } else if (bounceWarning || complaintWarning) {
+                const msg = `⚠️ *WARNING: Instantly domain health degrading*\nBounce rate: *${stats.bounceRate.toFixed(2)}%* (target: <2%)\nComplaint rate: *${stats.complaintRate.toFixed(3)}%* (target: <0.08%)\nSent: ${stats.sent} | Bounced: ${stats.bounced} | Spam: ${stats.spamCount}\nReview recent export batches — may include riskier emails.`;
+                console.warn(`[monitorProcess] WARNING — ${msg}`);
+                if (slackWebhook) {
+                    await fetch(slackWebhook, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ text: msg }),
+                    });
+                }
             } else {
-                console.log(`[OK] Domain health stable. Bounce: ${stats.bounceRate.toFixed(1)}%`);
+                console.log(`[monitorProcess] ✅ Domain health OK — bounce: ${stats.bounceRate.toFixed(2)}%, complaint: ${stats.complaintRate.toFixed(3)}%, sent: ${stats.sent}`);
             }
         });
 
@@ -1520,241 +1623,142 @@ export const tidycalBookingSync = inngest.createFunction(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// LinkedIn DM Queue
-// Runs Mon–Fri at 9 AM MT. Surfaces four sequential LinkedIn touch points per
-// lead — starting with a connection request note on Day 1 (Step 0), followed by
-// three DM follow-ups at Day 5, 10, and 16.
-//
-// SEQUENCING RULES:
-//   Step 0 (dmStep 0→1): Day 1+  — Connection request note. Send before connecting.
-//   Step 1 (dmStep 1→2): Day 5+  — First follow-up DM after connecting.
-//   Step 2 (dmStep 2→3): Day 10+ — Guide resurface, softer angle.
-//   Step 3 (dmStep 3→4): Day 16+ — Final check-in. No more touches after this.
-//
-// DEDUP FIX (April 2026): dmStep is incremented BEFORE the Slack post fires.
-// Previously, if the Slack step succeeded but the increment step timed out,
-// leads re-appeared the next day. Now the increment is atomic with lead capture —
-// Slack failure no longer causes re-surfacing.
-//
-// LinkedIn DM automation violates ToS — all sends are manual. This is the
-// practical equivalent: Kelsey copies the script and sends from LinkedIn directly.
+// LinkedIn Social Nurture Queue
+// Runs Mon–Fri at 9 AM MT. Finds leads in WARMING status and advances them
+// through the 2-week social proof sequence. Posts an action-grouped checklist 
+// to Slack. Once sequence completes, advances lead to SEQUENCED for email.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const linkedInDmQueue = inngest.createFunction(
-    { id: "linkedin-dm-queue", retries: 1 },
-    { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon-Fri
+export const socialNurtureQueue = inngest.createFunction(
+    { id: "social-nurture-queue", retries: 1 },
+    { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon–Fri
     async ({ step }) => {
-        // ── Step 1: Query each DM step bracket ────────────────────────────────
-        // Timing is anchored to sentAt (when the Instantly email fired), not updatedAt.
-        //
-        // Step 0 (connection request note): surfaces starting Day 1 after email sent.
-        //   Send BEFORE sending a connection request — this IS the connection note.
-        //   dmStep advances 0 → 1.
-        //
-        // Step 1 (first follow-up DM): Day 5+ after email sent, Step 0 already surfaced.
-        //   Send after they've (hopefully) accepted the connection request.
-        //   dmStep advances 1 → 2.
-        //
-        // Step 2 (guide resurface): Day 10+ after email sent, Step 1 already surfaced.
-        //   Different angle — softer framing, not a repetition of the guide ask.
-        //   dmStep advances 2 → 3.
-        //
-        // Step 3 (final check-in): Day 16+ after email sent, Step 2 already surfaced.
-        //   Genuine close. No more touches after this. dmStep advances 3 → 4.
-        //
-        // IMPORTANT: dmStep is incremented BEFORE the Slack post fires (dedup fix).
-        // This prevents the same lead from re-appearing if the Slack step fails.
-        const { step0Leads, step1Leads, step2Leads, step3Leads } = await step.run("find-dm-queue-leads", async () => {
-            const now = new Date();
-            const d1  = new Date(now.getTime() -  1 * 24 * 60 * 60 * 1000);
-            const d5  = new Date(now.getTime() -  5 * 24 * 60 * 60 * 1000);
-            const d10 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000);
-            const d16 = new Date(now.getTime() - 16 * 24 * 60 * 60 * 1000);
-
-            const [step0, step1, step2, step3] = await Promise.all([
-                // Step 0: emailed 1+ days ago, no LinkedIn touch ever surfaced
-                prisma.lead.findMany({
-                    where: { status: "SENT", sentAt: { lte: d1 }, dmStep: 0 } as any,
-                    orderBy: { score: "desc" },
-                    take: 10,
-                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
-                }),
-                // Step 1: emailed 5+ days ago, connection request note already surfaced
-                prisma.lead.findMany({
-                    where: { status: "SENT", sentAt: { lte: d5 },  dmStep: 1 } as any,
-                    orderBy: { score: "desc" },
-                    take: 10,
-                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
-                }),
-                // Step 2: emailed 10+ days ago, Step 1 already surfaced
-                prisma.lead.findMany({
-                    where: { status: "SENT", sentAt: { lte: d10 }, dmStep: 2 } as any,
-                    orderBy: { score: "desc" },
-                    take: 10,
-                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
-                }),
-                // Step 3: emailed 16+ days ago, Step 2 already surfaced — final touch
-                prisma.lead.findMany({
-                    where: { status: "SENT", sentAt: { lte: d16 }, dmStep: 3 } as any,
-                    orderBy: { score: "desc" },
-                    take: 10,
-                    select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true },
-                }),
-            ]);
-
-            return { step0Leads: step0, step1Leads: step1, step2Leads: step2, step3Leads: step3 };
+        const warmingLeads = await step.run("find-warming-leads", async () => {
+            // @ts-ignore — statuses/fields added to schema
+            return prisma.lead.findMany({
+                where: { status: "WARMING" },
+                orderBy: { score: "desc" },
+                select: { id: true, name: true, title: true, company: true, linkedinUrl: true, score: true, socialUpdatedAt: true, socialNurtureStep: true, recentPostSummary: true },
+            }) as any[];
         });
 
-        const totalLeads = step0Leads.length + step1Leads.length + step2Leads.length + step3Leads.length;
-
-        if (totalLeads === 0) {
-            console.log("[linkedin-dm-queue] No leads in any DM step today.");
-            return { status: "No leads", count: 0 };
+        if (warmingLeads.length === 0) {
+            console.log("[social-nurture-queue] No WARMING leads today.");
+            return { status: "No warming leads", count: 0 };
         }
 
-        // ── Step 2: Increment dmStep BEFORE posting to Slack (dedup fix) ──────
-        // Incrementing first means a Slack delivery failure cannot re-surface the
-        // same lead the following day. The lead list is already captured above.
-        await step.run("increment-dm-steps", async () => {
-            const allUpdates = [
-                ...step0Leads.map(l => ({ id: l.id, nextStep: 1 })),
-                ...step1Leads.map(l => ({ id: l.id, nextStep: 2 })),
-                ...step2Leads.map(l => ({ id: l.id, nextStep: 3 })),
-                ...step3Leads.map(l => ({ id: l.id, nextStep: 4 })),
-            ];
+        const now = new Date();
+        const views: any[] = [];
+        const engages: any[] = [];
+        const follows: any[] = [];
+        const connects: any[] = [];
+        const advancingToSequenced: string[] = [];
 
-            await Promise.all(
-                allUpdates.map(({ id, nextStep }) =>
-                    prisma.lead.update({
-                        where: { id },
-                        data: { dmStep: nextStep } as any,
-                    })
-                )
-            );
+        warmingLeads.forEach(lead => {
+            const stepNum = lead.socialNurtureStep || 0;
+            const diffDays = lead.socialUpdatedAt 
+                ? (now.getTime() - new Date(lead.socialUpdatedAt).getTime()) / (1000 * 3600 * 24) 
+                : 999; // If never updated, force process
 
-            console.log(`[linkedin-dm-queue] dmStep incremented for ${allUpdates.length} leads`);
+            if (stepNum === 0) views.push(lead); // Profile Views (Day 1)
+            else if (stepNum === 1 && diffDays >= 2) engages.push(lead); // Engage 1 (Day 3)
+            else if (stepNum === 2 && diffDays >= 2) engages.push(lead); // Engage 2 (Day 5)
+            else if (stepNum === 3 && diffDays >= 2) follows.push(lead); // Follow (Day 7)
+            else if (stepNum === 4 && diffDays >= 3) connects.push(lead); // Connect (Day 10)
+            else if (stepNum === 5 && diffDays >= 2) advancingToSequenced.push(lead.id); // Done -> SEQUENCED (Day 12+)
         });
 
-        // ── Step 3: Build Slack payload and post ──────────────────────────────
-        await step.run("post-dm-queue-to-slack", async () => {
+        // Advance finished leads automatically to SEQUENCED
+        if (advancingToSequenced.length > 0) {
+            await step.run("advance-to-sequenced", async () => {
+                await prisma.lead.updateMany({
+                    where: { id: { in: advancingToSequenced } },
+                    data: { status: "SEQUENCED", socialNurtureStep: 6 } as any
+                });
+            });
+            console.log(`[social-nurture-queue] Advanced ${advancingToSequenced.length} leads to SEQUENCED`);
+        }
+
+        const leadsBeingSurfaced = [...views, ...engages, ...follows, ...connects];
+
+        if (leadsBeingSurfaced.length === 0) {
+            console.log("[social-nurture-queue] Leads in WARMING but none eligible for steps today.");
+            return { status: "Leads waiting for timers", count: 0 };
+        }
+
+        await step.run("post-social-queue-to-slack", async () => {
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (!slackWebhook) {
-                console.warn("[linkedin-dm-queue] No SLACK_WEBHOOK_URL — skipping alert");
+                console.warn("[social-nurture-queue] No SLACK_WEBHOOK_URL — skipping alert");
                 return;
             }
 
-            // DM scripts — voice-guide compliant, no em dashes, no exclamation points.
-            // Step 0: connection request note — self-aware opener, guide offer, curiosity close.
-            //   Modeled on Kelsey's provided sample. 300-char LinkedIn limit: ~220 chars — fits.
-            // Step 1: quiet exploration angle — professionals in motion, no pressure.
-            // Step 2: guide resurface — different framing, not a repeat ask.
-            // Step 3: genuine final close — acknowledges they may not be interested, no agenda.
-            const buildDmScript = (stepNum: number, firstName: string): string => {
-                if (stepNum === 0) {
-                    return `"Hi ${firstName}, I realize this is a random connection request. I help professionals build a financial off-ramp through franchising. Could I send you a copy of my guide? It is called 5 Things That Actually Determine If Franchise Ownership Makes Sense For You. I'm curious if you'd see value in it."`;
-                }
-                if (stepNum === 1) {
-                    return `"Hi ${firstName}, the guide offer still stands if it sounded worth reading. No pitch. Just five questions worth thinking through."`;
-                }
-                if (stepNum === 2) {
-                    return `"Hi ${firstName}, not sure if the guide crossed your mind. Even if you are 90 percent sure this is not for you, the five criteria tend to clarify the decision pretty quickly. Worth a look if you want."`;
-                }
-                return `"Hi ${firstName}, last note from me. If franchise ownership has never crossed your mind, completely fine. If it has at any point, happy to talk through it with no agenda."`;
-            };
-
-            type DmLead = { id: string; name: string; title: string | null; company: string | null; linkedinUrl: string | null; score: number };
-
-            const buildLeadBlocks = (leads: DmLead[], stepNum: number, stepLabel: string) =>
-                leads.map(lead => {
-                    const firstName = lead.name.trim().split(/\s+/)[0];
-                    const script = buildDmScript(stepNum, firstName);
-                    const profileLine = lead.linkedinUrl
-                        ? `<${lead.linkedinUrl}|Open LinkedIn Profile>`
-                        : "_No LinkedIn URL on file_";
-                    return {
-                        type: "section",
-                        text: {
-                            type: "mrkdwn",
-                            text: [
-                                `*${lead.name}* | ${lead.title || "N/A"} @ ${lead.company || "N/A"} | Score: ${lead.score} | ${stepLabel}`,
-                                profileLine,
-                                "",
-                                `*Script (copy-paste):*`,
-                                script,
-                            ].join("\n"),
-                        },
-                    };
-                });
-
-            const today = new Date().toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" });
-
-            const blocks: object[] = [
-                {
-                    type: "header",
-                    text: {
-                        type: "plain_text",
-                        text: `LinkedIn Queue — ${totalLeads} lead${totalLeads !== 1 ? "s" : ""} need a touch (${today})`,
-                    },
-                },
-                {
-                    type: "section",
-                    text: {
-                        type: "mrkdwn",
-                        text: "Copy-paste the script, open their LinkedIn, and send. Step 0 = connection request note (send *before* you hit connect). Steps 1–3 are follow-up DMs after connecting.",
-                    },
-                },
-            ];
-
-            const stepSections: { label: string; leads: DmLead[]; num: number }[] = [
-                { label: "Step 0 — Connection Request Note",   leads: step0Leads, num: 0 },
-                { label: "Step 1 — Follow-Up DM (Day 5)",     leads: step1Leads, num: 1 },
-                { label: "Step 2 — Guide Resurface (Day 10)", leads: step2Leads, num: 2 },
-                { label: "Step 3 — Final Check-In (Day 16)",  leads: step3Leads, num: 3 },
-            ];
-
-            for (const { label, leads, num } of stepSections) {
-                if (leads.length === 0) continue;
-                blocks.push({ type: "divider" });
-                blocks.push({
-                    type: "section",
-                    text: {
-                        type: "mrkdwn",
-                        text: `*${label}* (${leads.length} lead${leads.length !== 1 ? "s" : ""})`,
-                    },
-                });
-                blocks.push(...buildLeadBlocks(leads, num, label));
+            function getConnectionNote(firstName: string): string {
+                return `Hi ${firstName}, I realize this is a random connection request. I help professionals build a financial off-ramp through franchising. Could I send you a copy of my guide? It is called 5 Things That Actually Determine If Franchise Ownership Makes Sense For You. I am curious if you would see value in it.`;
             }
 
-            blocks.push({
-                type: "context",
-                elements: [{
-                    type: "mrkdwn",
-                    text: "Step 0 is the connection note — paste it into the LinkedIn connection request message field (300 char limit). If they accept and the guide resonates, personalize from their profile. Step 3 is the final touch.",
-                }],
-            });
+            const formatLead = (l: any, withContext = false, isConnect = false) => {
+                let text = `• *${l.name}* | ${l.title || "N/A"} @ ${l.company || "N/A"} | score: ${l.score}\n  LinkedIn: ${l.linkedinUrl || "N/A"}`;
+                if (withContext) {
+                    text += `\n  Context: ${l.recentPostSummary ? l.recentPostSummary : "No recent posts detected by Clay. Check profile manually."}`;
+                }
+                if (isConnect) {
+                    text += `\n  Note (copy below):\n  ${getConnectionNote(l.name.split(" ")[0])}`;
+                }
+                return text;
+            };
+
+            const blocks: any[] = [
+                { type: "header", text: { type: "plain_text", text: `🔥 LinkedIn Social Nurture Queue` } },
+                { type: "section", text: { type: "mrkdwn", text: "Grouped by action type so you can process tasks efficiently. Connection texts are unquoted for simple copying." } }
+            ];
+
+            if (views.length > 0) {
+                blocks.push({ type: "divider" });
+                blocks.push({ type: "section", text: { type: "mrkdwn", text: `*1. PROFILE VIEWS (Day 1)*\n${views.map(l => formatLead(l)).join("\n\n")}` } });
+            }
+            if (engages.length > 0) {
+                blocks.push({ type: "divider" });
+                blocks.push({ type: "section", text: { type: "mrkdwn", text: `*2. LIKE OR COMMENT (Day 3 & 5)*\n${engages.map(l => formatLead(l, true)).join("\n\n")}` } });
+            }
+            if (follows.length > 0) {
+                blocks.push({ type: "divider" });
+                blocks.push({ type: "section", text: { type: "mrkdwn", text: `*3. FOLLOW (Day 7)*\n${follows.map(l => formatLead(l)).join("\n\n")}` } });
+            }
+            if (connects.length > 0) {
+                blocks.push({ type: "divider" });
+                blocks.push({ type: "section", text: { type: "mrkdwn", text: `*4. CONNECTION REQUESTS (Day 10)*\n${connects.map(l => formatLead(l, false, true)).join("\n\n")}` } });
+            }
 
             await fetch(slackWebhook, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    text: `LinkedIn Queue — ${totalLeads} lead${totalLeads !== 1 ? "s" : ""} need a touch today`,
-                    blocks,
+                    channel: "C0AM06AAY2W",
+                    text: `🔥 LinkedIn Social Nurture Queue - ${leadsBeingSurfaced.length} tasks today`,
+                    blocks
                 }),
             });
-
-            console.log(`[linkedin-dm-queue] Slack posted — ${totalLeads} leads (Step0: ${step0Leads.length}, Step1: ${step1Leads.length}, Step2: ${step2Leads.length}, Step3: ${step3Leads.length})`);
         });
 
-        return {
-            status: "Sent",
-            total: totalLeads,
-            step0: step0Leads.length,
-            step1: step1Leads.length,
-            step2: step2Leads.length,
-            step3: step3Leads.length,
-        };
+        // After posting, advance their internal step and bump the timestamp
+        await step.run("advance-internal-steps", async () => {
+            const updates = leadsBeingSurfaced.map(lead => {
+                return prisma.lead.update({
+                    where: { id: lead.id },
+                    data: {
+                        socialNurtureStep: (lead.socialNurtureStep || 0) + 1,
+                        socialUpdatedAt: new Date()
+                    } as any
+                });
+            });
+            await Promise.all(updates);
+        });
+
+        return { status: "Sent", count: leadsBeingSurfaced.length, advancedToSequenced: advancingToSequenced.length };
     }
 );
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Ghost Recovery Alert

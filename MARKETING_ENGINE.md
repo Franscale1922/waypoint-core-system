@@ -149,7 +149,7 @@ leadHunterProcess (Inngest) → scoring rubric
   · Persona fit score
   · Tenure score
        ↓
-Score ≥ 70 → status: ENRICHED → personalizerProcess (Inngest)
+Score ≥ 50 → status: ENRICHED → personalizerProcess (Inngest)
   · Signal priority: Priority A (companyNewsEvent) → B (recentPostSummary) → C (universal)
   · GPT-4o writes 50–90 word plain-text email (6 template variants)
   · Email stored as draft on lead record
