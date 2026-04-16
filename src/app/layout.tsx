@@ -118,6 +118,22 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        <Script id="revchat-init" strategy="afterInteractive">
+          {`
+            window.__REVCHAT_CONFIG__ = {
+              apiKey: "rcw_1924a860000846308da140c014551ab9",
+              apiUrl: "https://apis.chatbot.revscaleapps.com",
+              embedParams: {}
+            };
+            (function() {
+              var s = document.createElement("script");
+              s.type = "module";
+              s.async = true;
+              s.src = "https://apis.chatbot.revscaleapps.com/widget/widget.js";
+              document.head.appendChild(s);
+            })();
+          `}
+        </Script>
       </body>
     </html>
   );
