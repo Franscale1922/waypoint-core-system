@@ -371,6 +371,9 @@ export default async function AboutPage() {
                 Or text me &rarr;
               </a>
             </div>
+            <p className="mt-3 text-[10px] text-white/35 leading-snug">
+              By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+            </p>
             <p className="mt-5 text-xs text-white/40">
               Want to see how I work first?{" "}
               <a href="/process" className="text-white/60 underline hover:text-white/80 transition-colors">See the process &rarr;</a>

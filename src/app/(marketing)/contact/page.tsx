@@ -70,6 +70,9 @@ export default function ContactPage() {
                     <p className="text-xs text-[#7a7a7a]">(214) 995-1062</p>
                   </div>
                 </a>
+                <p className="text-[10px] text-[#9a9a8a] leading-snug pl-14">
+                  By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+                </p>
 
                 <a
                   href="mailto:kelsey@waypointfranchise.com"

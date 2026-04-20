@@ -100,6 +100,9 @@ export default function ContactForm() {
           placeholder="(214) 555-0100"
           className="w-full px-4 py-3 text-sm rounded-lg border border-[#d0c9be] bg-white text-[#0c1929] placeholder-[#b0a898] focus:outline-none focus:ring-2 focus:ring-[#CC6535] focus:border-transparent transition"
         />
+        <p className="mt-1.5 text-[10px] text-[#9a9a8a] leading-snug">
+          By providing your phone number, you consent to receive SMS messages from Waypoint Franchise Advisors regarding your inquiry. Msg &amp; data rates may apply. Reply STOP to opt out at any time.
+        </p>
       </div>
 
       <div>
@@ -131,9 +134,8 @@ export default function ContactForm() {
       </button>
 
       <p className="text-xs text-center text-[#9a9a8a] leading-relaxed">
-        By submitting this form you agree to receive text messages from Waypoint Franchise
-        Advisors at the number provided. Message frequency varies. Message &amp; data rates may
-        apply. Reply STOP to opt out at any time. View our{" "}
+        By providing your phone number and submitting this form, you expressly consent to receive text (SMS) messages from Waypoint Franchise Advisors at the number provided. Message frequency varies. Msg &amp; data rates may apply.
+        Reply <strong>STOP</strong> to opt out at any time. View our{" "}
         <a href="/privacy" className="text-[#8E3012] hover:underline">Privacy Policy</a>.
       </p>
 

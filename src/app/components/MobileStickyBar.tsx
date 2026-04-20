@@ -73,12 +73,31 @@ export default function MobileStickyBar() {
       <div
         style={{
           display: "flex",
-          gap: "12px",
-          alignItems: "center",
-          padding: "12px 16px",
+          flexDirection: "column",
+          padding: "8px 16px 0",
           paddingBottom: "calc(12px + env(safe-area-inset-bottom, 0px))",
+          gap: "6px",
         }}
       >
+        {/* Consent notice — TCPA compliance for the Text Kelsey CTA */}
+        <p
+          style={{
+            fontSize: "9px",
+            color: "rgba(255,255,255,0.35)",
+            textAlign: "center",
+            lineHeight: 1.4,
+            margin: 0,
+          }}
+        >
+          By texting, you consent to SMS from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+        </p>
+        <div
+          style={{
+            display: "flex",
+            gap: "12px",
+            alignItems: "center",
+          }}
+        >
         {/* Text Kelsey — secondary */}
         <a
           href="sms:+12149951062"
@@ -137,6 +156,7 @@ export default function MobileStickyBar() {
         >
           Book a Free Call
         </a>
+        </div>
       </div>
     </div>,
     document.body

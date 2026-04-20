@@ -93,6 +93,9 @@ export default function HomePage() {
               Or text me &rarr;
             </a>
           </div>
+          <p className="animate-fade-in-up stagger-4 text-[10px] text-white/40 leading-snug max-w-xs">
+            By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+          </p>
 
           {/* B-3: 70% stat — safety/permission signal, not a proof credential */}
           <p className="mt-5 sm:mt-7 animate-fade-in-up stagger-4 text-[11px] sm:text-xs leading-snug">
@@ -253,6 +256,9 @@ export default function HomePage() {
               Or text me &rarr;
             </a>
           </div>
+          <p className="mt-1 text-[10px] text-white/35 leading-snug">
+            By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+          </p>
           <div className="reveal mt-4 text-center">
             <Link
               href="/refer"
@@ -504,6 +510,9 @@ export default function HomePage() {
                 Or text me &rarr;
               </a>
             </div>
+            <p className="mt-3 text-[10px] text-white/40 leading-snug max-w-sm mx-auto">
+              By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+            </p>
           </div>
         </div>
       </section>

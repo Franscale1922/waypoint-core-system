@@ -77,6 +77,40 @@ Live at: `https://waypointfranchise.com/admin`
 
 ---
 
+## Brand Knowledge Vault
+
+The vault is the **first place to check** for any franchise brand data before doing independent research.
+
+**GitHub**: `https://github.com/Franscale1922/obsidian-vault` (private)
+**Local path**: `~/Projects/obsidian-vault/` (clone here on every machine)
+**Protocols**: `_protocols/BRAND_INTAKE.md` and `_protocols/VAULT_RULES.md`
+
+### Setup (New Machine)
+```bash
+cd ~/Projects && git clone git@github.com:Franscale1922/obsidian-vault.git
+```
+
+### Read a Brand (Always Do This First)
+```bash
+git -C ~/Projects/obsidian-vault pull
+cat ~/Projects/obsidian-vault/Brands/[Brand\ Name]/[Brand\ Name].md
+```
+Load additional files (transcripts, fdd notes) only if the task requires them.
+
+### Write to Vault
+```bash
+git -C ~/Projects/obsidian-vault pull          # ALWAYS pull first
+# ... make changes ...
+git -C ~/Projects/obsidian-vault add .
+git -C ~/Projects/obsidian-vault commit -m "update(brand): [Brand Name] — [what changed]"
+git -C ~/Projects/obsidian-vault push
+```
+
+### If Brand Has No Vault Folder
+Run Workflow 1 from `~/Projects/obsidian-vault/_protocols/BRAND_INTAKE.md` to create it. Never skip this — all brand knowledge must be persisted.
+
+---
+
 ## Important Pipeline Rules
 
 - **PENDING_CLAY** is the entry status for all admin-imported leads. `pendingClayFallback` cron (7 AM MT Mon–Fri) advances stuck leads after 24h as a safety net.

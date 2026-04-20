@@ -207,6 +207,9 @@ export default function MarketingLayout({
                   Text me
                 </a>
               </div>
+              <p className="mt-2 text-[9px] text-[#666666] leading-snug max-w-[180px]">
+                By texting, you consent to receive SMS from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+              </p>
               <p className="mt-3 text-xs text-[#888888]">
                 Whitefish, Montana
               </p>

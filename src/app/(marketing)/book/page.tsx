@@ -126,6 +126,9 @@ export default function BookPage() {
                   Text me
                 </a>
               </div>
+              <p className="mt-2 text-[10px] text-center text-[#9a9a8a] leading-snug">
+                By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
+              </p>
             </div>
           </div>
 
