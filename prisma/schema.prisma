@@ -59,6 +59,11 @@ model Lead {
   instantlyLeadId   String?
   // suppressionReason: why the lead was suppressed — enables suppression analysis
   suppressionReason String?    // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed" | "riskier_email" | "fabricated_email"
+  // ── Legacy / deprecated fields — do not populate, kept to avoid data-loss migration blocks ──
+  // dmStep was replaced by socialNurtureStep — column still exists in DB with historical data
+  dmStep            Int?       // DEPRECATED — use socialNurtureStep. Kept to prevent prisma db push data-loss error.
+  dmStatus          String?    // LinkedIn DM queue status — not actively used
+  dmSentAt          DateTime?  // LinkedIn DM sent timestamp — not actively used
 
   // ── Sales Navigator Attribute Fields (Intelligence Layer — added March 2026) ─
   // These attributes come from Clay/Evaboot enrichment at import time.
@@ -79,6 +84,7 @@ model Lead {
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 }
+
 
 model SuppressionList {
   id        String   @id @default(uuid())
