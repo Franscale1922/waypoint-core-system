@@ -191,7 +191,7 @@ ghostRecoveryAlert cron (10 AM MT, Mon)
 | kelsey@meetwaypointfranchise.com | meetwaypointfranchise.com | 30 | 100% |
 | kstuart@meetwaypointfranchise.com | meetwaypointfranchise.com | 30 | 100% |
 
-**Campaign daily cap:** 15–25 (set in `/admin/settings` → `maxSendsPerDay`)  
+**Campaign daily cap:** 35 (set in `/admin/settings` → `maxSendsPerDay`)  
 **Campaign ID:** `e969de1c-e244-488a-8b29-6278f1ea39a2`
 
 ### Email Voice Rules
@@ -209,7 +209,7 @@ Kelsey's email voice is non-negotiable. Full rules in `docs/VOICE_GUIDE.md`. Sum
 
 - **Follow-up sequence steps** in Instantly (Step 2, 3) — activate after 4+ weeks clean metrics
 - **RepliQ/Sendspark personalized video** as a second touch after `Curious` reply classification
-- **Raise daily cap** from 25 toward 50–100 as deliverability data matures
+- **Raise daily cap** from 35 toward 50–100 as deliverability data matures
 
 ---
 

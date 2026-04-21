@@ -216,8 +216,8 @@ Step 7 — EMAIL PERSONALIZATION (Automated | Minutes after Step 6)
 
 Step 8 — DAILY SEND SCHEDULER (Automated | 8 AM MT, Mon–Fri)
   Inngest cron: warmupScheduler
-  Reads SystemSettings.maxSendsPerDay (currently 25)
-  Selects top 25 SEQUENCED leads by score
+  Reads SystemSettings.maxSendsPerDay (currently 35)
+  Selects top 35 SEQUENCED leads by score
   Fires workflow/lead.send.start for each
 
 Step 9 — EMAIL SEND (Automated | Immediately after Step 8)

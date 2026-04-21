@@ -32,7 +32,7 @@
     ↓ (gate: score ≥ 50)
 8. Inngest: personalizerProcess — GPT-4o writes email → status: SEQUENCED
     ↓
-9. Inngest: warmupScheduler (8 AM MT, Mon–Fri) — fires top 25 SEQUENCED leads by score
+9. Inngest: warmupScheduler (8 AM MT, Mon–Fri) — fires top 35 SEQUENCED leads by score
    senderProcess → Instantly v2 API → lead added to campaign → status: SENT
     ↓
 10. Instantly sends email from sending domain (getwaypointfranchise.com / meetwaypointfranchise.com)

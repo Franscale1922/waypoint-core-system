@@ -95,7 +95,7 @@ async function main() {
         `  2. Create a new campaign: "Waypoint Re-Engagement — ${new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" })}"`,
         `  3. Upload reengagement_leads.csv as the contact list`,
         `  4. Use the Step 2 guide offer template as the first (and only) step`,
-        `  5. Set schedule: Mon-Fri, 8 AM - 5 PM MT, daily cap 25`,
+        `  5. Set schedule: Mon-Fri, 8 AM - 5 PM MT, daily cap 35`,
         `  6. Launch and monitor`,
         ``,
     ].join("\n");

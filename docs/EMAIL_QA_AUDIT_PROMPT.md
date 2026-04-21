@@ -147,7 +147,7 @@ At the end, provide:
 
 - The pipeline runs: Clay enrichment → Google Sheets → Apps Script → `/api/webhooks/clay` → `leadHunterProcess` (scoring) → `personalizerProcess` (GPT-4o) → status = SEQUENCED
 - The code for prohibited phrase guarding after this session: after GPT generates text, the server scans for any prohibited phrase and retries with an explicit note if found (`hitPhrase` returned in Inngest step output)
-- The `warmupScheduler` fires Mon–Fri 8 AM MT, sends 15 leads/day to Instantly → campaign → SENT
+- The `warmupScheduler` fires Mon–Fri 8 AM MT, sends 35 leads/day to Instantly → campaign → SENT
 - INSTANTLY_API_KEY is now set in Vercel environment variables (set March 21, 2026)
 - All 178 SEQUENCED leads were regenerated March 21, 2026 after this round of prompt improvements
 - The admin dashboard at `waypointfranchise.com/admin/leads` is part of the same Next.js app (not a separate project) — it uses the same database as the pipeline

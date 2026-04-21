@@ -73,7 +73,7 @@ Live at: `https://waypointfranchise.com/admin`
 | `/admin/leads` | Full lead manager — status, score, draft email |
 | `/admin/leads/[id]` | Lead detail — regenerate email, send now, view signals |
 | `/admin/linkedin` | LinkedIn DM queue (SENT leads 5+ days, no reply) |
-| `/admin/settings` | `maxSendsPerDay` (currently 25), API keys |
+| `/admin/settings` | `maxSendsPerDay` (currently 35), API keys |
 
 ---
 
@@ -115,5 +115,5 @@ Run Workflow 1 from `~/Projects/obsidian-vault/_protocols/BRAND_INTAKE.md` to cr
 
 - **PENDING_CLAY** is the entry status for all admin-imported leads. `pendingClayFallback` cron (7 AM MT Mon–Fri) advances stuck leads after 24h as a safety net.
 - **Signal priority** in `personalizerProcess`: Priority A (companyNewsEvent, valid >10 chars and non-numeric) → Priority B (recentPostSummary, passes institutional gate) → Priority C (universal golden handcuffs — never fabricate company-specific claims).
-- **Daily cap** is read from `SystemSettings.maxSendsPerDay` in DB (currently 25). Fallback default in code is 15 — update via `/admin/settings`, not in code.
+- **Daily cap** is read from `SystemSettings.maxSendsPerDay` in DB (currently 35). Fallback default in code is 15 — update via `/admin/settings`, not in code.
 - **Regenerate** resets SENT leads to SEQUENCED before re-running personalizerProcess.
