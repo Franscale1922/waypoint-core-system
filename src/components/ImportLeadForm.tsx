@@ -23,6 +23,13 @@ const COLUMN_ALIASES: Record<string, string> = {
     "url": "linkedinUrl",
     // email
     "email": "email",
+    // emailStatus — Evaboot verification tier ("safe" | "riskier")
+    // Evaboot exports this column as "Email Status" in the CSV header.
+    "email status": "emailStatus",
+    "emailstatus": "emailStatus",
+    "email_status": "emailStatus",
+    "verification status": "emailStatus",
+    "email verification": "emailStatus",
     // title — Evaboot uses "Current Job"
     "title": "title",
     "job title": "title",
@@ -59,6 +66,7 @@ type LeadRow = {
     name: string;
     linkedinUrl: string;
     email?: string;
+    emailStatus?: "safe" | "riskier";  // Evaboot verification tier — gates riskier emails in senderProcess
     title: string;
     company: string;
     country?: string;
@@ -125,6 +133,9 @@ function parseCSV(text: string): LeadRow[] {
             name,
             linkedinUrl: row["linkedinUrl"] ?? "",
             email: row["email"] || undefined,
+            emailStatus: (row["emailStatus"] === "safe" || row["emailStatus"] === "riskier")
+                ? (row["emailStatus"] as "safe" | "riskier")
+                : undefined,
             title: row["title"] ?? "",
             company: row["company"] ?? "",
             country: row["country"] || undefined,
