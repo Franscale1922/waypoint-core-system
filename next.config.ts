@@ -2,12 +2,13 @@ import type { NextConfig } from "next";
 
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://asset-tidycal.b-cdn.net https://f.vimeocdn.com",
+  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://asset-tidycal.b-cdn.net https://f.vimeocdn.com https://apis.chatbot.revscaleapps.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://asset-tidycal.b-cdn.net",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https:",
-  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://tidycal.com https://api.tidycal.com https://vimeo.com https://fresnel.vimeocdn.com",
+  "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://tidycal.com https://api.tidycal.com https://vimeo.com https://fresnel.vimeocdn.com https://apis.chatbot.revscaleapps.com",
   "frame-src 'self' https://tidycal.com https://player.vimeo.com",
+  "worker-src 'self' blob: https://apis.chatbot.revscaleapps.com",
   "frame-ancestors 'none'",
 ].join('; ');
 
