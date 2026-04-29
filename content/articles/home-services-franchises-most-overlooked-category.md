@@ -1,7 +1,7 @@
 ---
 title: "Home Services Franchises: The Most Overlooked Category"
 relatedSlugs:
-  - "b2b-franchise-opportunities-lower-risk-steadier-cash"
+  - "mosquito-control-franchises"
   - "restoration-franchises-the-disaster-proof-business"
   - "maid-and-residential-cleaning-franchises"
 slug: "home-services-franchises-most-overlooked-category"

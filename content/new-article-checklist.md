@@ -87,6 +87,9 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | maid-and-residential-cleaning-franchises | Industry Spotlights |
 | staffing-franchises | Industry Spotlights |
 | garage-transformation-franchises | Industry Spotlights |
+| mosquito-control-franchises | Industry Spotlights |
+| weight-loss-franchises | Industry Spotlights |
+| pilates-franchises | Industry Spotlights |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 

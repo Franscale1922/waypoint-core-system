@@ -3,7 +3,7 @@ title: "Fitness Franchise Comparison: What the Numbers Say"
 relatedSlugs:
   - "health-wellness-franchises-fad-vs-durable-business"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
-  - "recession-proof-franchise-categories"
+  - "pilates-franchises"
 slug: "fitness-franchise-comparison-what-the-numbers-say"
 date: "2026-02-10"
 category: "Industry Spotlights"

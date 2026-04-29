@@ -51,11 +51,11 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | `[ ]` | Sweet Concept Franchises: Candy, Ice Cream, and the Impulse Purchase Model | Industry Spotlights | Brick-and-mortar, high foot traffic dependency, tourism and mall adjacency. |
 | `[ ]` | Laundromat Franchises: The Semi-Passive Model With Real Overhead | Industry Spotlights | Capital-heavy equipment, location-critical, true passive income vs. reality. |
 | `[ ]` | Maid and Residential Cleaning Franchises: The Repeat Service Model | Industry Spotlights | Subcontractor vs. employee model, churn management, local competition. |
-| `[ ]` | Weight Loss Franchises: Medical vs. Behavioral vs. Coaching Models | Industry Spotlights | Rapidly evolving category (GLP-1 impact). Needs current framing. |
-| `[ ]` | Mosquito Control Franchises: Seasonal Business With Recurring Revenue | Industry Spotlights | Subscription model, outdoor service, geographic demand variation. |
+| `[x]` | Weight Loss Franchises: Medical vs. Behavioral vs. Coaching Models | Industry Spotlights | Rapidly evolving category (GLP-1 impact). Needs current framing. |
+| `[x]` | Mosquito Control Franchises: Seasonal Business With Recurring Revenue | Industry Spotlights | Subscription model, outdoor service, geographic demand variation. |
 | `[ ]` | Salon Suite Franchises: The Landlord Model for Beauty | Industry Spotlights | Not operating a salon — leasing suites to independent stylists. Asset-light, recurring. |
 | `[ ]` | B2B Logistics Franchises: Last-Mile and Specialty Freight Models | Industry Spotlights | Non-consumer, contract-based, driver/fleet model. |
-| `[ ]` | Pilates Franchises: Studio Economics and the Boutique Fitness Reality | Industry Spotlights | Membership vs. class pack, instructor staffing, equipment cost. Compare to fitness article. |
+| `[x]` | Pilates Franchises: Studio Economics and the Boutique Fitness Reality | Industry Spotlights | Membership vs. class pack, instructor staffing, equipment cost. Compare to fitness article. |
 | `[ ]` | Pet Waste Removal Franchises: The Business That Sounds Funny and Performs Seriously | Industry Spotlights | Extremely low capital, recurring route-based model, B2C with B2B (HOA) potential. |
 | `[ ]` | Entertainment and Destination Franchises: Experience Economy Models | Industry Spotlights | Escape rooms, axe throwing, mini golf — foot traffic and event booking hybrid. |
 | `[ ]` | Furniture Franchises: Retail Model Pressures and the Franchise Fit | Industry Spotlights | Lease obligations, inventory, e-commerce competition. Requires careful framing. |
