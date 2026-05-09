@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
+    "@anthropic-ai/sdk": "^0.95.1",
     "@tailwindcss/typography": "^0.5.19",
     "ai": "^6.0.116",
     "clsx": "^2.1.1",
