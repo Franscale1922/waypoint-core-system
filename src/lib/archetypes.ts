@@ -327,7 +327,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { educator: 4, community_builder: 1 },
       },
       {
-        label: "Helping someone through a hard situation — and knowing it meant something",
+        label: "Helping someone through a hard situation, knowing it meant something",
         scores: { empath: 4, community_builder: 1 },
       },
       {
@@ -339,7 +339,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Closing something — hitting a number, finishing a deal, winning a pitch",
+        label: "Closing something. Hitting a number, finishing a deal, winning a pitch",
         scores: { driver: 4, operator: 1 },
       },
       {
@@ -369,7 +369,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { empath: 4, community_builder: 1 },
       },
       {
-        label: "Introductions — \"you should meet so-and-so\"",
+        label: "Introductions. \"You should meet so-and-so.\"",
         scores: { connector: 4, community_builder: 1 },
       },
       {
@@ -377,7 +377,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "Honest, direct advice — even when it's not what they want to hear",
+        label: "Honest, direct advice, even when it's not what they want to hear",
         scores: { driver: 3, analyst: 2 },
       },
       {
@@ -389,7 +389,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { analyst: 4, operator: 1 },
       },
       {
-        label: "Making things look and feel right — design, story, experience",
+        label: "Making things look and feel right. Design, story, experience.",
         scores: { creative: 4, community_builder: 1 },
       },
     ],
@@ -437,42 +437,42 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     question: "How do you naturally operate with the people around you?",
     options: [
       {
-        label: "I develop people — I invest in their growth and capability",
+        label: "I develop people. I invest in their growth and capability",
         scores: { educator: 3, empath: 2, community_builder: 1 },
       },
       {
-        label: "I read people — I know what they need before they say it",
+        label: "I read people. I know what they need before they say it",
         scores: { empath: 4, connector: 1, community_builder: 1 },
       },
       {
-        label: "I connect people — I'm always making introductions and building bridges",
+        label: "I connect people. I'm always making introductions and building bridges",
         scores: { connector: 4, community_builder: 2 },
       },
       {
-        label: "I manage people — I'm clear about expectations and hold them to it",
+        label: "I manage people. I'm clear about expectations and hold them to it",
         scores: { operator: 3, driver: 2 },
       },
       {
-        label: "I persuade people — I'm direct and I move them toward a decision",
+        label: "I persuade people. I'm direct and I move them toward a decision",
         scores: { driver: 4, connector: 1 },
       },
       {
-        label: "I mobilize people — I create the group energy that makes things happen",
+        label: "I mobilize people. I create the group energy that makes things happen",
         scores: { community_builder: 4, connector: 1 },
       },
       {
-        label: "I advise people — I bring the analysis that makes decisions defensible",
+        label: "I advise people. I bring the analysis that makes decisions defensible",
         scores: { analyst: 4, educator: 1 },
       },
       {
-        label: "I inspire people — I create things worth being excited about",
+        label: "I inspire people. I create things worth being excited about",
         scores: { creative: 3, community_builder: 2 },
       },
     ],
   },
   {
     id: "rejection",
-    question: "When something doesn't work — a prospect says no, a plan fails — what happens for you?",
+    question: "When something doesn't work (a prospect says no, a plan fails), what happens for you?",
     options: [
       {
         label: "I immediately want to understand why so I can improve the approach",
@@ -491,7 +491,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { operator: 4, analyst: 1 },
       },
       {
-        label: "I move on fast — 'no' just tells me where to go next",
+        label: "I move on fast. 'No' just tells me where to go next",
         scores: { driver: 4, operator: 1 },
       },
       {
@@ -517,7 +517,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { educator: 4, empath: 1 },
       },
       {
-        label: "Client satisfaction — are the people we serve actually happy?",
+        label: "Client satisfaction. Are the people we serve actually happy?",
         scores: { empath: 4, community_builder: 1 },
       },
       {
@@ -533,7 +533,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { driver: 4, analyst: 1 },
       },
       {
-        label: "Community engagement — reviews, events, word of mouth",
+        label: "Community engagement. Reviews, events, word of mouth",
         scores: { community_builder: 4, connector: 1 },
       },
       {
@@ -541,7 +541,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { analyst: 4, operator: 1 },
       },
       {
-        label: "Brand perception — how does the market see us?",
+        label: "Brand perception. How does the market see us?",
         scores: { creative: 4, connector: 1 },
       },
     ],
@@ -563,7 +563,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { connector: 2, driver: 3 },
       },
       {
-        label: "I ran operations — managed teams, owned P&Ls, built processes",
+        label: "I ran operations. Managed teams, owned P&Ls, built processes",
         scores: { operator: 4, analyst: 1 },
       },
       {
@@ -571,7 +571,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { driver: 4, connector: 1 },
       },
       {
-        label: "I was community-facing — nonprofit, chamber, local government, events",
+        label: "I was community-facing. Nonprofit, chamber, local government, events",
         scores: { community_builder: 4, connector: 1 },
       },
       {
@@ -589,7 +589,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
     question: "When you imagine yourself three years into owning a franchise, what does the good version look like?",
     options: [
       {
-        label: "I've built a great team — people who grew because of how I developed them",
+        label: "I've built a great team. People who grew because of how I developed them",
         scores: { educator: 4, community_builder: 1 },
       },
       {
@@ -597,11 +597,11 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { empath: 4, connector: 1 },
       },
       {
-        label: "I'm known in my market — everyone refers to me because of the relationships I've built",
+        label: "I'm known in my market. Everyone refers to me because of the relationships I've built",
         scores: { connector: 4, community_builder: 1 },
       },
       {
-        label: "The operation runs like a machine — consistent, scalable, and profitable",
+        label: "The operation runs like a machine. Consistent, scalable, and profitable",
         scores: { operator: 4, analyst: 1 },
       },
       {
@@ -617,7 +617,7 @@ export const QUIZ_QUESTIONS: QuizQuestion[] = [
         scores: { analyst: 4, operator: 1 },
       },
       {
-        label: "My brand stands out locally — better experience, stronger story, more talked about",
+        label: "My brand stands out locally. Better experience, stronger story, more talked about",
         scores: { creative: 4, connector: 1 },
       },
     ],
