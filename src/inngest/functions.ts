@@ -2434,86 +2434,49 @@ export const scorecardNurtureProcess = inngest.createFunction(
             return { sent: true, step: 2 };
         });
 
-        // ── Email 3 — Day 7 (4 more days after Email 2): Soft close ─────────────
+        // ── Email 3 — Day 7 (4 more days after Email 2): band-specific soft close ─
+        // Refactored 2026-05-15: dispatches by 4-band model (<40 / 40-59 / 60-79 / ≥80)
+        // matching the /scorecard landing page result copy. Each band gets a tailored
+        // close. Templates live in src/app/emails/scorecard-day7-{band}.ts.
         await step.sleep("wait-for-scorecard-email-3", "4d");
 
         await step.run("send-scorecard-email-3", async () => {
             const suppress3 = await shouldSuppress();
             if (suppress3.stop) return { skipped: true, reason: suppress3.reason };
 
-            const subject = `Still thinking about it, ${firstName}?`;
+            // Lazy import inside step.run so module-level imports stay minimal
+            const { scorecardDay7StrongHtml, scorecardDay7StrongText } = await import("@/app/emails/scorecard-day7-strong");
+            const { scorecardDay7PromisingHtml, scorecardDay7PromisingText } = await import("@/app/emails/scorecard-day7-promising");
+            const { scorecardDay7WorthExploringHtml, scorecardDay7WorthExploringText } = await import("@/app/emails/scorecard-day7-worth-exploring");
+            const { scorecardDay7EarlyHtml, scorecardDay7EarlyText } = await import("@/app/emails/scorecard-day7-early");
 
-            const htmlBody = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${subject}</title>
-</head>
-<body style="margin:0;padding:0;background:#FAF8F4;font-family:Georgia,'Times New Roman',serif;">
-  <div style="max-width:560px;margin:0 auto;padding:40px 24px;">
-    <div style="margin-bottom:32px;">
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#8E3012;">
-        WAYPOINT FRANCHISE ADVISORS
-      </p>
-    </div>
-    <h1 style="margin:0 0 20px;font-size:26px;font-weight:700;color:#1a1a1a;line-height:1.3;">
-      ${firstName}, still thinking about it?
-    </h1>
-    <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
-      A few days ago you scored ${score}/100 on the Franchise Readiness Quiz. I haven't heard from you since, and that's completely fine. This is a big decision and it deserves time.
-    </p>
-    <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
-      I want to be straightforward with you: I'm not going to send you a dozen emails. This is the last one unless you reach out. I don't believe in pushing people toward something this significant.
-    </p>
-    <p style="margin:0 0 24px;font-size:16px;color:#4a4a4a;line-height:1.7;">
-      What I can offer is 30 minutes where I'll tell you exactly what I think, whether that's "here are three concepts worth exploring" or "honestly, now isn't the right time." Either answer is useful. Neither costs you anything.
-    </p>
-    <div style="background:#0c1929;border-radius:12px;padding:24px 28px;margin:32px 0;">
-      <p style="margin:0 0 8px;font-size:22px;color:#FFFFFF;line-height:1.4;">
-        &ldquo;The worst outcome is making a $300K decision on incomplete information.&rdquo;
-      </p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — Something I say in every first call
-      </p>
-    </div>
-    <p style="margin:0 0 28px;font-size:16px;color:#4a4a4a;line-height:1.7;">
-      If the timing still isn't right, no hard feelings. Bookmark the link and come back when it is.
-    </p>
-    <a href="https://waypointfranchise.com/book"
-       style="display:inline-block;background:#CC6535;color:#0c1929;font-family:Arial,sans-serif;font-size:14px;font-weight:700;padding:16px 32px;border-radius:8px;text-decoration:none;letter-spacing:0.05em;">
-      Book a Free Call When You're Ready
-    </a>
-    <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
-      <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">This is the last email in this series.</p>
-      <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
+            // 4-band dispatch (computed inline, distinct from getScoreTier's 3-tier Email-1 logic)
+            let subject: string;
+            let htmlBody: string;
+            let textBody: string;
+            let band: string;
 
-            const textBody = [
-                `${firstName},`,
-                "",
-                `Still thinking about it?`,
-                "",
-                `A few days ago you scored ${score}/100 on the Franchise Readiness Quiz.`,
-                "",
-                `I'm not going to send you a dozen emails. This is the last one unless you reach out.`,
-                "",
-                `What I can offer is 30 minutes where I'll tell you exactly what I think, whether that's "here are three concepts worth exploring" or "honestly, now isn't the right time." Either answer is useful.`,
-                "",
-                `"The worst outcome is making a $300K decision on incomplete information."`,
-                "",
-                `Book a free call when you're ready: https://waypointfranchise.com/book`,
-                "",
-                `This is the last email in this series.`,
-                plainFooter,
-            ].join("\n");
+            if (score >= 80) {
+                band = "band-strong";
+                subject = `${firstName}, the conversation is overdue`;
+                htmlBody = scorecardDay7StrongHtml(name, score, unsubscribeUrl);
+                textBody = scorecardDay7StrongText(name, score, unsubscribeUrl) + plainFooter;
+            } else if (score >= 60) {
+                band = "band-promising";
+                subject = `${firstName}, you're closer than you think`;
+                htmlBody = scorecardDay7PromisingHtml(name, score, unsubscribeUrl);
+                textBody = scorecardDay7PromisingText(name, score, unsubscribeUrl) + plainFooter;
+            } else if (score >= 40) {
+                band = "band-worth-exploring";
+                subject = `${firstName}, the honest version of where you are`;
+                htmlBody = scorecardDay7WorthExploringHtml(name, score, unsubscribeUrl);
+                textBody = scorecardDay7WorthExploringText(name, score, unsubscribeUrl) + plainFooter;
+            } else {
+                band = "band-early";
+                subject = `${firstName}, the most useful version of this`;
+                htmlBody = scorecardDay7EarlyHtml(name, score, unsubscribeUrl);
+                textBody = scorecardDay7EarlyText(name, score, unsubscribeUrl) + plainFooter;
+            }
 
             await resend.emails.send({
                 from: SCORECARD_FROM,
@@ -2523,11 +2486,14 @@ export const scorecardNurtureProcess = inngest.createFunction(
                 html: htmlBody,
                 text: textBody,
                 headers: unsubscribeHeaders,
-                tags: [{ name: "sequence", value: "scorecard-email-3" }],
+                tags: [
+                    { name: "sequence", value: "scorecard-email-3" },
+                    { name: "band", value: band },
+                ],
             });
 
             await markStep(3, true);
-            return { sent: true, step: 3 };
+            return { sent: true, step: 3, band };
         });
 
         return { status: "Scorecard nurture complete", submissionId };
@@ -2730,5 +2696,168 @@ export const escapeKitNurtureProcess = inngest.createFunction(
         });
 
         return { status: "Escape Kit nurture complete", downloadId };
+    }
+);
+
+// ─── Archetype Quiz Nurture Process ─────────────────────────────────────────
+// Triggered by: nurture/archetype.complete
+// Sends 3 archetype-specific timed follow-ups: Day 3, Day 5, Day 7.
+// Each email is dispatched by archetype ID via ARCHETYPE_SEQUENCES; the templates
+// live in src/app/emails/archetype-day{3,5,7}-{archetype}.ts and were authored to
+// draw on Kelsey's CDO/advisor observer vantage (no synthesized owner stories).
+// Suppression: stops on unsubscribe, TidyCal booking, or REPLIED lead status.
+
+import { getArchetypeSequence } from "@/app/emails/archetype-sequence-dispatcher";
+
+const ARCHETYPE_FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+const ARCHETYPE_REPLY_TO = "kelsey@waypointfranchise.com";
+
+export const archetypeNurtureProcess = inngest.createFunction(
+    { id: "archetype-nurture-process", retries: 2 },
+    { event: "nurture/archetype.complete" },
+    async ({ event, step }) => {
+        const { submissionId, email, name, archetype } = event.data as {
+            submissionId: string;
+            email: string;
+            name: string;
+            archetype: string;
+        };
+
+        const sequence = getArchetypeSequence(archetype);
+        if (!sequence) {
+            return { status: "Skipped — unknown archetype", archetype };
+        }
+
+        // Build HMAC unsubscribe URL inline (mirrors escapeKitNurtureProcess pattern)
+        const unsubscribeUrl = (() => {
+            const secret = process.env.UNSUBSCRIBE_SECRET;
+            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            const crypto = require("crypto");
+            const token = crypto.createHmac("sha256", secret).update(submissionId).digest("hex");
+            const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
+            return `${base}/api/archetype-unsubscribe?id=${submissionId}&token=${token}`;
+        })();
+
+        const plainFooter = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            `To stop receiving these notes: ${unsubscribeUrl}`,
+        ].join("\n");
+
+        const unsubscribeHeaders = {
+            "List-Unsubscribe": `<${unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        };
+
+        // Helper: stop sequence if user opted out, booked a call, or replied
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            const submission = await (prisma as any).archetypeSubmission.findUnique({
+                where: { id: submissionId },
+                select: { unsubscribed: true },
+            });
+            if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                // @ts-ignore — bookedAt added to schema; Prisma client regenerates on deploy
+                select: { status: true, bookedAt: true },
+            });
+            if ((lead as any)?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
+        }
+
+        async function markStep(stepNum: number, completed = false) {
+            await (prisma as any).archetypeSubmission.update({
+                where: { id: submissionId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                },
+            });
+        }
+
+        // ── Email 2 — Day 3: advisor's-perspective story per archetype ──────────
+        await step.sleep("wait-for-archetype-email-2", "3d");
+
+        await step.run("send-archetype-email-2", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: ARCHETYPE_FROM,
+                to: email,
+                replyTo: ARCHETYPE_REPLY_TO,
+                subject: sequence.day3.subject,
+                html: sequence.day3.html(name, unsubscribeUrl),
+                text: sequence.day3.text(name, unsubscribeUrl) + plainFooter,
+                headers: unsubscribeHeaders,
+                tags: [
+                    { name: "sequence", value: "archetype-email-2" },
+                    { name: "archetype", value: archetype },
+                ],
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3 — Day 5: archetype-specific strength + trap insight ─────────
+        await step.sleep("wait-for-archetype-email-3", "2d");
+
+        await step.run("send-archetype-email-3", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: ARCHETYPE_FROM,
+                to: email,
+                replyTo: ARCHETYPE_REPLY_TO,
+                subject: sequence.day5.subject,
+                html: sequence.day5.html(name, unsubscribeUrl),
+                text: sequence.day5.text(name, unsubscribeUrl) + plainFooter,
+                headers: unsubscribeHeaders,
+                tags: [
+                    { name: "sequence", value: "archetype-email-3" },
+                    { name: "archetype", value: archetype },
+                ],
+            });
+
+            await markStep(3);
+            return { sent: true, step: 3 };
+        });
+
+        // ── Email 4 — Day 7: soft discovery-call invite, last in series ─────────
+        await step.sleep("wait-for-archetype-email-4", "2d");
+
+        await step.run("send-archetype-email-4", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: ARCHETYPE_FROM,
+                to: email,
+                replyTo: ARCHETYPE_REPLY_TO,
+                subject: sequence.day7.subject,
+                html: sequence.day7.html(name, unsubscribeUrl),
+                text: sequence.day7.text(name, unsubscribeUrl) + plainFooter,
+                headers: unsubscribeHeaders,
+                tags: [
+                    { name: "sequence", value: "archetype-email-4" },
+                    { name: "archetype", value: archetype },
+                ],
+            });
+
+            await markStep(4, true);
+            return { sent: true, step: 4 };
+        });
+
+        return { status: "Archetype nurture complete", submissionId, archetype };
     }
 );
