@@ -32,7 +32,7 @@ export function scorecardDay7WorthExploringHtml(name: string, score: number, uns
     </p>
 
     <p style="margin:0 0 16px;font-size:16px;color:#4a4a4a;line-height:1.7;">
-      I am keeping the promise I made in the first email. This is the last one unless you reach out. I am writing it because at your score, the most useful next step is rarely to look at brands. It is to identify which one or two things are actually causing the gap. Capital, runway, family alignment, decision clarity, timing. The right answer to that question is what makes the next twelve months either productive or wasted.
+      I am keeping the promise I made in the first email. This is the last one unless you reach out. I am writing it because at your score, the most useful next step is rarely to look at brands. It is to identify which one or two things are actually causing the gap. Capital, runway, family alignment, where you actually stand on the decision, timing. The right answer to that question is what makes the next twelve months either productive or wasted.
     </p>
 
     <!-- Pull quote -->
@@ -41,7 +41,7 @@ export function scorecardDay7WorthExploringHtml(name: string, score: number, uns
         &ldquo;The candidates who score in your range and act on the wrong gap waste a year. The ones who name the right gap are usually ready in six months.&rdquo;
       </p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — Something I have learned by watching the same pattern repeat
+        ... Something I have learned by watching the same pattern repeat
       </p>
     </div>
 
@@ -55,10 +55,10 @@ export function scorecardDay7WorthExploringHtml(name: string, score: number, uns
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        This is the last email in this series. You'll only hear from me again if you reach out. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Readiness Score at waypointfranchise.com. This is the last email in this series. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -76,7 +76,7 @@ The honest version of where you are.
 
 A week ago you scored ${score}/100 on the readiness scorecard. That puts you in the band where the conversation is real and the gap is also real. You are not too early. You are not ready. You are somewhere in between, and most candidates in that range have specific work to do before signing anything would actually be a good decision.
 
-This is the last email unless you reach out. At your score, the most useful next step is rarely to look at brands. It is to identify which one or two things are actually causing the gap. Capital, runway, family alignment, decision clarity, timing.
+This is the last email unless you reach out. At your score, the most useful next step is rarely to look at brands. It is to identify which one or two things are actually causing the gap. Capital, runway, family alignment, where you actually stand on the decision, timing.
 
 "The candidates who score in your range and act on the wrong gap waste a year. The ones who name the right gap are usually ready in six months."
 
@@ -84,9 +84,13 @@ Thirty minutes is what I am asking for. The point of the call is not to sell you
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
 
-This is the last email in this series. You'll only hear from me again if you reach out.
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Readiness Score at waypointfranchise.com. This is the last email in this series.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }

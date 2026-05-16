@@ -41,7 +41,7 @@ export function archetypeDay3AnalystHtml(name: string, unsubscribeUrl: string): 
         &ldquo;The Analysts did not avoid risk. They priced it correctly while everyone else was guessing.&rdquo;
       </p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — A pattern I came to rely on
+        ... A pattern I came to rely on
       </p>
     </div>
 
@@ -53,7 +53,7 @@ export function archetypeDay3AnalystHtml(name: string, unsubscribeUrl: string): 
     <div style="border-left:3px solid #CC6535;padding-left:20px;margin:28px 0;">
       <p style="margin:0 0 8px;font-size:14px;font-weight:700;font-family:Arial,sans-serif;color:#8E3012;letter-spacing:0.1em;text-transform:uppercase;">WHAT THIS MEANS FOR YOU</p>
       <p style="margin:0;font-size:15px;color:#4a4a4a;line-height:1.7;">
-        If you scored Analyst, you are already going to do the due diligence. The work I want to do with you is helping you decide when the model is good enough to act on. Analysts make some of the best franchise decisions in the industry, but only after they decide the data point they are waiting for is not the one that will actually change their answer.
+        If you scored Analyst, you are already going to do the due diligence. The work I want to do with you is helping you decide when the model is good enough to act on. Analysts often make franchise decisions that hold up well over time, but only after they decide the data point they are waiting for is not the one that will actually change their answer.
       </p>
     </div>
 
@@ -67,10 +67,10 @@ export function archetypeDay3AnalystHtml(name: string, unsubscribeUrl: string): 
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -98,7 +98,13 @@ What this means for you: if you scored Analyst, you are already going to do the 
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
+
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }

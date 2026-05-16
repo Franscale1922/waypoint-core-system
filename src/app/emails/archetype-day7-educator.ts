@@ -45,7 +45,7 @@ export function archetypeDay7EducatorHtml(name: string, unsubscribeUrl: string):
         &ldquo;The Educators who hire me are not looking for permission. They are looking for the second opinion that lets them stop researching and start choosing.&rdquo;
       </p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — Something I've said more than once
+        ... Something I've said more than once
       </p>
     </div>
 
@@ -59,10 +59,10 @@ export function archetypeDay7EducatorHtml(name: string, unsubscribeUrl: string):
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        This is the last email in this series. You'll only hear from me again if you reach out. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. This is the last email in this series. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -90,9 +90,13 @@ If the timing is not right yet, bookmark the link and come back when it is. Ther
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
 
-This is the last email in this series. You'll only hear from me again if you reach out.
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. This is the last email in this series.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }

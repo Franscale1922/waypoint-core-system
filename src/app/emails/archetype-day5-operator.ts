@@ -68,10 +68,10 @@ export function archetypeDay5OperatorHtml(name: string, unsubscribeUrl: string):
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -103,7 +103,13 @@ The Operators who land well are not the ones who picked the brand with the longe
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
+
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }

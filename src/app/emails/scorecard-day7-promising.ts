@@ -41,7 +41,7 @@ export function scorecardDay7PromisingHtml(name: string, score: number, unsubscr
         &ldquo;Promising means you are not waiting on a number. You are waiting on a conversation.&rdquo;
       </p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — Something I have said more than once
+        ... Something I have said more than once
       </p>
     </div>
 
@@ -55,10 +55,10 @@ export function scorecardDay7PromisingHtml(name: string, score: number, unsubscr
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        This is the last email in this series. You'll only hear from me again if you reach out. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Readiness Score at waypointfranchise.com. This is the last email in this series. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -84,9 +84,13 @@ Thirty minutes is enough. I will tell you which one or two things are actually s
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
 
-This is the last email in this series. You'll only hear from me again if you reach out.
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Readiness Score at waypointfranchise.com. This is the last email in this series.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }

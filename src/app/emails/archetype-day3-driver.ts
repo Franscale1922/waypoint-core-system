@@ -41,7 +41,7 @@ export function archetypeDay3DriverHtml(name: string, unsubscribeUrl: string): s
         &ldquo;The Drivers I watched did not chase activity. They created it. Then they outran everyone else trying to react to what they had already built.&rdquo;
       </p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:13px;color:#CC6535;">
-        — A pattern I saw repeat across categories
+        ... A pattern I saw repeat across categories
       </p>
     </div>
 
@@ -67,10 +67,10 @@ export function archetypeDay3DriverHtml(name: string, unsubscribeUrl: string): s
     </a>
 
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:12px 0 0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
-        You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
+        Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
       </p>
     </div>
   </div>
@@ -98,7 +98,13 @@ What this means for you: if you scored Driver, the franchise that fits you is on
 
 Book a free call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
+
+---
+Waypoint Franchise Advisors
+P.O. Box 3421, Whitefish, MT 59937
+You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com.
+To stop receiving these notes: ${unsubscribeUrl}
 `.trim();
 }
