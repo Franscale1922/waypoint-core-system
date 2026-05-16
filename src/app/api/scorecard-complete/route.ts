@@ -8,7 +8,10 @@ import { ScorecardSchema } from "@/app/lib/schemas";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+// FROM uses the verified mail.waypointfranchise.com subdomain (apex is reserved for Google Workspace receiving).
+// REPLY_TO uses the apex so any replies land in Kelsey's Gmail inbox.
+const FROM = "Kelsey Stuart <kelsey@mail.waypointfranchise.com>";
+const REPLY_TO = "kelsey@waypointfranchise.com";
 const HIGH_SCORE_THRESHOLD = 70;
 
 export async function POST(req: Request) {
@@ -116,6 +119,7 @@ export async function POST(req: Request) {
     // ── 3. Send Email 1 immediately (scorecard results) — always sent ─────────
     await resend.emails.send({
       from: FROM,
+      replyTo: REPLY_TO,
       to: email,
       subject: `Your Franchise Readiness Score: ${Math.min(score, 98)}/100`,
       html: scoreResultsHtml({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),

@@ -6,7 +6,10 @@ import prisma from "@/lib/prisma";
 import { ArchetypeSchema } from "@/app/lib/schemas";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+// FROM uses the verified mail.waypointfranchise.com subdomain (apex is reserved for Google Workspace receiving).
+// REPLY_TO uses the apex so any replies land in Kelsey's Gmail inbox.
+const FROM = "Kelsey Stuart <kelsey@mail.waypointfranchise.com>";
+const REPLY_TO = "kelsey@waypointfranchise.com";
 
 export async function POST(req: Request) {
   try {
@@ -113,6 +116,7 @@ export async function POST(req: Request) {
 
     await resend.emails.send({
       from: FROM,
+      replyTo: REPLY_TO,
       to: email,
       subject: `Your Franchise Archetype: ${archetypeName}`,
       headers: {

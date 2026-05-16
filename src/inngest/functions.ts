@@ -2261,7 +2261,8 @@ export const checklistNurtureProcess = inngest.createFunction(
 
 import { buildUnsubscribeUrl as buildScorecardUnsubscribeUrl } from "@/lib/nurture-emails";
 
-const SCORECARD_FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+// FROM uses verified mail.waypointfranchise.com subdomain (apex reserved for Google Workspace receiving).
+const SCORECARD_FROM = "Kelsey Stuart <kelsey@mail.waypointfranchise.com>";
 const SCORECARD_REPLY_TO = "kelsey@waypointfranchise.com";
 
 export const scorecardNurtureProcess = inngest.createFunction(
@@ -2709,7 +2710,8 @@ export const escapeKitNurtureProcess = inngest.createFunction(
 
 import { getArchetypeSequence } from "@/app/emails/archetype-sequence-dispatcher";
 
-const ARCHETYPE_FROM = "Kelsey Stuart <kelsey@waypointfranchise.com>";
+// FROM uses verified mail.waypointfranchise.com subdomain (apex reserved for Google Workspace receiving).
+const ARCHETYPE_FROM = "Kelsey Stuart <kelsey@mail.waypointfranchise.com>";
 const ARCHETYPE_REPLY_TO = "kelsey@waypointfranchise.com";
 
 export const archetypeNurtureProcess = inngest.createFunction(
