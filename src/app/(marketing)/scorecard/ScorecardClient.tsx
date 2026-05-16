@@ -198,7 +198,7 @@ export default function ScorecardClient() {
                 {
                   href: "/resources/how-franchise-funding-actually-works",
                   label: "How Franchise Funding Actually Works",
-                  desc: "Cash, ROBS, HELOC, SBA. What each path actually requires.",
+                  desc: "Cash, ROBS, HELOC, SBA... what each path actually requires.",
                 },
               ].map(({ href, label, desc }) => (
                 <a
