@@ -748,7 +748,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             // GPT often ends the body with a standalone "Kelsey" sign-off before its own CTA.
             // After the CTA strip above, that leaves an orphaned "Kelsey," line between the
             // email body and the sanitizer-appended CTA, producing: "...your goals. Kelsey,
-            // Worth a conversation?" — which reads as if Kelsey is addressing herself.
+            // Worth a conversation?" — which reads as if Kelsey is addressing himself.
             // Strip all trailing sign-off variants deterministically before appending the CTA.
             emailText = emailText
                 .replace(/\n+Kelsey[,.]?\s*$/i, "")  // trailing "Kelsey" / "Kelsey," / "Kelsey."
@@ -1011,7 +1011,7 @@ Output ONLY the category name.`;
             });
         });
 
-        // HITL alert — send Kelsey an email for hot replies so she can respond within 15 min
+        // HITL alert — send Kelsey an email for hot replies so he can respond within 15 min
         await step.run("notify-human", async () => {
             const hotReplyClassifications = ["Interested", "Curious", "Ambiguous"];
             if (!hotReplyClassifications.includes(classification)) return;
