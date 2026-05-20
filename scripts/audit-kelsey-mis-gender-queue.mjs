@@ -112,8 +112,7 @@ async function main() {
     select: {
       id: true,
       email: true,
-      firstName: true,
-      lastName: true,
+      name: true,
       company: true,
       draftEmail: true,
       updatedAt: true,
@@ -145,8 +144,7 @@ async function main() {
 
   console.log('--- Flagged leads ---\n');
   for (const { lead, hits } of flagged) {
-    const name = [lead.firstName, lead.lastName].filter(Boolean).join(' ') || '(no name)';
-    console.log(`Lead ${lead.id}  ${lead.email}  ${name}  (${lead.company ?? 'no company'})`);
+    console.log(`Lead ${lead.id}  ${lead.email ?? '(no email)'}  ${lead.name ?? '(no name)'}  (${lead.company ?? 'no company'})`);
     console.log(`  Last updated: ${lead.updatedAt.toISOString()}`);
     for (const h of hits) {
       console.log(`  [${h.type}] line ${h.line}: ${h.snippet}`);
