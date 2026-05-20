@@ -14,8 +14,19 @@
  *   - Therefore: any SEQUENCED lead whose draftEmail was generated before
  *     2026-05-20 may render Kelsey with she/her pronouns
  *
- * Usage:
- *   DATABASE_URL=<neon-prod-url> node scripts/audit-kelsey-mis-gender-queue.mjs
+ * Usage (Prisma schema reads POSTGRES_PRISMA_URL):
+ *
+ *   Easiest — pull prod env from Vercel:
+ *     vercel link                         # one-time, links cwd to project
+ *     vercel env pull .env.production.local --environment=production
+ *     set -a; source .env.production.local; set +a
+ *     node scripts/audit-kelsey-mis-gender-queue.mjs
+ *
+ *   Or inline (single-quote the URL to protect special chars):
+ *     POSTGRES_PRISMA_URL='postgres://...' node scripts/audit-kelsey-mis-gender-queue.mjs
+ *
+ * For convenience this script also accepts DATABASE_URL and copies it
+ * into POSTGRES_PRISMA_URL before initializing Prisma.
  *
  * Output:
  *   - Count of SEQUENCED leads
@@ -30,6 +41,23 @@
  *     workflow/lead.personalize.start, or (b) reset status to ENRICHED and
  *     let the pipeline re-run.
  */
+
+// Compat shim: schema expects POSTGRES_PRISMA_URL, but DATABASE_URL is the
+// more common convention. Honor either.
+if (!process.env.POSTGRES_PRISMA_URL && process.env.DATABASE_URL) {
+  process.env.POSTGRES_PRISMA_URL = process.env.DATABASE_URL;
+}
+
+if (!process.env.POSTGRES_PRISMA_URL) {
+  console.error('ERROR: POSTGRES_PRISMA_URL (or DATABASE_URL) not set.');
+  console.error('');
+  console.error('Pull production env from Vercel:');
+  console.error('  vercel link');
+  console.error('  vercel env pull .env.production.local --environment=production');
+  console.error('  set -a; source .env.production.local; set +a');
+  console.error('  node scripts/audit-kelsey-mis-gender-queue.mjs');
+  process.exit(1);
+}
 
 import { PrismaClient } from '@prisma/client';
 
