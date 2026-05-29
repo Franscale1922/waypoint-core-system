@@ -52,6 +52,27 @@ export default function ResourcesPage() {
       </section>
       <ResourcesGrid grouped={grouped} allArticles={allArticles} />
 
+      {/* Featured: first-party data report (Citation Magnet) */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 pt-12">
+        <Link
+          href="/reports/franchise-matching-2026"
+          className="group block border border-[#CC6535]/40 rounded-xl p-6 sm:p-8 bg-white hover:shadow-sm hover:border-[#CC6535] transition-all"
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+            <div className="flex-1">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-1">First-Party Data Report</p>
+              <p className="font-playfair text-lg text-[#0c1929] mb-1 group-hover:text-[#8E3012] transition-colors">The Franchise Matching Report 2026</p>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed">
+                What 250+ screened brands and 146+ owner matches across 35 states reveal about choosing well, including why roughly 7 in 10 candidates decide not to buy.
+              </p>
+            </div>
+            <span className="flex-shrink-0 inline-flex items-center justify-center px-6 py-3 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] group-hover:bg-[#D4724A] rounded-lg transition-all min-h-[44px]">
+              Read the Report &rarr;
+            </span>
+          </div>
+        </Link>
+      </section>
+
       {/* B-6: Email capture — research-mode visitors */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-12">
         <EmailCapture />
