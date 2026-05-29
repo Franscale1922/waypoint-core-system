@@ -8,6 +8,13 @@ export const localBusinessSchema = {
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. We match burned-out professionals to franchise opportunities that fit their life, capital, and goals.",
   url: SITE_URL,
+  // Real brand/portrait assets in /public — gives Google and AI a visual entity
+  // anchor and clears the "Missing field image" rich-results notice. (No
+  // dedicated logo file exists yet; the header is a text wordmark.)
+  image: [
+    `${SITE_URL}/og_default_1773343895292.png`,
+    `${SITE_URL}/images/kelsey-honest-portrait.jpg`,
+  ],
   email: "kelsey@waypointfranchise.com",
   telephone: "+1-214-995-1062",
   founder: {
@@ -214,4 +221,72 @@ export const franchiseConsultingServiceSchema = {
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Express Car Wash Franchises" } },
     ],
   },
+  // ReserveAction makes the primary conversion (booking a free discovery call)
+  // explicit and machine-actionable for agentic browsers (Project Mariner / UCP)
+  // and AI assistants, which navigate by the accessibility/action graph.
+  potentialAction: {
+    "@type": "ReserveAction",
+    name: "Book a free franchise discovery call",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/book`,
+      actionPlatform: [
+        "http://schema.org/DesktopWebPlatform",
+        "http://schema.org/MobileWebPlatform",
+      ],
+    },
+    result: {
+      "@type": "Reservation",
+      name: "Free 30-minute franchise discovery call",
+    },
+  },
 };
+
+/**
+ * VideoObject schema factory.
+ *
+ * Google requires `name`, `description`, `thumbnailUrl`, and `uploadDate` for a
+ * video to be eligible for video rich results and AI/Ask-YouTube surfacing.
+ *
+ * IMPORTANT: pass `transcript` ONLY when a real, verified transcript of the
+ * spoken content is available. Never fabricate spoken words — an inaccurate
+ * transcript misrepresents what was said and breaks trust/E-E-A-T.
+ */
+export function videoObjectSchema({
+  name,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  duration,
+  embedUrl,
+  contentUrl,
+  transcript,
+}: {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;
+  duration?: string;
+  embedUrl?: string;
+  contentUrl?: string;
+  transcript?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name,
+    description,
+    thumbnailUrl: [thumbnailUrl],
+    uploadDate,
+    ...(duration ? { duration } : {}),
+    ...(embedUrl ? { embedUrl } : {}),
+    ...(contentUrl ? { contentUrl } : {}),
+    ...(transcript ? { transcript } : {}),
+    publisher: {
+      "@type": "Organization",
+      "@id": `${SITE_URL}/#business`,
+      name: "Waypoint Franchise Advisors",
+      url: SITE_URL,
+    },
+  };
+}

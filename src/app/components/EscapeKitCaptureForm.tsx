@@ -67,18 +67,26 @@ export default function EscapeKitCaptureForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-3" id="escape-kit-form">
       <div className="flex flex-col md:flex-row gap-3">
+        <label htmlFor="escape-kit-name" className="sr-only">First name</label>
         <input
           type="text"
           id="escape-kit-name"
+          name="name"
+          autoComplete="given-name"
           placeholder="First name"
+          aria-label="First name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="w-full md:w-36 px-4 py-3 text-sm border border-[#e2ddd2] rounded-lg bg-[#FAF8F4] text-[#0c1929] placeholder-[#9a9a8a] focus:outline-none focus:border-[#CC6535] transition-colors"
         />
+        <label htmlFor="escape-kit-email" className="sr-only">Your email address</label>
         <input
           type="email"
           id="escape-kit-email"
+          name="email"
+          autoComplete="email"
           placeholder="Your email address"
+          aria-label="Your email address"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
@@ -94,7 +102,7 @@ export default function EscapeKitCaptureForm({
         </button>
       </div>
       {status === "error" && (
-        <p className="text-xs text-red-600">
+        <p className="text-xs text-red-600" role="alert">
           Something went wrong. Try emailing kelsey@waypointfranchise.com directly.
         </p>
       )}

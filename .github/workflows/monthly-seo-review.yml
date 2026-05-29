@@ -74,7 +74,15 @@ jobs:
           fi
 
           if [ -f "$CITE_REPORT" ]; then
-            CITE_HITS=$(grep -c "✅" "$CITE_REPORT" 2>/dev/null || echo "0")
+            # Parse the report header lines (robust to table formatting changes).
+            # "**Citation hits:** N of M checks (...)"
+            CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1)
+            CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1)
+            CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p')
+            # "**Share of Voice:** X% presence (...), Y% average share"
+            SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1)
+            SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1)
+            SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p')
           fi
 
           # Build plain-text summary for email
@@ -90,7 +98,8 @@ jobs:
           </table>
 
           <h3>🤖 AI Citation Status</h3>
-          <p>${CITE_HITS:-0} of 24 AI queries returned a Waypoint citation (GPT-4o + Perplexity + Gemini × 8 questions).</p>
+          <p>${CITE_HITS:-0} of ${CITE_TOTAL:-0} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
+          <p><b>Share of Voice:</b> ${SOV_PRESENCE:-—} presence &middot; ${SOV_AVG:-—} average share among tracked franchise advisors.</p>
 
           <h3>✅ Next Step</h3>
           <p>Full reports are committed to <a href="https://github.com/Franscale1922/waypoint-core-system/tree/main/docs/seo-reviews/${MONTH}">docs/seo-reviews/${MONTH}/</a></p>

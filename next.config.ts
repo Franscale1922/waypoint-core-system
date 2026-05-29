@@ -1,8 +1,14 @@
 import type { NextConfig } from "next";
 
+// React + Turbopack require eval() in development for debugging features
+// (reconstructing call stacks, etc.). Production React never uses eval(), so
+// 'unsafe-eval' is added ONLY in dev — the production CSP stays locked down.
+const isDev = process.env.NODE_ENV !== "production";
+const devEval = isDev ? " 'unsafe-eval'" : "";
+
 const ContentSecurityPolicy = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://asset-tidycal.b-cdn.net https://f.vimeocdn.com https://apis.chatbot.revscaleapps.com",
+  `script-src 'self' 'unsafe-inline'${devEval} https://www.googletagmanager.com https://www.google-analytics.com https://asset-tidycal.b-cdn.net https://f.vimeocdn.com https://apis.chatbot.revscaleapps.com`,
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://asset-tidycal.b-cdn.net",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data: https:",

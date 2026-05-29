@@ -138,6 +138,21 @@ export default function BookPage() {
               <TidyCalEmbed path="m7v2jox/waypoint30" />
             </div>
 
+            {/* Crawlable booking fallback — the calendar above is a JS-injected
+                widget that AI agents and no-JS crawlers cannot traverse. This
+                real anchor exposes the booking action to them and serves as a
+                graceful fallback if the embed fails to load. */}
+            <p className="text-center text-xs text-[#9a9a8a]">
+              Calendar not loading?{" "}
+              <a
+                href="https://tidycal.com/m7v2jox/waypoint30"
+                className="text-[#8E3012] hover:underline font-medium"
+                rel="noopener"
+              >
+                Book your free 30-minute call directly →
+              </a>
+            </p>
+
             {/* After you book — post-booking clarity */}
             <div className="bg-white border border-[#e8e0d0] rounded-xl p-5">
               <p className="text-xs font-semibold text-[#CC6535] uppercase tracking-[0.15em] mb-3">After you book</p>

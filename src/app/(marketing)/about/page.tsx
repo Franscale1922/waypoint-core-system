@@ -2,23 +2,69 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
+import { videoObjectSchema } from "../../lib/structured-data";
 
-// Revalidate every hour — re-fetches Vimeo oEmbed thumbnail if it ever changes
+// Revalidate every hour — re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
 
 const VIDEO_ID = "1174270863";
 
-async function getVimeoThumbnail(videoId: string): Promise<string | undefined> {
+// Plain-text transcript of the About video (Kelsey's own words; timestamps and
+// speaker labels stripped, the speech-to-text glitch "Blumen Blinds" corrected
+// to his actual company "Bloomin' Blinds"). Renders in a crawlable <details>
+// block under the player AND is added to the VideoObject schema, making the
+// spoken content extractable by AI answer engines (Ask YouTube, AI Overviews).
+const VIDEO_TRANSCRIPT: string | undefined = `First off, a little context: my family and I started a franchise brand called Bloomin' Blinds about twelve years ago. I was the founder and the CEO, and my family and I ran that company for about twelve years. And then last year, I got tired of being an expensive paperweight. We had hired all the positions and all the jobs that I normally do, so I went to the family and said, "Hey look, I want to go do something else." And so I moved into this role that I am currently in now, which is called a franchise consultant. It's the early, aspirational, kind of dating phase of franchising, and it's my favorite part. Since I had the freedom to choose, this is where I chose to play.
+
+Overall, as a franchise consultant, I am a matchmaker, or a realtor for franchising is another way to say it. I connect with individuals, take some time to listen and learn the criteria that you want for a business, not the widget. I am not concerned at this point if you want to sell popcorn or if you want to run a senior care business. What I am concerned about is what do you want in that business? How do you want it to operate? Hours of operation, types of employees, number of employees, investment level, the different things that you would love about the criteria behind the curtain.
+
+Once I know that information, then I can use it to filter through the two hundred and fifty different brands that we work with, and I can bring back brands that match the criteria. My overall thought is, if I can help you find a business that is a perfect match to your lifestyle, to your goals, to your dreams, to your scale ambitions, does it really matter if you are scooping poop or selling popsicles? To some it matters more than others. But the general concept is, let's find a business that actually matches your life and your desires, and let's choose the widget last. That's how I think franchising goes really well. People who find businesses that they love operating, that's usually how it happens.
+
+I get to do the service for you for free. The brands pay a commission when I present them a buyer who is educated and properly vetted. They would much rather pay us to bring a really qualified candidate than simply run their marketing on Google and sift through the piles of people that come from that. So you don't pay me, you would never pay me a dime. I get a nominal fee from the brand when we have a successful placement. If you decide not to buy anything, then no one pays me anything.
+
+The cool part is, I already have a franchise brand that I still own and my family still operates, so I don't have to do this from a financial perspective. I get to do it because I want to, because I love it. And I think that's a great scenario, because you are never going to catch me trying to push you or anyone else into something that may not be a good fit.
+
+I decided to just do a video instead of typing up an email or sending you to my website. In the long run, this is me, this is what I do, and I absolutely love it. So if you want someone with deep knowledge and lots of roots and history in the franchising space, I'm interested in getting to know you and seeing if I can be helpful. Okay, here's my elevator pitch. Hope you have a great day, and hope we get in contact. Bye.`;
+
+type VimeoMeta = {
+  thumbnailUrl?: string;
+  uploadDate?: string; // ISO 8601 date (required by schema.org VideoObject)
+  duration?: string; // ISO 8601 duration, e.g. PT3M12S
+  title?: string;
+  description?: string;
+};
+
+function secondsToISO8601(seconds: number): string {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `PT${m}M${s}S`;
+}
+
+async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
     const res = await fetch(
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
       { next: { revalidate: 3600 } }
     );
-    if (!res.ok) return undefined;
+    if (!res.ok) return {};
     const data = await res.json();
-    return data.thumbnail_url as string | undefined;
+    // Vimeo returns upload_date as "YYYY-MM-DD HH:MM:SS"; take the date portion.
+    const uploadDate =
+      typeof data.upload_date === "string"
+        ? data.upload_date.slice(0, 10)
+        : undefined;
+    return {
+      thumbnailUrl: data.thumbnail_url as string | undefined,
+      uploadDate,
+      duration:
+        typeof data.duration === "number"
+          ? secondsToISO8601(data.duration)
+          : undefined,
+      title: data.title as string | undefined,
+      description: data.description as string | undefined,
+    };
   } catch {
-    return undefined;
+    return {};
   }
 }
 
@@ -38,9 +84,34 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const thumbnailUrl = await getVimeoThumbnail(VIDEO_ID);
+  const vimeo = await getVimeoMeta(VIDEO_ID);
+  const thumbnailUrl = vimeo.thumbnailUrl;
+  const videoName = "Kelsey Stuart on what honest franchise consulting actually looks like";
+  const videoDescription =
+    "Waypoint Franchise Advisors founder Kelsey Stuart explains, in about three minutes, what honest, no-pitch franchise consulting actually looks like and how he helps people decide whether franchise ownership fits their life.";
+  // Only emit VideoObject schema when Vimeo gives us a real upload date and
+  // thumbnail (both required by schema.org). Never fabricate these values.
+  const videoSchema =
+    vimeo.uploadDate && (thumbnailUrl)
+      ? videoObjectSchema({
+          name: videoName,
+          description: videoDescription,
+          thumbnailUrl: thumbnailUrl,
+          uploadDate: vimeo.uploadDate,
+          duration: vimeo.duration,
+          embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
+          contentUrl: `https://vimeo.com/${VIDEO_ID}`,
+          transcript: VIDEO_TRANSCRIPT,
+        })
+      : null;
   return (
     <>
+      {videoSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }}
+        />
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -138,6 +209,7 @@ export default async function AboutPage() {
             label="3 min · Watch"
             headline="Who is this Kelsey guy?"
             title="Kelsey Stuart on what honest franchise consulting actually looks like"
+            transcript={VIDEO_TRANSCRIPT}
           />
         </div>
       </section>

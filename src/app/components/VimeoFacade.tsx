@@ -16,6 +16,7 @@ export default function VimeoFacade({
   headline = "Hear it from Kelsey",
   title = "Watch the video",
   aspectRatio = "16/9",
+  transcript,
 }: {
   videoId: string;
   thumbnailUrl?: string;
@@ -23,10 +24,18 @@ export default function VimeoFacade({
   headline?: string;
   title?: string;
   aspectRatio?: string;
+  /**
+   * Optional plain-text transcript of the spoken content. When provided it is
+   * rendered in a crawlable <details> block below the player so AI answer
+   * engines (Ask YouTube, AI Overviews) can extract it from the DOM. Only pass
+   * a real, verified transcript — never fabricated speech.
+   */
+  transcript?: string;
 }) {
   const [playing, setPlaying] = useState(false);
 
   return (
+    <>
     <div
       className="relative w-full overflow-hidden rounded-xl bg-[#0c1929] shadow-xl"
       style={{ aspectRatio }}
@@ -89,5 +98,16 @@ export default function VimeoFacade({
         </>
       )}
     </div>
+    {transcript && (
+      <details className="mt-4 rounded-xl border border-[#e8e0d0] bg-white">
+        <summary className="cursor-pointer select-none px-4 py-3 text-xs font-semibold uppercase tracking-[0.15em] text-[#8E3012]">
+          Read the transcript
+        </summary>
+        <div className="px-4 pb-4 text-sm leading-relaxed text-[#3a3a2e] whitespace-pre-line">
+          {transcript}
+        </div>
+      </details>
+    )}
+    </>
   );
 }

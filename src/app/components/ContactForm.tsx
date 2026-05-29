@@ -43,7 +43,7 @@ export default function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="bg-[#0c1929] rounded-xl p-8 text-center">
+      <div className="bg-[#0c1929] rounded-xl p-8 text-center" role="status" aria-live="polite">
         <div className="w-10 h-10 rounded-full bg-[#CC6535]/20 flex items-center justify-center mx-auto mb-4">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#CC6535" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
         </div>
@@ -120,7 +120,7 @@ export default function ContactForm() {
       </div>
 
       {status === "error" && (
-        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2">
+        <p className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2" role="alert">
           {errorMsg}
         </p>
       )}
