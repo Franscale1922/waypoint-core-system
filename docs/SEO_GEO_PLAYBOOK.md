@@ -4,6 +4,23 @@
 
 ---
 
+## Status (last updated May 2026)
+
+Phases 1–4 are the original off-page/GEO plan. Phases 5–8 were added in May 2026 to cover the newer Google I/O 2025/2026 layer (Information Agents, Ask YouTube, agentic browsing, AI Share-of-Voice). The site was already strong on AEO fundamentals (per-article `Article`/`FAQPage`/`BreadcrumbList` schema, site-wide `LocalBusiness`/`Service`/`Person` schema, question-format H2s, the Island Test for extractability), so Phases 5–8 build on that rather than redoing it.
+
+| Phase | Title | Status |
+|---|---|---|
+| 1 | Directory & NAP Synchronization | Manual / ongoing (off-site account work) |
+| 2 | "Atomic" Content Structuring | Partially covered by existing content standards |
+| 3 | Geo-Targeted Landing Pages | Not started |
+| 4 | Original Data Report ("Citation Magnet") | Not started — see Phase 8 note |
+| 5 | Video + Transcripts (Ask YouTube) | **Done** for the About video; frontmatter capability pending |
+| 6 | Agent-Friendly Architecture | **Done** (forms a11y, ReserveAction, crawlable booking link) |
+| 7 | AI Share-of-Voice Measurement | **Done** (SOV upgrade + monthly cron); admin view pending |
+| 8 | Off-Site Citation Pool + Non-Commodity Content | SOP + standards **done**; press section & data report pending |
+
+---
+
 ## Phase 1: Directory & NAP Synchronization (Manual & Delegated)
 This phase establishes the foundational hyper-local authority for Waypoint using your official Name, Address, and Phone (NAP).
 
@@ -110,3 +127,61 @@ Actions:
 
 Please draft the content structure first. Once approved, build the Next.js page.
 ```
+
+---
+
+## Phase 5: Video + Transcripts (Ask YouTube) — DONE (initial)
+
+Since Ask YouTube and AI Overviews surface video, transcripts/chapters/descriptions are conversationally searchable. Video is a citation surface, not just a CRO asset.
+
+### Done
+- `videoObjectSchema()` factory in `src/app/lib/structured-data.ts`.
+- `/about` emits `VideoObject` from real Vimeo oEmbed metadata (name, description, thumbnail, timezone-qualified `uploadDate`, duration, embed/content URLs) — only when real data is present.
+- `VimeoFacade` renders an optional crawlable `<details>` transcript; the About video transcript is populated with Kelsey's verbatim words and also flows into the schema's `transcript` field.
+
+### Remaining
+- Make video a frontmatter-driven article capability (add optional `video:` fields to `content/articles/*.md`, emit `VideoObject` in `src/app/(marketing)/resources/[slug]/page.tsx`) so high-intent articles can attach video + transcript.
+
+---
+
+## Phase 6: Agent-Friendly Architecture — DONE
+
+Chrome-embedded AI Mode and agents (Project Mariner / UCP) navigate by DOM, accessibility tree, and visual render, and increasingly take actions like booking. The conversion path must be machine-navigable.
+
+### Done
+- `ReserveAction` (book-a-call) added to the site-wide `Service` schema so agents understand the bookable action.
+- Crawlable booking-link fallback on `/book` (the TidyCal embed is a JS-injected widget agents cannot traverse).
+- Real `<label>`/`aria-label`/`autoComplete` added to `EscapeKitCaptureForm` (was placeholder-only); ARIA live status/alert announcements added to `ContactForm`.
+
+### Remaining
+- Periodic automated a11y check (axe/Lighthouse) on home, an article, and `/book` as a regression guard.
+
+---
+
+## Phase 7: AI Share-of-Voice Measurement — DONE
+
+As informational clicks fall, "are we cited?" becomes the leading KPI.
+
+### Done
+- `scripts/ai-citation-check.mjs` upgraded from binary cited/not-cited to tracked-set **Share of Voice** (presence SOV + average share vs. a competitor set; FranChoice excluded as we are an affiliate). Query set expanded from 8 to 16 to cover advisor-selection and conversational fan-out intent.
+- `.github/workflows/monthly-seo-review.yml` already schedules the run monthly and now parses real numbers + surfaces SOV in the email summary.
+
+### Remaining
+- Flag GSC impressions-hold / CTR-drop URLs (AI Overview fingerprint) in `scripts/gsc-report.mjs`.
+- Optional read-only admin view under `src/app/admin/` rendering the latest SOV report.
+
+---
+
+## Phase 8: Off-Site Citation Pool + Non-Commodity Content — IN PROGRESS
+
+Information Agents synthesize from across the web; AI engines cite non-commodity content over paraphrase.
+
+### Done
+- `docs/OFFSITE_DISTRIBUTION.md` — SOP turning each published article into LinkedIn posts, community answers, and trade-press angles (authentic participation only, full compliance with content standards).
+- Section 13 of `content/CONTENT-STANDARDS.md` — defines Waypoint's non-commodity edge (decision-process narratives, first-hand operator POV, aggregate anonymized pattern data, proprietary frameworks) within the no-brand / no-earnings constraints, plus a "commodity test."
+- `image[]` added to `LocalBusiness`/`Organization` schema (entity anchor + clears rich-results notice).
+
+### Remaining (needs Kelsey's inputs)
+- **"As Heard On" press section** on `/about` + reflect verified podcast/media URLs in the `Person` schema `sameAs`. Needs confirmed, real URLs (do not publish unverified links).
+- **Original Data Report (Phase 4 "Citation Magnet")** built from genuine aggregate stats only (146+ placements, 35 states, 250+ brands screened, ~30% proceed rate). No invented data, no profitability, no brand names. Needs Kelsey to confirm/supply the dataset before the page is built.
+

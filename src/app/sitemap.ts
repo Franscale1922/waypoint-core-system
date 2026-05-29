@@ -130,6 +130,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
+      url: `${SITE_URL}/reports/franchise-matching-2026`,
+      lastModified: new Date("2026-05-29"),
+      changeFrequency: "yearly",
+      priority: 0.85,
+    },
+    {
       url: `${SITE_URL}/resources/getting-started`,
       lastModified: new Date("2026-03-15"),
       changeFrequency: "monthly",

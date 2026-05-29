@@ -40,6 +40,19 @@ function secondsToISO8601(seconds: number): string {
   return `PT${m}M${s}S`;
 }
 
+// Vimeo's oEmbed `upload_date` is "YYYY-MM-DD HH:MM:SS" (UTC, no offset). Google
+// wants uploadDate as a full ISO 8601 datetime WITH a timezone, so we normalize
+// to "...THH:MM:SSZ". Falls back to midnight UTC for a date-only value.
+function toVideoUploadDate(raw: unknown): string | undefined {
+  if (typeof raw !== "string") return undefined;
+  const s = raw.trim();
+  const dt = s.match(/^(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2}:\d{2})/);
+  if (dt) return `${dt[1]}T${dt[2]}Z`;
+  const dateOnly = s.match(/^(\d{4}-\d{2}-\d{2})$/);
+  if (dateOnly) return `${dateOnly[1]}T00:00:00Z`;
+  return undefined;
+}
+
 async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
     const res = await fetch(
@@ -48,11 +61,9 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
     );
     if (!res.ok) return {};
     const data = await res.json();
-    // Vimeo returns upload_date as "YYYY-MM-DD HH:MM:SS"; take the date portion.
-    const uploadDate =
-      typeof data.upload_date === "string"
-        ? data.upload_date.slice(0, 10)
-        : undefined;
+    // Normalize Vimeo's "YYYY-MM-DD HH:MM:SS" to a timezone-qualified ISO 8601
+    // datetime (Google flags date-only / no-timezone values on VideoObject).
+    const uploadDate = toVideoUploadDate(data.upload_date);
     return {
       thumbnailUrl: data.thumbnail_url as string | undefined,
       uploadDate,

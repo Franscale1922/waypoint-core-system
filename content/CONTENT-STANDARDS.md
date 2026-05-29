@@ -335,3 +335,40 @@ Articles (Section 10) ban Item numbers entirely because the reader is a first-ti
 ### Applies to all asset types
 
 This rule applies to: checklists, buyer guides, one-pagers, email sequences, and any other non-article asset that contains instructional content about evaluating a franchise.
+
+---
+
+## Section 13 — Non-Commodity Content (Citation-Grade Writing)
+
+Google's May 2026 generative-AI guidance is explicit: AI answer engines cite and recommend **non-commodity content** — writing with a distinctive point of view, first-hand experience, or proprietary insight — over **commodity content** that merely paraphrases what is already on the internet. This section defines what non-commodity content means *for Waypoint specifically*, because our other hard rules (no brand names, no profitability claims) close off the usual playbook of "case study with real revenue numbers."
+
+### The Waypoint constraint problem
+
+The standard advice for citation-worthy content is "publish original data and named case studies." We cannot do the obvious version of that: we cannot name brands (Section 2) and we cannot state or imply earnings (Section 1). So our non-commodity edge has to come from somewhere those rules do not touch. It comes from **how Kelsey thinks**, not from **which brand made how much**.
+
+### The four sources of Waypoint's citation-grade content
+
+1. **Decision-process narratives.** Show the actual reasoning, not a generic checklist. "How I decide when to tell someone to walk away" is citable; "10 questions to ask before buying a franchise" is not. The value is the judgment, sequencing, and trade-offs a first-time buyer cannot reconstruct on their own.
+2. **First-hand operator perspective.** Kelsey is simultaneously a former franchisor (built a system to 200+ locations) and a former franchisee who lost money. Almost no one writing franchise content has both seats. Lean on that lived vantage point: what the franchisor is actually optimizing for, what the franchisee actually experiences, where those two diverge.
+3. **Aggregate, anonymized pattern data.** We can describe patterns across the 250+ brands screened and the 146+ placements without naming a single brand or quoting a single earnings figure. "Across the categories we screen, the systems that hold up under validation calls share three traits" is original, proprietary, and fully compliant. State the pattern; never attach it to a named brand or a profit number.
+4. **Proprietary frameworks.** Named, reusable mental models (for example the validation-call-first sequence, or the way we separate the business characteristics a candidate wants from the "widget" they end up selling). A framework with a memorable name and a clear structure is exactly what AI systems extract and attribute.
+
+### The commodity test
+
+Before publishing, apply this test to the core of the piece:
+
+> **Could a competitor write this exact paragraph by reading three other franchise websites? If yes, it is commodity. If it required Kelsey's experience, a Waypoint-specific framework, or our aggregate placement data, it is citation-grade.**
+
+If a section fails the test, the fix is not to add more words. It is to replace the generic explanation with the specific judgment, pattern, or first-hand observation that only Waypoint can supply.
+
+### Examples
+
+- ❌ "There are several ways to finance a franchise, including SBA loans, ROBS, and HELOCs." (Commodity: on every site.)
+- ✅ "When someone tells me they want to use their retirement account to fund the business, the first thing I do is slow them down, because the order you stack funding sources in changes how much risk you are personally carrying." (Process + judgment.)
+
+- ❌ "Recurring-revenue franchises are popular right now." (Commodity.)
+- ✅ "Across the home-services categories we screen, the systems that survive a candidate's validation calls almost always have recurring service agreements rather than one-time jobs. That single trait predicts more about an owner's week than the industry label does." (Aggregate pattern, no brand, no earnings.)
+
+### Relationship to other sections
+
+This section sharpens Section 3 (Reader-First) and Section 4 (AEO). Those tell you to answer directly and write for extraction. This one tells you *what* to put in the extractable slot: a non-commodity insight, not a paraphrase. A piece can satisfy every other rule and still be commodity. It is not done until it passes the commodity test above.
