@@ -8,22 +8,53 @@ Follow this process every time a new resource article is created. This keeps the
 
 Create a new `.md` file in `content/articles/` following the naming convention: `descriptive-slug-with-hyphens.md`.
 
-Include all required frontmatter fields:
+The fastest compliant start is to copy `content/_article-skeleton.md` and fill it in. It already contains every field below plus the answer-first structure and hard-rule reminders.
+
+Include all required frontmatter fields. **The `faqs:` block (exactly 4 questions) is required** by the content standards and is what powers the `FAQPage` schema for AI citation, so it must be present before publishing:
 
 ```yaml
 ---
-title: "Your Article Title Here"
+# ---- REQUIRED ----
+title: "Plain, Searchable Title (what a person would actually type)"
 slug: "your-article-slug-here"
 date: "YYYY-MM-DD"
-category: "Getting Started"   # or "Going Deeper" or "Industry Spotlights"
+category: "Getting Started"   # Getting Started | Going Deeper | Industry Spotlights
 tier: 1                         # 1 = Getting Started, 2 = Going Deeper, 3 = Industry Spotlights
-excerpt: "One to two sentence teaser. This appears on the resources index and in related article cards."
+excerpt: "Self-contained 1-2 sentence answer to the article's main question. Appears in metadata, the resources index, and related-article cards, so it must deliver value on its own."
 relatedSlugs:
   - "slug-of-related-article-one"
   - "slug-of-related-article-two"
   - "slug-of-related-article-three"
+checklistSlug: "universal"      # pick from the table in .agents/workflows/new-article.md, OR delete this line for no widget
+faqs:                           # REQUIRED: exactly 4, each answer standalone (emitted as FAQPage JSON-LD)
+  - q: "A real question a buyer would search?"
+    a: "A complete, standalone answer. Date-qualify figures with 'as of YYYY'. No brand names, no earnings claims."
+  - q: "Second buyer question?"
+    a: "Standalone answer."
+  - q: "Third buyer question?"
+    a: "Standalone answer."
+  - q: "Fourth buyer question?"
+    a: "Standalone answer."
+
+# ---- OPTIONAL (delete if unused) ----
+# updatedAt: "YYYY-MM-DD"       # set when the article is meaningfully revised
+# escapeKit: true               # show the Escape Kit CTA on this article
+# video:                        # OPT-IN per-article VideoObject. Capability deferred (render wiring TBD); never required.
+#   name: "Video title"
+#   description: "One-sentence description."
+#   thumbnailUrl: "https://example.com/thumb.jpg"
+#   uploadDate: "YYYY-MM-DDThh:mm:ss-05:00"
+#   embedUrl: "https://player.vimeo.com/video/XXXXXXXX"
 ---
 ```
+
+### Write for answer extraction (AEO)
+
+Before the related-slug steps, make sure the draft itself follows the answer-first pattern the rest of the library now uses:
+
+- **Atomic summary lead.** The first paragraph (no heading) answers the title's question in 1-2 plain sentences, under ~320 characters. This is the sentence AI engines quote verbatim, so never bury it.
+- **Question-format H2s.** Convert 2-3 of the highest-intent section headings into the actual question a buyer searches (for example, "The Full Funding Picture" becomes "How much cash do you actually need to fund a franchise?"). Keep the answer in the first 1-2 sentences under each. Leave list-label and synthesis headings as plain descriptors; do not turn every H2 into a question, and do not duplicate an FAQ question verbatim.
+- **No em dashes, date-qualified facts, non-commodity core.** See `content/CONTENT-STANDARDS.md` (Sections 11, 6, and 13).
 
 ### Choosing related slugs for the new article
 
@@ -97,10 +128,18 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 
 ## Step 3 — Verify the build
 
-Run the dev server and visit the new article page to confirm the "Keep Reading" section renders with 3 cards.
+First run the structural checks from the repo root. The new slug should be clean on all of them:
 
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system"
+npm run aeo-audit                         # new slug must NOT appear under "missing FAQ", "zero question H2s", or "relatedSlugs != 3"
+npm run test                              # related-slug link check
+grep -c "—" content/articles/<slug>.md    # must be 0 (em-dash ban, Section 11)
+```
+
+Then run the dev server and visit the new article page to confirm the "Keep Reading" section renders with 3 cards.
+
+```bash
+cd "/Users/kelseystuart/Projects/waypoint-core-system"
 npm run dev
 ```
 

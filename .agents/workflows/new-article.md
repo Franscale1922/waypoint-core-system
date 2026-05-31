@@ -19,7 +19,7 @@ Use this workflow any time the intent is to add a new resource article to the si
 **Before drafting a single word, read the full content standards:**
 
 ```
-cat "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/content/CONTENT-STANDARDS.md"
+cat "/Users/kelseystuart/Projects/waypoint-core-system/content/CONTENT-STANDARDS.md"
 ```
 
 This document defines hard requirements that apply to every article without exception:
@@ -28,13 +28,17 @@ This document defines hard requirements that apply to every article without exce
 3. **Reader-First Writing** — WIIFM mindset, tone, and structure rules.
 4. **SEO and AEO Optimization** — keyword, structure, and answer-engine requirements.
 5. **Related Article Library** — `relatedSlugs` requirements and pool maintenance.
+6. **Freshness (Section 6):** date-qualify time-sensitive facts inline with "as of YYYY".
+7. **No FDD item numbers (Section 10):** use plain-language equivalents, never "Item 7 / 19 / 20".
+8. **No em dashes (Section 11):** use colons, commas, or periods. Verify with `grep -c "—"` = 0.
+9. **Non-commodity content (Section 13):** the core must pass the commodity test (Kelsey's first-hand judgment, an aggregate Waypoint pattern, or a named framework, never a paraphrase of other franchise sites).
 
 No article is complete until it passes the pre-publication checklist at the bottom of that document. Run the checklist explicitly before declaring the article done.
 
 Also read the article pool checklist and briefly review 1–2 existing articles to calibrate voice:
 
 ```
-cat "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system/content/new-article-checklist.md"
+cat "/Users/kelseystuart/Projects/waypoint-core-system/content/new-article-checklist.md"
 ```
 
 The writing is direct, first-person where appropriate, avoids hype, and treats the reader as a capable adult making a real business decision.
@@ -72,7 +76,7 @@ Criteria:
 
 ## Step 4 — Draft and save the article
 
-Create the file at `content/articles/{slug}.md` with the following structure:
+Create the file at `content/articles/{slug}.md`. The quickest compliant start is to copy `content/_article-skeleton.md`. The structure:
 
 ```markdown
 ---
@@ -81,20 +85,24 @@ slug: "article-slug-here"
 date: "YYYY-MM-DD"
 category: "Getting Started"
 tier: 1
+checklistSlug: "universal"   # see Step 4b, or delete this line for no widget
 excerpt: "One to two sentence teaser written in the article's voice."
 relatedSlugs:
   - "related-slug-one"
   - "related-slug-two"
   - "related-slug-three"
-faqs:
+faqs:                         # REQUIRED: exactly 4, each answer standalone (FAQPage JSON-LD)
   - q: "Question one?"
-    a: "Answer one — write as a complete, standalone answer. This is used verbatim in FAQPage JSON-LD schema for AEO (AI citation)."
+    a: "A complete, standalone answer, used verbatim in FAQPage JSON-LD schema for AEO (AI citation). Date-qualify figures; no brand names or earnings claims."
   - q: "Question two?"
     a: "Answer two."
   - q: "Question three?"
     a: "Answer three."
+  - q: "Question four?"
+    a: "Answer four."
+# Optional: updatedAt, escapeKit, and an opt-in `video:` block (deferred VideoObject capability). See content/_article-skeleton.md.
 ---
-Opening paragraph — no heading, drops the reader straight into the substance.
+Opening paragraph (the atomic summary): no heading, answers the title question in 1-2 plain sentences. This is the AEO citation hook.
 
 ---
 
@@ -135,6 +143,8 @@ Writing guidelines:
 - Aim for 800–1,200 words. No filler, no hedging phrases like "it's important to note that"
 - **Always include a `faqs` frontmatter block.** These render as both a visible "Common Questions" section AND as `FAQPage` JSON-LD schema automatically. Write answers as complete, standalone sentences.
 - **Primary keyword must appear in the title AND within the first 100 words.**
+- **Convert 2-3 of the highest-intent H2s into the actual question a buyer searches** (for example, "The Full Funding Picture" becomes "How much cash do you actually need to fund a franchise?"), and keep the answer in the first 1-2 sentences under each (the Island Test, Section 7). Leave list-label and synthesis headings as plain descriptors; do not turn every H2 into a question, and do not duplicate an FAQ question verbatim.
+- **No em dashes (—)**: use colons, commas, or periods. Date-qualify time-sensitive facts with "as of YYYY" (Section 6). The core of the piece must be non-commodity (Section 13), not a paraphrase of other franchise sites.
 
 ---
 
@@ -236,10 +246,18 @@ Append social drafts for the new article to `content/social/social-drafts-part-1
 
 ## Step 9 — Verify
 
+First run the structural checks from the repo root:
+
+```bash
+npm run aeo-audit                         # new slug must be clean: FAQ present, has question H2s, relatedSlugs = 3, em dashes = 0
+npm run test                              # related-slug link check
+grep -c "—" content/articles/{slug}.md    # must be 0
+```
+
 Start the dev server if not already running:
 
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system" && npm run dev
+cd "/Users/kelseystuart/Projects/waypoint-core-system" && npm run dev
 ```
 
 Visit `http://localhost:3000/resources/{slug}` and confirm:
