@@ -55,7 +55,20 @@ As of this writing, across 41 articles:
 
 ## 5. The work, in order
 
-### Phase A — Article AEO pass (do first)
+### Phase 0 — Above-the-fold answer layer + hero/LCP audit (cross-cutting)
+
+Modern AEO does not object to hero images. It objects to heroes that leave nothing answer-extractable above the fold. The fix is never "remove the hero" — it is "keep the brand impression AND add an answer-first lede in plain (server-rendered) HTML near the top, then protect LCP." Audit the key marketing templates against: does the first viewport contain a sentence an AI can lift verbatim as the answer to the dominant question for that URL, in HTML (not JS-injected)?
+
+Known state to start from (verify, do not assume):
+- **Homepage (`src/app/(marketing)/page.tsx`): already good.** H1 tagline is immediately followed by an answer-first paragraph ("I'm Kelsey Stuart... I help burned-out professionals figure out if franchise ownership actually makes sense...") plus an "ENTITY BLOCK — AEO answer extraction target." Confirm it renders in initial HTML; otherwise leave it.
+- **`/about` (`src/app/(marketing)/about/page.tsx`): real gap.** The hero subtext paragraph is `className="hidden sm:block"`, so on MOBILE the answer is removed entirely (H1 + photo only). Fix so an answer-extractable sentence is present above the fold on mobile too.
+- **`/resources` and `/book`:** H1s are taglines with descriptive (not strongly answer-first) ledes. Consider tightening the lede to answer the page's dominant question.
+- **Article template lede:** ties to Phase A4 (8 long-lead articles bury the answer). Same principle at the article level.
+- **LCP / Core Web Vitals:** the full-viewport hero image is the LCP element on hero pages. It is already `webp` + `priority` + `fetchPriority="high"` + `next/image`, so likely fine, but run a real Lighthouse/CWV check on home, `/about`, and an article. CWV is not an AEO signal directly, but it feeds the blue-link/RAG layer that powers AI answers.
+
+Principle for any new/edited template: the first ~100 words of every URL should answer that URL's dominant question, in plain HTML. Heroes stay; the answer layer is additive.
+
+### Phase A — Article AEO pass (do after Phase 0, or in parallel)
 
 - **A1. Em dashes (quick, unambiguous):** fix the 6 files above. Replace each `—` per Section 11 guidance (colon / period / comma + conjunction). Verify `grep -c "—"` = 0 each. Re-run `npm run aeo-audit`.
 - **A2. Question-format H2s (highest leverage; CONFIRM STYLE FIRST):** Before a mass pass, do ONE article (suggest `how-franchise-funding-actually-works`) and show Kelsey a before/after so he approves the voice. Then apply to the ~10 highest-intent articles first: funding, true cost, ROI-math, consultant, semi-absentee, FDD-decoded, the comparison pieces (sba-vs-robs, big-name-vs-emerging, fitness, asset-light-vs-capital-heavy). Convert/duplicate 2–3 body H2s into the actual question a buyer searches.
