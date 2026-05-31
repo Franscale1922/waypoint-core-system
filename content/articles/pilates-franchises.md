@@ -13,26 +13,28 @@ checklistSlug: "fitness-wellness"
 faqs:
   - q: "What is a pilates franchise?"
     a: "A pilates franchise is a boutique fitness studio that generates revenue through recurring memberships and class packages, typically focusing on reformer-based, low-impact workouts in a small group setting."
-  - q: "Are pilates franchises profitable?"
+  - q: "What drives the economics of a pilates franchise?"
     a: "The financial performance of a pilates studio depends on balancing premium membership revenue against fixed real estate costs and the high hourly rates required to retain certified instructors."
   - q: "How much does it cost to open a pilates franchise?"
     a: "The initial investment for a boutique pilates studio typically runs higher than other boutique fitness concepts because each studio requires leasing or purchasing specialized reformer machines, alongside the standard retail buildout costs."
   - q: "Do you need to be a pilates instructor to own a franchise?"
     a: "No, franchise owners do not need to be certified instructors; the owner's primary role is managing sales, local marketing, and recruiting talent, while certified trainers deliver the actual product."
 ---
-A pilates franchise is a boutique fitness business that generates revenue through recurring memberships and class packages, focusing on low-impact, reformer-based group workouts. In the broader fitness category, pilates sits at the premium end of the market, attracting a demographic that is willing to pay significantly more than a traditional big-box gym membership.
+A pilates franchise is a boutique fitness business that generates revenue through recurring memberships and class packages, focusing on low-impact, reformer-based group workouts.
+
+In the broader fitness category, pilates sits at the premium end of the market, attracting a demographic that is willing to pay significantly more than a traditional big-box gym membership.
 
 If you are exploring the boutique fitness space, you must understand the specific unit economics of a pilates studio. The model requires balancing a high-ticket membership base against two primary cost drivers: expensive specialized equipment and premium instructor payroll.
 
 ---
 
-## The Equipment Barrier and Studio Capacity
+## Why does reformer equipment limit a pilates studio's revenue?
 
-Unlike a bootcamp or yoga studio where the primary requirement is open floor space, a pilates franchise is built around the reformer machine. 
+Because the studio is built around reformer machines, your class capacity is capped at the number of reformers that fit your floor space, which sets a hard ceiling on revenue per class and drives up the initial investment. Unlike a bootcamp or yoga studio where the primary requirement is open floor space, a pilates franchise is built around the reformer machine. 
 
 This introduces a hard cap on your class capacity. If your real estate footprint only allows for 12 reformers, your absolute maximum revenue per class is fixed at 12 participants. You cannot simply squeeze two more people into the room during a busy Saturday morning session.
 
-This equipment dependency also drives up the initial investment. You must either purchase or lease the reformers as part of your opening costs. When evaluating franchisors, ask directly about their equipment vendor relationships. Strong franchisors leverage their scale to negotiate favorable lease terms or purchase discounts, which can significantly alter your break-even timeline.
+This equipment dependency also drives up the initial investment. You must either purchase or lease the reformers as part of your opening costs. When evaluating franchisors, ask directly about their equipment vendor relationships. Strong franchisors leverage their scale to negotiate favorable lease terms or purchase discounts, which can significantly lower your upfront equipment costs.
 
 ---
 
@@ -56,9 +58,9 @@ When reviewing a franchisor's FDD, look closely at their sales systems. Do they 
 
 ---
 
-## Semi-Absentee Expectations
+## Can you run a pilates franchise semi-absentee?
 
-Boutique fitness is often pitched as a semi-absentee investment. The reality is more nuanced.
+Not from day one. The first year requires your active involvement in community networking, lead generation, and team building, and the model can transition to semi-absentee only by year two or three once the membership base and a reliable studio manager are in place. Boutique fitness is often pitched as a semi-absentee investment. The reality is more nuanced.
 
 While you do not need to be in the studio teaching classes, the first year requires your active involvement in community networking, lead generation, and team building. You cannot simply hire a general manager on day one and expect the studio to fill itself. 
 
@@ -72,7 +74,7 @@ By year two or three, once the membership base is stable and you have a reliable
 
 A pilates franchise is a boutique fitness studio that generates revenue through recurring memberships and class packages, typically focusing on reformer-based, low-impact workouts in a small group setting.
 
-**Are pilates franchises profitable?**
+**What drives the economics of a pilates franchise?**
 
 The financial performance of a pilates studio depends on balancing premium membership revenue against fixed real estate costs and the high hourly rates required to retain certified instructors.
 

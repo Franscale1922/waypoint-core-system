@@ -20,15 +20,17 @@ faqs:
   - q: "What is the difference between behavioral and medical weight loss models?"
     a: "Behavioral models rely on coaching, nutrition planning, and accountability, while medical models integrate physician oversight, prescriptions, and clinical treatments."
 ---
-A weight loss franchise is a consumer-facing business that provides structured programs, coaching, or medical interventions to help clients achieve their health goals. Historically, this category was dominated by behavioral coaching, meal replacements, and nutrition counseling. Today, the landscape is experiencing the most significant disruption in its history.
+A weight loss franchise is a consumer-facing business that provides structured programs, coaching, or medical interventions to help clients achieve their health goals.
+
+Historically, this category was dominated by behavioral coaching, meal replacements, and nutrition counseling. Today, the landscape is experiencing the most significant disruption in its history.
 
 If you are evaluating the weight loss space, you must understand how the introduction of GLP-1 medications has bifurcated the market into two distinct models: clinical intervention and holistic support.
 
 ---
 
-## The Rise of Medical Weight Loss
+## What is a medical weight loss clinic franchise?
 
-The most rapid growth in this category is currently in medical weight loss clinics. These franchises operate as retail medical spaces, offering physician-supervised programs, hormone therapies, and prescription medications. 
+A medical weight loss clinic franchise operates as a retail medical space offering physician-supervised programs, hormone therapies, and prescription medications. The most rapid growth in this category is currently in medical weight loss clinics. These franchises operate as retail medical spaces, offering physician-supervised programs, hormone therapies, and prescription medications. 
 
 The revenue model here is highly attractive due to the recurring nature of the treatments and the premium price point of clinical services. However, this is not a simple retail business. It is a healthcare operation.
 
@@ -50,9 +52,9 @@ When evaluating a behavioral coaching model, look closely at their retention met
 
 ---
 
-## Real Estate and Buildout Considerations
+## How much space and buildout does a weight loss franchise need?
 
-The real estate requirements depend entirely on the model you choose.
+It depends entirely on the model: behavioral coaching centers fit in 1,200 to 1,500 square feet with a simple buildout, while medical clinics need larger, higher-visibility space with clinical buildout requirements that push the investment significantly higher. The real estate requirements depend entirely on the model you choose.
 
 Behavioral coaching centers require relatively small footprints, often 1,200 to 1,500 square feet in class B retail or office park locations. The buildout is simple: consultation rooms, a reception area, and perhaps a small space for retail product displays.
 
@@ -68,7 +70,7 @@ In a behavioral model, you are hiring coaches, nutritionists, and sales staff. Y
 
 In a medical model, you are recruiting nurse practitioners, registered nurses, and managing a medical director relationship. The compensation structures are higher, and the hiring pool is more competitive. You are managing clinical schedules and ensuring compliance with healthcare protocols. 
 
-Both models require a strong sales engine, but the product you are selling—and the team delivering it—are fundamentally different.
+Both models require a strong sales engine, but the product you are selling, and the team delivering it, are fundamentally different.
 
 ---
 

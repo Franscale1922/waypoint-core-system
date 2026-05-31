@@ -29,9 +29,9 @@ Here is what a franchise consultant does, what they cost you, and how to tell th
 
 ---
 
-## What a Franchise Consultant Does
+## What does a franchise consultant actually do?
 
-The closest analogy is a buyer's agent in real estate. When you buy a house, you don't need an agent. But a good one finds you properties you wouldn't have found on your own, helps you read the situation clearly at every step, and warns you about things that aren't obvious from the listing. They get paid by the seller, so they don't add to your costs.
+A good one helps you understand your capital position, define the role you want to play, then finds and vets the concepts that fit and stays with you through funding and the agreement. The closest analogy is a buyer's agent in real estate. When you buy a house, you don't need an agent. But a good one finds you properties you wouldn't have found on your own, helps you read the situation clearly at every step, and warns you about things that aren't obvious from the listing. They get paid by the seller, so they don't add to your costs.
 
 A franchise consultant does most of the same things.
 
@@ -47,7 +47,7 @@ What a consultant does not do: convince you that franchise ownership is the righ
 
 ---
 
-## What It Costs You
+## How much does a franchise consultant cost you?
 
 Nothing, in most cases.
 
@@ -59,7 +59,7 @@ The implication worth thinking through: because a consultant gets paid only when
 
 ---
 
-## How to Tell the Bad Ones Apart
+## How do you spot a bad franchise consultant?
 
 There are two consultant archetypes that are genuinely bad for buyers.
 

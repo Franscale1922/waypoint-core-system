@@ -55,7 +55,7 @@ This model works standalone or as a bolt-on for someone already in home services
 
 ---
 
-## The Operator Profile That Succeeds Here
+## What kind of person succeeds owning a home services franchise?
 
 Home services rewards people who are good at managing crews and processes, not necessarily people who love the work itself. You don't need to know how to seal a parking lot or clean a grill. You need to hire people who do, keep them on schedule, and close the initial commercial or residential account.
 
@@ -68,9 +68,9 @@ Most home services franchises are not semi-absentee at launch. Year one typicall
 
 ---
 
-## What the Numbers Look Like
+## What investment and revenue should you expect from a home services franchise?
 
-Ranges vary considerably by model as of 2025:
+Most home services franchises require $60,000 to $200,000 to start, with strong B2B-focused operators reaching $400,000 to $1M+ in revenue by year two. Ranges vary considerably by model as of 2025:
 
 - **Initial investment:** $60,000–$200,000 depending on equipment requirements and territory size
 - **Revenue by year two (strong performers):** $400,000–$1M+ for B2B-focused models with commercial accounts

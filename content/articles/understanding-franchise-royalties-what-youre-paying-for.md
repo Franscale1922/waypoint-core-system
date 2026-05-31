@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Franchise royalty rates typically run 4–8% of gross revenue — paid every month, for life, whether you're profitable or not. Here's what the royalty actually covers, how to evaluate whether it's worth it, and the red flags to watch for before you sign."
+excerpt: "Franchise royalty rates typically run 4–8% of gross revenue, paid every month, for life, whether you're profitable or not. Here's what the royalty actually covers, how to evaluate whether it's worth it, and the red flags to watch for before you sign."
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "fdd-decoded-what-actually-matters"
@@ -27,9 +27,9 @@ The royalty is what you actually live with for the life of the agreement, and it
 
 ---
 
-## How Royalties Are Structured
+## How are franchise royalties structured?
 
-Franchise royalties come in two main forms, and the distinction matters more than most buyers realize.
+Franchise royalties usually take one of three forms: a percentage of gross revenue, a flat fee or minimum royalty, or stepped rates that start lower during ramp-up. The distinction matters more than most buyers realize.
 
 **Percentage-of-gross.** The most common structure. You pay the franchisor a fixed percentage of your total gross revenue each period, regardless of whether you made money. A 6% royalty on $50,000 in monthly revenue is $3,000, whether your net margin that month was 15% or negative. This structure means your royalty obligation exists even in months when the business is having a hard time.
 
@@ -41,7 +41,7 @@ Franchise royalties come in two main forms, and the distinction matters more tha
 
 ## What the Royalty Is Supposed to Cover
 
-The royalty is the franchisor's revenue. That's the first thing to understand. When you write that check every month, you are funding a company — and a company that isn't funded doesn't survive.
+The royalty is the franchisor's revenue. That's the first thing to understand. When you write that check every month, you are funding a company, and a company that isn't funded doesn't survive.
 
 Part of what you bought when you entered the franchise is membership in a larger organization. You bought the leverage of group purchasing power, the credibility of an established brand, the systems, and the community of other owners operating under the same flag. None of those things maintain themselves. The franchisor needs operating capital to staff a real support team, negotiate national vendor contracts, defend the brand legally, develop new technology, and grow the system in a way that makes your individual location worth more over time.
 
@@ -65,7 +65,7 @@ At a minimum, royalties should be funding:
 
 ---
 
-## How to Evaluate Whether a Royalty Is Worth It
+## How do you know if a franchise royalty is worth paying?
 
 The royalty rate is not the number to optimize. What matters is what you're getting for it.
 

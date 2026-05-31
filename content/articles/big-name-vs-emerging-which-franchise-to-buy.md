@@ -70,7 +70,7 @@ The actual comparison, established versus emerging franchise systems, is more nu
 
 ---
 
-## What Brand Recognition Does and Does Not Do
+## What does brand recognition actually get you in a franchise?
 
 The idea that you're paying franchise fees for brand recognition has become one of the most persistent misconceptions in franchise buying. Royalties fund national marketing, R&D, vendor relationships, training infrastructure, and ongoing operational support. For most franchise concepts, people recognizing the name is a small fraction of the return on those fees.
 
@@ -80,7 +80,7 @@ There are categories, quick-service food being the obvious one, where name recog
 
 ---
 
-## The Hidden Risks in Big, Established Brands
+## What are the risks of buying a big, established franchise?
 
 Large legacy systems carry two structural risks that most buyers don't think about until they're inside one.
 
@@ -94,7 +94,7 @@ If your long-term goal is to build a franchise portfolio, showing up late to a c
 
 ---
 
-## When Emerging Brands Are the Better Bet
+## When is an emerging franchise the better bet?
 
 The case for emerging or mid-size brands comes down to where the upside actually is.
 

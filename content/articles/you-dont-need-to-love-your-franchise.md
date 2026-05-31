@@ -38,13 +38,13 @@ When you care deeply about the specific service your franchise delivers, two thi
 
 ---
 
-## What to Care About Instead
+## What should you care about in a franchise if not passion for the product?
 
-The candidates who do best in franchising tend to care about business itself: building teams, generating and converting leads, reading financials, holding people accountable to systems, and watching the value of the operation grow over time.
+Care about the business itself, not the service it delivers. The candidates who do best in franchising tend to care about building teams, generating and converting leads, reading financials, holding people accountable to systems, and watching the value of the operation grow over time.
 
 If that's where your interest lives, the product category becomes almost secondary. You're looking for a concept with strong unit economics, good franchisee retention, a territory that supports the customer volume you need, and a franchisor that has its support infrastructure built out. Whether the service is window cleaning, senior care, or commercial waste management is, in a meaningful sense, beside the point.
 
-This is the counterintuitive case for franchising over starting something from scratch. When you start from scratch, you need to love what you're building because the early years are not financially rewarding enough to sustain you otherwise. In franchising, you're buying a proven system. The emotional fuel comes from watching the business metrics move, not from loving the product.
+This is the counterintuitive case for franchising over starting something from scratch. When you start from scratch, you need to love what you're building because the early years are lean and grinding, and that passion is often the only thing that sustains you. In franchising, you're buying a proven system. The emotional fuel comes from watching the business metrics move, not from loving the product.
 
 ---
 

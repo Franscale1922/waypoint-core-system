@@ -52,7 +52,7 @@ These franchises are selling you a job. And not even a good one, because a job h
 
 People sometimes say they only want to own one unit and the restrictions don't bother them. That thinking misses the point. The difference between choosing to stay small and being forced to stay small is significant. One gives you flexibility. The other gives you a constraint that will cost you at exit, when buyers want to see scale potential.
 
-Read Items 6 and 9 of the FDD carefully for any restrictions on growth, staffing, or multi-unit development rights before you go further.
+Read the sections of the franchise disclosure document covering your ongoing fees and your obligations as a franchisee carefully, looking for any restrictions on growth, staffing, or multi-unit development rights before you go further.
 
 ---
 

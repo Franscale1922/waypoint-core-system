@@ -26,9 +26,9 @@ Here is how to tell which you're looking at, and why the category as a whole is 
 
 ---
 
-## Many Wellness Franchises Are Fads. Here's How to Tell.
+## Are wellness franchises just a fad?
 
-IV drips. Cryotherapy. Red light therapy. Cold plunges. Each of these has had a moment in the wellness franchise world, and some of them have had rough second chapters.
+Some are, and some are not: single-modality concepts built around one trend carry real fad risk, while diversified models with multiple independent revenue streams are durable businesses. IV drips. Cryotherapy. Red light therapy. Cold plunges. Each of these has had a moment in the wellness franchise world, and some of them have had rough second chapters.
 
 The problem isn't that these concepts don't work. Some of them have real science behind them. The problem is that single-modality wellness businesses have almost no cushion when demand softens. If IV hydration is 100% of your revenue and interest drops by 40% in your market, that's a 40% revenue drop with no offset.
 
@@ -65,7 +65,7 @@ The unit economics in men's health are strong when the service model is tight, b
 
 ---
 
-## The Operator Question
+## What kind of person succeeds in a wellness franchise?
 
 Who succeeds in wellness franchises? Not necessarily people who are personally passionate about wellness, though that doesn't hurt.
 

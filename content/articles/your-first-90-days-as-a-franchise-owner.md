@@ -23,9 +23,9 @@ Most new franchise owners are surprised by what the first 90 days feel like. The
 
 If you're inside that window right now, or preparing for it, here's what matters most.
 
-## Month One: Learn What You Bought
+## What should you focus on in your first month as a franchise owner?
 
-Your franchisor has a training program. Do all of it, even the parts that seem obvious.
+Spend month one entirely on training and learning the unit economics of your concept, before you race ahead to customer acquisition. Your franchisor has a training program. Do all of it, even the parts that seem obvious.
 
 Franchise training is where you encounter the reasoning behind procedures that will seem arbitrary until you understand the system. The best operators spend the first month in training absorbing not just the what but the why, because you'll need to explain it to employees, and you'll need to defend it when someone on your team suggests doing it differently.
 
@@ -69,9 +69,9 @@ At the 90-day mark, you should have a clear picture of:
 
 If those numbers are soft, that's information, not failure. Most franchise businesses have a learning curve that the FDD accounts for. What matters is whether you understand why they're soft and have a specific response, not just optimism.
 
-## The One Thing Most New Owners Get Wrong
+## How involved do you need to be in the first 90 days of a franchise?
 
-Franchise ownership, especially in the first year, requires more active management than most people anticipate. Even "semi-absentee" models require close attention in the early months before the business has stable systems and trained staff.
+More involved than most buyers anticipate. Franchise ownership, especially in the first year, requires more active management than most people anticipate, and even "semi-absentee" models require close attention in the early months before the business has stable systems and trained staff.
 
 The owners who struggle in year one are almost always the ones who stepped back too early. They treated opening day as the end of the hard part rather than the beginning of a different kind of hard part.
 

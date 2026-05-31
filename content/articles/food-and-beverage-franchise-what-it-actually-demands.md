@@ -56,9 +56,9 @@ Food and beverage is not a monolith. Within the category, there are meaningful s
 
 ---
 
-## Who Food Franchising Is Actually Built For
+## Who is a food and beverage franchise actually right for?
 
-The profiles that tend to do well in this category share specific traits:
+Food and beverage franchising fits hands-on operators who like managing people and processes, can run labor rigorously, and have a strong local market presence. The profiles that tend to do well in this category share specific traits:
 
 **Hands-on operators, especially in year one.** The buyers who thrive in food franchising are typically people who don't mind being present in the operation while it's getting built. They like managing people and processes. They get satisfaction from execution, not just strategy. They're not looking to step back immediately, they're building toward that over time.
 
@@ -70,9 +70,9 @@ The profiles that struggle most are buyers who chose food because they love food
 
 ---
 
-## The Questions to Ask Before Buying a Food Franchise
+## What should you ask before buying a food franchise?
 
-If you're seriously evaluating a food concept, these are the questions worth spending real time on:
+Before buying a food franchise, focus your due diligence on average unit volume, the system's recent closure rate, lease terms, realistic labor costs, and the recommended capital reserve for launch. If you're seriously evaluating a food concept, these are the questions worth spending real time on:
 
 - What is the average unit volume for this brand's existing franchisees (ask the franchisor for financial performance data)?
 - What is the franchise system's closure rate for units opened in the last five years?

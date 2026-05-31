@@ -20,7 +20,9 @@ faqs:
   - q: "What kind of owner succeeds in a pet care franchise?"
     a: "The most successful pet care franchise operators are typically strong people managers with an affinity for customer relationships, not necessarily people with veterinary or animal care backgrounds. The business is fundamentally about managing staff, groomers, boarding attendants, dog walkers, and building trust with an emotionally invested clientele. Buyers who choose pet care primarily because they love animals often find that the emotional labor of managing pet incidents (illness, injury, behavioral issues) in a commercial setting is harder than they anticipated. Operational discipline and customer communication skills matter more than personal affection for animals."
 ---
-Pet care is one of the most consistently resilient consumer spending categories in the US economy. Americans have increased spending on their pets through every major recession in the modern era. The category crossed $150 billion in annual spending as of 2024 and has grown in every year of public data going back more than two decades.
+Pet care is one of the most consistently resilient consumer spending categories in the US economy. Americans have increased spending on their pets through every major recession in the modern era.
+
+The category crossed $150 billion in annual spending as of 2024 and has grown in every year of public data going back more than two decades.
 
 That demand profile, emotionally driven, recurring, and broadly insulated from economic cycles, makes pet care franchising worth examining seriously. The category also has structural characteristics that separate it from most consumer service verticals: customers self-select based on deep personal attachment to the service, churn is low when service quality is consistent, and referrals move quickly within communities of pet owners who all know each other.
 
@@ -52,9 +54,9 @@ The constraint in pet training is talent. Quality training requires certified, s
 
 ---
 
-## What Actually Drives Customer Loyalty
+## What drives customer loyalty in a pet care business?
 
-Pet care customers are among the most loyal in consumer services, when the relationship is established and trust is maintained.
+Loyalty in pet care is driven by emotion, not price: consistency and proactive communication keep clients because they are trusting you with something they love. Pet care customers are among the most loyal in consumer services, when the relationship is established and trust is maintained.
 
 The loyalty driver is emotional, not rational. Pet owners are not making utilitarian decisions about where to board their dog or who grooms their cat. They are making trust decisions about who handles something they love. A single negative incident, a sick dog at a boarding facility, a groomer who handles an anxious animal poorly, can end the relationship immediately and generate powerful negative word-of-mouth.
 
@@ -80,7 +82,7 @@ All figures are estimates. Actual investment requirements are disclosed in the f
 
 ---
 
-## Who This Category Fits
+## Who is a pet care franchise the right fit for?
 
 The buyer profile that tends to do well in pet care franchising: a strong people manager who builds customer relationships naturally, is organized enough to run a service operation, and can manage the emotional intensity that comes with caring for animals in a commercial setting.
 

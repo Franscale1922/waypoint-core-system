@@ -16,7 +16,7 @@ faqs:
   - q: "Which type of franchise is easier to run: B2B or B2C?"
     a: "It depends on your background. B2C franchises rely heavily on marketing systems to generate consumer leads. They suit operators who are analytical and comfortable reading marketing data. B2B franchises rely on relationship-driven sales with longer cycles and larger contracts. They suit operators with sales experience or deep industry credibility. Neither is universally easier; both suit different operator profiles."
   - q: "What type of franchise has the strongest unit economics relative to investment?"
-    a: "Asset-light B2B franchises with contract-based recurring revenue have historically produced strong returns relative to invested capital because overhead is lower. Non-brick-and-mortar home services have also performed well since 2020. The more important factor is fit. A well-matched operator in any category will outperform a mismatched one regardless of model type."
+    a: "Asset-light B2B franchises with contract-based recurring revenue have historically operated with lower overhead relative to the capital invested, which is why many operators favor them. Non-brick-and-mortar home services have also drawn steady interest since 2020. The more important factor is fit. A well-matched operator in any category will outperform a mismatched one regardless of model type."
   - q: "What does semi-absentee mean in franchise ownership?"
     a: "Semi-absentee ownership means the day-to-day operation is managed by a hired operator or manager so you do not need to work in the business full-time. It is most practical in brick-and-mortar models with a fixed location and defined staff roles, but some non-brick-and-mortar models also support it. Semi-absentee requires more upfront working capital because you are funding a manager's salary from day one rather than covering the role yourself."
 ---
@@ -26,7 +26,7 @@ There are two axes that matter most. The first is whether the business needs a p
 
 ---
 
-## Physical Location or Not: This Is Your First Decision
+## Does your franchise need a physical location?
 
 The terms "asset-light" and "capital-heavy" map directly onto whether your franchise needs a retail space.
 
@@ -44,13 +44,13 @@ Neither model is better. They suit different operators. The question is which su
 
 ---
 
-## Who Are You Selling To: Consumers or Other Businesses?
+## Should your franchise sell to consumers or other businesses?
 
 The B2B versus B2C distinction changes how the business works day to day, and it has to match how you're wired.
 
 **B2C (business to consumer)** franchises generate leads primarily through marketing, paid ads, SEO, and local visibility. The individual owner-customer relationship matters less than the system's ability to attract and convert volume. If you like digging into marketing data, optimizing spend, and building systems, B2C is typically a natural fit.
 
-**B2B (business to business)** franchises sell to other companies. The contracts are larger, the sales cycles are longer, and individual relationships drive a significant portion of the revenue. If you have a background in sales or deep experience in an industry you'd be selling into, B2B can generate strong returns with a lower volume of customers.
+**B2B (business to business)** franchises sell to other companies. The contracts are larger, the sales cycles are longer, and individual relationships drive a significant portion of the revenue. If you have a background in sales or deep experience in an industry you'd be selling into, B2B can support a substantial business on a lower volume of customers.
 
 The trade-off in B2B: it is not a model for hands-off ownership. The owner's relationships and credibility are part of the product, especially in the early years. If you want to step back from day-to-day operations quickly, a B2B model is going to make that harder.
 

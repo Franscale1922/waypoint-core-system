@@ -24,9 +24,9 @@ Territory selection is one of the decisions that most franchise buyers spend the
 
 If you are evaluating franchises and you have not spent serious time on territory yet, this is worth stopping for.
 
-## Why Territory Matters More Than Brand in Some Models
+## Does franchise territory matter more than the brand?
 
-For territory-based franchises, where you own the right to operate in a defined geographic area, the territory is as much of the investment as the franchise itself. Two franchisees in the same system with the same training and the same effort will produce very different results if one is operating in a dense, underserved market and the other is fighting over a saturated area.
+For territory-based franchises, it can. Where you own the right to operate in a defined geographic area, the territory is as much of the investment as the franchise itself. Two franchisees in the same system with the same training and the same effort will produce very different results if one is operating in a dense, underserved market and the other is fighting over a saturated area.
 
 The brand gets you the playbook. The territory determines the opportunity.
 
@@ -38,9 +38,9 @@ This matters differently depending on the type of franchise:
 
 **B2B franchise concepts:** Territory often defines your right to call on specific industries, geographies, or business types. Understanding who your prospects are and whether they are concentrated in your territory matters more than raw headcount.
 
-## What to Look For in a Territory
+## How do you evaluate a franchise territory before signing?
 
-Most franchisors provide demographic data as part of the territory selection process. Some use proprietary maps built on census data, household income, and psychographic profiles. Others use simpler radius-based protection. Know which model your franchisor uses before you rely on it.
+Evaluate a territory on four things: the density of your actual target customer, the competitive landscape including any territories returned nearby, whether the area is growing or declining over a 5-10 year window, and how comparable territories have performed. Most franchisors provide demographic data as part of the territory selection process. Some use proprietary maps built on census data, household income, and psychographic profiles. Others use simpler radius-based protection. Know which model your franchisor uses before you rely on it.
 
 The questions that matter when evaluating a specific territory:
 

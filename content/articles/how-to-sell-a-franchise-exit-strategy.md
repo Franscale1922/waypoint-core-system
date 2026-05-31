@@ -13,7 +13,7 @@ faqs:
   - q: "Can you sell a franchise you own?"
     a: "Yes. Franchise owners can sell their unit to a new buyer, subject to franchisor approval. The franchisor must approve the transfer, has the right to vet the buyer, and typically charges a transfer fee. Some franchise agreements also include a right of first refusal that allows the franchisor to buy the unit before it can be sold to an outside buyer. Selling a franchise is a structured process, not a private transaction, the franchisor is a required participant."
   - q: "How is a franchise unit valued for sale?"
-    a: "Franchise resales are most commonly valued as a multiple of EBITDA, earnings before interest, taxes, depreciation, and amortization, typically between 2x and 4x for a healthy, well-documented unit as of 2026. The multiple is influenced by the remaining term on the franchise agreement, the unit's revenue trend, the transferability of the customer base, lease terms, and the overall health of the franchisor's system. Distressed or underperforming units often sell at or below asset value, which is significantly below what a performing unit would command."
+    a: "Franchise resales are valued on the strength of the individual unit, not a single formula. The number is shaped by the time left on the franchise agreement, the unit's revenue trend, how transferable the customer base is, the lease, and the overall health of the franchisor's system. A healthy, well-documented unit commands far more than a distressed or underperforming one, which often sells at or below the value of its tangible assets. Work the specific valuation with an accountant who knows franchise resales."
   - q: "How long does it take to sell a franchise?"
     a: "Franchise resales typically take six to eighteen months from the decision to sell through closing, depending on how well-prepared the seller is, market conditions, and the speed of the franchisor's transfer approval process. Sellers who have clean financials, an organized operations team, and a business that doesn't depend on the owner personally tend to sell faster and at better valuations. Sellers who begin preparing after they've already decided to leave often discover that preparation takes longer than the actual sale."
   - q: "What makes a franchise harder to sell?"
@@ -35,13 +35,13 @@ By contrast, a franchise unit where leads come through marketing channels, staff
 
 ---
 
-## What Determines Your Exit Valuation
+## What determines how much a franchise sells for?
 
-Franchise resales are typically valued as a multiple of EBITDA, earnings before interest, taxes, depreciation, and amortization. For a healthy, well-documented unit, that multiple generally falls between 2x and 4x as of 2026.
+Franchise resales are valued on the strength of the individual unit, not a single formula. A healthy, well-documented unit commands far more than a distressed one, which often sells at or below the value of its tangible assets.
 
-The multiple is not fixed. It moves based on several variables you can affect:
+The valuation is not fixed. It moves based on several variables you can affect:
 
-**Revenue trend.** A business with three years of growing revenue commands a higher multiple than one with flat or declining revenue, even at the same absolute level. Buyers and their advisors look at direction, not just the current number. The last two to three years before a sale set the narrative.
+**Revenue trend.** A business with three years of growing revenue commands a higher valuation than one with flat or declining revenue, even at the same absolute level. Buyers and their advisors look at direction, not just the current number. The last two to three years before a sale set the narrative.
 
 **Remaining franchise term.** The term structure in a resale depends on the franchisor. Some franchisors require the buyer to assume the remaining term of the existing agreement, which means a unit with three years left transfers with three years left. Others issue the new buyer a full, fresh franchise agreement, resetting the term entirely. Both approaches are used in the industry, and which one applies will be specified in your franchise agreement's transfer provisions.
 
@@ -59,7 +59,7 @@ As a seller, this matters because buyers want runway. A unit with limited time l
 
 Exit preparation is not something you do in the six months before you sell. It's a practice you maintain throughout ownership, and it accelerates as you approach the sale horizon.
 
-**Three to five years out:** Document your systems. Build a playbook the next owner can use. Develop the management team so the business doesn't depend on your daily presence. Grow revenue consistently. The last three years are the ones that set the multiple.
+**Three to five years out:** Document your systems. Build a playbook the next owner can use. Develop the management team so the business doesn't depend on your daily presence. Grow revenue consistently. The last three years are the ones that set the valuation.
 
 **One to two years out:** Have a qualified accountant clean up your books and prepare normalized financials that show true business performance. Understand your lease renewal timeline. Have a frank conversation with your franchise development contact at the franchisor about the transfer process and their requirements.
 
@@ -77,9 +77,9 @@ Franchisors that have active resale support programs, where the corporate team h
 
 ---
 
-## When to Sell
+## When is the best time to sell a franchise?
 
-There is no universal answer, but two principles hold consistently:
+There is no universal answer, but two principles hold consistently: sell from strength rather than necessity, and align your exit with the franchise system's momentum.
 
 **Sell from strength, not necessity.** The best exits happen when the business is performing well and the seller is ready, not when the seller is burned out and the revenue trend is declining. Buyers sense desperation and distress, and they price it heavily. If you know you're going to want out in the next three to five years, begin preparing now.
 
@@ -99,7 +99,7 @@ Yes. Franchise owners can sell their unit to a new buyer, subject to franchisor 
 
 **How is a franchise unit valued for sale?**
 
-Franchise resales are most commonly valued as a multiple of EBITDA, earnings before interest, taxes, depreciation, and amortization, typically between 2x and 4x for a healthy, well-documented unit as of 2026. The multiple is influenced by the remaining term on the franchise agreement, the unit's revenue trend, the transferability of the customer base, lease terms, and the overall health of the franchisor's system.
+Franchise resales are valued on the strength of the individual unit, not a single formula. The number is shaped by the remaining term on the franchise agreement, the unit's revenue trend, the transferability of the customer base, lease terms, and the overall health of the franchisor's system. A healthy, well-documented unit commands far more than a distressed one.
 
 **How long does it take to sell a franchise?**
 

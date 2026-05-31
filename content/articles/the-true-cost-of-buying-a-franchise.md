@@ -31,9 +31,9 @@ Here's how to think about all four before you look at a single concept.
 
 ---
 
-## What the Cost Ranges Look Like
+## What does a franchise actually cost, all-in?
 
-Before anything else, the type of franchise you're buying changes the cost conversation completely.
+As of 2026, the all-in cost typically runs $150,000 to $350,000 for non-brick-and-mortar concepts and $300,000 to $800,000 or more for brick-and-mortar. The type of franchise, not the franchise fee, drives the number. Before anything else, the type of franchise you're buying changes the cost conversation completely.
 
 **Brick-and-mortar franchises** (wellness studios, fitness concepts, child enrichment, retail, food) run $300,000 to $800,000 or more all-in as of 2026. Real estate, buildout, equipment, and leasehold improvements drive those numbers up fast. You are building out a physical space from scratch in most cases, and construction costs are what they are.
 
@@ -67,7 +67,7 @@ A safe rule: whatever you think you'll need, add to it. Not because franchises a
 
 ---
 
-## You Probably Don't Need All of It in Cash
+## How much cash do you actually need up front?
 
 A $400,000 franchise investment does not mean you need $400,000 sitting in a bank account.
 

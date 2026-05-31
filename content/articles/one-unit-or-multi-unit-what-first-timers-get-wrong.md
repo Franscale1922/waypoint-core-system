@@ -77,9 +77,9 @@ The number you should know before you decide: most buyers who work with advisors
 
 ---
 
-## Why "Just One" Sounds Safe but Isn't
+## Is it a mistake to buy just one franchise unit?
 
-The logic behind starting with one unit is understandable. Less capital, less exposure, more manageable. If it doesn't work, the loss is contained.
+Often, yes. Starting with a single unit gives up territory, caps your exit value, and can leave you owning a job instead of an asset. The logic behind starting with one unit is understandable. Less capital, less exposure, more manageable. If it doesn't work, the loss is contained.
 
 The problem is what you give up.
 
@@ -91,9 +91,9 @@ The problem is what you give up.
 
 ---
 
-## Why 2–5 Units Is the Sweet Spot
+## How many franchise units should a first-time buyer purchase?
 
-The answer isn't to overcommit. Ten units across multiple states from day one is how people get buried. Two to five units in a defined area is where the math starts working in your favor.
+For most first-time buyers, 2 to 5 units in a defined, contiguous area is the range where manageable risk and real growth potential align. The answer isn't to overcommit. Ten units across multiple states from day one is how people get buried. Two to five units in a defined area is where the math starts working in your favor.
 
 Here's the distinction by type:
 

@@ -20,11 +20,15 @@ faqs:
   - q: "Is a senior care franchise semi-absentee?"
     a: "Most senior care franchise models are not semi-absentee at launch. Non-medical agencies require active involvement in caregiver recruitment, scheduling, and compliance during the first one to two years. Full-spectrum skilled care requires hands-on management of licensed clinical staff from day one. Some operators transition to a management-level role by year three as the team stabilizes. The matchmaking model, with its lower staffing overhead, may become semi-manageable earlier, but still requires sustained relationship-building and sales activity."
 ---
-Senior care is one of the most recession-resistant franchise categories available, and one of the most commonly misread. Most people lump it into one bucket. That's a mistake. There are three meaningfully different ways to operate in this space, and picking the wrong model for your personality and skill set is how good candidates end up miserable.
+Senior care is one of the most recession-resistant franchise categories available, and one of the most commonly misread.
+
+Most people lump it into one bucket. That's a mistake. There are three meaningfully different ways to operate in this space, and picking the wrong model for your personality and skill set is how good candidates end up miserable.
 
 ---
 
-## The Category Has Three Very Different Business Models
+## What are the main senior care franchise models?
+
+There are three structurally different models: traditional non-medical home care agencies that employ caregivers directly, full-spectrum skilled care that adds clinical services and insurance reimbursement, and matchmaking that connects families with independent caregivers without employing them.
 
 **1. Traditional non-medical home care agencies** hire caregivers directly, send them into clients' homes, and manage scheduling, compliance, and payroll in-house. The staffing model carries real overhead, but the concept is familiar, scalable, and has strong brand recognition in most markets.
 
@@ -63,9 +67,9 @@ If you find people management genuinely draining, senior care will grind you dow
 
 ---
 
-## The Real Risk Factor: Staffing
+## What is the hardest part of running a senior care franchise?
 
-Ask any senior care franchise owner what keeps them up at night and you'll hear the same answer: staffing.
+Staffing is the hardest part: ask any senior care franchise owner what keeps them up at night and you'll hear the same answer.
 
 Caregiver turnover in home care runs 65-80% annually across the industry. That's a structural reality of low-wage service work, not unique to any single brand. Some franchise systems have built management tools to handle it better than others. Before you sign any franchise agreement in this category, look at the franchisor's financial performance data for existing units, but spend equal time reviewing how many franchise owners left the system in the last three years. If franchise owner turnover is high, that tells you something different than what the marketing deck will.
 

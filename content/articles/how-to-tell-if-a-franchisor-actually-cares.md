@@ -36,7 +36,9 @@ The history of franchising has clear examples of franchisors driving system-wide
 
 This doesn't mean every franchisor is misaligned. Most aren't. But the incentive structure means you shouldn't assume alignment. You should confirm it.
 
-## Signs of Misalignment
+## What are the warning signs of a misaligned franchisor?
+
+The clearest signs are price controls without cost controls, locations opening too close together, leadership distracted by new concepts, and a franchisor who will sell to nearly any qualified candidate.
 
 **Price controls without cost controls.** When a franchisor dictates what you can charge but doesn't cushion you when input costs rise, you absorb the financial hit. Ask franchisees: "Has corporate pricing ever hurt your unit's financial performance? What happened?"
 
@@ -56,9 +58,9 @@ This doesn't mean every franchisor is misaligned. Most aren't. But the incentive
 
 **Franchisee retention rate.** The franchise disclosure document requires the franchisor to disclose every franchisee who has left the system in the last three years, including whether they transferred, terminated, or exited another way. A high retention rate across a large system is the clearest evidence that the system works for operators.
 
-## How to Find Out Before You Sign
+## How can you confirm a franchisor is aligned with franchisees before signing?
 
-Validation calls, conversations with current franchisees you choose yourself from the full contact list in the disclosure document, are where you learn this. Not the success stories the franchisor points you to. The ones who had a rough second year.
+You confirm it through validation calls: conversations with current franchisees you choose yourself from the full contact list in the disclosure document. Not the success stories the franchisor points you to. The ones who had a rough second year.
 
 Questions that surface alignment:
 - "If you had a bad month and needed to talk to someone at corporate, what happened?"

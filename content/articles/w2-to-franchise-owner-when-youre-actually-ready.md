@@ -25,9 +25,9 @@ A lot of people look at franchise ownership as an exit from corporate life. That
 
 If you're considering leaving your job to buy a franchise, the question you need to answer honestly is: are you running toward something, or away from something? The answer changes everything about whether this is the right move and the right time.
 
-## What You Are Giving Up
+## What do you give up when you leave a W-2 job to buy a franchise?
 
-Before the appeal of "being your own boss" takes over, be honest about what a W-2 job actually provides.
+You give up predictable income, a defined scope of responsibility, limited downside, and the ability to exit cleanly with two weeks' notice. Before the appeal of "being your own boss" takes over, be honest about what a W-2 job actually provides.
 
 **Predictable income.** You know what's hitting your account every two weeks. That predictability has real value, especially if you have a mortgage, dependents, or tuition payments. Run the numbers on replacing your health insurance before you leave. It's expensive.
 
@@ -51,11 +51,9 @@ The reasons to make the leap are also real.
 
 **Revenue diversification.** Your entire income currently comes from one employer. One bad quarter, one reorganization, one new VP who doesn't like you: 100% of your income is at risk at all times. A franchise business distributes that risk across hundreds or thousands of customers. In most franchise models, even your single largest customer represents less than 15% of revenue.
 
-## The Real Readiness Test
+## How do you know if you are ready to leave your job to buy a franchise?
 
-After working through this with hundreds of people, the single best indicator of readiness isn't capital or credit score or business experience.
-
-The test: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job before the business stabilizes, and does that prospect excite you or terrify you?
+The single best indicator of readiness isn't capital or credit score or business experience. The test: can you handle 18 months of uncertainty, potentially longer hours, and less income than your current job before the business stabilizes, and does that prospect excite you or terrify you?
 
 If it excites you, you're probably ready.
 

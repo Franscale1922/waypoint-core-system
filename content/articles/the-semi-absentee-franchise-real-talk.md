@@ -24,9 +24,9 @@ Keeping your job while a franchise grows in the background sounds like the smart
 
 If you're looking at franchises and planning to hold onto your salary until the business proves itself, you should know what that path looks like before you commit to it.
 
-## What the "Keep My Job" Plan Does to a Business
+## Can you keep your job while a franchise grows in the background?
 
-The logic is straightforward: job gives you income, franchise grows in parallel, eventually the franchise income exceeds the job income, you walk away. Clean.
+You can, but nine times out of ten it backfires: the safety net of a salary makes the business less likely to get the urgency it needs. The logic sounds straightforward: job gives you income, franchise grows in parallel, eventually the franchise income exceeds the job income, you walk away. Clean.
 
 The reality is a feedback loop that stalls most businesses before they get traction.
 
@@ -36,7 +36,7 @@ This isn't just a patience issue. Businesses run by part-time owners with safety
 
 The safety net of your job can make the business less likely to succeed, not more.
 
-## The Two Paths That Work
+## What actually works instead of keeping your job?
 
 If the concern behind "I'll keep my job" is personal cash flow, there are better solutions than splitting your attention.
 
@@ -46,7 +46,7 @@ The other benefit: when the salary is built into the model from the start, the b
 
 **Spouse-run model.** One partner keeps their income, the other runs the business full-time. This is owner-operated in the meaningful sense. Somebody with real decision-making authority is in the business daily. It's not the same as remote absentee ownership. This works when the roles are clear and the non-operating partner genuinely stays out of day-to-day decisions.
 
-## What "Semi-Absentee" Means
+## What does semi-absentee franchise ownership actually mean?
 
 Every franchise says something different about owner involvement, and the terminology is loose. "Semi-absentee" in the franchise world usually means the business is designed to be run by a manager day-to-day, with the owner checking in for a few hours a week. Think a gym model where you hire a studio manager, or a home services concept where you hire a field supervisor.
 

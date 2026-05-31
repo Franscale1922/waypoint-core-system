@@ -32,9 +32,9 @@ The result is a revenue model that holds up when consumer spending contracts, be
 
 ---
 
-## The Two Structures in Restoration Franchising
+## What are the different types of restoration franchises?
 
-The restoration category has two meaningfully different models. Understanding both before evaluating a specific franchise is essential.
+The restoration category has two meaningfully different models: full-service disaster restoration that handles the entire job, and specialty restoration that solves one component within a larger disaster job. Understanding both before evaluating a specific franchise is essential.
 
 **Full-service disaster restoration**
 
@@ -58,9 +58,9 @@ The advantage of specialization: you're not competing head-to-head with every fu
 
 ---
 
-## What Makes Someone Successful in Restoration
+## What kind of owner does well in a restoration franchise?
 
-Restoration is not a passive business for the first two years. Regardless of model, you're building relationships with a commercial B2B audience while simultaneously managing operations and staff.
+The owners who do well combine project management instinct, comfort with B2B relationship-building, tolerance for on-call demands, and enough working capital to manage insurance payment timelines. Restoration is not a passive business for the first two years. Regardless of model, you're building relationships with a commercial B2B audience while simultaneously managing operations and staff.
 
 The operators who do well share a few characteristics:
 

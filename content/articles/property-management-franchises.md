@@ -20,15 +20,15 @@ faqs:
   - q: "What licensing is required to run a property management franchise?"
     a: "Licensing requirements vary significantly by state. Many states require a real estate broker's license or a dedicated property management license to operate legally. Some franchise systems handle this by structuring the franchisee as a manager under the franchisor's license in the early phase, while others require franchisees to obtain their own license before opening. Confirm the licensing path for your state before signing anything, and ask the franchisor specifically how they support franchisees through the licensing process."
 ---
-Property management franchises are a category that looks simple from the outside and turns out to be more operationally layered than most buyers expect. The core model is recurring: you manage rental properties for owners who do not want to deal with tenants, maintenance calls, or lease administration. In exchange, you collect a percentage of rent each month plus fees for specific services. The revenue is contractual and predictable. The work is relationship-intensive and compliance-driven.
+A property management franchise is a recurring-fee business: you manage rental properties for owners who don't want to deal with tenants, maintenance calls, or lease administration, and in exchange you collect a percentage of rent each month plus fees for specific services.
 
-This is not a passive business, but it is a real business with a durable demand signal. The US residential rental market has grown significantly over the past decade, and a meaningful portion of rental property owners actively want to hand off day-to-day management. That gap is what the franchise model is built to capture.
+The revenue is contractual and predictable. The work is relationship-intensive and compliance-driven. It looks simple from the outside and turns out to be more operationally layered than most buyers expect. This is not a passive business, but it is a real business with a durable demand signal: the US residential rental market has grown significantly over the past decade, and a meaningful portion of rental property owners actively want to hand off day-to-day management. That gap is what the franchise model is built to capture.
 
 ---
 
-## What the Business Model Actually Is
+## How does a property management franchise make money?
 
-The franchisee in a property management model is not a landlord. You do not own the properties. You are the operational layer between the property owner and the tenant, and you are compensated for managing that relationship on the owner's behalf.
+A property management franchise earns recurring fees for managing rental properties on the owner's behalf: a monthly management fee as a percentage of rent collected, plus fees for leasing, lease renewals, and maintenance coordination. The franchisee is not a landlord. You do not own the properties. You are the operational layer between the property owner and the tenant, and you are compensated for managing that relationship on the owner's behalf.
 
 Revenue comes from several sources:
 
@@ -53,9 +53,9 @@ This model is a poor fit for buyers who need a straightforward, transactional bu
 
 ---
 
-## The Licensing Reality
+## Do you need a license to run a property management franchise?
 
-This is the most important operational detail to resolve before you go further in evaluating any property management franchise: licensing requirements vary significantly by state, and some states have meaningful requirements that affect how quickly you can open and operate.
+In many states, yes: a real estate broker's license or a dedicated property management license is required to manage properties legally, though requirements vary significantly by state. This is the most important operational detail to resolve before you go further in evaluating any property management franchise: some states have meaningful requirements that affect how quickly you can open and operate.
 
 Many states require a real estate broker's license or a dedicated property management license to manage properties legally. Some states have no specific licensing requirement beyond a general business license. Others have strict requirements that take months to satisfy.
 

@@ -40,9 +40,9 @@ This is the high-margin, one-time revenue game. A client needs a permanent plant
 
 ---
 
-## The Working Capital Challenge
+## Why do staffing franchises need so much working capital?
 
-The most critical factor to evaluate in a staffing franchise is how the system handles payroll funding. In the temporary placement side of the business, you must pay your workers every week. However, your B2B clients will typically negotiate net-30 or net-60 payment terms. 
+Because you must pay temporary workers every week, while your B2B clients typically negotiate net-30 or net-60 payment terms. The most critical factor to evaluate in a staffing franchise is how the system handles payroll funding. 
 
 This creates a massive cash flow gap. You are floating payroll for weeks before the client invoice is paid. If you secure a huge contract, you could go bankrupt simply from the working capital required to service it. 
 
@@ -50,9 +50,9 @@ Most top-tier staffing franchisors solve this by financing the payroll for you. 
 
 ---
 
-## The Operator Profile
+## Who is a good fit to own a staffing franchise?
 
-This is a sales-driven business. You are not buying a brand name that will spontaneously generate walk-in traffic. You are buying an operating system, compliance frameworks, and back-office support. 
+This is a sales-driven business that fits people who excel at B2B networking and can manage a team of recruiters. You are not buying a brand name that will spontaneously generate walk-in traffic. You are buying an operating system, compliance frameworks, and back-office support. 
 
 As the owner, your primary job is outward-facing. You must build relationships with local HR directors, plant managers, and business owners. At the same time, your internal team must be aggressively recruiting the workforce needed to fulfill those contracts. If you prefer to sit behind a desk and optimize spreadsheets, this is the wrong model. If you excel at B2B networking and can manage a team of recruiters, the scale potential is significant.
 

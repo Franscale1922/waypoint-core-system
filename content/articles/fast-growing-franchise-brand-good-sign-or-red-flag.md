@@ -86,9 +86,9 @@ Those are manageable trade-offs with a clearly performing model. Slow growth pre
 
 ---
 
-## The Real Concern Is Slow Growth
+## Is slow franchise growth a red flag?
 
-A franchise that isn't growing is not being responsible. It's not growing because not enough qualified buyers want to be in the system.
+Usually, yes. A franchise that isn't growing is not being responsible. It's not growing because not enough qualified buyers want to be in the system.
 
 This matters for several reasons.
 
@@ -100,9 +100,9 @@ When you look at franchisee departure data for a slow-growing system, pay attent
 
 ---
 
-## How to Evaluate the Growth
+## What should you look at besides a franchise's growth rate?
 
-The growth rate tells you something. It doesn't tell you everything.
+Look at where the growth is concentrated geographically, the system's attrition rate in the disclosure document, and what franchisees in years 2 to 4 say. The growth rate tells you something. It doesn't tell you everything.
 
 The questions that matter more:
 

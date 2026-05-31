@@ -16,7 +16,7 @@ faqs:
   - q: "Is buying an existing franchise better than starting a new one?"
     a: "It depends on what you're buying. An existing unit with a real customer base, documented revenue history, and trained staff removes a lot of early-stage risk. But a unit sold because it was underperforming, poorly located, or mismanaged transfers those problems to the next buyer. The resale path is only better when you verify what you're actually buying. The opportunity is in the due diligence, not the category."
   - q: "How do you value an existing franchise unit?"
-    a: "Franchise resales are typically valued as a multiple of EBITDA (earnings before interest, taxes, depreciation, and amortization), usually between 2x and 4x for healthy units as of 2026. Weaker or distressed units trade at or below tangible asset value. The multiple depends on remaining franchise term length, unit revenue trend (growing vs. declining), lease terms, staff stability, and how much goodwill the current owner has built that will or won't transfer."
+    a: "Franchise resales are valued on the strength of the individual unit, not a single formula. The biggest factors are the revenue trend (growing or declining), how much of the customer base and goodwill will actually transfer, the time left on the franchise agreement, the lease, and staff stability. A healthy, well-documented unit commands far more than a distressed one, which often sells at or below the value of its tangible assets. Because the right number depends on all of these, work the specific valuation with an accountant who knows franchise resales."
   - q: "What does the franchisor's role look like in a franchise resale?"
     a: "The franchisor must approve any ownership transfer. They will typically interview the buyer, run background and financial checks, and require the buyer to complete the same training as a new franchisee. The franchisor may also exercise a right of first refusal, meaning the right to buy the unit themselves before it can be sold to an outside buyer. Their approval is not guaranteed, and they can reject a transfer if the buyer does not meet their qualifications."
 ---
@@ -78,9 +78,9 @@ If a resale opportunity presents itself that also happens to be a genuine fit, t
 
 ---
 
-## Why Sellers Sell, and Why It Matters
+## Why do owners sell an existing franchise unit?
 
-When an existing franchise unit goes to market, the first question to ask is not "what does it cost?" It's "why is this person selling?"
+Owners sell for one of three reasons: a life event like retirement or relocation, an opportunity to cash out at peak value, or distress when the business is underperforming. When an existing franchise unit goes to market, the first question to ask is not "what does it cost?" It's "why is this person selling?"
 
 There are three categories of motivated sellers, and they produce very different situations:
 
@@ -124,9 +124,9 @@ For a new franchise unit, the franchisor's financial performance data and franch
 
 ---
 
-## The Franchisor's Role in the Transfer
+## Does the franchisor have to approve a franchise resale?
 
-The franchisor controls whether the deal happens. They must approve you as the new franchisee, and they charge a transfer fee, typically $5,000 to $20,000 as of 2026, to process the transaction.
+Yes. The franchisor controls whether the deal happens. They must approve you as the new franchisee, and they charge a transfer fee, typically $5,000 to $20,000 as of 2026, to process the transaction.
 
 Most franchisors also hold a right of first refusal on any resale. Before you can sell to an outside buyer, the franchisor has the right to step in and buy the unit at the agreed-upon price themselves. This rarely happens in practice, but it's a clause to understand in the franchise agreement.
 
@@ -160,7 +160,7 @@ Not necessarily, and often no. A resale offers existing cash flow, which sounds 
 
 **How do you value an existing franchise unit?**
 
-Franchise resales are typically valued as a multiple of EBITDA (earnings before interest, taxes, depreciation, and amortization), usually between 2x and 4x for healthy units as of 2026. Weaker or distressed units trade at or below tangible asset value. The multiple depends on remaining franchise term length, unit revenue trend, lease terms, staff stability, and how much goodwill will transfer.
+Franchise resales are valued on the strength of the individual unit, not a single formula. The biggest factors are the revenue trend, how much of the customer base and goodwill will actually transfer, the time left on the franchise agreement, the lease, and staff stability. A healthy, well-documented unit commands far more than a distressed one, which often sells at or below the value of its tangible assets. Work the specific valuation with an accountant who knows franchise resales.
 
 **What does the franchisor's role look like in a franchise resale?**
 

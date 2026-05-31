@@ -76,9 +76,9 @@ This model offers lower overhead and a smaller footprint than traditional fitnes
 
 ---
 
-## Key Benchmarks for Any Fitness Franchise FDD
+## What benchmarks should you check in a fitness franchise disclosure document?
 
-When evaluating fitness franchise FDD data, useful thresholds to hold:
+When evaluating a fitness franchise disclosure document, these are the useful thresholds to hold:
 
 - **Boutique fitness ramp time:** Typically 12–24 months to reach stable revenue, highly location-dependent
 - **Mass-market fitness churn:** 50–80% annual churn is normal at low price points; brands compensate by continuously acquiring new members
