@@ -121,6 +121,7 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | mosquito-control-franchises | Industry Spotlights |
 | weight-loss-franchises | Industry Spotlights |
 | pilates-franchises | Industry Spotlights |
+| it-services-and-msp-franchises | Industry Spotlights |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 

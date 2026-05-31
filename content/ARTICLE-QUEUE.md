@@ -26,21 +26,21 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 
 | Status | Working Title | Category | Notes |
 |---|---|---|---|
-| `[ ]` | Pet Services Franchises: What the Category Actually Looks Like | Industry Spotlights | Grooming, daycare, training — asset-light vs. brick-and-mortar split. |
+| `[x]` | Pet Services Franchises: What the Category Actually Looks Like | Industry Spotlights | Published as `pet-care-franchise-built-on-unconditional-demand`. |
 | `[ ]` | Hair Care and Salon Service Franchises: How the Model Works | Industry Spotlights | Booth rental vs. franchise employee model distinction important here. |
 | `[ ]` | Estate Sale Franchises: A Category Most Buyers Overlook | Industry Spotlights | Low capital entry, repeat clientele, demographic tailwinds. |
 | `[ ]` | Child Enrichment Franchises: What Parents Buy and What You Operate | Industry Spotlights | Tutoring, STEM, arts — recurring vs. program-based revenue. |
 | `[ ]` | Swim School Franchises: Seasonal Demand and the Year-Round Model | Industry Spotlights | Indoor vs. outdoor, membership structure, staffing model. |
-| `[ ]` | IT Services and MSP Franchises: The B2B Tech Category Explained | Industry Spotlights | Recurring managed service contracts, b2b acquisition model. |
+| `[x]` | IT Services and MSP Franchises: The B2B Tech Category Explained | Industry Spotlights | Published as `it-services-and-msp-franchises` (2026-05-31). |
 | `[ ]` | Large-Scale Storage Franchises: The PODS-Style Business Model | Industry Spotlights | Asset-heavy, high capital, recurring revenue. Real estate adjacency. |
 | `[ ]` | Sports Performance and Training Franchises | Industry Spotlights | Youth vs. adult split, membership vs. session-based, facility requirements. |
 | `[ ]` | Fleet Maintenance Franchises: B2B Service with Built-In Retention | Industry Spotlights | Contract-based, commercial clients, low consumer dependency. |
 | `[~]` | Mental Health Franchises: What the Licensing Reality Looks Like | Industry Spotlights | Highly regulated — needs careful treatment of licensure, supervision requirements. Flag profitability restriction carefully. |
 | `[~]` | Chiropractic and Health Coaching Franchises | Industry Spotlights | Overlaps licensed healthcare — needs careful framing. Kelsey's input recommended. |
 | `[ ]` | Cost and Operational Efficiency Franchises: Selling Savings to Businesses | Industry Spotlights | B2B consulting model, energy auditing, procurement optimization. |
-| `[ ]` | Staffing Franchises: Recurring Revenue Through Workforce Placement | Industry Spotlights | Temp vs. direct placement models, margin structure, client acquisition. |
+| `[x]` | Staffing Franchises: Recurring Revenue Through Workforce Placement | Industry Spotlights | Published as `staffing-franchises`. |
 | `[ ]` | Light Remodel Franchises: The Middle Ground Between Construction and Services | Industry Spotlights | Bathroom, kitchen refresh — subcontractor model, ticket size, seasonality. |
-| `[ ]` | Garage Transformation Franchises: High Ticket, High Satisfaction | Industry Spotlights | Flooring, storage systems, insulated doors — project-based, referral-driven. |
+| `[x]` | Garage Transformation Franchises: High Ticket, High Satisfaction | Industry Spotlights | Published as `garage-transformation-franchises`. |
 | `[ ]` | Glass Replacement Franchises: Insurance-Driven Demand | Industry Spotlights | Auto and residential glass — insurance referral pipeline parallel to restoration. |
 | `[ ]` | On-Site Corporate Gym Franchises: B2B Wellness at Scale | Industry Spotlights | Employer-contract model, recurring revenue, low consumer marketing spend. |
 | `[ ]` | Sugar Waxing and Hair Removal Franchises | Industry Spotlights | Membership model, low product COGS, repeat service cadence. |
@@ -50,7 +50,7 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | `[ ]` | Driving School Franchises: Licensing, Territory, and the Teen Demographic | Industry Spotlights | Regulated, recurring seasonal demand, instructor staffing model. |
 | `[ ]` | Sweet Concept Franchises: Candy, Ice Cream, and the Impulse Purchase Model | Industry Spotlights | Brick-and-mortar, high foot traffic dependency, tourism and mall adjacency. |
 | `[ ]` | Laundromat Franchises: The Semi-Passive Model With Real Overhead | Industry Spotlights | Capital-heavy equipment, location-critical, true passive income vs. reality. |
-| `[ ]` | Maid and Residential Cleaning Franchises: The Repeat Service Model | Industry Spotlights | Subcontractor vs. employee model, churn management, local competition. |
+| `[x]` | Maid and Residential Cleaning Franchises: The Repeat Service Model | Industry Spotlights | Published as `maid-and-residential-cleaning-franchises`. |
 | `[x]` | Weight Loss Franchises: Medical vs. Behavioral vs. Coaching Models | Industry Spotlights | Rapidly evolving category (GLP-1 impact). Needs current framing. |
 | `[x]` | Mosquito Control Franchises: Seasonal Business With Recurring Revenue | Industry Spotlights | Subscription model, outdoor service, geographic demand variation. |
 | `[ ]` | Salon Suite Franchises: The Landlord Model for Beauty | Industry Spotlights | Not operating a salon — leasing suites to independent stylists. Asset-light, recurring. |

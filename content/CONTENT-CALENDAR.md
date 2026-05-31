@@ -47,6 +47,7 @@ Update this table after each article is published. This is the source of truth f
 | 1 | `maid-and-residential-cleaning-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `staffing-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `garage-transformation-franchises` | 2026-04-02 | 2026-04-02 | — |
+| 1 | `it-services-and-msp-franchises` | 2026-05-31 | ⏳ Pending | ⏳ Pending |
 
 *"Indexed" = confirmed via URL Inspection in Search Console showing "URL is on Google". Submit each new URL in GSC immediately after publish — do not wait for sitemap crawl.*
 
@@ -68,14 +69,14 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 | 2 | Which Candidate Avatar Are You? | `[~]` Needs avatar docs | Getting Started |
 | 3 | Franchise Ownership as a Total Reinvention | `[~]` Needs Kelsey input | Getting Started |
 | 4 | Bringing Your Spouse or Partner Into the Franchise Decision | `[~]` Needs Kelsey input | Getting Started |
-| 5 | Maid and Residential Cleaning Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 6 | Staffing Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 7 | Garage Transformation Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 8 | Mosquito Control Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 9 | Pet Services Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 10 | Weight Loss Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 11 | Pilates Franchises | `[ ]` Agent-ready | Industry Spotlights |
-| 12 | IT Services and MSP Franchises | `[ ]` Agent-ready | Industry Spotlights |
+| 5 | Maid and Residential Cleaning Franchises | `[x]` Published | Industry Spotlights |
+| 6 | Staffing Franchises | `[x]` Published | Industry Spotlights |
+| 7 | Garage Transformation Franchises | `[x]` Published | Industry Spotlights |
+| 8 | Mosquito Control Franchises | `[x]` Published | Industry Spotlights |
+| 9 | Pet Services Franchises | `[x]` Published (as pet-care-franchise-built-on-unconditional-demand) | Industry Spotlights |
+| 10 | Weight Loss Franchises | `[x]` Published | Industry Spotlights |
+| 11 | Pilates Franchises | `[x]` Published | Industry Spotlights |
+| 12 | IT Services and MSP Franchises | `[x]` Published 2026-05-31 | Industry Spotlights |
 | 13 | Property Management Franchises | `[x]` Published 2026-04-01 | Industry Spotlights |
 
 > **Note on `[~]` articles:** Flag these for Kelsey before drafting. The four Getting Started conceptual pieces (items 1–4) require Kelsey's direct input or source documents before an agent should write them. If Kelsey input is not yet available, skip to the agent-ready Industry Spotlights and return to the `[~]` items when source material is ready.
