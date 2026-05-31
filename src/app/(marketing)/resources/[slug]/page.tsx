@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
+import { videoObjectSchema } from "../../../lib/structured-data";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
 import NewsletterForm from "../../../components/NewsletterForm";
@@ -39,7 +40,7 @@ export default async function ArticlePage({ params }: Props) {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) notFound();
-  const { meta, content, relatedSlugs, faqs } = article;
+  const { meta, content, relatedSlugs, faqs, video } = article;
   const related = getRelatedArticles(relatedSlugs);
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
@@ -88,6 +89,14 @@ export default async function ArticlePage({ params }: Props) {
                 acceptedAnswer: { "@type": "Answer", text: a },
               })),
             }),
+          }}
+        />
+      )}
+      {video?.name && video?.thumbnailUrl && video?.uploadDate && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(videoObjectSchema(video)),
           }}
         />
       )}

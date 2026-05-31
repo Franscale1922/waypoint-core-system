@@ -14,6 +14,19 @@ export type Article = {
   escapeKit?: boolean;
 };
 
+// Optional, opt-in per-article video. When present in frontmatter, the article
+// page emits VideoObject JSON-LD via videoObjectSchema(). Never required.
+export type ArticleVideo = {
+  name: string;
+  description: string;
+  thumbnailUrl: string;
+  uploadDate: string;       // timezone-qualified ISO 8601
+  duration?: string;        // ISO 8601 duration, e.g. "PT3M30S"
+  embedUrl?: string;
+  contentUrl?: string;
+  transcript?: string;      // only when a real, verified transcript exists
+};
+
 const articlesDir = nodePath.join(process.cwd(), "content", "articles");
 
 export function getAllArticles(): Article[] {
@@ -37,7 +50,7 @@ export function getAllArticles(): Article[] {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
 
-export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[]; faqs?: { q: string; a: string }[] } | null {
+export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[]; faqs?: { q: string; a: string }[]; video?: ArticleVideo } | null {
   const fullPath = nodePath.join(articlesDir, `${slug}.md`);
   if (!fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
@@ -46,6 +59,7 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
     content,
     relatedSlugs: (data.relatedSlugs as string[]) ?? [],
     faqs: (data.faqs as { q: string; a: string }[] | undefined) ?? undefined,
+    video: (data.video as ArticleVideo | undefined) ?? undefined,
   };
 }
 
