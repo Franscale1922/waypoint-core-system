@@ -6,6 +6,20 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 
 ---
 
+> ## ⚠️ HELD DRAFTS — READY TO PUBLISH (as of 2026-05-31)
+>
+> **Three articles are already fully drafted, verified, and wired** (relatedSlugs, back-links, pool, keyword map, social drafts). They are **NOT yet published** — they wait on the git branch **`aeo/phase2-drafts-reinvention-spouse`** (pushed to origin). **Do not re-draft them.** Some rows below still show `[~]`/`[ ]`; that is stale, ignore it.
+>
+> **Publish order (forced — the Spouse article links to the Reinvention article, so Reinvention must go live first):**
+> 1. `franchise-ownership-as-a-total-reinvention` + `bringing-your-spouse-into-the-franchise-decision` — branch commit `e07249c`
+> 2. `hair-care-and-salon-service-franchises` — branch commit `5780c58`
+>
+> **To publish the next held article:** `git fetch`, merge that commit into `main`, flip its queue + `CONTENT-CALENDAR.md` status from `[>]` to `[x]`, add a `Phase Tracker` row with the publish date, push `main` (Vercel auto-deploys), then submit the new URL in Google Search Console (URL Inspection → Request Indexing). Respect cadence: 3 shipped 2026-05-31 (it-services, process, avatars); max 4/week, so space the pushes across days.
+>
+> Hair Care uses `checklistSlug: "universal"` (a salon/beauty checklist in `content/downloads/` is an optional enhancement, not built). Interview source for Reinvention/Spouse: `content/_phase2-interview-notes.md` (local, gitignored).
+
+---
+
 ## Conceptual & Advisory Articles
 *These require interview time with Kelsey or source documents before drafting. Core voice and insight must come from direct input.*
 

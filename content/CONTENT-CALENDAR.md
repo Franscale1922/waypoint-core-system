@@ -39,6 +39,8 @@ After each article is drafted and passes the pre-publication checklist in `CONTE
 
 ## Phase Tracker
 
+> **⚠️ HELD DRAFTS READY TO PUBLISH (as of 2026-05-31):** three articles are fully drafted and waiting on branch `aeo/phase2-drafts-reinvention-spouse` (on origin) — publish in order: (1) `franchise-ownership-as-a-total-reinvention` + `bringing-your-spouse-into-the-franchise-decision` (commit `e07249c`), then (2) `hair-care-and-salon-service-franchises` (commit `5780c58`). Do NOT re-draft. Full procedure is in `content/ARTICLE-QUEUE.md` (top banner). 3 already shipped 2026-05-31; keep under 4/week.
+
 Update this table after each article is published. This is the source of truth for what has shipped and when.
 
 | Phase | Article Slug | Publish Date | GSC Submitted | Indexed |
