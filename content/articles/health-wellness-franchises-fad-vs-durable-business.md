@@ -2,7 +2,7 @@
 title: "Health & Wellness Franchises: Fad vs. Durable Business"
 relatedSlugs:
   - "fitness-franchise-comparison-what-the-numbers-say"
-  - "red-flags-franchise-types-to-avoid"
+  - "hair-care-and-salon-service-franchises"
   - "weight-loss-franchises"
 slug: "health-wellness-franchises-fad-vs-durable-business"
 date: "2026-02-18"

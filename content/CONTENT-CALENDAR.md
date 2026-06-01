@@ -93,7 +93,7 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 
 | Priority | Working Title | Queue Status | Category |
 |----------|---------------|--------------|----------|
-| 14 | Hair Care and Salon Service Franchises | `[ ]` | Industry Spotlights |
+| 14 | Hair Care and Salon Service Franchises | `[>]` Drafted, pending publish | Industry Spotlights |
 | 15 | Child Enrichment Franchises | `[ ]` | Industry Spotlights |
 | 16 | Sports Performance and Training Franchises | `[ ]` | Industry Spotlights |
 | 17 | Assisted Stretch Franchises | `[ ]` | Industry Spotlights |

@@ -74,6 +74,7 @@
 | `maid-and-residential-cleaning-franchises` | Maid and Residential Cleaning Franchises: The Repeat Service Model | "residential cleaning franchise" / "maid service franchise" | I/C | Medium | ✅ Good |
 | `staffing-franchises` | Staffing Franchises: Margin Structure and B2B Revenue | "staffing franchise" | I/C | Medium | ✅ Good |
 | `it-services-and-msp-franchises` | IT Services and MSP Franchises: How the B2B Tech Category Works | "IT services franchise" / "MSP franchise" | C | Low | ✅ Strong |
+| `hair-care-and-salon-service-franchises` | Hair Care and Salon Service Franchises: How the Model Actually Works | "salon franchise" / "hair salon franchise" | I/C | Medium | ✅ Good |
 | `garage-transformation-franchises` | Garage Transformation Franchises: High-Ticket, Project-Based Service | "garage franchise" | I/C | Medium | ✅ Good |
 | `mosquito-control-franchises` | Mosquito Control Franchises: Seasonal Business With Recurring Revenue | "mosquito control franchise" | I/C | Medium | ✅ Exact match keyword in title |
 | `weight-loss-franchises` | Weight Loss Franchises: The Impact of GLP-1 and Evolving Models | "weight loss franchise" | I/C | Medium | ✅ Exact match keyword |

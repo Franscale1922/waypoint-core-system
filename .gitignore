@@ -43,3 +43,6 @@ next-env.d.ts
 /src/generated/prisma
 brands/Marketing/
 .env*.local
+
+# working interview material (anonymized real call transcripts) — never publish/commit
+content/_phase2-interview-notes.md

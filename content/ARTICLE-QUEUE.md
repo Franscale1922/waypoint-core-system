@@ -27,7 +27,7 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | Status | Working Title | Category | Notes |
 |---|---|---|---|
 | `[x]` | Pet Services Franchises: What the Category Actually Looks Like | Industry Spotlights | Published as `pet-care-franchise-built-on-unconditional-demand`. |
-| `[ ]` | Hair Care and Salon Service Franchises: How the Model Works | Industry Spotlights | Booth rental vs. franchise employee model distinction important here. |
+| `[>]` | Hair Care and Salon Service Franchises: How the Model Works | Industry Spotlights | Drafted as `hair-care-and-salon-service-franchises` (held on branch, pending publish). Booth-rental vs. employee model split. |
 | `[ ]` | Estate Sale Franchises: A Category Most Buyers Overlook | Industry Spotlights | Low capital entry, repeat clientele, demographic tailwinds. |
 | `[ ]` | Child Enrichment Franchises: What Parents Buy and What You Operate | Industry Spotlights | Tutoring, STEM, arts — recurring vs. program-based revenue. |
 | `[ ]` | Swim School Franchises: Seasonal Demand and the Year-Round Model | Industry Spotlights | Indoor vs. outdoor, membership structure, staffing model. |
