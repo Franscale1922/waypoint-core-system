@@ -124,6 +124,8 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | it-services-and-msp-franchises | Industry Spotlights |
 | what-the-franchise-process-looks-like-start-to-finish | Getting Started |
 | which-candidate-avatar-are-you | Getting Started |
+| franchise-ownership-as-a-total-reinvention | Getting Started |
+| bringing-your-spouse-into-the-franchise-decision | Getting Started |
 
 > **After adding a new article:** Update the table above with the new slug and category so this checklist stays current.
 

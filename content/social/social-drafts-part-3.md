@@ -351,3 +351,79 @@ Most people are a blend of two, and the blend is where the useful tension lives.
 The practical move: turn your type into filters, weighting what matters and ruling out what doesn't. Then evaluate businesses by how they operate, not by what they sell. Fit leads, product follows.
 
 Which one sounds like you? Full breakdown: [link]
+
+---
+
+## Article: Franchise Ownership as a Total Reinvention
+**Slug:** `franchise-ownership-as-a-total-reinvention`
+
+### Twitter/X Thread
+
+Buying a franchise isn't just changing jobs. It's changing identity, from employee to owner. That shift, more than the money or the model, is what people underestimate. 🧵
+
+1/ Picture two lions. One in the zoo: fed, sheltered, safe, but caged. One in the pride: eats what it kills, gets wet when it rains, free. Room for both. Misery comes from being in the wrong one.
+
+2/ A job gives you a defined role inside someone else's structure. Ownership hands you the whole structure, plus the weight most people have never actually carried.
+
+3/ Nobody reinvents out of nowhere. There's a trigger: layoff, reorg, missed promotion, a ceiling. If you're walking toward control, it lasts. If you're just running from a bad month, it fades right when you need it.
+
+4/ The trade at the center: you take back control of your outcome, and accept the uncertainty that comes with it. Most owners can't stand the idea of someone else deciding their fate.
+
+5/ The part nobody markets: it gets hard. Launch is a rocket at full thrust that barely moves at first. The honeymoon wears off. Work-life balance is earned later, not granted up front.
+
+6/ Right when it's hard, fear shows up wearing the mask of logic. It says "the timing isn't right," not "I'm scared." Learning to hear the difference is most of year one.
+
+7/ The downside is smaller than it feels. If you're coachable, work hard, and are decent to be around, you can always find a job again. The reinvention isn't a one-way door.
+
+Full piece: [link]
+
+### LinkedIn Post
+
+Buying a franchise is not just a career move. It is an identity change, from employee to owner, and that shift is the part most people underestimate.
+
+There is an analogy I come back to: two kinds of lions. One lives in the zoo, fed and sheltered and safe, but in a cage. The other lives in the pride, blazing its own trail, eating what it kills, getting wet when it rains. There is room for both, and neither is nobler. But the two environments are unforgiving if you are in the wrong one, and plenty of people spend years sensing they are in the wrong enclosure.
+
+The decision usually has a trigger: a layoff, a reorganization, a ceiling you can see the top of. If you are moving toward control over your own outcome, that motivation holds up. If you are mostly running from a bad stretch at work, it fades right when the work gets hard.
+
+And it does get hard. Launching a business is like a rocket leaving the pad: full thrust, barely moving at first, climbing only because the effort never lets up. The honeymoon wears off, and right on cue, fear shows up disguised as logic. It rarely says "I am scared." It says "the timing is not right."
+
+The reassuring part: the downside is more recoverable than it feels. If you are coachable, work hard, and are pleasant to be around, you can always find a job again. The identity you are stepping into is not a one-way door.
+
+For the right person, that whole trade is the point. Full breakdown: [link]
+
+---
+
+## Article: Bringing Your Spouse or Partner Into the Franchise Decision
+**Slug:** `bringing-your-spouse-into-the-franchise-decision`
+
+### Twitter/X Thread
+
+If a partner shares the franchise decision, the biggest predictor of whether it survives isn't whether they said yes. It's whether they went through the process WITH you. 🧵
+
+1/ First question to settle honestly: is this solely your decision, or a shared one? Don't assume you're the sole decision-maker when your household actually shares it.
+
+2/ The failure pattern, the "spousal ambush": one partner does all the investigating and slowly gets comfortable. The other only gets translated highlights, even while saying yes, yes, yes.
+
+3/ Then near the end, the deal stalls. Not because anything's wrong with the business, but because the partner who never participated doesn't have enough information to feel safe signing.
+
+4/ By then it's too late to catch them up. The investigating partner usually walks away rather than disrupt the household. Entirely avoidable.
+
+5/ The flip side: a couple that goes through it together is one of the strongest signals there is. Often the partner who won't run the business becomes the most excited cheerleader.
+
+6/ A partner who merely tolerates it, in a genuinely shared-decision home, rarely holds. Lack of knowledge leaves room for fear, and the fear shows up right when commitment is required.
+
+7/ The move: bring your partner in early, onto the calls with the consultant and the brands. Not every detail, just enough that fear and uncertainty don't fill the gap later.
+
+Full piece: [link]
+
+### LinkedIn Post
+
+If a partner is part of your franchise decision, the biggest predictor of whether it survives is not whether they said yes at the start. It is whether they go through the process with you.
+
+The failure pattern is common enough that it has a name: the spousal ambush. One partner does all the investigating. They take the calls, ask the questions, and slowly grow comfortable with the risk and the change. The other partner is never on those calls. They only get a few highlights secondhand, even though they have been saying yes the whole way. Then, near the end, the deal stalls, not because anything is wrong with the business, but because the partner who never participated does not have enough information to feel safe signing. By then it is almost too late to catch them up, and the investigating partner usually walks away rather than disrupt the household.
+
+The opposite is just as clear. A couple that goes through the process together is one of the strongest signals there is. And the partner who will not even work in the business is often the most excited one, because they get to be the cheerleader while their other half bets on themselves.
+
+The practical takeaway: if your partner shares this decision, bring them in early, onto the calls, into the conversations, from the beginning. They do not need every operational detail. They need enough understanding that fear does not fill the gap when commitment is required. Couples who walk it together tend to finish it together.
+
+Full breakdown: [link]

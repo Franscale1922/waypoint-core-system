@@ -20,6 +20,8 @@
 | `w2-to-franchise-owner-when-youre-actually-ready` | W2 to Franchise Owner: When You're Actually Ready | "leaving job to buy franchise" / "corporate to franchise owner" | I | Low | ✅ Strong for ICP search |
 | `what-the-franchise-process-looks-like-start-to-finish` | What the Franchise Process Actually Looks Like, Start to Finish | "how does buying a franchise work" / "franchise buying process" | I | Medium | ✅ Strong |
 | `which-candidate-avatar-are-you` | Which Candidate Avatar Are You? | "what type of franchise is right for me" / "franchise buyer types" | I | Low | ✅ Strong |
+| `franchise-ownership-as-a-total-reinvention` | Franchise Ownership as a Total Reinvention | "leaving corporate to start a business" / "am I cut out to own a business" | I | Low | ✅ Strong |
+| `bringing-your-spouse-into-the-franchise-decision` | Bringing Your Spouse or Partner Into the Franchise Decision | "buying a franchise with spouse" / "spouse franchise decision" | I | Low | ✅ Strong |
 | `one-unit-or-multi-unit-what-first-timers-get-wrong` | One Unit or Multi-Unit: What First-Timers Get Wrong | "multi-unit franchise ownership" / "how many franchise units to buy" | I | Low | ✅ Good |
 | `you-dont-need-to-love-your-franchise` | You Don't Need to Love Your Franchise | "do you have to be passionate about your franchise" | I | Low | ✅ Strong opinion hook |
 | `your-first-90-days-as-a-franchise-owner` | Your First 90 Days as a Franchise Owner | "what to expect first year franchise" / "new franchise owner tips" | I | Low | ✅ Good |

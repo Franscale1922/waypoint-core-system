@@ -3,7 +3,7 @@ title: "You Don't Need to Love Your Franchise"
 relatedSlugs:
   - "are-you-ready-to-own-a-franchise"
   - "w2-to-franchise-owner-when-youre-actually-ready"
-  - "asset-light-vs-capital-heavy-choosing-your-franchise-type"
+  - "franchise-ownership-as-a-total-reinvention"
 slug: "you-dont-need-to-love-your-franchise"
 date: "2025-10-21"
 category: "Getting Started"

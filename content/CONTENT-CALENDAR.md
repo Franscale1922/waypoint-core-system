@@ -69,8 +69,8 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 |----------|---------------|--------------|----------|
 | 1 | What the Franchise Process Actually Looks Like, Start to Finish | `[x]` Published 2026-05-31 | Getting Started |
 | 2 | Which Candidate Avatar Are You? | `[x]` Published 2026-05-31 | Getting Started |
-| 3 | Franchise Ownership as a Total Reinvention | `[~]` Needs Kelsey input | Getting Started |
-| 4 | Bringing Your Spouse or Partner Into the Franchise Decision | `[~]` Needs Kelsey input | Getting Started |
+| 3 | Franchise Ownership as a Total Reinvention | `[>]` Drafted, pending publish | Getting Started |
+| 4 | Bringing Your Spouse or Partner Into the Franchise Decision | `[>]` Drafted, pending publish | Getting Started |
 | 5 | Maid and Residential Cleaning Franchises | `[x]` Published | Industry Spotlights |
 | 6 | Staffing Franchises | `[x]` Published | Industry Spotlights |
 | 7 | Garage Transformation Franchises | `[x]` Published | Industry Spotlights |

@@ -2,7 +2,7 @@
 title: "W-2 to Franchise Owner: When the Timing Is Right"
 relatedSlugs:
   - "are-you-ready-to-own-a-franchise"
-  - "the-semi-absentee-franchise-real-talk"
+  - "bringing-your-spouse-into-the-franchise-decision"
   - "you-dont-need-to-love-your-franchise"
 slug: "w2-to-franchise-owner-when-youre-actually-ready"
 date: "2026-01-06"
