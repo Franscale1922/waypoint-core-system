@@ -48,6 +48,7 @@ Update this table after each article is published. This is the source of truth f
 | 1 | `staffing-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `garage-transformation-franchises` | 2026-04-02 | 2026-04-02 | — |
 | 1 | `it-services-and-msp-franchises` | 2026-05-31 | ⏳ Pending | ⏳ Pending |
+| 1 | `what-the-franchise-process-looks-like-start-to-finish` | 2026-05-31 | ⏳ Pending | ⏳ Pending |
 
 *"Indexed" = confirmed via URL Inspection in Search Console showing "URL is on Google". Submit each new URL in GSC immediately after publish — do not wait for sitemap crawl.*
 
@@ -65,7 +66,7 @@ Articles are sequenced to build topical authority progressively. Earlier phases 
 
 | Priority | Working Title | Queue Status | Category |
 |----------|---------------|--------------|----------|
-| 1 | What the Franchise Process Actually Looks Like, Start to Finish | `[~]` Needs Kelsey input | Getting Started |
+| 1 | What the Franchise Process Actually Looks Like, Start to Finish | `[x]` Published 2026-05-31 | Getting Started |
 | 2 | Which Candidate Avatar Are You? | `[~]` Needs avatar docs | Getting Started |
 | 3 | Franchise Ownership as a Total Reinvention | `[~]` Needs Kelsey input | Getting Started |
 | 4 | Bringing Your Spouse or Partner Into the Franchise Decision | `[~]` Needs Kelsey input | Getting Started |

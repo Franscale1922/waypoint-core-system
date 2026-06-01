@@ -265,3 +265,46 @@ Operationally, your largest risk is instructor turnover. Pilates requires specia
 The model relies on converting trial users into recurring monthly memberships, not selling drop-in class packs. To succeed, you need a highly structured sales process and active involvement during the launch phase. If you can build the community and retain your instructors, the premium pricing model works exceptionally well.
 
 Full breakdown: [link]
+
+---
+
+## Article: What the Franchise Process Actually Looks Like, Start to Finish
+**Slug:** `what-the-franchise-process-looks-like-start-to-finish`
+
+### Twitter/X Thread
+
+Most people think buying a franchise means browsing brands like cars on a lot. The real process runs almost backward from that. Here's what actually happens, start to finish. 🧵
+
+1/ It opens with a free 30-minute call that's mostly about you: why ownership, how long you've been looking, what's driving the change. If it feels like a pitch, you're talking to the wrong person.
+
+2/ Then a short questionnaire, before anything else. Part information, part tell. How you handle a simple first step says a lot about how you'll handle the franchisor's process later.
+
+3/ Next is a ~90-minute consultation where you do about 90% of the talking. The questions aren't "what industry do you like." They're how you want to operate: hours, team, scale, how much coaching you want.
+
+4/ The single biggest mistake buyers make: picking the widget first. Define the business you actually want to run, then choose the product from what fits. If you like running it, it matters less what it sells.
+
+5/ Out of that comes "the model": a written snapshot of what you want, built before excitement or fear can pull you off course. You come back to it every time you wobble.
+
+6/ Only then do you see brands. About three that fit, narrowed to one over a month or two. Two rules: don't buy on one voice, and don't walk away on one voice.
+
+7/ Timeline: ~30 days if you move fast, 6-8 weeks is common, 2-4 months on average. Signing isn't opening. Service businesses train and launch in weeks; brick-and-mortar adds construction.
+
+8/ The order is the whole point. You get honest about who you are before you fall for a logo.
+
+Full piece: [link]
+
+### LinkedIn Post
+
+Most people picture buying a franchise as browsing brands like cars on a lot. The real process runs almost backward from that, and not knowing the order is how buyers lose control of a major decision.
+
+It starts with a free 30-minute call that's mostly about you, not a pitch. Then a short questionnaire that's part information and part tell: how you handle a simple first step predicts how you'll handle the franchisor's process later.
+
+The center of it is a 90-minute consultation where you talk about 90% of the time. The questions aren't about which industry excites you. They're about how you want to operate day to day: your role, the size and pace, how much coaching you want, and the dozens of small trade-offs you've never had a reason to weigh.
+
+That conversation produces "the model": a written snapshot of what you actually want, built before emotions climb. It becomes a baseline you return to every time you get excited, get nervous, or want to chase something shiny.
+
+Only then do you look at brands. About three that fit, narrowed to one over several weeks of direct conversations and validation calls, with someone walking beside you the whole way.
+
+The biggest mindset shift: pick the business you want to run first, and the product last. If you like running it, it matters far less what it sells.
+
+Full breakdown of the whole process: [link]
