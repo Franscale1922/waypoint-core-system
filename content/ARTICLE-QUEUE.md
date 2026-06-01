@@ -15,7 +15,7 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 | `[~]` | Why Weekly Meetings Change Everything During Brand Exploration | Going Deeper | Value of regular touchpoints during brand conversations — prep, guide, digest. Needs Kelsey's process detail. |
 | `[~]` | The Exploration Process Is a Practice Run | Getting Started | Following franchisor processes before you sign is a preview of franchise life. Trust in standards not created by you. Needs expansion. |
 | `[~]` | Franchise Ownership as a Total Reinvention | Getting Started | Not just leaving a desk — full mindset shift from corporate to entrepreneurial. Connects to candidate avatars. Needs avatar docs. |
-| `[~]` | Which Candidate Avatar Are You? (and What That Means for Your Search) | Getting Started | The different personas and how they align to industries. Needs avatar/persona docs from previous work. |
+| `[x]` | Which Candidate Avatar Are You? (and What That Means for Your Search) | Getting Started | Published as `which-candidate-avatar-are-you` (2026-05-31), built on the candidate-model-builder 8-archetype framework. |
 | `[x]` | What the Franchise Process Actually Looks Like, Start to Finish | Getting Started | Published as `what-the-franchise-process-looks-like-start-to-finish` (2026-05-31), from Kelsey's consult template + call transcripts. |
 | `[~]` | Bringing Your Spouse or Partner Into the Franchise Decision | Getting Started | FAQ gap: how to involve a partner early, what they should know, how to align before signing. Needs Kelsey's observations on partner dynamics in the process. |
 

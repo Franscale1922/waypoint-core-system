@@ -308,3 +308,46 @@ Only then do you look at brands. About three that fit, narrowed to one over seve
 The biggest mindset shift: pick the business you want to run first, and the product last. If you like running it, it matters far less what it sells.
 
 Full breakdown of the whole process: [link]
+
+---
+
+## Article: Which Candidate Avatar Are You?
+**Slug:** `which-candidate-avatar-are-you`
+
+### Twitter/X Thread
+
+The most common mistake in franchise buying is starting with the product. The better question: what kind of owner are you? Most buyers are one of 8 types. 🧵
+
+1/ The Corporate Refugee. Out of corporate, wants control and stability. Methodical, does every bit of homework, reassured by proven systems and talking to existing owners.
+
+2/ The Serial Entrepreneur. Has owned before. Fast, gut-driven, impatient with process. Wants efficiency, a clearly competent franchisor, and real autonomy.
+
+3/ The Wealth Builder. Treats the franchise as an asset to build equity in, not a job. Patient and analytical. Leans semi-absentee and multi-unit.
+
+4/ The Lifestyle Seeker. Schedule and quality of life over maximum income. Has hard non-negotiables and will walk away from upside that violates them.
+
+5/ The Empire Builder. Thinks in multiples from day one. A single unit is the starting line. Asks about territory and growth early.
+
+6/ The Technical Specialist. Deep expertise, drawn to businesses near their field. Quality-focused, wants an operation they're proud to own.
+
+7/ The Community Connector. Motivated by relationships and local impact. The business is a means to connection, not just income.
+
+8/ The Reluctant Explorer. Still deciding if ownership is for them. Question-heavy, well served by education and permission to say no.
+
+9/ Most people are a blend of two. Naming yours surfaces what you actually want, and what you definitely don't, before a single brand enters the picture.
+
+Full piece: [link]
+
+### LinkedIn Post
+
+The most common mistake in franchise buying is starting with the product. The more useful question is what kind of owner you are, because two people in the same industry can live completely different lives depending on the model.
+
+Most candidates recognize themselves in one of eight types:
+
+The Corporate Refugee wants out of corporate and values proven systems and validation. The Serial Entrepreneur has owned before and wants efficiency and autonomy. The Wealth Builder treats the franchise as an asset to build equity in, often manager-run. The Lifestyle Seeker puts schedule and balance ahead of maximum income. The Empire Builder thinks in multiple units and territory from day one. The Technical Specialist wants a quality operation in or near their field. The Community Connector is driven by relationships and local impact. And the Reluctant Explorer is still deciding whether ownership is even for them.
+
+Most people are a blend of two, and the blend is where the useful tension lives. The Empire Builder who is secretly a Lifestyle Seeker needs to decide which one wins before signing, because those two pull in opposite directions.
+
+The practical move: turn your type into filters, weighting what matters and ruling out what doesn't. Then evaluate businesses by how they operate, not by what they sell. Fit leads, product follows.
+
+Which one sounds like you? Full breakdown: [link]
