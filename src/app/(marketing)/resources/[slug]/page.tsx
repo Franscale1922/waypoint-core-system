@@ -67,7 +67,7 @@ export default async function ArticlePage({ params }: Props) {
               "@type": "Organization",
               "@id": "https://www.waypointfranchise.com/#business",
               name: "Waypoint Franchise Advisors",
-              url: "https://waypointfranchise.com",
+              url: "https://www.waypointfranchise.com",
             },
             mainEntityOfPage: {
               "@type": "WebPage",
@@ -111,7 +111,7 @@ export default async function ArticlePage({ params }: Props) {
                 "@type": "ListItem",
                 position: 1,
                 name: "Home",
-                item: "https://waypointfranchise.com",
+                item: "https://www.waypointfranchise.com",
               },
               {
                 "@type": "ListItem",

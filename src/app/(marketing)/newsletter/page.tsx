@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import NewsletterForm from "../../components/NewsletterForm";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "The Franchise Dispatch Newsletter | Free Weekly Insights",
@@ -42,6 +43,25 @@ const WHAT_YOU_GET = [
 export default function NewsletterPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            jsonLdGraph(
+              webPageSchema({
+                url: `${SITE_URL}/newsletter`,
+                name: "The Franchise Dispatch Newsletter | Waypoint Franchise Advisors",
+                description:
+                  "A no-hype newsletter on franchise ownership, financial independence, and the honest math of leaving corporate. From Kelsey Stuart, former Bloomin' Blinds franchisor.",
+                breadcrumb: breadcrumbSchema([
+                  { name: "Home", url: SITE_URL },
+                  { name: "Newsletter", url: `${SITE_URL}/newsletter` },
+                ]),
+              }),
+            ),
+          ),
+        }}
+      />
       {/* ── Hero ── */}
       <section className="py-20 sm:py-28 md:py-36 border-b border-[#e2ddd2]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">

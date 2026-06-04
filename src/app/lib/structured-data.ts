@@ -1,5 +1,15 @@
 export const SITE_URL = "https://www.waypointfranchise.com";
 
+/**
+ * Normalize any same-site URL to the canonical www host. The bare apex
+ * (waypointfranchise.com) 301-redirects to www, so JSON-LD must always use www —
+ * otherwise @id references and `url`/`item` values point at a redirecting host
+ * and don't deduplicate against the rest of the entity graph.
+ */
+export function toWww(url: string): string {
+  return url.replace(/^https?:\/\/(www\.)?waypointfranchise\.com/i, SITE_URL);
+}
+
 export const localBusinessSchema = {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
@@ -52,36 +62,10 @@ export const localBusinessSchema = {
     "franchisee validation calls",
   ],
   priceRange: "Free",
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "5.0",
-    reviewCount: "47",
-    bestRating: "5",
-    worstRating: "1",
-  },
-  review: [
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "Marcus T." },
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-      reviewBody:
-        "He didn't show me a single franchise until he had spent two hours understanding what I actually wanted.",
-    },
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "James P." },
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-      reviewBody:
-        "Kelsey never pushed me toward anything. He helped me put together a plan so that by the time I leave corporate, the business will already be running.",
-    },
-    {
-      "@type": "Review",
-      author: { "@type": "Person", name: "Tom W." },
-      reviewRating: { "@type": "Rating", ratingValue: "5", bestRating: "5" },
-      reviewBody:
-        "I came in with a list of brands I'd already researched. Kelsey set the list aside and showed me something I'd never considered. Six months after that call I opened my doors.",
-    },
-  ],
+  // NOTE: aggregateRating / review markup intentionally omitted. Google does not
+  // permit self-serving review markup on a business's own LocalBusiness/Organization
+  // entity (it is ignored for rich results and can trigger a Search Console flag).
+  // Testimonials live as on-page content instead.
   sameAs: [
     "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
@@ -287,6 +271,135 @@ export function videoObjectSchema({
       "@id": `${SITE_URL}/#business`,
       name: "Waypoint Franchise Advisors",
       url: SITE_URL,
+    },
+  };
+}
+
+/**
+ * WebSite node — the top of the entity graph. Declares the site as a distinct
+ * entity published by the business, so search and AI crawlers can resolve
+ * "what site is this" separately from "what business runs it".
+ *
+ * No `potentialAction`/SearchAction: the site has no search-results endpoint, so
+ * advertising a sitelinks searchbox would be invalid markup.
+ */
+export const webSiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${SITE_URL}/#website`,
+  url: SITE_URL,
+  name: "Waypoint Franchise Advisors",
+  description:
+    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor — matching corporate professionals and career changers to franchise opportunities that fit their life, capital, and goals.",
+  publisher: { "@id": `${SITE_URL}/#business` },
+  inLanguage: "en-US",
+};
+
+type JsonLdNode = Record<string, unknown>;
+
+/**
+ * Wrap one or more schema nodes into a single `@graph` document. Strips any
+ * per-node `@context` (the wrapper carries the one authoritative context), so
+ * existing schemas that include `@context` and new builder nodes that don't can
+ * be mixed freely. Emit the result in a single <script type="application/ld+json">.
+ */
+export function jsonLdGraph(...nodes: JsonLdNode[]) {
+  return {
+    "@context": "https://schema.org",
+    "@graph": nodes.map((node) => {
+      const { "@context": _ctx, ...rest } = node as JsonLdNode & { "@context"?: unknown };
+      return rest;
+    }),
+  };
+}
+
+/**
+ * BreadcrumbList node (no `@context` — meant to nest in a `@graph` or a WebPage).
+ * URLs are normalized to the canonical www host.
+ */
+export function breadcrumbSchema(items: { name: string; url: string }[]) {
+  return {
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: toWww(item.url),
+    })),
+  };
+}
+
+/**
+ * WebPage node tied into the site graph (`isPartOf` → #website). Pass a
+ * `breadcrumb` (from breadcrumbSchema) and/or a `mainEntityId` to link the page
+ * to its primary entity (e.g. the homepage → #business).
+ */
+export function webPageSchema({
+  url,
+  name,
+  description,
+  breadcrumb,
+  mainEntityId,
+  primaryImage,
+}: {
+  url: string;
+  name: string;
+  description: string;
+  breadcrumb?: ReturnType<typeof breadcrumbSchema>;
+  mainEntityId?: string;
+  primaryImage?: string;
+}) {
+  const canonical = toWww(url);
+  return {
+    "@type": "WebPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name,
+    description,
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    inLanguage: "en-US",
+    ...(primaryImage ? { primaryImageOfPage: toWww(primaryImage) } : {}),
+    ...(mainEntityId ? { mainEntity: { "@id": mainEntityId } } : {}),
+    ...(breadcrumb ? { breadcrumb } : {}),
+  };
+}
+
+/**
+ * CollectionPage node with an embedded ItemList — for listing pages (the
+ * resources hub and the three category pages). `items` are the listed articles.
+ */
+export function collectionPageSchema({
+  url,
+  name,
+  description,
+  items,
+  breadcrumb,
+}: {
+  url: string;
+  name: string;
+  description: string;
+  items: { name: string; url: string }[];
+  breadcrumb?: ReturnType<typeof breadcrumbSchema>;
+}) {
+  const canonical = toWww(url);
+  return {
+    "@type": "CollectionPage",
+    "@id": `${canonical}#webpage`,
+    url: canonical,
+    name,
+    description,
+    isPartOf: { "@id": `${SITE_URL}/#website` },
+    inLanguage: "en-US",
+    ...(breadcrumb ? { breadcrumb } : {}),
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: items.length,
+      itemListElement: items.map((item, i) => ({
+        "@type": "ListItem",
+        position: i + 1,
+        url: toWww(item.url),
+        name: item.name,
+      })),
     },
   };
 }

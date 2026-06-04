@@ -4,6 +4,7 @@ import Link from "next/link";
 const glossarySchema = {
   "@context": "https://schema.org",
   "@type": "DefinedTermSet",
+  "@id": "https://www.waypointfranchise.com/glossary#glossary",
   name: "Franchise Glossary | Waypoint Franchise Advisors",
   description:
     "Plain-language definitions of franchise industry terms for prospective franchise buyers, including FDD items, royalty, territory, discovery day, ROBS, unit economics, semi-absentee, SBA loans, and more.",
@@ -831,11 +832,24 @@ const terms = [
 ];
 
 export default function GlossaryPage() {
+  // Populate the DefinedTermSet with every term as a DefinedTerm entity, so each
+  // definition is individually machine-readable (not just the container).
+  const glossarySchemaWithTerms = {
+    ...glossarySchema,
+    hasDefinedTerm: terms.flatMap((group) =>
+      group.entries.map((entry) => ({
+        "@type": "DefinedTerm",
+        name: entry.term,
+        description: entry.definition,
+        inDefinedTermSet: { "@id": "https://www.waypointfranchise.com/glossary#glossary" },
+      })),
+    ),
+  };
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(glossarySchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(glossarySchemaWithTerms) }}
       />
 
       {/* Hero */}

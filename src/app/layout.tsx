@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import { localBusinessSchema, personSchema, franchiseConsultingServiceSchema } from "./lib/structured-data";
+import {
+  localBusinessSchema,
+  personSchema,
+  franchiseConsultingServiceSchema,
+  webSiteSchema,
+  jsonLdGraph,
+} from "./lib/structured-data";
 import { GA_ID } from "./lib/analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -96,17 +102,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           }}
         />
         {/* End Google Tag Manager */}
+        {/* Site-wide entity graph: Organization/LocalBusiness ↔ WebSite ↔ Person ↔
+            Service, cross-linked by @id and emitted as one connected @graph so
+            search engines and AI crawlers resolve them as a single knowledge graph. */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(franchiseConsultingServiceSchema) }}
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(
+              jsonLdGraph(
+                localBusinessSchema,
+                webSiteSchema,
+                personSchema,
+                franchiseConsultingServiceSchema,
+              ),
+            ),
+          }}
         />
       </head>
       <body

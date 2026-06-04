@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import TidyCalEmbed from "./TidyCalEmbed";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Book a Free Discovery Call",
@@ -19,6 +20,26 @@ export const metadata: Metadata = {
 export default function BookPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            jsonLdGraph(
+              webPageSchema({
+                url: `${SITE_URL}/book`,
+                name: "Book a Free Discovery Call | Waypoint Franchise Advisors",
+                description:
+                  "30 minutes with Kelsey Stuart. No pitch, no agenda. An honest conversation about whether franchise ownership makes sense for your situation right now.",
+                mainEntityId: `${SITE_URL}/#service`,
+                breadcrumb: breadcrumbSchema([
+                  { name: "Home", url: SITE_URL },
+                  { name: "Book a Call", url: `${SITE_URL}/book` },
+                ]),
+              }),
+            ),
+          ),
+        }}
+      />
 
       {/* Hero — compact, letting the content below breathe */}
       <section className="relative py-14 sm:py-20 overflow-hidden">

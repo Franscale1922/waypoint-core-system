@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Testimonials from "../components/Testimonials";
 import FranchiseMapWrapper from "../components/FranchiseMapWrapper";
+import { SITE_URL, jsonLdGraph, webPageSchema } from "../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
     description:
       "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
-    url: "https://waypointfranchise.com",
+    url: "https://www.waypointfranchise.com",
     images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors — Find the Franchise That Fits Your Life" }],
   },
 };
@@ -44,6 +45,25 @@ export default function HomePage() {
 
   return (
     <>
+      {/* Homepage WebPage node — ties the landing page into the site graph and
+          names the business as its primary entity. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            jsonLdGraph(
+              webPageSchema({
+                url: SITE_URL,
+                name: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
+                description:
+                  "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. 146+ owners helped across 35 states. No pitch, no pressure.",
+                mainEntityId: `${SITE_URL}/#business`,
+                primaryImage: `${SITE_URL}/og_default_1773343895292.png`,
+              }),
+            ),
+          ),
+        }}
+      />
       {/* ============================================
           HERO — Full-screen Montana, text overlaid
           Inspired by: Eleven Experience, Under Canvas

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ContactForm from "../../components/ContactForm";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
 
 export const metadata: Metadata = {
   title: "Contact | Waypoint Franchise Advisors",
@@ -15,6 +16,26 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(
+            jsonLdGraph(
+              webPageSchema({
+                url: `${SITE_URL}/contact`,
+                name: "Contact | Waypoint Franchise Advisors",
+                description:
+                  "Ask a question, share where you are in the process, or just say hello. Kelsey responds within one business day.",
+                mainEntityId: `${SITE_URL}/#business`,
+                breadcrumb: breadcrumbSchema([
+                  { name: "Home", url: SITE_URL },
+                  { name: "Contact", url: `${SITE_URL}/contact` },
+                ]),
+              }),
+            ),
+          ),
+        }}
+      />
 
       {/* Hero */}
       <section className="bg-[#0c1929] pt-24 pb-16 px-6 text-center">
