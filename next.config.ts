@@ -85,6 +85,25 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
+        // Content-rich pages serve HTML to browsers and markdown to agents that
+        // send `Accept: text/markdown` (see middleware.ts). Advertise Vary: Accept
+        // so any intermediary cache keys the two representations separately.
+        source: '/resources/:slug*',
+        headers: [{ key: 'Vary', value: 'Accept' }],
+      },
+      {
+        source: '/resources',
+        headers: [{ key: 'Vary', value: 'Accept' }],
+      },
+      {
+        source: '/glossary',
+        headers: [{ key: 'Vary', value: 'Accept' }],
+      },
+      {
+        source: '/faq',
+        headers: [{ key: 'Vary', value: 'Accept' }],
+      },
+      {
         // Long-lived cache for public images (immutable — filenames don't change)
         source: '/images/:path*',
         headers: [

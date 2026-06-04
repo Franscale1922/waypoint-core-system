@@ -7,7 +7,10 @@ export const metadata: Metadata = {
   title: "Getting Started with Franchising | Waypoint Franchise Advisors",
   description:
     "If you are new to franchising, start here. Practical guides covering readiness, costs, how consultants work, FDD review, and what type of franchise fits your situation.",
-  alternates: { canonical: "https://www.waypointfranchise.com/resources/getting-started" },
+  alternates: {
+    canonical: "https://www.waypointfranchise.com/resources/getting-started",
+    types: { "text/markdown": "https://www.waypointfranchise.com/resources/getting-started.md" },
+  },
   openGraph: {
     title: "Getting Started with Franchising | Waypoint Franchise Advisors",
     description:

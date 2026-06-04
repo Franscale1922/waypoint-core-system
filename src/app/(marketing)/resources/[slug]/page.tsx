@@ -24,7 +24,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${article.meta.title} | Waypoint Franchise Advisors`,
     description: article.meta.excerpt,
-    alternates: { canonical: `https://www.waypointfranchise.com/resources/${slug}` },
+    alternates: {
+      canonical: `https://www.waypointfranchise.com/resources/${slug}`,
+      types: { "text/markdown": `https://www.waypointfranchise.com/resources/${slug}.md` },
+    },
     openGraph: {
       title: article.meta.title,
       description: article.meta.excerpt,

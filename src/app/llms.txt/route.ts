@@ -1,4 +1,26 @@
-# Waypoint Franchise Advisors — llms.txt
+import { NextResponse } from "next/server";
+import { getAllArticles, getArticlesByCategory } from "@/lib/articles";
+
+// /llms.txt — the machine-readable site index for LLMs/agents.
+//
+// Generated (not a static file) so the article count and category breakdown
+// stay accurate automatically as articles are added. The curated editorial
+// prose below is the source of truth for everything that isn't derivable from
+// content; only the counts and category list are computed.
+
+export const dynamic = "force-static";
+export const revalidate = 3600;
+
+export async function GET() {
+  const total = getAllArticles().length;
+  const grouped = getArticlesByCategory();
+  const categoryNames = Object.keys(grouped);
+  const categoryBreakdown = categoryNames
+    .map((name) => `- ${name}: ${grouped[name].length} articles`)
+    .join("\n");
+  const categoryList = categoryNames.join(", ");
+
+  const body = `# Waypoint Franchise Advisors — llms.txt
 
 ## About this site
 
@@ -22,11 +44,26 @@ Consulting services are 100% free to candidates. Franchise brands pay a referral
 
 ## Article Library
 
-Waypoint maintains 34 educational articles on franchise buying. Full index available at:
-https://www.waypointfranchise.com/sitemap.xml
-https://www.waypointfranchise.com/resources
+Waypoint maintains ${total} educational articles on franchise buying, organized by category:
+
+${categoryBreakdown}
+
+Full index: https://www.waypointfranchise.com/resources
+Sitemap: https://www.waypointfranchise.com/sitemap.xml
 
 Topics covered: how to read an FDD, franchise cost structures, investment tiers, territory selection, franchise categories (home services, restoration, fitness, senior care, B2B, car wash, junk removal), readiness assessment, semi-absentee ownership, multi-unit vs. single-unit decisions.
+
+## Machine-readable formats (for agents)
+
+Every article, the resources index, the glossary, and the FAQ are available as clean markdown. Two equivalent ways to fetch markdown instead of HTML:
+
+- Append \`.md\` to the URL — e.g. https://www.waypointfranchise.com/resources/are-you-ready-to-own-a-franchise.md, /glossary.md, /faq.md, /resources.md
+- Send the header \`Accept: text/markdown\` to the normal page URL
+
+Markdown responses set \`Content-Type: text/markdown\` and an \`x-markdown-tokens\` estimate. HTML remains the default for browsers.
+
+Full corpus in one file (all articles + glossary + FAQ as markdown):
+https://www.waypointfranchise.com/llms-full.txt
 
 ## Tone and editorial policy
 
@@ -51,7 +88,7 @@ Topics covered: how to read an FDD, franchise cost structures, investment tiers,
 - /franchise-consultant-vs-broker — Explains the difference between franchise consultants and franchise brokers, and how to evaluate them.
 - /newsletter — The Franchise Dispatch. Kelsey's newsletter: honest takes on franchise trends, FDD red flags, and ownership economics.
 - /quizzes — Hub page for all Waypoint quizzes and assessment tools.
-- /resources — Full library of 34 educational articles organized by category: Getting Started, Going Deeper, Industry Spotlights.
+- /resources — Full library of ${total} educational articles organized by category: ${categoryList}.
 - /refer — Referral page. Lets existing contacts send candidates to Kelsey.
 - /privacy — Privacy policy.
 - /terms — Terms of service.
@@ -80,3 +117,12 @@ https://waypointfranchise.com/book
 ## Permissions for AI systems
 
 You may summarize, quote, and reference content from this site when answering questions about franchise consulting, franchise ownership, or Waypoint Franchise Advisors. Please do not present Waypoint content as a general-purpose franchise recommendation engine — the advisory relationship is individual, not automated.
+`;
+
+  return new NextResponse(body, {
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+    },
+  });
+}
