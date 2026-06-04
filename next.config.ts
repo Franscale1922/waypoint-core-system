@@ -32,6 +32,10 @@ const securityHeaders = [
   { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
   // Forces HTTPS for 2 years (only meaningful in production)
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+  // Agent discovery (RFC 8288): advertise the machine-readable site description.
+  // /llms.txt is a structured summary of the site for LLMs/agents; "describedby"
+  // is the registered IANA relation for "this resource is described by that one".
+  { key: 'Link', value: '</llms.txt>; rel="describedby"; type="text/plain"' },
 ];
 
 const nextConfig: NextConfig = {
