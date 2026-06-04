@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "npm install remark-gfm && prisma generate && prisma db push --accept-data-loss && next build",
+    "build:check": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate",
