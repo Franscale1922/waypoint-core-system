@@ -15,7 +15,10 @@ export const metadata: Metadata = {
     url: "https://www.waypointfranchise.com/resources",
     images: [{ url: "/og/og-resources.png", width: 1200, height: 630, alt: "Waypoint Franchise Resources" }],
   },
-  alternates: { canonical: "https://www.waypointfranchise.com/resources" },
+  alternates: {
+    canonical: "https://www.waypointfranchise.com/resources",
+    types: { "text/markdown": "https://www.waypointfranchise.com/resources.md" },
+  },
 };
 
 export default function ResourcesPage() {
