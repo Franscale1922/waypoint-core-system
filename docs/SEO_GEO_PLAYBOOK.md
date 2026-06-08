@@ -148,7 +148,13 @@ Since Ask YouTube and AI Overviews surface video, transcripts/chapters/descripti
 
 Chrome-embedded AI Mode and agents (Project Mariner / UCP) navigate by DOM, accessibility tree, and visual render, and increasingly take actions like booking. The conversion path must be machine-navigable.
 
+> **Structured-data architecture, conventions, and guardrails are documented in
+> [`docs/STRUCTURED_DATA.md`](./STRUCTURED_DATA.md).** Read it before editing any
+> JSON-LD: it covers the connected `@graph`, the `@id` scheme, the `<JsonLd>`
+> escaping component, the www-only rule, and the `verify-schema` CI guard.
+
 ### Done
+- Site-wide entities (`LocalBusiness`/`WebSite`/`Person`/`Service`) emitted as one connected `@graph`; every page adds a `WebPage`/`CollectionPage`/`Article` node linked in by `@id`. Self-serving review markup removed (Google policy).
 - `ReserveAction` (book-a-call) added to the site-wide `Service` schema so agents understand the bookable action.
 - Crawlable booking-link fallback on `/book` (the TidyCal embed is a JS-injected widget agents cannot traverse).
 - Real `<label>`/`aria-label`/`autoComplete` added to `EscapeKitCaptureForm` (was placeholder-only); ARIA live status/alert announcements added to `ContactForm`.
