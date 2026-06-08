@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getArticlesByCategoryName } from "../../../../lib/articles";
 import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import JsonLd from "../../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
@@ -24,29 +25,24 @@ export default function IndustrySpotlightsPage() {
   const articles = getArticlesByCategoryName("Industry Spotlights");
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              collectionPageSchema({
-                url: `${SITE_URL}/resources/industry-spotlights`,
-                name: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
-                description:
-                  "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
-                breadcrumb: breadcrumbSchema([
-                  { name: "Home", url: SITE_URL },
-                  { name: "Resources", url: `${SITE_URL}/resources` },
-                  { name: "Industry Spotlights", url: `${SITE_URL}/resources/industry-spotlights` },
-                ]),
-                items: articles.map((a) => ({
-                  name: a.title,
-                  url: `${SITE_URL}/resources/${a.slug}`,
-                })),
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          collectionPageSchema({
+            url: `${SITE_URL}/resources/industry-spotlights`,
+            name: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
+            description:
+              "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Resources", url: `${SITE_URL}/resources` },
+              { name: "Industry Spotlights", url: `${SITE_URL}/resources/industry-spotlights` },
+            ]),
+            items: articles.map((a) => ({
+              name: a.title,
+              url: `${SITE_URL}/resources/${a.slug}`,
+            })),
+          }),
+        )}
       />
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-6 border-b border-[#e8e0d0]">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ScorecardClient from "./ScorecardClient";
-import { scorecardFaqSchema } from "../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, scorecardFaqSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Franchise Readiness Quiz | Are You Ready to Own a Franchise?",
@@ -26,9 +27,20 @@ export const metadata: Metadata = {
 export default function ScorecardPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(scorecardFaqSchema) }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/scorecard`,
+            name: "Franchise Readiness Quiz | Waypoint Franchise Advisors",
+            description:
+              "Take the 2-minute franchise readiness quiz. Get a personalized score based on your capital, timeline, and motivation. Free, honest, no-pitch results from a former franchisor.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Readiness Quiz", url: `${SITE_URL}/scorecard` },
+            ]),
+          }),
+          scorecardFaqSchema,
+        )}
       />
       <ScorecardClient />
     </>

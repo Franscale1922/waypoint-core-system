@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import EmailCapture from "../../components/EmailCapture";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Free Franchise Checklists | Waypoint Franchise Advisors",
@@ -73,7 +74,7 @@ const checklistsSchema = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.waypointfranchise.com/checklists",
+      "@id": "https://www.waypointfranchise.com/checklists#webpage",
       url: "https://www.waypointfranchise.com/checklists",
       name: "Free Franchise Checklists | Waypoint Franchise Advisors",
       description:
@@ -144,10 +145,7 @@ const checklistsSchema = {
 export default function ChecklistsPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(checklistsSchema) }}
-      />
+      <JsonLd data={checklistsSchema} />
       {/* Hero */}
       <section className="bg-[#0c1929] pt-20 pb-16 px-6">
         <div className="max-w-4xl mx-auto">

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Testimonials from "../components/Testimonials";
 import FranchiseMapWrapper from "../components/FranchiseMapWrapper";
 import { SITE_URL, jsonLdGraph, webPageSchema } from "../lib/structured-data";
+import JsonLd from "../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
@@ -47,22 +48,17 @@ export default function HomePage() {
     <>
       {/* Homepage WebPage node — ties the landing page into the site graph and
           names the business as its primary entity. */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              webPageSchema({
-                url: SITE_URL,
-                name: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
-                description:
-                  "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. 146+ owners helped across 35 states. No pitch, no pressure.",
-                mainEntityId: `${SITE_URL}/#business`,
-                primaryImage: `${SITE_URL}/og_default_1773343895292.png`,
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: SITE_URL,
+            name: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
+            description:
+              "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. 146+ owners helped across 35 states. No pitch, no pressure.",
+            mainEntityId: `${SITE_URL}/#business`,
+            primaryImage: `${SITE_URL}/og_default_1773343895292.png`,
+          }),
+        )}
       />
       {/* ============================================
           HERO — Full-screen Montana, text overlaid

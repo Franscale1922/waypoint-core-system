@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
 import { videoObjectSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 // Revalidate every hour — re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
@@ -117,16 +118,9 @@ export default async function AboutPage() {
       : null;
   return (
     <>
-      {videoSchema && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(videoSchema) }}
-        />
-      )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
+      {videoSchema && <JsonLd data={videoSchema} />}
+      <JsonLd
+        data={{
             "@context": "https://schema.org",
             "@type": "Person",
             "@id": "https://www.waypointfranchise.com/about#kelsey",
@@ -162,7 +156,6 @@ export default async function AboutPage() {
               "semi-absentee franchise ownership",
               "SBA franchise financing"
             ]
-          }),
         }}
       />
       {/* Hero */}

@@ -1,6 +1,8 @@
 import { terms } from "@/data/glossary";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 const glossarySchema = {
   "@context": "https://schema.org",
@@ -28,7 +30,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Glossary | Waypoint Franchise Advisors",
     description:
-      "Every term a franchise buyer needs to understand, explained in plain language. 60+ definitions from FDD to unit economics.",
+      "Every term a franchise buyer needs to understand, explained in plain language. 90+ definitions from FDD to unit economics.",
     url: "https://www.waypointfranchise.com/glossary",
     images: [{ url: "/og/og-glossary.png", width: 1200, height: 630, alt: "Franchise Glossary — Plain-English Definitions | Waypoint" }],
   },
@@ -50,12 +52,24 @@ export default function GlossaryPage() {
       })),
     ),
   };
+  // Join the glossary into the site graph: a WebPage node (isPartOf #website) +
+  // breadcrumb alongside the DefinedTermSet, all escaped via <JsonLd>.
+  const glossaryGraph = jsonLdGraph(
+    webPageSchema({
+      url: `${SITE_URL}/glossary`,
+      name: "Franchise Glossary | Waypoint Franchise Advisors",
+      description:
+        "Plain-language definitions of franchise industry terms for prospective franchise buyers.",
+      breadcrumb: breadcrumbSchema([
+        { name: "Home", url: SITE_URL },
+        { name: "Glossary", url: `${SITE_URL}/glossary` },
+      ]),
+    }),
+    glossarySchemaWithTerms,
+  );
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(glossarySchemaWithTerms) }}
-      />
+      <JsonLd data={glossaryGraph} />
 
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-6 border-b border-[#e8e0d0]">

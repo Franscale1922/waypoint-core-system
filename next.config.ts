@@ -32,10 +32,6 @@ const securityHeaders = [
   { key: 'Content-Security-Policy', value: ContentSecurityPolicy },
   // Forces HTTPS for 2 years (only meaningful in production)
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-  // Agent discovery (RFC 8288): advertise the machine-readable site description.
-  // /llms.txt is a structured summary of the site for LLMs/agents; "describedby"
-  // is the registered IANA relation for "this resource is described by that one".
-  { key: 'Link', value: '</llms.txt>; rel="describedby"; type="text/plain"' },
 ];
 
 const nextConfig: NextConfig = {
@@ -83,6 +79,18 @@ const nextConfig: NextConfig = {
         // Apply to all routes
         source: '/(.*)',
         headers: securityHeaders,
+      },
+      {
+        // Agent discovery (RFC 8288): advertise the machine-readable site
+        // description at /llms.txt via the registered "describedby" relation.
+        // Scoped to HTML document routes only — the negative lookahead excludes
+        // /_next, /api, and any path with a file extension (/llms.txt itself,
+        // images, sitemap.xml, robots.txt) so the header doesn't leak onto
+        // asset/binary responses or self-reference llms.txt.
+        source: '/((?!_next/|api/|.*\\.).*)',
+        headers: [
+          { key: 'Link', value: '</llms.txt>; rel="describedby"; type="text/plain"' },
+        ],
       },
       {
         // Content-rich pages serve HTML to browsers and markdown to agents that

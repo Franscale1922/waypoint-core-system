@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FAQItem } from "./FAQItem";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "FAQ | Waypoint Franchise Advisors",
@@ -42,9 +44,20 @@ const faqPageSchema = {
 export default function FAQPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqPageSchema) }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/faq`,
+            name: "Frequently Asked Questions | Waypoint Franchise Advisors",
+            description:
+              "Honest answers to common questions about franchise consulting, cost, capital requirements, funding paths, territory, semi-absentee ownership, the FDD, and how the process works.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "FAQ", url: `${SITE_URL}/faq` },
+            ]),
+          }),
+          faqPageSchema,
+        )}
       />
 
       {/* Hero */}

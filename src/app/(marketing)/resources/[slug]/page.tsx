@@ -4,7 +4,8 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
-import { videoObjectSchema } from "../../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema } from "../../../lib/structured-data";
+import JsonLd from "../../../components/JsonLd";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
 import NewsletterForm from "../../../components/NewsletterForm";
@@ -45,93 +46,56 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
   const { meta, content, relatedSlugs, faqs, video } = article;
   const related = getRelatedArticles(relatedSlugs);
+  const articleUrl = `${SITE_URL}/resources/${slug}`;
+  // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
+  // plus optional FAQ/Video and breadcrumbs — all via the shared helpers/escaping.
+  const articleGraph = jsonLdGraph(
+    {
+      "@type": "Article",
+      "@id": `${articleUrl}#article`,
+      url: articleUrl,
+      headline: meta.title,
+      description: meta.excerpt,
+      datePublished: meta.date,
+      dateModified: meta.updatedAt ?? meta.date,
+      image: `${SITE_URL}/og_default_1773343895292.png`,
+      author: { "@id": `${SITE_URL}/about#kelsey` },
+      publisher: { "@id": `${SITE_URL}/#business` },
+      mainEntityOfPage: { "@id": `${articleUrl}#webpage` },
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${articleUrl}#webpage`,
+      url: articleUrl,
+      name: meta.title,
+      isPartOf: { "@id": `${SITE_URL}/#website` },
+      inLanguage: "en-US",
+      mainEntity: { "@id": `${articleUrl}#article` },
+      breadcrumb: breadcrumbSchema([
+        { name: "Home", url: SITE_URL },
+        { name: "Resources", url: `${SITE_URL}/resources` },
+        { name: meta.title, url: articleUrl },
+      ]),
+    },
+    ...(faqs && faqs.length > 0
+      ? [
+          {
+            "@type": "FAQPage",
+            mainEntity: faqs.map(({ q, a }) => ({
+              "@type": "Question",
+              name: q,
+              acceptedAnswer: { "@type": "Answer", text: a },
+            })),
+          },
+        ]
+      : []),
+    ...(video?.name && video?.thumbnailUrl && video?.uploadDate
+      ? [videoObjectSchema(video)]
+      : []),
+  );
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Article",
-            "@id": `https://www.waypointfranchise.com/resources/${slug}`,
-            url: `https://www.waypointfranchise.com/resources/${slug}`,
-            headline: meta.title,
-            description: meta.excerpt,
-            datePublished: meta.date,
-            dateModified: meta.updatedAt ?? meta.date,
-            image: "https://www.waypointfranchise.com/og_default_1773343895292.png",
-            author: {
-              "@type": "Person",
-              "@id": "https://www.waypointfranchise.com/about#kelsey",
-              name: "Kelsey Stuart",
-              url: "https://www.waypointfranchise.com/about",
-            },
-            publisher: {
-              "@type": "Organization",
-              "@id": "https://www.waypointfranchise.com/#business",
-              name: "Waypoint Franchise Advisors",
-              url: "https://www.waypointfranchise.com",
-            },
-            mainEntityOfPage: {
-              "@type": "WebPage",
-              "@id": `https://www.waypointfranchise.com/resources/${slug}`,
-            },
-          }),
-        }}
-      />
-      {faqs && faqs.length > 0 && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "FAQPage",
-              mainEntity: faqs.map(({ q, a }) => ({
-                "@type": "Question",
-                name: q,
-                acceptedAnswer: { "@type": "Answer", text: a },
-              })),
-            }),
-          }}
-        />
-      )}
-      {video?.name && video?.thumbnailUrl && video?.uploadDate && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(videoObjectSchema(video)),
-          }}
-        />
-      )}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: "https://www.waypointfranchise.com",
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Resources",
-                item: "https://www.waypointfranchise.com/resources",
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: meta.title,
-                item: `https://www.waypointfranchise.com/resources/${slug}`,
-              },
-            ],
-          }),
-        }}
-      />
+      <JsonLd data={articleGraph} />
       <section className="max-w-3xl mx-auto px-6 pt-16 sm:pt-24 pb-10">
         <Link href="/resources" className="inline-flex items-center text-xs text-[#8E3012] tracking-wide uppercase font-medium hover:text-[#CC6535] transition-colors mb-8">
           ← Resources

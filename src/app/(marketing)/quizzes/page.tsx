@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
@@ -19,24 +20,19 @@ export const metadata: Metadata = {
 export default function QuizzesPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              webPageSchema({
-                url: `${SITE_URL}/quizzes`,
-                name: "Free Franchise Quizzes | Waypoint Franchise Advisors",
-                description:
-                  "Two free assessments to help you figure out where you stand before talking to anyone: the Franchise Readiness Quiz and the Owner Type Quiz.",
-                breadcrumb: breadcrumbSchema([
-                  { name: "Home", url: SITE_URL },
-                  { name: "Quizzes", url: `${SITE_URL}/quizzes` },
-                ]),
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/quizzes`,
+            name: "Free Franchise Quizzes | Waypoint Franchise Advisors",
+            description:
+              "Two free assessments to help you figure out where you stand before talking to anyone: the Franchise Readiness Quiz and the Owner Type Quiz.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Quizzes", url: `${SITE_URL}/quizzes` },
+            ]),
+          }),
+        )}
       />
 
       {/* Hero */}

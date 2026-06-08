@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 const comparisonSchema = {
   "@context": "https://schema.org",
@@ -88,9 +90,20 @@ const comparisonRows = [
 export default function FranchiseConsultantVsBrokerPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(comparisonSchema) }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/franchise-consultant-vs-broker`,
+            name: "Franchise Consultant vs. Broker | Waypoint Franchise Advisors",
+            description:
+              "Franchise consultants and franchise brokers are often the same thing legally, but they work very differently. Here is what the distinction actually means for your process.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Consultant vs. Broker", url: `${SITE_URL}/franchise-consultant-vs-broker` },
+            ]),
+          }),
+          comparisonSchema,
+        )}
       />
 
       {/* Hero */}

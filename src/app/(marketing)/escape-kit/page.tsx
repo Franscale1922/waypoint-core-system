@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import EscapeKitCaptureForm from "../../components/EscapeKitCaptureForm";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "The Financial Safety Nets of Franchising vs. W2 | Waypoint Franchise Advisors",
@@ -21,7 +22,7 @@ const escapeKitSchema = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.waypointfranchise.com/escape-kit",
+      "@id": "https://www.waypointfranchise.com/escape-kit#webpage",
       url: "https://www.waypointfranchise.com/escape-kit",
       name: "The Financial Safety Nets of Franchising vs. W2 | Waypoint Franchise Advisors",
       description:
@@ -70,10 +71,7 @@ const SECTIONS = [
 export default function EscapeKitPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(escapeKitSchema) }}
-      />
+      <JsonLd data={escapeKitSchema} />
 
       {/* ── Hero ── */}
       <section className="bg-[#0c1929] pt-20 pb-16 px-6">

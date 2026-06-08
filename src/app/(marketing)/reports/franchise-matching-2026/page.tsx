@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { jsonLdGraph, breadcrumbSchema } from "../../../lib/structured-data";
+import JsonLd from "../../../components/JsonLd";
 
 const SITE_URL = "https://www.waypointfranchise.com";
 const PATH = "/reports/franchise-matching-2026";
@@ -34,13 +36,11 @@ const STATS = [
 export default function FranchiseMatchingReport2026() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
+      <JsonLd
+        data={jsonLdGraph(
+          {
             "@type": "Article",
-            "@id": `${SITE_URL}${PATH}`,
+            "@id": `${SITE_URL}${PATH}#article`,
             url: `${SITE_URL}${PATH}`,
             headline: "The Franchise Matching Report 2026",
             description:
@@ -48,35 +48,25 @@ export default function FranchiseMatchingReport2026() {
             datePublished: PUBLISHED,
             dateModified: PUBLISHED,
             image: `${SITE_URL}/og_default_1773343895292.png`,
-            author: {
-              "@type": "Person",
-              "@id": `${SITE_URL}/about#kelsey`,
-              name: "Kelsey Stuart",
-              url: `${SITE_URL}/about`,
-            },
-            publisher: {
-              "@type": "Organization",
-              "@id": `${SITE_URL}/#business`,
-              name: "Waypoint Franchise Advisors",
-              url: SITE_URL,
-            },
-            mainEntityOfPage: { "@type": "WebPage", "@id": `${SITE_URL}${PATH}` },
-          }),
-        }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-              { "@type": "ListItem", position: 2, name: "Resources", item: `${SITE_URL}/resources` },
-              { "@type": "ListItem", position: 3, name: "The Franchise Matching Report 2026", item: `${SITE_URL}${PATH}` },
-            ],
-          }),
-        }}
+            author: { "@id": `${SITE_URL}/about#kelsey` },
+            publisher: { "@id": `${SITE_URL}/#business` },
+            mainEntityOfPage: { "@id": `${SITE_URL}${PATH}#webpage` },
+          },
+          {
+            "@type": "WebPage",
+            "@id": `${SITE_URL}${PATH}#webpage`,
+            url: `${SITE_URL}${PATH}`,
+            name: "The Franchise Matching Report 2026",
+            isPartOf: { "@id": `${SITE_URL}/#website` },
+            inLanguage: "en-US",
+            mainEntity: { "@id": `${SITE_URL}${PATH}#article` },
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Resources", url: `${SITE_URL}/resources` },
+              { name: "The Franchise Matching Report 2026", url: `${SITE_URL}${PATH}` },
+            ]),
+          },
+        )}
       />
 
       {/* Hero */}

@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ArchetypeClient from "./ArchetypeClient";
 import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "What Kind of Franchise Owner Are You? | Waypoint Franchise Advisors",
@@ -19,24 +20,19 @@ export const metadata: Metadata = {
 export default function ArchetypePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              webPageSchema({
-                url: `${SITE_URL}/archetype`,
-                name: "What Kind of Franchise Owner Are You? | Waypoint Franchise Advisors",
-                description:
-                  "The Franchise Archetype Quiz: 8 questions to discover your franchise personality type, the industries you're wired for, and the ones to avoid. Free, no sales pitch.",
-                breadcrumb: breadcrumbSchema([
-                  { name: "Home", url: SITE_URL },
-                  { name: "Archetype Quiz", url: `${SITE_URL}/archetype` },
-                ]),
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/archetype`,
+            name: "What Kind of Franchise Owner Are You? | Waypoint Franchise Advisors",
+            description:
+              "The Franchise Archetype Quiz: 8 questions to discover your franchise personality type, the industries you're wired for, and the ones to avoid. Free, no sales pitch.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Archetype Quiz", url: `${SITE_URL}/archetype` },
+            ]),
+          }),
+        )}
       />
       <ArchetypeClient />
     </>

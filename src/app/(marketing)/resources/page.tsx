@@ -5,6 +5,7 @@ import { getAllArticles, getArticlesByCategory } from "../../../lib/articles";
 import ResourcesGrid from "../../components/ResourcesGrid";
 import EmailCapture from "../../components/EmailCapture";
 import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Franchise Resources | Waypoint Franchise Advisors",
@@ -26,28 +27,23 @@ export default function ResourcesPage() {
   const allArticles = getAllArticles();
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              collectionPageSchema({
-                url: `${SITE_URL}/resources`,
-                name: "Franchise Resources | Waypoint Franchise Advisors",
-                description:
-                  "Guides, articles, and tools for anyone seriously exploring franchise ownership. No pitch, no agenda.",
-                breadcrumb: breadcrumbSchema([
-                  { name: "Home", url: SITE_URL },
-                  { name: "Resources", url: `${SITE_URL}/resources` },
-                ]),
-                items: allArticles.map((a) => ({
-                  name: a.title,
-                  url: `${SITE_URL}/resources/${a.slug}`,
-                })),
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          collectionPageSchema({
+            url: `${SITE_URL}/resources`,
+            name: "Franchise Resources | Waypoint Franchise Advisors",
+            description:
+              "Guides, articles, and tools for anyone seriously exploring franchise ownership. No pitch, no agenda.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Resources", url: `${SITE_URL}/resources` },
+            ]),
+            items: allArticles.map((a) => ({
+              name: a.title,
+              url: `${SITE_URL}/resources/${a.slug}`,
+            })),
+          }),
+        )}
       />
       <section className="relative pt-24 pb-20 px-6 overflow-hidden">
         <Image

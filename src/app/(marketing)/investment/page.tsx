@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import InvestmentTierToggle from "@/app/components/InvestmentTierToggle";
 import type { InvestmentTier } from "@/app/components/InvestmentTierToggle";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 const investmentGuideSchema = {
   "@context": "https://schema.org",
@@ -132,9 +134,20 @@ const costComponents = [
 export default function InvestmentPage() {
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(investmentGuideSchema) }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/investment`,
+            name: "Franchise Investment Guide | Waypoint Franchise Advisors",
+            description:
+              "A plain-language guide to franchise investment costs: initial franchise fees, total investment ranges by category, royalty structures, working capital, and how franchise financing actually works.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Investment Guide", url: `${SITE_URL}/investment` },
+            ]),
+          }),
+          investmentGuideSchema,
+        )}
       />
 
       {/* Hero */}

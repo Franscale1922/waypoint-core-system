@@ -176,11 +176,11 @@ export const franchiseConsultingServiceSchema = {
     "@id": `${SITE_URL}/about#kelsey`,
     name: "Kelsey Stuart",
   },
-  brand: {
-    "@type": "Brand",
-    "@id": `${SITE_URL}/#business`,
-    name: "Waypoint Franchise Advisors",
-  },
+  // Reference the business by @id only (no explicit @type). The `brand` property
+  // accepts an Organization, and #business is a LocalBusiness (⊂ Organization), so
+  // this stays valid WITHOUT re-typing #business as a Brand — which would otherwise
+  // collapse the merged #business node into a cross-branch LocalBusiness+Brand type.
+  brand: { "@id": `${SITE_URL}/#business` },
   areaServed: {
     "@type": "Country",
     name: "United States",
@@ -314,6 +314,17 @@ export function jsonLdGraph(...nodes: JsonLdNode[]) {
 }
 
 /**
+ * Build a fragment @id from a canonical URL. The apex/root has no path, so we
+ * insert a "/" before the fragment to match the site-level @ids
+ * (`${SITE_URL}/#business`, `/#website`). Pathed URLs (e.g. `/resources`) keep
+ * their path and append the fragment directly. Keeps every node's @id uniform.
+ */
+export function fragmentId(canonical: string, fragment: string): string {
+  const base = canonical === SITE_URL ? `${SITE_URL}/` : canonical;
+  return `${base}${fragment}`;
+}
+
+/**
  * BreadcrumbList node (no `@context` — meant to nest in a `@graph` or a WebPage).
  * URLs are normalized to the canonical www host.
  */
@@ -352,7 +363,7 @@ export function webPageSchema({
   const canonical = toWww(url);
   return {
     "@type": "WebPage",
-    "@id": `${canonical}#webpage`,
+    "@id": fragmentId(canonical, "#webpage"),
     url: canonical,
     name,
     description,
@@ -384,7 +395,7 @@ export function collectionPageSchema({
   const canonical = toWww(url);
   return {
     "@type": "CollectionPage",
-    "@id": `${canonical}#webpage`,
+    "@id": fragmentId(canonical, "#webpage"),
     url: canonical,
     name,
     description,

@@ -9,6 +9,7 @@ import {
   webSiteSchema,
   jsonLdGraph,
 } from "./lib/structured-data";
+import JsonLd from "./components/JsonLd";
 import { GA_ID } from "./lib/analytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
@@ -105,18 +106,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* Site-wide entity graph: Organization/LocalBusiness ↔ WebSite ↔ Person ↔
             Service, cross-linked by @id and emitted as one connected @graph so
             search engines and AI crawlers resolve them as a single knowledge graph. */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(
-              jsonLdGraph(
-                localBusinessSchema,
-                webSiteSchema,
-                personSchema,
-                franchiseConsultingServiceSchema,
-              ),
-            ),
-          }}
+        <JsonLd
+          data={jsonLdGraph(
+            localBusinessSchema,
+            webSiteSchema,
+            personSchema,
+            franchiseConsultingServiceSchema,
+          )}
         />
       </head>
       <body

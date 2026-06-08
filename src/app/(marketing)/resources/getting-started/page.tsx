@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getArticlesByCategoryName } from "../../../../lib/articles";
 import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from "../../../lib/structured-data";
+import JsonLd from "../../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Getting Started with Franchising | Waypoint Franchise Advisors",
@@ -24,29 +25,24 @@ export default function GettingStartedPage() {
   const articles = getArticlesByCategoryName("Getting Started");
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            jsonLdGraph(
-              collectionPageSchema({
-                url: `${SITE_URL}/resources/getting-started`,
-                name: "Getting Started with Franchising | Waypoint Franchise Advisors",
-                description:
-                  "If you are new to franchising, start here. Practical guides covering readiness, costs, how consultants work, FDD review, and what type of franchise fits your situation.",
-                breadcrumb: breadcrumbSchema([
-                  { name: "Home", url: SITE_URL },
-                  { name: "Resources", url: `${SITE_URL}/resources` },
-                  { name: "Getting Started", url: `${SITE_URL}/resources/getting-started` },
-                ]),
-                items: articles.map((a) => ({
-                  name: a.title,
-                  url: `${SITE_URL}/resources/${a.slug}`,
-                })),
-              }),
-            ),
-          ),
-        }}
+      <JsonLd
+        data={jsonLdGraph(
+          collectionPageSchema({
+            url: `${SITE_URL}/resources/getting-started`,
+            name: "Getting Started with Franchising | Waypoint Franchise Advisors",
+            description:
+              "If you are new to franchising, start here. Practical guides covering readiness, costs, how consultants work, FDD review, and what type of franchise fits your situation.",
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "Resources", url: `${SITE_URL}/resources` },
+              { name: "Getting Started", url: `${SITE_URL}/resources/getting-started` },
+            ]),
+            items: articles.map((a) => ({
+              name: a.title,
+              url: `${SITE_URL}/resources/${a.slug}`,
+            })),
+          }),
+        )}
       />
       {/* Hero */}
       <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-6 border-b border-[#e8e0d0]">

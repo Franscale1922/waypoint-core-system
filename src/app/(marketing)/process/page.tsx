@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import JsonLd from "../../components/JsonLd";
 
 const howToSchema = {
   "@context": "https://schema.org",
@@ -130,9 +132,21 @@ const steps: {
 export default function ProcessPage() {
   return (
     <main className="text-[#0c1929]">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+      <JsonLd
+        data={jsonLdGraph(
+          webPageSchema({
+            url: `${SITE_URL}/process`,
+            name: "How It Works | Waypoint Franchise Advisors",
+            description:
+              "A five-step process from your first conversation to a confident franchise decision. Free consulting, no pitch.",
+            mainEntityId: `${SITE_URL}/#service`,
+            breadcrumb: breadcrumbSchema([
+              { name: "Home", url: SITE_URL },
+              { name: "How It Works", url: `${SITE_URL}/process` },
+            ]),
+          }),
+          howToSchema,
+        )}
       />
 
       {/* ── Hero ─────────────────────────────────────────── */}

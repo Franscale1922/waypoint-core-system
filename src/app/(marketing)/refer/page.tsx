@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
   title: "Refer a Friend | Waypoint Franchise Advisors",
@@ -63,15 +64,12 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "WebPage",
-      "@id": "https://www.waypointfranchise.com/refer",
+      "@id": "https://www.waypointfranchise.com/refer#webpage",
       "name": "Refer a Friend | Waypoint Franchise Advisors",
       "description": "Know someone who's been quietly thinking about franchise ownership? Here's a simple way to point them in the right direction.",
       "url": "https://www.waypointfranchise.com/refer",
-      "publisher": {
-        "@type": "LocalBusiness",
-        "name": "Waypoint Franchise Advisors",
-        "url": "https://www.waypointfranchise.com"
-      }
+      "isPartOf": { "@id": "https://www.waypointfranchise.com/#website" },
+      "publisher": { "@id": "https://www.waypointfranchise.com/#business" }
     },
     {
       "@type": "HowTo",
@@ -104,10 +102,7 @@ const jsonLd = {
 export default function ReferPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       {/* Hero */}
       <section className="relative pt-16 pb-36 sm:py-24 md:py-32 overflow-hidden">
         <Image
