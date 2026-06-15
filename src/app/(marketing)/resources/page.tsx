@@ -96,6 +96,40 @@ export default function ResourcesPage() {
         </Link>
       </section>
 
+      {/* Pillar guides — in-content links to the financing + industries hubs */}
+      <section className="max-w-4xl mx-auto px-5 sm:px-10 pt-12">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-8 h-[2px] bg-[#CC6535]" />
+          <p className="text-xs font-medium text-[#CC6535] uppercase tracking-[0.2em]">Start Here</p>
+        </div>
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Link
+            href="/industries"
+            className="group block rounded-xl border border-[#e2ddd2] bg-white p-6 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+          >
+            <h3 className="font-playfair text-lg text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-2">
+              Browse franchises by industry
+            </h3>
+            <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
+              Category-by-category guides — home services, senior care, fitness, food, B2B and more — covering what each is really like and who it fits.
+            </p>
+            <span className="text-xs text-[#8E3012] font-medium tracking-wide">See the categories →</span>
+          </Link>
+          <Link
+            href="/franchise-financing"
+            className="group block rounded-xl border border-[#e2ddd2] bg-white p-6 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+          >
+            <h3 className="font-playfair text-lg text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-2">
+              How to finance a franchise
+            </h3>
+            <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
+              SBA loans, ROBS, home equity, securities-backed lines, and franchisor financing — the main funding paths, in plain English.
+            </p>
+            <span className="text-xs text-[#8E3012] font-medium tracking-wide">Read the guide →</span>
+          </Link>
+        </div>
+      </section>
+
       {/* B-6: Email capture — research-mode visitors */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-12">
         <EmailCapture />

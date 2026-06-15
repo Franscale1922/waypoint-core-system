@@ -479,6 +479,64 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
+          EXPLORE BY TOPIC — in-content links to the pillar pages
+          (homepage authority → financing + industries hubs)
+          ============================================ */}
+      <section className="py-16 sm:py-20">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="reveal text-center mb-10 sm:mb-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#8E3012] mb-4">
+              Start Exploring
+            </p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a1a1a] tracking-tight">
+              Get your bearings before the call
+            </h2>
+          </div>
+          <div className="reveal grid gap-5 sm:grid-cols-3">
+            <Link
+              href="/industries"
+              className="group block rounded-xl border border-[#e2ddd2] bg-white p-6 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+            >
+              <div className="w-5 h-[2px] bg-[#CC6535] mb-4 group-hover:w-8 transition-all duration-300" />
+              <h3 className="font-playfair text-lg text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-2">
+                Browse by industry
+              </h3>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
+                Home services, senior care, fitness, food, B2B and more — what each category is really like and who it fits.
+              </p>
+              <span className="text-xs text-[#8E3012] font-medium tracking-wide">See the categories →</span>
+            </Link>
+            <Link
+              href="/franchise-financing"
+              className="group block rounded-xl border border-[#e2ddd2] bg-white p-6 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+            >
+              <div className="w-5 h-[2px] bg-[#CC6535] mb-4 group-hover:w-8 transition-all duration-300" />
+              <h3 className="font-playfair text-lg text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-2">
+                How to finance a franchise
+              </h3>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
+                SBA loans, ROBS, home equity, and more — the main ways franchises get funded, in plain English.
+              </p>
+              <span className="text-xs text-[#8E3012] font-medium tracking-wide">Read the guide →</span>
+            </Link>
+            <Link
+              href="/resources"
+              className="group block rounded-xl border border-[#e2ddd2] bg-white p-6 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+            >
+              <div className="w-5 h-[2px] bg-[#CC6535] mb-4 group-hover:w-8 transition-all duration-300" />
+              <h3 className="font-playfair text-lg text-[#0c1929] group-hover:text-[#8E3012] transition-colors mb-2">
+                Read the resources
+              </h3>
+              <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
+                Honest articles on FDDs, territories, validation, and the real numbers behind franchise ownership.
+              </p>
+              <span className="text-xs text-[#8E3012] font-medium tracking-wide">Browse articles →</span>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================
           FINAL CTA — mountain lake background
           Inspired by: Under Canvas location pages
           ============================================ */}

@@ -113,6 +113,14 @@ import JsonLd from "../../components/JsonLd";
 />
 ```
 
+> **Note on `FAQPage`:** Google fully retired FAQ *rich results* (the expandable
+> Q&A in the SERP) for all sites in May 2026 — there is no longer any rich-result
+> upside to FAQ markup. We still emit `FAQPage` and, more importantly, render the
+> FAQ **visibly on the page**, purely for AEO/LLM grounding (AI Overviews, ChatGPT,
+> Perplexity) and for the `.md` agent variants. Keep visible FAQ and schema in
+> lockstep from one shared array; don't invest further engineering in FAQ-schema
+> breadth expecting SERP rich results.
+
 ## Verifying changes
 
 - `npm run verify-schema` — static guardrails (fast, no server).

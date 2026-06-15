@@ -2,47 +2,30 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import InvestmentTierToggle from "@/app/components/InvestmentTierToggle";
 import type { InvestmentTier } from "@/app/components/InvestmentTierToggle";
-import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
 
-const investmentGuideSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
+const investmentGuideSchema = faqPageSchema(
+  [
     {
-      "@type": "Question",
-      name: "How much does it cost to buy a franchise?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "The total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
-      },
+      q: "How much does it cost to buy a franchise?",
+      a: "The total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
     },
     {
-      "@type": "Question",
-      name: "What is a franchise fee?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
-      },
+      q: "What is a franchise fee?",
+      a: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
     },
     {
-      "@type": "Question",
-      name: "What is a franchise royalty?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "A royalty is an ongoing fee paid to the franchisor, typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
-      },
+      q: "What is a franchise royalty?",
+      a: "A royalty is an ongoing fee paid to the franchisor, typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
     },
     {
-      "@type": "Question",
-      name: "How much liquid capital do I need to buy a franchise?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
-      },
+      q: "How much liquid capital do I need to buy a franchise?",
+      a: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
     },
   ],
-};
+  `${SITE_URL}/investment`,
+);
 
 export const metadata: Metadata = {
   title: "How Much Does a Franchise Cost? | Investment Guide | Waypoint Franchise Advisors",

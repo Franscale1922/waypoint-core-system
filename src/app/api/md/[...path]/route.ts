@@ -4,6 +4,11 @@ import {
   resourcesIndexMarkdown,
   glossaryMarkdown,
   faqMarkdown,
+  financingMarkdown,
+  financingGuideMarkdown,
+  industriesIndexMarkdown,
+  industryMarkdown,
+  industryCostMarkdown,
   estimateTokens,
   categoryNameFromSlug,
 } from "@/lib/markdown-views";
@@ -20,6 +25,8 @@ function render(path: string[]): string | null {
     if (path[0] === "resources") return resourcesIndexMarkdown();
     if (path[0] === "glossary") return glossaryMarkdown();
     if (path[0] === "faq") return faqMarkdown();
+    if (path[0] === "franchise-financing") return financingMarkdown();
+    if (path[0] === "industries") return industriesIndexMarkdown();
     return null;
   }
   if (path.length === 2 && path[0] === "resources") {
@@ -28,6 +35,15 @@ function render(path: string[]): string | null {
     const categoryName = categoryNameFromSlug(seg);
     if (categoryName) return resourcesIndexMarkdown(categoryName);
     return articleMarkdown(seg);
+  }
+  if (path.length === 2 && path[0] === "industries") {
+    return industryMarkdown(path[1]);
+  }
+  if (path.length === 2 && path[0] === "franchise-financing") {
+    return financingGuideMarkdown(path[1]);
+  }
+  if (path.length === 3 && path[0] === "industries" && path[2] === "cost") {
+    return industryCostMarkdown(path[1]);
   }
   return null;
 }

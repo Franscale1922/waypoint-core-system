@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FAQItem } from "./FAQItem";
-import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
@@ -25,21 +25,11 @@ export const metadata: Metadata = {
 
 
 
-// Build FAQPage schema from the faqs array above
-const faqPageSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.flatMap(({ questions }) =>
-    questions.map(({ q, a }) => ({
-      "@type": "Question",
-      name: q,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: a,
-      },
-    }))
-  ),
-};
+// Build FAQPage schema from the categorized faqs (flattened to {q,a}[]).
+const faqPageNode = faqPageSchema(
+  faqs.flatMap(({ questions }) => questions.map(({ q, a }) => ({ q, a }))),
+  `${SITE_URL}/faq`,
+);
 
 export default function FAQPage() {
   return (
@@ -56,7 +46,7 @@ export default function FAQPage() {
               { name: "FAQ", url: `${SITE_URL}/faq` },
             ]),
           }),
-          faqPageSchema,
+          faqPageNode,
         )}
       />
 

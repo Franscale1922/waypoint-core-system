@@ -1,38 +1,40 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
+import { FAQItem } from "../faq/FAQItem";
 
-const comparisonSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "What is the difference between a franchise consultant and a franchise broker?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "In the franchise industry, the terms consultant and broker are often used interchangeably, and both are typically paid by franchise brands when a candidate becomes a franchisee. The meaningful difference is in how they work. A franchise broker tends to present a large catalog of options and let the buyer do the sorting. A franchise consultant invests time understanding the buyer's background, capital, lifestyle goals, and risk tolerance before presenting any options. The result is a small curated list rather than a large catalog.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Do franchise consultants and brokers cost money?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Franchise consulting and brokerage services are free to candidates. The franchise brand pays a referral fee when a candidate they were introduced to becomes a franchisee. That fee is paid by the brand, not added to what the buyer pays.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is a franchise consultant the same as a franchise broker?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Legally and structurally, yes. Both are paid by the franchise brand and both help candidates evaluate franchise opportunities. The distinction is in the working style: how much time the advisor spends understanding the candidate before presenting options, how many brands they present, and how hands-on they are throughout the due diligence process.",
-      },
-    },
-  ],
-};
+// Single source of truth for this page's FAQ: the visible accordion below AND the
+// FAQPage JSON-LD are both built from this array, so on-page content and structured
+// data can never drift (a requirement for FAQ markup to stay eligible).
+const faqs = [
+  {
+    q: "What is the difference between a franchise consultant and a franchise broker?",
+    a: "In the franchise industry, the terms consultant and broker are often used interchangeably, and both are typically paid by franchise brands when a candidate becomes a franchisee. The meaningful difference is in how they work. A franchise broker tends to present a large catalog of options and let the buyer do the sorting. A franchise consultant invests time understanding the buyer's background, capital, lifestyle goals, and risk tolerance before presenting any options. The result is a small curated list rather than a large catalog.",
+  },
+  {
+    q: "Do franchise consultants and brokers cost money?",
+    a: "No. Franchise consulting and brokerage services are free to candidates. The franchise brand pays a referral fee when a candidate they were introduced to becomes a franchisee. That fee is paid by the brand, not added to what the buyer pays.",
+  },
+  {
+    q: "Is a franchise consultant the same as a franchise broker?",
+    a: "Legally and structurally, yes. Both are paid by the franchise brand and both help candidates evaluate franchise opportunities. The distinction is in the working style: how much time the advisor spends understanding the candidate before presenting options, how many brands they present, and how hands-on they are throughout the due diligence process.",
+  },
+  {
+    q: "Should I use a franchise consultant or go directly to a franchise brand?",
+    a: "Going directly to brands is possible. Franchisors have their own development teams. But a development rep works for the franchisor. Their job is to qualify you for their specific brand. A consultant's job is to figure out which brand is right for you, which may not be any of the ones a single brand's rep can offer. The consulting relationship is also free, which means there is no cost to having representation.",
+  },
+  {
+    q: "Can a franchise consultant show me any brand, or only brands in their network?",
+    a: "Consultants who operate through networks like FranChoice have access to a curated inventory of 200–400+ brands that have opted into the consultant referral model. Not every franchisor participates. Some smaller or newer brands may not be in a consultant's inventory. If you have a specific brand in mind, ask your consultant whether they work with that brand before assuming they can represent you in that conversation.",
+  },
+  {
+    q: "How do I know if a franchise consultant is actually independent?",
+    a: "Ask them directly how many brands they presented to their last five clients, and whether any single brand generates a disproportionate share of their placements. Also look at how they structure the early part of the process: if they are showing you brands before understanding your situation, that is a signal. Independent consultants spend time on discovery before they spend time on presentation.",
+  },
+];
+
+const comparisonSchema = faqPageSchema(faqs, `${SITE_URL}/franchise-consultant-vs-broker`);
 
 export const metadata: Metadata = {
   title: "Franchise Consultant vs. Franchise Broker: What's the Difference? | Waypoint Franchise Advisors",
@@ -234,25 +236,9 @@ export default function FranchiseConsultantVsBrokerPage() {
           Common Questions
         </p>
         <h2 className="font-playfair text-2xl sm:text-3xl mb-8">Questions about working with a consultant</h2>
-        <div className="space-y-6">
-          {[
-            {
-              q: "Should I use a franchise consultant or go directly to a franchise brand?",
-              a: "Going directly to brands is possible. Franchisors have their own development teams. But a development rep works for the franchisor. Their job is to qualify you for their specific brand. A consultant's job is to figure out which brand is right for you, which may not be any of the ones a single brand's rep can offer. The consulting relationship is also free, which means there is no cost to having representation.",
-            },
-            {
-              q: "Can a franchise consultant show me any brand, or only brands in their network?",
-              a: "Consultants who operate through networks like FranChoice have access to a curated inventory of 200–400+ brands that have opted into the consultant referral model. Not every franchisor participates. Some smaller or newer brands may not be in a consultant's inventory. If you have a specific brand in mind, ask your consultant whether they work with that brand before assuming they can represent you in that conversation.",
-            },
-            {
-              q: "How do I know if a franchise consultant is actually independent?",
-              a: "Ask them directly how many brands they presented to their last five clients, and whether any single brand generates a disproportionate share of their placements. Also look at how they structure the early part of the process: if they are showing you brands before understanding your situation, that is a signal. Independent consultants spend time on discovery before they spend time on presentation.",
-            },
-          ].map(({ q, a }) => (
-            <div key={q} className="border-l-2 border-[#8E3012] pl-6">
-              <h3 className="font-semibold text-[#0c1929] mb-2">{q}</h3>
-              <p className="text-sm text-[#4a4a3e] leading-relaxed">{a}</p>
-            </div>
+        <div>
+          {faqs.map(({ q, a }) => (
+            <FAQItem key={q} q={q} a={a} />
           ))}
         </div>
       </section>
