@@ -4,11 +4,13 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
-import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema } from "../../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema } from "../../../lib/structured-data";
 import JsonLd from "../../../components/JsonLd";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
 import NewsletterForm from "../../../components/NewsletterForm";
+import { FAQItem } from "../../faq/FAQItem";
+import { pillarForArticle } from "../../../../lib/pillars";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -46,6 +48,7 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
   const { meta, content, relatedSlugs, faqs, video } = article;
   const related = getRelatedArticles(relatedSlugs);
+  const pillar = pillarForArticle(slug);
   const articleUrl = `${SITE_URL}/resources/${slug}`;
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs — all via the shared helpers/escaping.
@@ -77,18 +80,7 @@ export default async function ArticlePage({ params }: Props) {
         { name: meta.title, url: articleUrl },
       ]),
     },
-    ...(faqs && faqs.length > 0
-      ? [
-          {
-            "@type": "FAQPage",
-            mainEntity: faqs.map(({ q, a }) => ({
-              "@type": "Question",
-              name: q,
-              acceptedAnswer: { "@type": "Answer", text: a },
-            })),
-          },
-        ]
-      : []),
+    ...(faqs && faqs.length > 0 ? [faqPageSchema(faqs, articleUrl)] : []),
     ...(video?.name && video?.thumbnailUrl && video?.uploadDate
       ? [videoObjectSchema(video)]
       : []),
@@ -112,9 +104,42 @@ export default async function ArticlePage({ params }: Props) {
       <article className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#8E3012] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
         <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
+      {/* Pillar up-link — points the article back to the topic-cluster pillar it
+          belongs to (derived from the same data the pillar uses to link down). */}
+      {pillar && (
+        <section className="max-w-3xl mx-auto px-6 pb-4">
+          <Link
+            href={pillar.href}
+            className="group block rounded-lg border border-[#e8e0d0] bg-white px-5 py-4 hover:border-[#CC6535]/40 hover:shadow-sm transition-all"
+          >
+            <span className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[#8E3012]">
+              Part of our guide
+            </span>
+            <span className="mt-1 block font-playfair text-base text-[#0c1929] group-hover:text-[#8E3012] transition-colors">
+              {pillar.label} →
+            </span>
+          </Link>
+        </section>
+      )}
       <section className="max-w-3xl mx-auto px-6">
         <InlineCapture />
       </section>
+      {/* Visible FAQ — same `faqs` array feeds the FAQPage schema above, so on-page
+          content and structured data stay in lockstep (Google requires the FAQ to be
+          present on the page for the markup to be eligible). */}
+      {faqs && faqs.length > 0 && (
+        <section className="max-w-3xl mx-auto px-6 py-12 sm:py-16 border-t border-[#e8e0d0]">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
+            Common Questions
+          </p>
+          <h2 className="font-playfair text-2xl sm:text-3xl mb-6">Frequently asked questions</h2>
+          <div>
+            {faqs.map(({ q, a }) => (
+              <FAQItem key={q} q={q} a={a} />
+            ))}
+          </div>
+        </section>
+      )}
       <RelatedArticles articles={related} />
       {/* Newsletter subscribe callout — appears on every article */}
       <section className="border-t border-[#e8e0d0] bg-white py-10 px-6">

@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "../lib/articles";
+import { industries, getIndustryCost } from "../data/industries";
+import { financingGuides } from "../data/financing";
 
 const SITE_URL = "https://www.waypointfranchise.com";
 
@@ -36,6 +38,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${SITE_URL}/franchise-consultant-vs-broker`,
       lastModified: new Date("2026-03-15"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/franchise-financing`,
+      lastModified: new Date("2026-06-13"),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/industries`,
+      lastModified: new Date("2026-06-13"),
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: `${SITE_URL}/franchise-vs-starting-a-business`,
+      lastModified: new Date("2026-06-13"),
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/is-a-franchise-worth-it`,
+      lastModified: new Date("2026-06-13"),
       changeFrequency: "monthly",
       priority: 0.8,
     },
@@ -162,5 +188,34 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
-  return [...corePages, ...articlePages];
+  const industryPages: MetadataRoute.Sitemap = industries.map((i) => ({
+    url: `${SITE_URL}/industries/${i.slug}`,
+    lastModified: new Date("2026-06-13"),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
+  const financingGuidePages: MetadataRoute.Sitemap = financingGuides.map((g) => ({
+    url: `${SITE_URL}/franchise-financing/${g.slug}`,
+    lastModified: new Date("2026-06-13"),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }));
+
+  const industryCostPages: MetadataRoute.Sitemap = industries
+    .filter((i) => getIndustryCost(i.slug))
+    .map((i) => ({
+      url: `${SITE_URL}/industries/${i.slug}/cost`,
+      lastModified: new Date("2026-06-13"),
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    }));
+
+  return [
+    ...corePages,
+    ...articlePages,
+    ...industryPages,
+    ...financingGuidePages,
+    ...industryCostPages,
+  ];
 }

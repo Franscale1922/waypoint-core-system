@@ -122,44 +122,29 @@ export const personSchema = {
   ],
 };
 
-export const scorecardFaqSchema = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "How much capital do I need to buy a franchise?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "It depends on the franchise. Many solid concepts start under $150K in liquid capital. The quiz helps identify which investment ranges match your profile.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Is the franchise readiness quiz free?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Yes, the quiz and all consulting services through Waypoint are 100% free to candidates. Franchise brands pay the referral fee, not you.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "What happens after I complete the quiz?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "You get a personalized readiness score. From there you can book a free 30-minute call with Kelsey to discuss your results and explore franchise concepts that match your profile.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "Do I need prior business experience to buy a franchise?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Many of the best franchise owners come from corporate backgrounds with no prior business ownership. The quiz accounts for your experience level when generating your score.",
-      },
-    },
-  ],
-};
+// Scorecard FAQ — flat source array; the visible accordion on /scorecard and the
+// FAQPage JSON-LD are both built from this (the page maps scorecardFaqs; the schema
+// is faqPageSchema(scorecardFaqs)).
+export const scorecardFaqs = [
+  {
+    q: "How much capital do I need to buy a franchise?",
+    a: "It depends on the franchise. Many solid concepts start under $150K in liquid capital. The quiz helps identify which investment ranges match your profile.",
+  },
+  {
+    q: "Is the franchise readiness quiz free?",
+    a: "Yes, the quiz and all consulting services through Waypoint are 100% free to candidates. Franchise brands pay the referral fee, not you.",
+  },
+  {
+    q: "What happens after I complete the quiz?",
+    a: "You get a personalized readiness score. From there you can book a free 30-minute call with Kelsey to discuss your results and explore franchise concepts that match your profile.",
+  },
+  {
+    q: "Do I need prior business experience to buy a franchise?",
+    a: "No. Many of the best franchise owners come from corporate backgrounds with no prior business ownership. The quiz accounts for your experience level when generating your score.",
+  },
+];
+
+export const scorecardFaqSchema = faqPageSchema(scorecardFaqs, `${SITE_URL}/scorecard`);
 
 export const franchiseConsultingServiceSchema = {
   "@context": "https://schema.org",
@@ -203,6 +188,7 @@ export const franchiseConsultingServiceSchema = {
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Senior Care Franchises" } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Pet Care Franchises" } },
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Express Car Wash Franchises" } },
+      { "@type": "Offer", itemOffered: { "@type": "Service", name: "Food and Beverage Franchises" } },
     ],
   },
   // ReserveAction makes the primary conversion (booking a free discovery call)
@@ -413,4 +399,33 @@ export function collectionPageSchema({
       })),
     },
   };
+}
+
+/**
+ * FAQPage node built from a flat {q,a}[] array — the one shape used everywhere FAQ
+ * content appears (articles, the FAQ page, scorecard, comparison, financing, and
+ * the industry/category pages). Returns a node WITHOUT `@context` so it composes
+ * inside `jsonLdGraph(...)`.
+ *
+ * Pass `url` (the page's canonical) to anchor the node in the graph with a stable
+ * `@id` + `isPartOf #website` + `inLanguage`. Always pass it for page-level FAQs so
+ * the FAQPage isn't a floating, unlinked node. The visible on-page FAQ MUST be
+ * rendered from the same array (Google requires the Q&A to be present on the page).
+ */
+export function faqPageSchema(items: { q: string; a: string }[], url?: string) {
+  const node: Record<string, unknown> = {
+    "@type": "FAQPage",
+    mainEntity: items.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a },
+    })),
+  };
+  if (url) {
+    const canonical = toWww(url);
+    node["@id"] = fragmentId(canonical, "#faq");
+    node["isPartOf"] = { "@id": `${SITE_URL}/#website` };
+    node["inLanguage"] = "en-US";
+  }
+  return node;
 }

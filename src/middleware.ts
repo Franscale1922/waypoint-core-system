@@ -8,7 +8,11 @@ function isMarkdownNegotiable(pathname: string): boolean {
     pathname === "/resources" ||
     pathname.startsWith("/resources/") ||
     pathname === "/glossary" ||
-    pathname === "/faq"
+    pathname === "/faq" ||
+    pathname === "/franchise-financing" ||
+    pathname.startsWith("/franchise-financing/") ||
+    pathname === "/industries" ||
+    pathname.startsWith("/industries/")
   );
 }
 
@@ -89,5 +93,11 @@ export const config = {
     "/glossary.md",
     "/faq",
     "/faq.md",
+    "/franchise-financing",
+    "/franchise-financing.md",
+    "/franchise-financing/:path*",
+    "/industries",
+    "/industries.md",
+    "/industries/:path*",
   ],
 };

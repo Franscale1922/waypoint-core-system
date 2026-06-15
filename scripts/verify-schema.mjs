@@ -17,6 +17,11 @@ import { join, relative } from "node:path";
 
 const ROOT = process.cwd();
 const APP_DIR = join(ROOT, "src", "app");
+// Single-source content/links now also live outside src/app: data files in
+// src/data and the markdown view generators. Scan these too so a non-www URL
+// added there can't escape the canonical-host guard below.
+const DATA_DIR = join(ROOT, "src", "data");
+const MARKDOWN_VIEWS = join(ROOT, "src", "lib", "markdown-views.ts");
 const STRUCTURED_DATA = join(APP_DIR, "lib", "structured-data.ts");
 
 // Paths whose non-www URLs are legitimately out of scope (email bodies, the RSS
@@ -42,7 +47,7 @@ function walk(dir) {
   return out;
 }
 
-const files = walk(APP_DIR);
+const files = [...walk(APP_DIR), ...walk(DATA_DIR), MARKDOWN_VIEWS];
 
 // 1) No self-serving review/rating markup reintroduced on the business entity.
 //    Match the property-assignment / typed-node FORM (not the word in a comment),

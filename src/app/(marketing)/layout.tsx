@@ -54,6 +54,18 @@ export default function MarketingLayout({
               FAQ
             </Link>
             <Link
+              href="/industries"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Industries
+            </Link>
+            <Link
+              href="/franchise-financing"
+              className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
+            >
+              Financing
+            </Link>
+            <Link
               href="/resources"
               className="text-xs font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors tracking-wide uppercase link-underline"
             >
@@ -177,8 +189,28 @@ export default function MarketingLayout({
                   </Link>
                 </li>
                 <li>
+                  <Link href="/industries" className="hover:text-white transition-colors inline-block py-1">
+                    Franchise Industries
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/franchise-financing" className="hover:text-white transition-colors inline-block py-1">
+                    How to Finance a Franchise
+                  </Link>
+                </li>
+                <li>
                   <Link href="/franchise-consultant-vs-broker" className="hover:text-white transition-colors inline-block py-1">
                     Consultant vs. Broker
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/franchise-vs-starting-a-business" className="hover:text-white transition-colors inline-block py-1">
+                    Franchise vs. Own Business
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/is-a-franchise-worth-it" className="hover:text-white transition-colors inline-block py-1">
+                    Is a Franchise Worth It?
                   </Link>
                 </li>
               </ul>
