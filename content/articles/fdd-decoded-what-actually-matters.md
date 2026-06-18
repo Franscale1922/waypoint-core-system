@@ -146,7 +146,7 @@ The Franchise Disclosure Document is a legally mandated document that every fran
 
 **How long do you have to review the FDD before you sign?**
 
-Federal law requires a minimum 14-day waiting period between receiving the FDD and signing any binding agreement or making any payment. This is a floor, not a deadline. Most buyers take four to eight weeks to review the document, consult an attorney, and complete validation calls before committing.
+[Federal law (the FTC Franchise Rule)](https://www.ftc.gov/business-guidance/resources/franchise-rule-compliance-guide) requires a minimum 14-day waiting period between receiving the FDD and signing any binding agreement or making any payment. This is a floor, not a deadline. Most buyers take four to eight weeks to review the document, consult an attorney, and complete validation calls before committing.
 
 **What is Item 19 of the FDD?**
 

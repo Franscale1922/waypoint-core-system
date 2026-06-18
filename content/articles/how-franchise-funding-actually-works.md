@@ -37,7 +37,7 @@ The right sequence is to inventory your options in order of how clean and simple
 
 4. **ROBS (Rollover for Business Startups):** for buyers with retirement savings, this is often the best structured path. No debt, no monthly payment, no credit score qualification required. Closes in weeks.
 
-5. **SBA financing:** the path of last resort. Powerful when you genuinely need it, but the most documentation-heavy, slowest, and most banker-involved option available. Best reserved for situations where no other path provides enough capital.
+5. **SBA financing:** the path of last resort, backed by the [U.S. Small Business Administration's 7(a) loan program](https://www.sba.gov/funding-programs/loans/7a-loans). Powerful when you genuinely need it, but the most documentation-heavy, slowest, and most banker-involved option available. Best reserved for situations where no other path provides enough capital.
 
 ## How much cash do you actually need to fund a franchise?
 

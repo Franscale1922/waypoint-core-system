@@ -109,7 +109,7 @@ Simpler qualification. There's no credit score floor, no collateral requirement,
 
 ## When does an SBA loan make sense for a franchise?
 
-The SBA 7(a) loan program is the most commonly used franchise funding tool in the US. That word, *commonly*, is important context. Common is not the same as best. It's common because many buyers don't have the retirement savings for ROBS and don't have enough liquid capital to fund the purchase directly. For those buyers, SBA is the right tool. But it is also the hardest one to use.
+The [SBA 7(a) loan program](https://www.sba.gov/funding-programs/loans/7a-loans) is the most commonly used franchise funding tool in the US. That word, *commonly*, is important context. Common is not the same as best. It's common because many buyers don't have the retirement savings for ROBS and don't have enough liquid capital to fund the purchase directly. For those buyers, SBA is the right tool. But it is also the hardest one to use.
 
 The SBA doesn't lend directly. It guarantees loans made by participating banks, which reduces lender risk. But the documentation burden, timeline, and ongoing obligation are entirely yours.
 
@@ -170,7 +170,7 @@ SBA 7(a) loans for franchise funding typically require 10 to 20% of the total pr
 
 **Is ROBS legal and IRS-approved?**
 
-ROBS is legal. The IRS has published formal guidance on the structure and has reviewed it extensively. ROBS must be set up correctly by a qualified administrator, and the ongoing compliance requirements are real. Done correctly, it is a legitimate and widely used funding path. Done incorrectly, it creates significant tax and legal exposure.
+ROBS is legal. The IRS has published [formal guidance on the ROBS structure](https://www.irs.gov/retirement-plans/rollovers-as-business-start-ups-compliance-project) and has reviewed it extensively. ROBS must be set up correctly by a qualified administrator, and the ongoing compliance requirements are real. Done correctly, it is a legitimate and widely used funding path. Done incorrectly, it creates significant tax and legal exposure.
 
 **Can you use both SBA and ROBS to fund a franchise?**
 
