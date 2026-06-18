@@ -90,6 +90,7 @@ If an existing article already has 3 strong related slugs, replace the weakest o
 | you-dont-need-to-love-your-franchise | Getting Started |
 | big-name-vs-emerging-which-franchise-to-buy | Going Deeper |
 | fast-growing-franchise-brand-good-sign-or-red-flag | Going Deeper |
+| franchise-investment-by-category | Going Deeper |
 | how-franchise-funding-actually-works | Going Deeper |
 | how-to-pick-a-franchise-territory | Going Deeper |
 | how-to-tell-if-a-franchisor-actually-cares | Going Deeper |
