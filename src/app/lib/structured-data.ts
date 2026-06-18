@@ -75,6 +75,8 @@ export const localBusinessSchema = {
     "https://www.youtube.com/@Waypoint-Franchise",
     "https://www.tiktok.com/@waypoint007",
     "https://www.pinterest.com/waypointfranchise/",
+    "https://www.crunchbase.com/organization/waypoint-franchise-advisors",
+    "https://www.wikidata.org/wiki/Q140285847",
   ],
 };
 
@@ -109,6 +111,7 @@ export const personSchema = {
     "https://www.youtube.com/@Waypoint-Franchise",
     "https://www.tiktok.com/@waypoint007",
     "https://www.pinterest.com/waypointfranchise/",
+    "https://www.crunchbase.com/person/kelsey-stuart-7ebb",
   ],
   knowsAbout: [
     "franchise consulting",
