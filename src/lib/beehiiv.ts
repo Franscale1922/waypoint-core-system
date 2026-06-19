@@ -1,5 +1,5 @@
 /**
- * beehiiv.ts — Shared subscriber sync utility
+ * beehiiv.ts: Shared subscriber sync utility
  *
  * Adds a subscriber to the Waypoint beehiiv publication.
  * Fire-and-forget safe: all errors are caught and logged, never re-thrown.
@@ -16,7 +16,7 @@ export async function subscribeToBeehiiv(
   const publicationId = process.env.BEEHIIV_PUBLICATION_ID;
 
   if (!apiKey || !publicationId) {
-    // Local dev without credentials — skip silently
+    // Local dev without credentials: skip silently
     return;
   }
 
@@ -34,7 +34,7 @@ export async function subscribeToBeehiiv(
         body: JSON.stringify({
           email,
           ...(firstName ? { first_name: firstName } : {}),
-          reactivate_existing: true,   // safe to call repeatedly — no duplicates
+          reactivate_existing: true,   // safe to call repeatedly: no duplicates
           send_welcome_email: false,   // Waypoint's own nurture handles welcome comms
           utm_source: "waypoint-crm",  // track origin in beehiiv analytics
         }),

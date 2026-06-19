@@ -1,7 +1,7 @@
 // ─── Escape Kit Email Builder ──────────────────────────────────────────────────
 // Renders the Corporate Escape Kit guide as a branded HTML email.
 // Design tokens: navy #122640, copper #CC6535, cream #F5F0E8.
-// All styles inline — Gmail/Outlook strip external CSS.
+// All styles inline. Gmail/Outlook strip external CSS.
 //
 // Parser handles the guide's actual markdown format:
 //   ## N. Section Title       → section heading
@@ -20,7 +20,7 @@ function esc(s: string): string {
 }
 
 // ── Inline markdown → HTML ─────────────────────────────────────────────────────
-// Handles **bold** only — safe subset for email rendering.
+// Handles **bold** only: safe subset for email rendering.
 function inlineMarkdown(s: string): string {
   return esc(s).replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
@@ -150,7 +150,7 @@ export function buildEscapeKitEmail(params: {
   const { firstName, guideMarkdown, unsubscribeUrl } = params;
   const sections = parseEscapeKitMarkdown(guideMarkdown);
 
-  const preHeader = "Your Corporate Escape Kit is inside — five sections on the financial realities of franchising vs. W2.";
+  const preHeader = "Your Corporate Escape Kit is inside: five sections on the financial realities of franchising vs. W2.";
   const pad = Array(60).fill("\u200C\u00A0").join("");
   const bookUrl = "https://www.waypointfranchise.com/book";
 

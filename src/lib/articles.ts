@@ -6,7 +6,7 @@ export type Article = {
   slug: string;
   title: string;
   date: string;
-  updatedAt?: string;  // Optional — set in frontmatter when article is meaningfully revised
+  updatedAt?: string;  // Optional: set in frontmatter when article is meaningfully revised
   category: string;
   tier: number;
   excerpt: string;

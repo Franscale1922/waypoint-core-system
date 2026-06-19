@@ -74,7 +74,7 @@ export function getRefreshCadenceDays(article: Article): number | null {
   const { slug, frontmatter } = article;
   const { category, tier } = frontmatter;
 
-  // Strategic / mindset slugs — never auto-refresh
+  // Strategic / mindset slugs: never auto-refresh
   const STRATEGIC_SLUGS = new Set([
     "you-dont-need-to-love-your-franchise",
     "are-you-ready-to-own-a-franchise",

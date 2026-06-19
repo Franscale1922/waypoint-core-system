@@ -69,14 +69,19 @@ console.log(`\nDate qualifier "as of YYYY": present in ${rows.filter((r) => r.ha
 console.log(`\nThin (<900 words): ${thin.length}${list(thin, (r) => `${r.f}(${r.words})`)}`);
 console.log(`Long lead paragraph (>320 chars): ${longLead.length}${list(longLead, (r) => `${r.f}(${r.leadLen})`)}`);
 
-// ─── Section 11 em-dash guard across rendered code (src/app, src/data) ───────
+// ─── Section 11 em-dash guard across all of src/ ────────────────────────────
 // CONTENT-STANDARDS Section 11 bans em dashes in ALL public-facing and
 // agent-generated copy, not just markdown. The per-article scan above only
-// covers content/articles, which is exactly why UI and data-layer violations
-// accumulated undetected. This walks the code that renders to users/agents and
-// FAILS the run (exit 1) if any em dash remains, so the rule is enforceable in CI.
-const EMDASH = String.fromCharCode(0x2014); // avoid putting a literal em dash in this file
-const CODE_DIRS = ["src/app", "src/data"];
+// covers content/articles, which is exactly why UI, data-layer, and agent/email
+// copy violations accumulated undetected. This walks ALL of src/ and FAILS the
+// run (exit 1) if any em dash remains.
+//
+// Escape hatch: a line containing the token "emdash-allow" is skipped, for the
+// rare legitimately-functional em dash (e.g. the literal em dash in a banned-
+// character detector array). Use sparingly and only for non-copy code.
+const EMDASH = String.fromCharCode(0x2014); // avoid a literal em dash in this file
+const ALLOW = "emdash-allow";
+const CODE_DIRS = ["src"];
 const CODE_EXT = /\.(tsx?|css)$/;
 function walk(dir, acc = []) {
   if (!fs.existsSync(dir)) return acc;
@@ -89,19 +94,27 @@ function walk(dir, acc = []) {
 }
 const codeFiles = CODE_DIRS.flatMap((d) => walk(d));
 const emdashViolations = codeFiles
-  .map((f) => ({ f, count: fs.readFileSync(f, "utf8").split(EMDASH).length - 1 }))
+  .map((f) => {
+    // Count em dashes line-by-line, skipping any line that opts out via ALLOW.
+    const count = fs
+      .readFileSync(f, "utf8")
+      .split("\n")
+      .filter((line) => !line.includes(ALLOW))
+      .reduce((s, line) => s + line.split(EMDASH).length - 1, 0);
+    return { f, count };
+  })
   .filter((r) => r.count > 0)
   .sort((a, b) => b.count - a.count);
 const totalCodeEmdash = emdashViolations.reduce((s, r) => s + r.count, 0);
 const articleEmdash = rows.reduce((s, r) => s + r.emdash, 0);
 
-console.log(`\nSection 11 em dashes in src/app + src/data (banned): ${totalCodeEmdash} across ${emdashViolations.length} files`);
+console.log(`\nSection 11 em dashes in src/ (banned): ${totalCodeEmdash} across ${emdashViolations.length} files`);
 for (const r of emdashViolations.slice(0, 20)) console.log(`  ${r.f} (${r.count})`);
 if (emdashViolations.length > 20) console.log(`  ... and ${emdashViolations.length - 20} more`);
 
 if (totalCodeEmdash > 0 || articleEmdash > 0) {
-  console.log(`\nFAIL Section 11: ${totalCodeEmdash + articleEmdash} em dashes total (articles: ${articleEmdash}, code: ${totalCodeEmdash}). Remove every em dash.`);
+  console.log(`\nFAIL Section 11: ${totalCodeEmdash + articleEmdash} em dashes total (articles: ${articleEmdash}, src/: ${totalCodeEmdash}). Remove every em dash (or mark a functional one with "${ALLOW}").`);
   process.exitCode = 1;
 } else {
-  console.log(`\nPASS Section 11: 0 em dashes in articles, src/app, or src/data.`);
+  console.log(`\nPASS Section 11: 0 em dashes in articles or src/.`);
 }

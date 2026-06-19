@@ -44,7 +44,7 @@ export function RegenerateButton(props: Props) {
             setTimeout(() => setState("idle"), 6000);
         } catch {
             setState("error");
-            setMessage("Network error — check your connection.");
+            setMessage("Network error. Check your connection.");
             setTimeout(() => setState("idle"), 4000);
         }
     }

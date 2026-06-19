@@ -9,7 +9,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   session: {
-    maxAge: 30 * 24 * 60 * 60, // 30 days — stay logged in for a month
+    maxAge: 30 * 24 * 60 * 60, // 30 days, stay logged in for a month
     updateAge: 24 * 60 * 60,   // Only refresh the session cookie once per day
   },
   pages: {

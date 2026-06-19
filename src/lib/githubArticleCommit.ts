@@ -2,13 +2,13 @@
  * githubArticleCommit.ts
  *
  * Commits one or more refreshed article files to GitHub using the
- * Git Data API — a single atomic commit for the entire batch.
+ * Git Data API: a single atomic commit for the entire batch.
  *
  * Required env vars:
- *   GITHUB_TOKEN      — fine-grained personal access token (contents: write)
- *   GITHUB_REPO_OWNER — e.g. "Franscale1922"
- *   GITHUB_REPO_NAME  — e.g. "waypoint-core-system"
- *   GITHUB_BRANCH     — defaults to "main" if not set
+ *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
+ *   GITHUB_REPO_OWNER: e.g. "Franscale1922"
+ *   GITHUB_REPO_NAME:  e.g. "waypoint-core-system"
+ *   GITHUB_BRANCH:     defaults to "main" if not set
  */
 
 import matter from "gray-matter";
@@ -145,7 +145,7 @@ export async function commitRefreshedArticles(
     month: "short", day: "numeric", year: "numeric",
   });
   const message = commitMessage
-    ?? `chore: content refresh — ${articles.length} article(s) updated (${today})`;
+    ?? `chore: content refresh, ${articles.length} article(s) updated (${today})`;
 
   const newCommit = await githubRequest<{ sha: string }>(
     "/git/commits",

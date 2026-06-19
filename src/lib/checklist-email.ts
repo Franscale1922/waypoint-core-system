@@ -1,7 +1,7 @@
 // ─── Checklist Email Builder ───────────────────────────────────────────────────
 // Parses checklist markdown into structured data, then renders a full HTML email
 // using Waypoint's design tokens (navy #122640, copper #CC6535, cream #F5F0E8).
-// All styles are inline — CSS classes are stripped by Gmail / Outlook.
+// All styles are inline. CSS classes are stripped by Gmail / Outlook.
 
 interface ChecklistSection {
   title: string;

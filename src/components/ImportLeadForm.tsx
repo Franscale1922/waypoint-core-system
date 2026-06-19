@@ -6,15 +6,15 @@ import { useRouter } from "next/navigation";
 
 // ── Column name aliases from Sales Navigator & Evaboot CSV/TSV exports ───────
 const COLUMN_ALIASES: Record<string, string> = {
-    // name — Evaboot exports "Full Name" as a combined column
+    // name: Evaboot exports "Full Name" as a combined column
     "full name": "name",
     "first name + last name": "name",
     "name": "name",
-    // split name columns — Evaboot exports "First Name" + "Last Name" separately
+    // split name columns: Evaboot exports "First Name" + "Last Name" separately
     "first name": "firstName",
     "last name": "lastName",
-    // linkedinUrl — Evaboot uses "Linkedin URL Public" (do NOT map "Linkedin URL Unique ID" —
-    // it comes after "Linkedin URL Public" in Evaboot's column order and would overwrite the
+    // linkedinUrl: Evaboot uses "Linkedin URL Public" (do NOT map "Linkedin URL Unique ID"
+    // because it comes after "Linkedin URL Public" in Evaboot's column order and would overwrite the
     // clean public slug URL with an unreadable hash like ACwAAASP...)
     "linkedin url": "linkedinUrl",
     "linkedin url public": "linkedinUrl",
@@ -23,20 +23,20 @@ const COLUMN_ALIASES: Record<string, string> = {
     "url": "linkedinUrl",
     // email
     "email": "email",
-    // emailStatus — Evaboot verification tier ("safe" | "riskier")
+    // emailStatus: Evaboot verification tier ("safe" | "riskier")
     // Evaboot exports this column as "Email Status" in the CSV header.
     "email status": "emailStatus",
     "emailstatus": "emailStatus",
     "email_status": "emailStatus",
     "verification status": "emailStatus",
     "email verification": "emailStatus",
-    // title — Evaboot uses "Current Job"
+    // title: Evaboot uses "Current Job"
     "title": "title",
     "job title": "title",
     "current title": "title",
     "current job": "title",
     "position": "title",
-    // company — Evaboot uses "Company Name"
+    // company: Evaboot uses "Company Name"
     "company": "company",
     "company name": "company",
     "current company": "company",
@@ -54,7 +54,7 @@ const COLUMN_ALIASES: Record<string, string> = {
     "careertrigger": "careerTrigger",
     "franchise angle": "franchiseAngle",
     "franchiseangle": "franchiseAngle",
-    // tenure — Evaboot exports "Years in Position"
+    // tenure: Evaboot exports "Years in Position"
     "years in current position": "yearsInCurrentRole",
     "years in position": "yearsInCurrentRole",
     "yearsincurrentposition": "yearsInCurrentRole",
@@ -66,7 +66,7 @@ type LeadRow = {
     name: string;
     linkedinUrl: string;
     email?: string;
-    emailStatus?: "safe" | "riskier";  // Evaboot verification tier — gates riskier emails in senderProcess
+    emailStatus?: "safe" | "riskier";  // Evaboot verification tier, gates riskier emails in senderProcess
     title: string;
     company: string;
     country?: string;
@@ -74,7 +74,7 @@ type LeadRow = {
     recentPostSummary?: string;
     careerTrigger?: string;
     franchiseAngle?: string;
-    yearsInCurrentRole?: number;  // Scoring signal only — never referenced in email
+    yearsInCurrentRole?: number;  // Scoring signal only. Never referenced in email
     _valid: boolean;
     _error?: string;
 };
@@ -115,7 +115,7 @@ function parseCSV(text: string): LeadRow[] {
     const commaCount = (firstLine.match(/,/g) ?? []).length;
     const delimiter = tabCount > commaCount ? "\t" : ",";
 
-    // Parse header — normalize to field keys via aliases
+    // Parse header, then normalize to field keys via aliases
     const rawHeaders = splitLine(firstLine, delimiter).map(h => h.replace(/^"|"$/g, "").trim().toLowerCase());
     const headers = rawHeaders.map(h => COLUMN_ALIASES[h] ?? h);
 
@@ -254,7 +254,7 @@ export function ImportLeadForm() {
                 setImportResult({ processed: data.processed, failed });
                 router.refresh();
             } else {
-                alert("Import failed — check console.");
+                alert("Import failed. Check console.");
             }
         } catch (err) {
             console.error(err);
@@ -334,7 +334,7 @@ export function ImportLeadForm() {
                                             Company News Event <span className="text-xs text-blue-500 ml-1">Priority A</span>
                                         </label>
                                         <input
-                                            placeholder="e.g. WARN filing — 400 layoffs announced Jan 15 | Boeing reorg Q1"
+                                            placeholder="e.g. WARN filing: 400 layoffs announced Jan 15 | Boeing reorg Q1"
                                             className="w-full border border-slate-200 rounded-lg px-3 py-2 text-sm"
                                             value={formData.companyNewsEvent}
                                             onChange={e => setFormData({ ...formData, companyNewsEvent: e.target.value })}
@@ -343,7 +343,7 @@ export function ImportLeadForm() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                                            Recent Post Topic <span className="text-xs text-slate-400 ml-1">Priority B — paraphrase only, no quotes</span>
+                                            Recent Post Topic <span className="text-xs text-slate-400 ml-1">Priority B: paraphrase only, no quotes</span>
                                         </label>
                                         <input
                                             placeholder="e.g. Leadership changes creating operational uncertainty"
@@ -351,7 +351,7 @@ export function ImportLeadForm() {
                                             value={formData.recentPostSummary}
                                             onChange={e => setFormData({ ...formData, recentPostSummary: e.target.value })}
                                         />
-                                        <p className="text-xs text-slate-400 mt-1">Topic only — never paste a verbatim quote. 8 words max.</p>
+                                        <p className="text-xs text-slate-400 mt-1">Topic only. Never paste a verbatim quote. 8 words max.</p>
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">Career Trigger Type</label>
@@ -373,7 +373,7 @@ export function ImportLeadForm() {
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-slate-700 mb-1">
-                                            Years in Current Role <span className="text-xs text-slate-400 ml-1">(optional — from Sales Nav, scoring signal only)</span>
+                                            Years in Current Role <span className="text-xs text-slate-400 ml-1">(optional: from Sales Nav, scoring signal only)</span>
                                         </label>
                                         <input
                                             type="number"
@@ -415,16 +415,16 @@ export function ImportLeadForm() {
                                     <input ref={fileRef} type="file" accept=".csv" className="hidden" onChange={handleFileChange} />
                                 </div>
 
-                                {/* Shared batch fields — apply to all rows */}
+                                {/* Shared batch fields, applied to all rows */}
                                 {csvRows.length > 0 && (
                                     <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
                                         <p className="text-xs font-semibold text-blue-700 uppercase tracking-wider">Apply to all {validCount} leads in this batch</p>
                                         <div>
                                             <label className="block text-sm font-medium text-slate-700 mb-1">
-                                                Company News Event <span className="text-xs text-blue-500 ml-1">Priority A — fills any blank rows</span>
+                                                Company News Event <span className="text-xs text-blue-500 ml-1">Priority A: fills any blank rows</span>
                                             </label>
                                             <input
-                                                placeholder="e.g. WARN filing — 400 layoffs, Boeing, announced March 2026"
+                                                placeholder="e.g. WARN filing: 400 layoffs, Boeing, announced March 2026"
                                                 className="w-full border border-blue-200 rounded-lg px-3 py-2 text-sm bg-white"
                                                 value={batchEvent}
                                                 onChange={e => setBatchEvent(e.target.value)}
@@ -468,9 +468,9 @@ export function ImportLeadForm() {
                                                 <tbody>
                                                     {csvRows.slice(0, 25).map((row, i) => (
                                                         <tr key={i} className={`border-t border-slate-100 ${!row._valid ? "opacity-50" : ""}`}>
-                                                            <td className="px-3 py-2 font-medium text-slate-800">{row.name || "—"}</td>
-                                                            <td className="px-3 py-2 text-slate-600">{row.title || "—"}</td>
-                                                            <td className="px-3 py-2 text-slate-600">{row.company || "—"}</td>
+                                                            <td className="px-3 py-2 font-medium text-slate-800">{row.name || "-"}</td>
+                                                            <td className="px-3 py-2 text-slate-600">{row.title || "-"}</td>
+                                                            <td className="px-3 py-2 text-slate-600">{row.company || "-"}</td>
                                                             <td className="px-3 py-2">
                                                                 {row._valid
                                                                     ? <span className="text-emerald-600 flex items-center gap-1"><CheckCircle2 className="w-3 h-3" /> OK</span>

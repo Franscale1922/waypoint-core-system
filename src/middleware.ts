@@ -35,7 +35,7 @@ export default auth((req) => {
   // --- Markdown content negotiation -------------------------------------
   // Two ways to ask for markdown, both rewriting (no client-visible redirect)
   // to the markdown route handler:
-  //   1. `.md` suffix convention — /resources/<slug>.md, /glossary.md, etc.
+  //   1. `.md` suffix convention: /resources/<slug>.md, /glossary.md, etc.
   //   2. `Accept: text/markdown` on the canonical URL.
   if (pathname.endsWith(".md")) {
     const base = pathname.slice(0, -3);
@@ -53,7 +53,7 @@ export default auth((req) => {
 
   // --- Auth gate (admin pages + sensitive APIs) -------------------------
   // The matcher also covers the markdown-negotiable pages above, so gate the
-  // auth redirect on the actual protected paths — never on public pages.
+  // auth redirect on the actual protected paths, never on public pages.
   const isProtectedApi =
     (pathname.startsWith("/api/leads") && !pathname.startsWith("/api/leads/retrigger")) ||
     pathname.startsWith("/api/settings");

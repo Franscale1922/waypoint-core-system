@@ -1,5 +1,5 @@
 /**
- * crm.ts — Outbound CRM notification helper
+ * crm.ts: Outbound CRM notification helper
  *
  * Pushes a lead record into the Waypoint CRM (Supabase Edge Function)
  * whenever a prospect engages with the website.
@@ -25,14 +25,14 @@ export interface CrmLeadPayload {
   name: string;
   email?: string;
   phone?: string;
-  /** Identifies the touchpoint — shown in CRM event log. */
+  /** Identifies the touchpoint: shown in CRM event log. */
   source: string;
   /** Extra context (score, archetype, checklist type, etc.). */
   notes?: string;
 }
 
 /**
- * Push a lead to the CRM. Call without await — it resolves in the background.
+ * Push a lead to the CRM. Call without await. It resolves in the background.
  *
  * @example
  *   notifyCrm({ name, email, source: "Contact Form", notes: message });
@@ -46,7 +46,7 @@ export function notifyCrm(payload: CrmLeadPayload): void {
   // Never send Kelsey's own test submissions to the CRM.
   if (payload.email?.toLowerCase() === KELSEY_EMAIL.toLowerCase()) return;
 
-  // Fire-and-forget — intentionally not awaited.
+  // Fire-and-forget: intentionally not awaited.
   fetch(webhookUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

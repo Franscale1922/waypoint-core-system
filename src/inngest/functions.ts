@@ -21,7 +21,7 @@ export const leadHunterProcess = inngest.createFunction(
             // Non-serviceable markets (add more as needed)
             const nonServiceableMarkets = ["India", "Philippines", "Pakistan", "Nigeria", "Bangladesh"];
             if (lead.country && nonServiceableMarkets.some(m => lead.country!.includes(m))) {
-                // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: suppressionReason added to schema; Prisma client regenerates on deploy
                 await prisma.lead.update({
                     where: { id: lead.id },
                     data: { status: "SUPPRESSED", suppressionReason: "non_serviceable_market" } as any,
@@ -34,7 +34,7 @@ export const leadHunterProcess = inngest.createFunction(
 
             // ── Title / Seniority (up to +20) ──────────────────────────────────
             // Four-stage pipeline:
-            //   1. Franchise ICP — score first, before any suppression check
+            //   1. Franchise ICP: score first, before any suppression check
             //   2. Hard suppress non-franchise owners, founders, freelancers
             //   3. Regex fast path for corporate seniority tiers
             //   4. GPT-4o-mini fallback for any title that scored 0 on regex
@@ -43,19 +43,19 @@ export const leadHunterProcess = inngest.createFunction(
             let titleMatched = false;
 
             // ── Stage 1: Franchise ICP (multi-unit expansion candidates) ──────
-            // These leads have already proven franchise interest — score them high.
+            // These leads have already proven franchise interest. Score them high.
             // Multi-unit/multi-brand operators are the most qualified targets.
             if (/\bmulti[.\s-]?unit\b|\bmulti[.\s-]?brand\b/i.test(title)) {
-                titleBonus = 20; titleMatched = true; // Multi-unit operator — top franchise ICP
+                titleBonus = 20; titleMatched = true; // Multi-unit operator: top franchise ICP
             } else if (/\bfranchise\s*(owner|operator|partner)\b|\bfranchisee\b/i.test(title)) {
-                titleBonus = 18; titleMatched = true; // Single-unit — multi-unit expansion candidate
+                titleBonus = 18; titleMatched = true; // Single-unit: multi-unit expansion candidate
             }
 
             // ── Stage 2: Hard suppression (non-franchise owners, founders) ────
             if (!titleMatched) {
                 if (/\b(founder|co-founder|business owner|co-owner)\b/i.test(title) ||
                     /\bfreelance\b|\bindependent\s+(consultant|writer|contractor|professional|advisor|coach|creator)\b/i.test(title)) {
-                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                    // @ts-ignore: suppressionReason added to schema; Prisma client regenerates on deploy
                     await prisma.lead.update({
                         where: { id: lead.id },
                         data: { status: "SUPPRESSED", suppressionReason: "title_suppressed" } as any,
@@ -71,7 +71,7 @@ export const leadHunterProcess = inngest.createFunction(
                 } else if (/\bsvp\b|\bevp\b|\brvp\b|\bvp\b|vice president|managing director/i.test(title)) {
                     titleBonus = 18; titleMatched = true; // VP / Managing Director tier
                 } else if (/\bavp\b|assistant vice president/i.test(title)) {
-                    titleBonus = 12; titleMatched = true; // AVP — financial services / banking
+                    titleBonus = 12; titleMatched = true; // AVP: financial services / banking
                 } else if (/\bdirector\b|\bhead of\b|general manager/i.test(title) ||
                            /\bgm\b.*(sales|operations|region|district|market)/i.test(title)) {
                     titleBonus = 15; titleMatched = true; // Director-equivalents
@@ -84,7 +84,7 @@ export const leadHunterProcess = inngest.createFunction(
 
             // ── Stage 4: LLM fallback for unrecognised titles ─────────────────
             // Only fires when regex matched nothing (titleMatched = false).
-            // Uses gpt-4o-mini — cheap, fast, semantically robust.
+            // Uses gpt-4o-mini: cheap, fast, semantically robust.
             // Handles: "Exec VP", "Country Lead", "Practice Director", etc.
             if (!titleMatched && title.length > 2) {
                 try {
@@ -96,7 +96,7 @@ export const leadHunterProcess = inngest.createFunction(
                         const { text } = await generateText({
                             model: miniModel,
                             system: `Classify a LinkedIn job title into one of these seniority tiers.
-Reply with ONLY the numeric tier — nothing else.
+Reply with ONLY the numeric tier, nothing else.
 20 = Multi-unit or multi-brand franchise operator
 18 = VP-tier: any Vice President variant (Executive VP, EVP, Exec VP, SVP, RVP, AVP-senior, Managing Director, MD)
 15 = Director-tier: any Director, Head of [dept], General Manager, GM (with context), Country/Market Lead
@@ -111,53 +111,53 @@ Reply with ONLY the numeric tier — nothing else.
                         }
                     }
                 } catch {
-                    // LLM fallback failed silently — title scores 0 bonus, pipeline continues
+                    // LLM fallback failed silently: title scores 0 bonus, pipeline continues
                 }
             }
 
             score += titleBonus;
 
             // ── Career Trigger Signal (up to +20) ─────────────────────────────
-            // FIX: promotion/new role signals the WRONG direction — someone who just started
+            // FIX: promotion/new role signals the WRONG direction. Someone who just started
             // a fresh chapter is LESS likely to buy a franchise. Demoted to +3.
             // New bucket: long-term dissatisfaction signals (burnout, plateau, stuck) = +15.
             const trigger = (lead.careerTrigger || "").toLowerCase();
             if (trigger) {
                 if (/layoff|laid off|job loss|let go|shut down|what.s next|exploring next|between roles/i.test(trigger)) {
-                    score += 20; // Acute catalyst — highest urgency
+                    score += 20; // Acute catalyst: highest urgency
                 } else if (/burnout|burned out|plateau|golden handcuff|stuck|trapped|tired of|corporate|exploring|ready for something new/i.test(trigger)) {
-                    score += 15; // Chronic dissatisfaction — strong ICP signal
+                    score += 15; // Chronic dissatisfaction: strong ICP signal
                 } else if (/promotion|new role|just started|relocated|franchise|entrepreneurship|ownership/i.test(trigger)) {
-                    score += 3; // Wrong direction — just refreshed career, low readiness
+                    score += 3; // Wrong direction: just refreshed career, low readiness
                 } else {
                     score += 3; // trigger present but generic
                 }
             }
 
-            // ── Company News Event (up to +20) — Priority A signal ────────────────
+            // ── Company News Event (up to +20): Priority A signal ────────────────
             // A macro public event (WARN Act, layoff, reorg) is the strongest ICP
             // signal: target still employed, transition mindset active, capital arriving.
-            // Previously this only gated the quality check — now it scores too.
+            // Previously this only gated the quality check. Now it scores too.
             const newsEvent = ((lead as any).companyNewsEvent as string | undefined ?? "").toLowerCase();
             if (newsEvent) {
                 if (/warn|layoff|laid off|reduction in force|rif|job cut|headcount|downsiz|restructur/i.test(newsEvent)) {
-                    score += 20; // WARN Act / mass layoff — highest urgency ICP signal
+                    score += 20; // WARN Act / mass layoff: highest urgency ICP signal
                 } else if (/reorg|reorgani|acqui|merger|spin.?off|divest|leadership change|ceo depart|shut down|office clos/i.test(newsEvent)) {
-                    score += 10; // Structural change — career uncertainty, moderate signal
+                    score += 10; // Structural change: career uncertainty, moderate signal
                 } else {
-                    score += 5;  // Company in news — any signal beats none
+                    score += 5;  // Company in news: any signal beats none
                 }
             }
 
             // ── LinkedIn Post Content (up to +8) ──────────────────────────────────
             // Executives don't vent on LinkedIn. Score realistic professional language:
-            // "next chapter", "open to", "exploring" — not burnout keywords.
+            // "next chapter", "open to", "exploring": not burnout keywords.
             const post = (lead.recentPostSummary || "").toLowerCase();
             if (post) {
                 if (/next chapter|exciting next|open to|exploring|what.s next|new opportunity|transition|ready for something|time to reflect|taking stock|considering|evaluating|pivot/i.test(post)) {
-                    score += 8;  // Career transition signal — professional phrasing
+                    score += 8;  // Career transition signal: professional phrasing
                 } else if (/burnout|burned out|autonomy|ownership|side business|w-?2|golden handcuff|corporate grind|tired of|had enough|escape/i.test(post)) {
-                    score += 8;  // Explicit signal — rare on LinkedIn but keep it
+                    score += 8;  // Explicit signal: rare on LinkedIn but keep it
                 } else {
                     score += 5;  // Active on LinkedIn = valid personalization hook
                 }
@@ -177,16 +177,16 @@ Reply with ONLY the numeric tier — nothing else.
             }
 
             // ── Tenure Signal (up to +20) ─────────────────────────────────────
-            // Source: Nemo (2025) — long tenure = golden handcuffs, plateau, burnout readiness.
-            // This is the PRIMARY ICP signal — weighted accordingly.
+            // Source: Nemo (2025). Long tenure = golden handcuffs, plateau, burnout readiness.
+            // This is the PRIMARY ICP signal, weighted accordingly.
             // IMPORTANT: This field is NEVER passed to the email generator. Scoring use only.
             const tenureYears = (lead as any).yearsInCurrentRole as number | null | undefined;
             if (tenureYears && tenureYears >= 8) {
-                score += 20; // Core ICP — 8+ years = high burnout-readiness
+                score += 20; // Core ICP: 8+ years = high burnout-readiness
             } else if (tenureYears && tenureYears >= 5) {
-                score += 10; // Solid tenure — worth pursuing
+                score += 10; // Solid tenure: worth pursuing
             } else if (tenureYears && tenureYears >= 3) {
-                score += 5;  // Building toward plateau — mild early signal
+                score += 5;  // Building toward plateau: mild early signal
             }
 
             // Cap at 100
@@ -194,7 +194,7 @@ Reply with ONLY the numeric tier — nothing else.
 
             // ── Open To Work signal (+10) ──────────────────────────────────────────
             // Explicit career transition signal: lead has activated the Open To Work
-            // banner on LinkedIn — the clearest possible indicator of readiness.
+            // banner on LinkedIn: the clearest possible indicator of readiness.
             // They've publicly acknowledged they're evaluating what comes next.
             // Note: this is a scoring-only signal, never referenced in the email body.
             const isOpenToWork = (lead as any).isOpenToWork as boolean | null | undefined;
@@ -204,7 +204,7 @@ Reply with ONLY the numeric tier — nothing else.
 
             // ── Email ─────────────────────────────────────────────────────────
             // Evaboot exports are email-verified, so lead.email is almost always set.
-            // If not, construct a best-guess and cap score at 50 — it cannot clear
+            // If not, construct a best-guess and cap score at 50. It cannot clear
             // the 70-pt gate and won't be sent. Clay upstream handles true enrichment.
             let foundEmail: string | null = lead.email || null;
             let emailIsFabricated = false;
@@ -213,7 +213,7 @@ Reply with ONLY the numeric tier — nothing else.
                 foundEmail = `${nameParts[0]?.toLowerCase()}.${nameParts.slice(1).join("").toLowerCase()}@${(lead.company || "unknown").toLowerCase().replace(/\s+/g, "").replace(/[^a-z0-9]/g, "")}.com`;
                 emailIsFabricated = true;
                 // Cap at 49 so rawScore < 50 check suppresses this lead.
-                // A fabricated email has zero deliverability guarantee — never send.
+                // A fabricated email has zero deliverability guarantee. Never send.
                 score = Math.min(score, 49);
             }
 
@@ -224,7 +224,7 @@ Reply with ONLY the numeric tier — nothing else.
             await step.run("mark-suppressed-or-ignored", async () => {
                 await prisma.lead.update({
                     where: { id: lead.id },
-                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                    // @ts-ignore: suppressionReason added to schema; Prisma client regenerates on deploy
                     data: {
                         status: "SUPPRESSED",
                         score: rawScore,
@@ -275,7 +275,7 @@ export const personalizerProcess = inngest.createFunction(
 
         // ── Signal selection (Priority A > B > C) ────────────────────────────────
         // A = company news event. B = LinkedIn post paraphrase. C = ICP fallback.
-        // No lead is held — every lead scoring ≥50 gets an email attempt.
+        // No lead is held: every lead scoring ≥50 gets an email attempt.
         const companyNewsEvent  = ((lead as any).companyNewsEvent as string | undefined)?.trim() ?? "";
         const recentPostSummary = (lead.recentPostSummary ?? "").trim();
 
@@ -314,7 +314,7 @@ export const personalizerProcess = inngest.createFunction(
             "congratulations to", "congrats to", "wishing her the best", "wishing him the best",
             "she will be missed", "he will be missed", "they will be missed",
             "send her off", "send him off",
-            // conference/event attendance logistics — these are social networking posts,
+            // conference/event attendance logistics: these are social networking posts,
             // not career-state signals. "Looking forward to seeing you at AUSA!" tells
             // us nothing about the prospect's career trajectory. Gate to Priority C.
             "looking forward to seeing", "looking forward to meeting everyone",
@@ -322,7 +322,7 @@ export const personalizerProcess = inngest.createFunction(
             "who's attending", "let's connect at", "find me at", "stop by our booth",
             "drop by and say hello", "heading to ", "will be in ",
             "i'll be at", "i'll be in ", "safe travels",
-            // institutional hire/welcome announcements — the prospect is speaking as an
+            // institutional hire/welcome announcements: the prospect is speaking as an
             // org representative about someone else joining; not their own career perspective.
             // Example: "We are delighted to welcome Evan Bradds back home to Belmont as head coach."
             "we are delighted to welcome", "we're delighted to welcome",
@@ -336,16 +336,16 @@ export const personalizerProcess = inngest.createFunction(
         ];
         // Keywords are already lowercased; recentPostSummary is also lowercased before comparison
         const postLowercase = recentPostSummary.toLowerCase();
-        // Minimum word count gate — casual one-liner social reactions (< 15 words) are
+        // Minimum word count gate: casual one-liner social reactions (< 15 words) are
         // not substantive career signals regardless of keyword content.
         const postTooShort = recentPostSummary.trim().split(/\s+/).length < 15;
-        // Third-party structural gate — posts that are about someone else's career journey,
+        // Third-party structural gate: posts that are about someone else's career journey,
         // not the prospect's own perspective. Key pattern: post begins with a named person
         // (possessive or nominative) and describes that person's achievement/departure.
         // Example: "Karen's truly in a class all to herself...Can't wait to see which lucky
-        // company she chooses to call home." — David is commenting about Karen, not himself.
+        // company she chooses to call home." David is commenting about Karen, not himself.
         // If we email David referencing Karen, he has zero context for why a stranger is
-        // mentioning Karen's name — it feels surveillance-like and confusing.
+        // mentioning Karen's name: it feels surveillance-like and confusing.
         const postAboutThirdParty =
             // Pattern 1: possessive opener + departure/next-chapter language
             // e.g. "Karen's truly in a class all to herself..."
@@ -355,7 +355,7 @@ export const personalizerProcess = inngest.createFunction(
                 .test(recentPostSummary)) ||
             // Pattern 2: institutional first-person-plural announcements
             // e.g. "We are delighted to welcome Evan Bradds back home to Belmont as head coach."
-            // These are org-voice posts about someone else joining — not the prospect's career state.
+            // These are org-voice posts about someone else joining, not the prospect's career state.
             /^(we are|we're|i am|i'm|please join (me|us)|our team is)\s+(delighted|pleased|thrilled|excited|proud|happy)\s+to\s+(welcome|announce)/i
                 .test(recentPostSummary.trim());
         const postLooksNonCareer = recentPostSummary
@@ -365,7 +365,7 @@ export const personalizerProcess = inngest.createFunction(
         // ── companyNewsEvent validity guard ──────────────────────────────────────
         // Clay occasionally bleeds yearsInCurrentRole into the companyNewsEvent field,
         // producing bare numbers like "19", "7", "30". When GPT receives these as a
-        // "company news" signal, it hallucinates events — e.g. "19" becomes "TriStar Skyline
+        // "company news" signal, it hallucinates events: e.g. "19" becomes "TriStar Skyline
         // reducing its workforce by 19%". This guard rejects values that are:
         //   (a) purely numeric, or
         //   (b) fewer than 10 characters (not a real news sentence).
@@ -375,7 +375,7 @@ export const personalizerProcess = inngest.createFunction(
             !/^\d+(\.\d+)?%?$/.test(companyNewsEvent);     // not a bare number like "19" or "19%"
 
         // ── Stale news gate ──────────────────────────────────────────────────────
-        // Reject news events referencing years 2010-2023 — an 11-year-old acquisition
+        // Reject news events referencing years 2010-2023. An 11-year-old acquisition
         // (e.g. Belk/Sycamore 2015) or a 2-year-old press release is not a relevant
         // career hook. Production audit: 1/10 emails used a 2015 signal and said
         // "a few years back" (now a prohibited phrase) to mask the staleness.
@@ -429,30 +429,30 @@ export const personalizerProcess = inngest.createFunction(
 
         // ── Signal selection (Priority A strong > A soft > B > C) ─────────────────
         if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && companyNewsIsInstabilitySignal) {
-            // Strong disruption signal — use Template A / E framing
+            // Strong disruption signal: use Template A / E framing
             primarySignal = companyNewsEvent;
-            signalType = `Priority A (strong): confirmed disruption event — layoff, leadership exit, M&A, restructuring, or WARN Act filing.
+            signalType = `Priority A (strong): confirmed disruption event such as layoff, leadership exit, M&A, restructuring, or WARN Act filing.
 Open directly with the event as context. Do NOT name specific individuals by name; reference the role or function instead (e.g. 'the leadership transition', 'the reorg underway') unless the departure is of a widely known public figure.
 Use Template A or Template E tone. Do NOT use disruption language if the signal is a positive event.`;
         } else if (companyNewsEvent && companyNewsIsValid && companyNewsIsRecent && !companyNewsIsInstabilitySignal) {
             // Valid and recent news but NOT a disruption signal (product launch, new location, award, etc.)
-            // Prefer Priority B if available — a LinkedIn post is a stronger personal hook.
+            // Prefer Priority B if available: a LinkedIn post is a stronger personal hook.
             // Fall back to the soft A framing only if no post signal exists.
             if (recentPostSummary && !postLooksNonCareer) {
                 primarySignal = recentPostSummary;
                 signalType = "Priority B: paraphrase of LinkedIn post TOPIC only (never verbatim, never name a third party if the post is about someone else).";
             } else {
                 primarySignal = companyNewsEvent;
-                signalType = `Priority A (soft): company momentum news — product launch, new location, expansion, or award. This is NOT a disruption event.
+                signalType = `Priority A (soft): company momentum news such as product launch, new location, expansion, or award. This is NOT a disruption event.
 Do NOT use instability language ('mandates being redrawn', 'golden handcuffs stripped', 'rethinking direction under pressure').
-Instead: use Template A2 tone — many leaders use moments of company momentum to quietly take stock of what their longer-term path looks like. Keep the framing light, curious, and career-reflective rather than urgent or anxiety-driven.`;
+Instead: use Template A2 tone. Many leaders use moments of company momentum to quietly take stock of what their longer-term path looks like. Keep the framing light, curious, and career-reflective rather than urgent or anxiety-driven.`;
             }
         } else if (recentPostSummary && !postLooksNonCareer) {
             primarySignal = recentPostSummary;
             signalType = "Priority B: paraphrase of LinkedIn post TOPIC only (never verbatim, never name a third party if the post is about someone else).";
         } else {
             primarySignal = `${lead.title || "Corporate professional"} at ${lead.company || "a major company"}`;
-            signalType = `Priority C: ICP-based outreach — NO external signal available.
+            signalType = `Priority C: ICP-based outreach. NO external signal available.
 Open with a golden handcuffs narrative: the prospect has spent years building expertise inside a corporate structure.
 Lead with the universal truth of their situation (ceiling, stability trap, income without ownership).
 STRICT RULES for Priority C:
@@ -486,7 +486,7 @@ STRICT RULES for Priority C:
             // ── Deterministic CTA rotation ────────────────────────────────────
             // GPT anchors on "Curious if that's even a thought?" ~80% of the time.
             // We select one of the 3 approved CTAs using a simple char-code hash of
-            // the lead's name — reproducible, no DB column needed, guarantees variety
+            // the lead's name: reproducible, no DB column needed, guarantees variety
             // across the full lead list without repeating the same phrase in bulk.
             const ctaIndex = lead.name
                 .split("")
@@ -498,39 +498,39 @@ Your ONLY goal is to write ONE cold email that generates a single reply from a h
 
 ${VOICE_RULES}
 
-PROHIBITED PHRASES — never use any of these:
+PROHIBITED PHRASES (never use any of these):
 ${PROHIBITED_PHRASES.join(", ")}
-AND: NO em dashes (—). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
+AND: NO em dashes (the long dash). NO exclamation points. NO starting 3 consecutive sentences with "I" or "Most".
 
-PROHIBITED AI-SOUNDING VOCABULARY — these words instantly mark the email as machine-generated. Do NOT use them:
+PROHIBITED AI-SOUNDING VOCABULARY. These words instantly mark the email as machine-generated. Do NOT use them:
 delve, landscape, leverage, synergies, pivoting, intersection, tapestry, multifaceted, embark, journey,
 realm, navigate, unlock, transform, revolutionize, innovative, cutting-edge, game-changing, thought leader,
 visionary, robust, it's clear that, it's evident that, it goes without saying, needless to say,
 in today's fast-paced, in today's dynamic, in the ever-evolving, as we move forward.
 If you write any of these words or phrases, rewrite that sentence before outputting. No exceptions.
 
-PROHIBITED AI STARTER SENTENCES — never open the email body (the line after "Hi [Name],") with:
+PROHIBITED AI STARTER SENTENCES. Never open the email body (the line after "Hi [Name],") with:
 "In today...", "As a...", "With the current...", "It's no secret...", "Whether you're...",
 "As someone who...", "Given your...", "I came across your...", "I noticed...", "I wanted to reach out",
 "I hope this finds you well", "I'm reaching out because".
 If your first line after the greeting falls into one of these patterns, delete it and restart.
 
-PERSONALIZATION RULES — mandatory:
+PERSONALIZATION RULES (mandatory):
 - Use EXACTLY 1 signal in the email body (provided below as the Personalization Signal).
 - NEVER verbatim-quote the prospect's own words. Paraphrase the topic only, no quotation marks.
 - NEVER state the logical connection between the signal and the pitch. The reader makes that connection.
 - NEVER reference: tenure, city, location, college, graduation year, hobbies, passive LinkedIn activity (likes/comments).
-- NEVER name a third party from a LinkedIn post. If the signal is a post about someone else (a colleague, a connection being praised, a farewell shout-out), treat it as Priority C — open with a golden handcuffs universal truth instead. The recipient would have zero context for why a stranger is referencing names from their social feed.
+- NEVER name a third party from a LinkedIn post. If the signal is a post about someone else (a colleague, a connection being praised, a farewell shout-out), treat it as Priority C. Open with a golden handcuffs universal truth instead. The recipient would have zero context for why a stranger is referencing names from their social feed.
 
-TEMPLATE REFERENCE — rotate structure per email:
+TEMPLATE REFERENCE (rotate structure per email):
 ${EMAIL_TEMPLATES}
 
-FINAL CHECK — binary pass/fail. Rewrite until ALL 7 pass before outputting:
+FINAL CHECK (binary pass/fail). Rewrite until ALL 7 pass before outputting:
 1. Word count 50–90. If outside range, cut or expand.
 2. Priority A/B: first sentence after greeting opens directly with the signal topic. No "I noticed", no flattery.
    Priority C: first sentence opens with a universal career truth. No fabricated hooks.
-3. Zero words from PROHIBITED PHRASES or PROHIBITED AI-SOUNDING VOCABULARY. If any found — rewrite. No rationalisations.
-4. ZERO em dashes (—) or en dashes (–) anywhere in the email. Replace with a comma, period, or new sentence.
+3. Zero words from PROHIBITED PHRASES or PROHIBITED AI-SOUNDING VOCABULARY. If any found, rewrite. No rationalisations.
+4. ZERO em dashes (the long dash) or en dashes (–) anywhere in the email. Replace with a comma, period, or new sentence.
    THIS IS A HARD FAIL. One em dash = the entire email must be rewritten.
 5. Zero exclamation points. Max 2 consecutive sentences starting with "I" or "Most".
 6. Zero AI starter sentences. If your opener reads like ChatGPT output, delete and rewrite.
@@ -556,7 +556,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
 
             // ── Generation + server-side prohibited phrase guard ──────────────
             // GPT occasionally drifts on prohibited phrases despite prompt instructions.
-            // We scan the output deterministically and retry once if needed — 100% reliable.
+            // We scan the output deterministically and retry once if needed: 100% reliable.
             async function generateEmail(): Promise<string> {
                 const { text } = await generateText({
                     model: openai("gpt-4o"),
@@ -570,7 +570,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
 
             // ── Server-side prohibited phrase scan ─────────────────────────────
             // GPT occasionally drifts on prohibited phrases despite prompt instructions.
-            // We scan the output deterministically and retry once if needed — 100% reliable.
+            // We scan the output deterministically and retry once if needed: 100% reliable.
             const emailLower = emailText.toLowerCase();
             const hitPhrase = PROHIBITED_PHRASES.find(phrase =>
                 emailLower.includes(phrase.toLowerCase())
@@ -606,10 +606,10 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                     ).length;
                     const verbatimRatio = matchCount / signalMeaningfulWords.length;
                     if (verbatimRatio > 0.6) {
-                        // High verbatim overlap detected — retry with explicit paraphrase instruction
+                        // High verbatim overlap detected: retry with explicit paraphrase instruction
                         const verbatimRetryPrompt = userPrompt +
                             `\n\n[SYSTEM NOTE: Your previous draft copied too many words directly from the Personalization Signal. ` +
-                            `Rewrite the email. You MUST paraphrase the TOPIC only — do not copy any specific words or phrases from the signal. ` +
+                            `Rewrite the email. You MUST paraphrase the TOPIC only. Do not copy any specific words or phrases from the signal. ` +
                             `Do not reference this note in your output.]`;
                         const { text: verbatimRetryText } = await generateText({
                             model: openai("gpt-4o"),
@@ -645,7 +645,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                     .replace(/\b(inc|llc|ltd|corp|co|group|holdings|partners|associates|services|solutions|technologies|global|international)\b\.?/gi, "")
                     .trim();
 
-                // Extract the first body sentence — the line immediately after the greeting
+                // Extract the first body sentence: the line immediately after the greeting
                 const emailLines = emailText.split("\n").map(l => l.trim()).filter(Boolean);
                 // Skip the greeting line ("Hi [Name],")
                 const firstBodyLine = emailLines.find(line =>
@@ -660,7 +660,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                 if (companyNameInOpener) {
                     const fabricationRetryPrompt = userPrompt +
                         `\n\n[SYSTEM NOTE: Your previous draft opened with a company-specific statement ` +
-                        `that references "${lead.company}" — a claim we cannot verify. ` +
+                        `that references "${lead.company}", a claim we cannot verify. ` +
                         `For Priority C you MUST open with a UNIVERSAL golden handcuffs truth that applies ` +
                         `to any corporate executive, with ZERO company-specific references in the first sentence. ` +
                         `Do NOT use the company name, a fabricated restructuring, or any implied recent event. ` +
@@ -672,25 +672,25 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
                         prompt: fabricationRetryPrompt,
                     });
                     emailText = fabricationRetryText;
-                    console.log(`[personalizer] Priority C fabrication retry fired — company name "${lead.company}" detected in opener.`);
+                    console.log(`[personalizer] Priority C fabrication retry fired: company name "${lead.company}" detected in opener.`);
                 }
             }
 
             // ── Deterministic post-generation sanitizer ───────────────────────
             // Runs AFTER all GPT retries. GPT-triggered retries can themselves
-            // produce em/en dashes — a single retry is not enough since the
+            // produce em/en dashes. A single retry is not enough since the
             // re-generation has no memory of the previous violation.
             //
             // Rules applied here are hard formatting constraints that are 100%
-            // deterministically fixable with string operations — no GPT needed.
+            // deterministically fixable with string operations: no GPT needed.
             //
-            // Rule 1: Em dash (U+2014) and en dash (U+2013) — replace with a
+            // Rule 1: Em dash (U+2014) and en dash (U+2013) are replaced with a
             //   comma or period depending on context. Simple heuristic: if the
             //   character is surrounded by spaces, replace with a comma; otherwise
             //   replace with a comma (conservative choice that reads naturally).
             emailText = emailText
-                .replace(/ — /g, ", ")   // em dash surrounded by spaces → comma
-                .replace(/—/g, ", ")      // em dash with no spaces → comma
+                .replace(/ — /g, ", ")   // em dash surrounded by spaces → comma  // emdash-allow: literal em dash is the search pattern the sanitizer depends on
+                .replace(/—/g, ", ")      // em dash with no spaces → comma  // emdash-allow: literal em dash is the search pattern the sanitizer depends on
                 .replace(/ – /g, ", ")    // en dash surrounded by spaces → comma
                 .replace(/–/g, ", ");     // en dash with no spaces → comma
 
@@ -707,7 +707,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             //   c. Collapse any resulting blank lines caused by removal.
             //   d. Append exactly one copy of requiredCTA on its own line.
             //
-            // This runs unconditionally — it's cheaper than any conditional logic
+            // This runs unconditionally. It's cheaper than any conditional logic
             // and guarantees one clean CTA regardless of GPT output.
             emailText = emailText
                 .replace(/[\u2018\u2019\u201A\u201B]/g, "'")   // curly/smart single quotes → straight '
@@ -717,7 +717,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             // GPT frequently rewrites approved CTAs with slight variations that slip
             // through exact-match stripping. Production audit: Caren Lusk email ended
             // with BOTH "Curious if that's a thought worth exploring?" AND "Worth a
-            // conversation?" — the GPT variant wasn't matched by the canonical string.
+            // conversation?" The GPT variant wasn't matched by the canonical string.
             //
             // Step 1: Exact-match strip (catches verbatim canonical CTAs)
             const approvedEndings = CLOSING_CTAS as readonly string[];
@@ -748,7 +748,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
             // GPT often ends the body with a standalone "Kelsey" sign-off before its own CTA.
             // After the CTA strip above, that leaves an orphaned "Kelsey," line between the
             // email body and the sanitizer-appended CTA, producing: "...your goals. Kelsey,
-            // Worth a conversation?" — which reads as if Kelsey is addressing himself.
+            // Worth a conversation?", which reads as if Kelsey is addressing himself.
             // Strip all trailing sign-off variants deterministically before appending the CTA.
             emailText = emailText
                 .replace(/\n+Kelsey[,.]?\s*$/i, "")  // trailing "Kelsey" / "Kelsey," / "Kelsey."
@@ -771,7 +771,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
         ];
 
         // Save to DB and update status
-        // CAN-SPAM footer appended here — deterministically, not by the AI
+        // CAN-SPAM footer appended here: deterministically, not by the AI
         await step.run("save-draft-email", async () => {
             // High-scoring leads (>=50) transition to WARMING for social sequence.
             // Since leadHunterProcess drops leads <50, all leads here will go to WARMING.
@@ -779,7 +779,7 @@ Write the email. Plain text only. No markdown. No quotes around the email.`;
 
             await prisma.lead.update({
                 where: { id: lead.id },
-                // @ts-ignore — signalType, ctaUsed added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: signalType, ctaUsed added to schema; Prisma client regenerates on deploy
                 data: {
                     draftEmail: draftEmail + CAN_SPAM_FOOTER,
                     status: nextStatus,
@@ -814,9 +814,9 @@ export const senderProcess = inngest.createFunction(
         // These run before any Instantly API call. A rejected lead is suppressed
         // in the DB so it never re-enters the send queue.
 
-        // Gate 1: emailStatus — only "safe" (server-verified by Evaboot) during warmup.
+        // Gate 1: emailStatus. Only "safe" (server-verified by Evaboot) during warmup.
         // "riskier" = catch-all server, ~83% deliverability; too many bounces risk domain health.
-        // Null emailStatus means the lead predates this field and went through un-gated — allow
+        // Null emailStatus means the lead predates this field and went through un-gated. Allow
         // but log so we can clean up the backlog manually.
         const emailStatus = (lead as any).emailStatus as string | null | undefined;
         if (emailStatus === "riskier") {
@@ -826,11 +826,11 @@ export const senderProcess = inngest.createFunction(
                     data: { status: "SUPPRESSED", suppressionReason: "riskier_email" } as any,
                 });
             });
-            console.warn(`[senderProcess] Lead ${lead.id} suppressed — emailStatus is "riskier" (catch-all). Not sending during warmup.`);
-            return { status: "Suppressed — riskier email", leadId: lead.id };
+            console.warn(`[senderProcess] Lead ${lead.id} suppressed: emailStatus is "riskier" (catch-all). Not sending during warmup.`);
+            return { status: "Suppressed: riskier email", leadId: lead.id };
         }
 
-        // Gate 2: SuppressionList — check email address and sending domain.
+        // Gate 2: SuppressionList. Check email address and sending domain.
         // Catches previously opted-out contacts re-imported from a new Evaboot export.
         const suppressionHit = await step.run("check-suppression-list", async () => {
             if (!lead.email) return null;
@@ -852,8 +852,8 @@ export const senderProcess = inngest.createFunction(
                     data: { status: "SUPPRESSED", suppressionReason: "unsubscribe" } as any,
                 });
             });
-            console.warn(`[senderProcess] Lead ${lead.id} suppressed — email/domain matched SuppressionList (reason: ${suppressionHit.reason ?? "unsubscribe"}).`);
-            return { status: "Suppressed — suppression list hit", leadId: lead.id };
+            console.warn(`[senderProcess] Lead ${lead.id} suppressed: email/domain matched SuppressionList (reason: ${suppressionHit.reason ?? "unsubscribe"}).`);
+            return { status: "Suppressed: suppression list hit", leadId: lead.id };
         }
 
 
@@ -915,7 +915,7 @@ export const senderProcess = inngest.createFunction(
                 ?? null;
             await prisma.lead.update({
                 where: { id: lead.id },
-                // @ts-ignore — sentAt, instantlyLeadId added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: sentAt, instantlyLeadId added to schema; Prisma client regenerates on deploy
                 data: {
                     status: "SENT",
                     sentAt: new Date(),
@@ -986,14 +986,14 @@ Output ONLY the category name.`;
             } else if (classification === "Not now") {
                 // Subscriber rescue: prospect isn't ready, but isn't opposed.
                 // Subscribe to newsletter so they stay warm without further cold outreach.
-                // Fire-and-forget — never blocks classification or suppression logic.
+                // Fire-and-forget: never blocks classification or suppression logic.
                 if (replyData.lead?.email) {
                     subscribeToBeehiiv(replyData.lead.email, replyData.lead.name ?? undefined).catch(() => {});
                 }
             }
 
             // Intelligence Layer: record repliedAt timestamp on first reply received.
-            // Only write repliedAt if not already set — first reply wins.
+            // Only write repliedAt if not already set: first reply wins.
             const leadRecord = replyData.lead!;
             const replyTimestamps: Record<string, unknown> = {};
             if (!(leadRecord as any).repliedAt) {
@@ -1002,7 +1002,7 @@ Output ONLY the category name.`;
 
             await prisma.lead.update({
                 where: { id: leadId },
-                // @ts-ignore — repliedAt, suppressionReason added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: repliedAt, suppressionReason added to schema; Prisma client regenerates on deploy
                 data: {
                     status: newStatus as any,
                     ...replyTimestamps,
@@ -1011,7 +1011,7 @@ Output ONLY the category name.`;
             });
         });
 
-        // HITL alert — send Kelsey an email for hot replies so he can respond within 15 min
+        // HITL alert: send Kelsey an email for hot replies so he can respond within 15 min
         await step.run("notify-human", async () => {
             const hotReplyClassifications = ["Interested", "Curious", "Ambiguous"];
             if (!hotReplyClassifications.includes(classification)) return;
@@ -1025,11 +1025,11 @@ Output ONLY the category name.`;
             const resendKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
 
             if (!resendKey) {
-                console.error("[HITL] No Resend API key — skipping HITL alert");
+                console.error("[HITL] No Resend API key, skipping HITL alert");
                 return;
             }
 
-            let draftReply = "(Draft generation failed — reply manually)";
+            let draftReply = "(Draft generation failed, reply manually)";
             if (openAiKey) {
                 try {
                     const { createOpenAI } = require('@ai-sdk/openai');
@@ -1056,9 +1056,9 @@ Write Kelsey's follow-up reply.`
             await resend.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: ["kelsey@waypointfranchise.com"],
-                subject: `${urgencyLabel} reply from ${lead.name} — respond within 15 min`,
+                subject: `${urgencyLabel} reply from ${lead.name}: respond within 15 min`,
                 text: [
-                    `HOT REPLY ALERT — ${classification.toUpperCase()}`,
+                    `HOT REPLY ALERT: ${classification.toUpperCase()}`,
                     ``,
                     `Lead: ${lead.name}`,
                     `Title: ${lead.title || "N/A"}`,
@@ -1084,7 +1084,7 @@ Write Kelsey's follow-up reply.`
                     `If ${lead.name} stops responding after your first exchange, send one of these:`,
                     ``,
                     `Option A (direct re-engagement):`,
-                    `  "${lead.name.split(" ")[0]} — are you doing this?"`,
+                    `  "${lead.name.split(" ")[0]}, are you doing this?"`,
                     ``,
                     `Option B (no-oriented question, Chris Voss):`,
                     `  "Have you given up on franchise ownership?"`,
@@ -1094,7 +1094,7 @@ Write Kelsey's follow-up reply.`
                 ].join("\n"),
             });
 
-            // Slack push notification — instant alert to phone via #waypoint-hot-replies
+            // Slack push notification: instant alert to phone via #waypoint-hot-replies
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (slackWebhook) {
                 try {
@@ -1102,13 +1102,13 @@ Write Kelsey's follow-up reply.`
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            text: `${urgencyLabel} — *${lead.name}* replied to your cold email`,
+                            text: `${urgencyLabel}: *${lead.name}* replied to your cold email`,
                             blocks: [
                                 {
                                     type: "section",
                                     text: {
                                         type: "mrkdwn",
-                                        text: `${urgencyLabel} *${lead.name}* replied — respond within 15 min\n*Title:* ${lead.title || "N/A"}  |  *Company:* ${lead.company || "N/A"}\n*LinkedIn:* ${lead.linkedinUrl || "N/A"}`
+                                        text: `${urgencyLabel} *${lead.name}* replied: respond within 15 min\n*Title:* ${lead.title || "N/A"}  |  *Company:* ${lead.company || "N/A"}\n*LinkedIn:* ${lead.linkedinUrl || "N/A"}`
                                     }
                                 },
                                 {
@@ -1154,7 +1154,7 @@ Write Kelsey's follow-up reply.`
 // lead within 24 hours, it advances to RAW and scores without enrichment signals
 // (Priority C ICP fallback email). Ensures no lead is stuck in PENDING_CLAY forever.
 //
-// Fires Mon–Fri at 7 AM Mountain Time (13:00 UTC) — before the 8 AM warmup scheduler.
+// Fires Mon–Fri at 7 AM Mountain Time (13:00 UTC), before the 8 AM warmup scheduler.
 
 export const pendingClayFallback = inngest.createFunction(
     { id: "pending-clay-fallback", retries: 1 },
@@ -1166,7 +1166,7 @@ export const pendingClayFallback = inngest.createFunction(
         const stuckLeads = await step.run("find-stuck-pending-clay", async () => {
             return prisma.lead.findMany({
                 where: {
-                    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+                    // @ts-ignore: PENDING_CLAY added to schema; Prisma client regenerates on deploy
                     status: "PENDING_CLAY",
                     createdAt: { lt: cutoff },
                 },
@@ -1184,7 +1184,7 @@ export const pendingClayFallback = inngest.createFunction(
                 where: {
                     id: { in: stuckLeads.map(l => l.id) },
                 },
-                // @ts-ignore — PENDING_CLAY in schema; resolves after Prisma client regenerates
+                // @ts-ignore: PENDING_CLAY in schema; resolves after Prisma client regenerates
                 data: { status: "RAW" },
             });
         });
@@ -1247,7 +1247,7 @@ export const warmupScheduler = inngest.createFunction(
                 data: { leadId: lead.id },
             });
 
-            // 90s stagger between dispatches — Instantly throttles internally too
+            // 90s stagger between dispatches: Instantly throttles internally too
             if (i < leads.length - 1) {
                 await step.sleep(`stagger-${i}`, "90s");
             }
@@ -1274,7 +1274,7 @@ export const monitorProcess = inngest.createFunction(
             const campaignId = process.env.INSTANTLY_CAMPAIGN_ID;
 
             if (!apiKey || !campaignId) {
-                console.error("[monitorProcess] Missing INSTANTLY_API_KEY or INSTANTLY_CAMPAIGN_ID — skipping health check.");
+                console.error("[monitorProcess] Missing INSTANTLY_API_KEY or INSTANTLY_CAMPAIGN_ID, skipping health check.");
                 return null;
             }
 
@@ -1314,7 +1314,7 @@ export const monitorProcess = inngest.createFunction(
         });
 
         if (!stats) {
-            return { status: "Skipped — analytics unavailable" };
+            return { status: "Skipped: analytics unavailable" };
         }
 
         await step.run("evaluate-health", async () => {
@@ -1329,7 +1329,7 @@ export const monitorProcess = inngest.createFunction(
 
             if (bounceCritical || complaintCritical) {
                 const msg = `🚨 *CRITICAL: Instantly domain health alert*\nBounce rate: *${stats.bounceRate.toFixed(2)}%* (threshold: 5%)\nComplaint rate: *${stats.complaintRate.toFixed(3)}%* (threshold: 0.3%)\nSent: ${stats.sent} | Bounced: ${stats.bounced} | Spam: ${stats.spamCount}\n*Action required: pause campaign and investigate immediately.*`;
-                console.error(`[monitorProcess] CRITICAL — ${msg}`);
+                console.error(`[monitorProcess] CRITICAL: ${msg}`);
                 if (slackWebhook) {
                     await fetch(slackWebhook, {
                         method: "POST",
@@ -1338,8 +1338,8 @@ export const monitorProcess = inngest.createFunction(
                     });
                 }
             } else if (bounceWarning || complaintWarning) {
-                const msg = `⚠️ *WARNING: Instantly domain health degrading*\nBounce rate: *${stats.bounceRate.toFixed(2)}%* (target: <2%)\nComplaint rate: *${stats.complaintRate.toFixed(3)}%* (target: <0.08%)\nSent: ${stats.sent} | Bounced: ${stats.bounced} | Spam: ${stats.spamCount}\nReview recent export batches — may include riskier emails.`;
-                console.warn(`[monitorProcess] WARNING — ${msg}`);
+                const msg = `⚠️ *WARNING: Instantly domain health degrading*\nBounce rate: *${stats.bounceRate.toFixed(2)}%* (target: <2%)\nComplaint rate: *${stats.complaintRate.toFixed(3)}%* (target: <0.08%)\nSent: ${stats.sent} | Bounced: ${stats.bounced} | Spam: ${stats.spamCount}\nReview recent export batches. May include riskier emails.`;
+                console.warn(`[monitorProcess] WARNING: ${msg}`);
                 if (slackWebhook) {
                     await fetch(slackWebhook, {
                         method: "POST",
@@ -1348,7 +1348,7 @@ export const monitorProcess = inngest.createFunction(
                     });
                 }
             } else {
-                console.log(`[monitorProcess] ✅ Domain health OK — bounce: ${stats.bounceRate.toFixed(2)}%, complaint: ${stats.complaintRate.toFixed(3)}%, sent: ${stats.sent}`);
+                console.log(`[monitorProcess] ✅ Domain health OK: bounce: ${stats.bounceRate.toFixed(2)}%, complaint: ${stats.complaintRate.toFixed(3)}%, sent: ${stats.sent}`);
             }
         });
 
@@ -1372,7 +1372,7 @@ const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 export const contentRefreshFunction = inngest.createFunction(
     {
         id: "content-refresh",
-        // Retry once on failure — prevents hammering OpenAI on partial failures
+        // Retry once on failure: prevents hammering OpenAI on partial failures
         retries: 1,
         // Allow up to 10 minutes for large article batches
         timeouts: { finish: "10m" },
@@ -1423,7 +1423,7 @@ export const contentRefreshFunction = inngest.createFunction(
                     prompt: buildUserPrompt(article),
                 });
 
-                // Parse the AI response — it should be a complete .md file
+                // Parse the AI response: it should be a complete .md file
                 const parsed = matter(text);
                 const newFrontmatter = parsed.data as typeof article.frontmatter;
                 const newBody = parsed.content;
@@ -1474,7 +1474,7 @@ export const contentRefreshFunction = inngest.createFunction(
             });
             const apiKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
             if (!apiKey) {
-                console.warn("[content-refresh] No Resend API key — skipping summary email");
+                console.warn("[content-refresh] No Resend API key, skipping summary email");
                 return;
             }
 
@@ -1485,7 +1485,7 @@ export const contentRefreshFunction = inngest.createFunction(
             const runType = force ? "Manual force-run" : "Scheduled monthly run";
 
             const bodyLines = [
-                `Content Refresh Summary — ${today}`,
+                `Content Refresh Summary: ${today}`,
                 `Run type: ${runType}`,
                 "",
                 `✅ Refreshed (${refreshed.length}):`,
@@ -1501,7 +1501,7 @@ export const contentRefreshFunction = inngest.createFunction(
             await client.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: [NOTIFY_EMAIL],
-                subject: `Content Refresh: ${refreshed.length} articles updated — ${today}`,
+                subject: `Content Refresh: ${refreshed.length} articles updated, ${today}`,
                 text: bodyLines.join("\n"),
             });
         });
@@ -1520,8 +1520,8 @@ export const contentRefreshFunction = inngest.createFunction(
 // TidyCal Booking Sync
 // Runs daily Mon–Fri. Polls TidyCal's REST API for bookings in the last 2 days
 // and updates matched leads to REPLIED status.
-// TidyCal does not support native outbound webhooks on the Individual plan —
-// polling is the reliable alternative.
+// TidyCal does not support native outbound webhooks on the Individual plan.
+// Polling is the reliable alternative.
 // ─────────────────────────────────────────────────────────────────────────────
 
 type TidyCalBooking = {
@@ -1600,7 +1600,7 @@ export const tidycalBookingSync = inngest.createFunction(
                     // bookedAt is a dedicated column because updatedAt is overwritten on every status change.
                     await prisma.lead.update({
                         where: { id: lead.id },
-                        // @ts-ignore — BOOKED added to schema; migration runs on next Vercel deploy
+                        // @ts-ignore: BOOKED added to schema; migration runs on next Vercel deploy
                         data: { status: "BOOKED" as any, bookedAt: new Date() },
                     });
 
@@ -1634,7 +1634,7 @@ export const socialNurtureQueue = inngest.createFunction(
     { cron: "0 15 * * 1-5" }, // 9 AM Mountain Time (UTC-6), Mon–Fri
     async ({ step }) => {
         const warmingLeads = await step.run("find-warming-leads", async () => {
-            // @ts-ignore — statuses/fields added to schema
+            // @ts-ignore: statuses/fields added to schema
             return prisma.lead.findMany({
                 where: { status: "WARMING" },
                 orderBy: { score: "desc" },
@@ -1689,7 +1689,7 @@ export const socialNurtureQueue = inngest.createFunction(
         await step.run("post-social-queue-to-slack", async () => {
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (!slackWebhook) {
-                console.warn("[social-nurture-queue] No SLACK_WEBHOOK_URL — skipping alert");
+                console.warn("[social-nurture-queue] No SLACK_WEBHOOK_URL, skipping alert");
                 return;
             }
 
@@ -1810,7 +1810,7 @@ export const ghostRecoveryAlert = inngest.createFunction(
         await step.run("post-ghost-recovery-to-slack", async () => {
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (!slackWebhook) {
-                console.warn("[ghost-recovery-alert] No SLACK_WEBHOOK_URL — skipping alert");
+                console.warn("[ghost-recovery-alert] No SLACK_WEBHOOK_URL, skipping alert");
                 return;
             }
 
@@ -1823,7 +1823,7 @@ export const ghostRecoveryAlert = inngest.createFunction(
                         lead.linkedinUrl ? `LinkedIn: ${lead.linkedinUrl}` : "No LinkedIn URL",
                         `Last active: ${new Date(lead.updatedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}`,
                         ``,
-                        `👻 Ghost Option A: _"${lead.name.split(" ")[0]} — are you doing this?"_`,
+                        `👻 Ghost Option A: _"${lead.name.split(" ")[0]}, are you doing this?"_`,
                         `👻 Ghost Option B: _"Have you given up on franchise ownership?"_`,
                     ].join("\n"),
                 },
@@ -1833,20 +1833,20 @@ export const ghostRecoveryAlert = inngest.createFunction(
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    text: `👻 Ghost Recovery Alert — ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} gone quiet for 30+ days`,
+                    text: `👻 Ghost Recovery Alert: ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} gone quiet for 30+ days`,
                     blocks: [
                         {
                             type: "header",
                             text: {
                                 type: "plain_text",
-                                text: `👻 Ghost Recovery — ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} silent for 30+ days`,
+                                text: `👻 Ghost Recovery: ${ghostedLeads.length} warm lead${ghostedLeads.length !== 1 ? "s" : ""} silent for 30+ days`,
                             },
                         },
                         {
                             type: "section",
                             text: {
                                 type: "mrkdwn",
-                                text: "These leads replied with interest but have gone dark. Pick *one* script per lead and send it as a standalone 1-sentence reply — nothing else attached.",
+                                text: "These leads replied with interest but have gone dark. Pick *one* script per lead and send it as a standalone 1-sentence reply. Nothing else attached.",
                             },
                         },
                         ...leadBlocks,
@@ -1863,7 +1863,7 @@ export const ghostRecoveryAlert = inngest.createFunction(
                 }),
             });
 
-            console.log(`[ghost-recovery-alert] Slack alert sent — ${ghostedLeads.length} ghosted leads`);
+            console.log(`[ghost-recovery-alert] Slack alert sent: ${ghostedLeads.length} ghosted leads`);
         });
 
         return { status: "Sent", count: ghostedLeads.length };
@@ -1872,13 +1872,13 @@ export const ghostRecoveryAlert = inngest.createFunction(
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Weekly Intelligence Digest
-// Runs every Monday at 8 AM Mountain Time — before the daily send cron fires.
+// Runs every Monday at 8 AM Mountain Time, before the daily send cron fires.
 // Queries outcome attribution data and posts a structured Slack summary:
 //   • Funnel overview (sent → replied → booked, all-time)
 //   • Signal effectiveness (Priority A/B/C reply + booking rates, last 30 days)
 //   • Score band validation (are high scorers actually booking at higher rates?)
 //   • CTA performance breakdown (last 30 days)
-//   • Suppression reasons (all-time — shows where the pipeline is leaking)
+//   • Suppression reasons (all-time: shows where the pipeline is leaking)
 //   • Booked lead attribute profiles (Sales Nav attributes of converted leads)
 //   • Scoring model health flag (auto-detects if weighting needs review)
 //
@@ -1901,7 +1901,7 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
                 prisma.lead.count({ where: { status: "SUPPRESSED" } }),
             ]);
 
-            // Signal effectiveness — last 30 days
+            // Signal effectiveness: last 30 days
             const signalKeys = ["Priority A", "Priority B", "Priority C"];
             const signalSent = await Promise.all(
                 signalKeys.map(async sig => ({
@@ -1993,7 +1993,7 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
         await step.run("post-to-slack", async () => {
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
             if (!slackWebhook) {
-                console.warn("[intelligence-digest] No SLACK_WEBHOOK_URL set — skipping Slack post");
+                console.warn("[intelligence-digest] No SLACK_WEBHOOK_URL set, skipping Slack post");
                 return;
             }
 
@@ -2014,8 +2014,8 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
 
             const ctaLines = stats.ctaData
                 .filter(c => c.sent > 0)
-                .map(c => `• _"${c.cta}"_ — ${c.sent} sent, ${c.replied} replied (${pct(c.replied, c.sent)})`);
-            if (ctaLines.length === 0) ctaLines.push("• No data yet — CTA tracking is live from this deploy forward");
+                .map(c => `• _"${c.cta}"_: ${c.sent} sent, ${c.replied} replied (${pct(c.replied, c.sent)})`);
+            if (ctaLines.length === 0) ctaLines.push("• No data yet. CTA tracking is live from this deploy forward");
 
             const suppressionLines = stats.suppressionCounts
                 .filter(s => s.count > 0)
@@ -2026,7 +2026,7 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
             const bookedAttrLines = (stats.bookedLeads as any[]).slice(0, 5).map((l: any) =>
                 `• ${l.seniorityLevel ?? "?"} | ${l.companySizeRange ?? "? size"} | ${l.industryVertical ?? "? industry"} | signal: ${l.signalType ?? "pre-capture"} | score: ${l.score}`
             );
-            if (bookedAttrLines.length === 0) bookedAttrLines.push("• No bookings yet — add Sales Navigator columns in Clay to populate attributes");
+            if (bookedAttrLines.length === 0) bookedAttrLines.push("• No bookings yet. Add Sales Navigator columns in Clay to populate attributes");
 
             const high = stats.scoreBandData.find(b => b.label === "80-100");
             const low  = stats.scoreBandData.find(b => b.label === "50-64");
@@ -2042,9 +2042,9 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    text: `Weekly Pipeline Intelligence — ${weekDate}`,
+                    text: `Weekly Pipeline Intelligence: ${weekDate}`,
                     blocks: [
-                        { type: "header", text: { type: "plain_text", text: `Weekly Pipeline Intelligence — ${weekDate}` } },
+                        { type: "header", text: { type: "plain_text", text: `Weekly Pipeline Intelligence: ${weekDate}` } },
                         {
                             type: "section",
                             text: {
@@ -2078,7 +2078,7 @@ export const weeklyIntelligenceDigest = inngest.createFunction(
 // Triggered when a checklist is downloaded via /api/capture-email.
 // Sends 4 timed follow-up emails (Days 3, 7, 14, 21) after the delivery email.
 // Email 2 and 3 have category-specific copy; Email 4 and 5 are universal.
-// Unsubscribe is checked from DB before every send — honouring mid-sequence opt-outs.
+// Unsubscribe is checked from DB before every send, honouring mid-sequence opt-outs.
 
 import {
     buildUnsubscribeUrl,
@@ -2111,7 +2111,7 @@ export const checklistNurtureProcess = inngest.createFunction(
         // Helper: check all suppression conditions before each send
         // Stops the sequence if: unsubscribed, booked a call, or replied
         async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
-            // @ts-ignore — unsubscribed added to schema
+            // @ts-ignore: unsubscribed added to schema
             const record = await prisma.checklistDownload.findUnique({
                 where: { id: downloadId },
                 // @ts-ignore
@@ -2132,7 +2132,7 @@ export const checklistNurtureProcess = inngest.createFunction(
 
         // Helper: update nurtureStep after a successful send
         async function markStep(stepNum: number, completed = false) {
-            // @ts-ignore — nurtureStep / nurtureCompletedAt added to schema; Prisma client regenerates on deploy
+            // @ts-ignore: nurtureStep / nurtureCompletedAt added to schema; Prisma client regenerates on deploy
             await prisma.checklistDownload.update({
                 where: { id: downloadId },
                 data: {
@@ -2142,7 +2142,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             });
         }
 
-        // ── Email 2 — Day 3 ─────────────────────────────────────────────────
+        // ── Email 2: Day 3 ─────────────────────────────────────────────────
         await step.sleep("wait-for-email-2", "3d");
 
         await step.run("send-email-2", async () => {
@@ -2169,7 +2169,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             return { sent: true, step: 2 };
         });
 
-        // ── Email 3 — Day 7 (4 more days after Email 2) ─────────────────────
+        // ── Email 3: Day 7 (4 more days after Email 2) ─────────────────────
         await step.sleep("wait-for-email-3", "4d");
 
         await step.run("send-email-3", async () => {
@@ -2195,7 +2195,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             return { sent: true, step: 3 };
         });
 
-        // ── Email 4 — Day 14 (7 more days after Email 3) ────────────────────
+        // ── Email 4: Day 14 (7 more days after Email 3) ────────────────────
         await step.sleep("wait-for-email-4", "7d");
 
         await step.run("send-email-4", async () => {
@@ -2220,7 +2220,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             return { sent: true, step: 4 };
         });
 
-        // ── Email 5 — Day 21 (7 more days after Email 4) ────────────────────
+        // ── Email 5: Day 21 (7 more days after Email 4) ────────────────────
         await step.sleep("wait-for-email-5", "7d");
 
         await step.run("send-email-5", async () => {
@@ -2254,9 +2254,9 @@ export const checklistNurtureProcess = inngest.createFunction(
 // Triggered from /api/scorecard-complete after Email 1 (immediate results) is sent.
 // Sends 2 timed follow-ups: Day 3 and Day 7.
 // Before each send, checks:
-//   1. ScorecardSubmission.unsubscribed  — opt-out via unsubscribe link
-//   2. Lead.bookedAt                     — TidyCal booking received (highest intent)
-//   3. Lead.status === REPLIED           — reply detected via Instantly or manual log
+//   1. ScorecardSubmission.unsubscribed:  opt-out via unsubscribe link
+//   2. Lead.bookedAt:                      TidyCal booking received (highest intent)
+//   3. Lead.status === REPLIED:            reply detected via Instantly or manual log
 // Any of these stops the sequence immediately.
 
 import { buildUnsubscribeUrl as buildScorecardUnsubscribeUrl } from "@/lib/nurture-emails";
@@ -2278,7 +2278,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
 
         const firstName = name ? name.split(" ")[0] : "there";
 
-        // Reuse the HMAC token helper — we pass submissionId as the identifier.
+        // Reuse the HMAC token helper: we pass submissionId as the identifier.
         // The unsubscribe endpoint at /api/scorecard-unsubscribe validates this same token.
         const unsubscribeUrl = buildScorecardUnsubscribeUrl(submissionId).replace(
             "/api/unsubscribe?",
@@ -2312,7 +2312,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
             // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
             const lead = await prisma.lead.findFirst({
                 where: { email },
-                // @ts-ignore — bookedAt added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: bookedAt added to schema; Prisma client regenerates on deploy
                 select: { status: true, bookedAt: true },
             });
             if ((lead as any)?.bookedAt) return { stop: true, reason: "booked" };
@@ -2332,7 +2332,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
             });
         }
 
-        // ── Email 2 — Day 3: "The 3 questions most people forget to ask" ────────
+        // ── Email 2: Day 3: "The 3 questions most people forget to ask" ────────
         await step.sleep("wait-for-scorecard-email-2", "3d");
 
         await step.run("send-scorecard-email-2", async () => {
@@ -2390,7 +2390,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
       Book a Free 30-Min Call
     </a>
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0 0 8px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Waypoint Franchise Advisors · Whitefish, Montana</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:11px;color:#aaa;">
         <a href="${unsubscribeUrl}" style="color:#aaa;">Unsubscribe</a>
@@ -2435,7 +2435,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
             return { sent: true, step: 2 };
         });
 
-        // ── Email 3 — Day 7 (4 more days after Email 2): band-specific soft close ─
+        // ── Email 3: Day 7 (4 more days after Email 2): band-specific soft close ─
         // Refactored 2026-05-15: dispatches by 4-band model (<40 / 40-59 / 60-79 / ≥80)
         // matching the /scorecard landing page result copy. Each band gets a tailored
         // close. Templates live in src/app/emails/scorecard-day7-{band}.ts.
@@ -2503,7 +2503,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
 
 // ─── Corporate Escape Kit Nurture Process ──────────────────────────────────────
 // Triggered by: nurture/escape-kit.download
-// 3-email sequence — shorter than checklist nurture, appropriate for a higher-intent
+// 3-email sequence, shorter than checklist nurture, appropriate for a higher-intent
 // pre-decision audience that has already sought out detailed financial guidance.
 // Email cadence: Day 3, Day 7, Day 14.
 // Suppression: stops on unsubscribe, TidyCal booking, or REPLIED lead status.
@@ -2522,7 +2522,7 @@ export const escapeKitNurtureProcess = inngest.createFunction(
         const unsubscribeUrl = (() => {
             const secret = process.env.UNSUBSCRIBE_SECRET;
             if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
-            // Inline HMAC to avoid import issues — mirrors buildUnsubscribeUrl
+            // Inline HMAC to avoid import issues: mirrors buildUnsubscribeUrl
             const crypto = require("crypto");
             const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
             const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
@@ -2565,9 +2565,9 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             });
         }
 
-        // ── Email 2 — Day 3 ──────────────────────────────────────────────────────
+        // ── Email 2: Day 3 ──────────────────────────────────────────────────────
         // Re-engages the reader after they've had time to sit with the guide.
-        // Bridges to the scorecard as a natural next step — no direct ask to book.
+        // Bridges to the scorecard as a natural next step: no direct ask to book.
         await step.sleep("wait-for-ek-email-2", "3d");
 
         await step.run("send-ek-email-2", async () => {
@@ -2610,8 +2610,8 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             return { sent: true, step: 2 };
         });
 
-        // ── Email 3 — Day 7 ──────────────────────────────────────────────────────
-        // Addresses the most common objection — "I don't know enough yet to have a
+        // ── Email 3: Day 7 ──────────────────────────────────────────────────────
+        // Addresses the most common objection: "I don't know enough yet to have a
         // conversation." Reframes what the first call actually is.
         await step.sleep("wait-for-ek-email-3", "4d");
 
@@ -2655,7 +2655,7 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             return { sent: true, step: 3 };
         });
 
-        // ── Email 4 — Day 14 ─────────────────────────────────────────────────────
+        // ── Email 4: Day 14 ─────────────────────────────────────────────────────
         // Soft close. Makes the next step frictionless. Signals this is the last note.
         await step.sleep("wait-for-ek-email-4", "7d");
 
@@ -2727,7 +2727,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
 
         const sequence = getArchetypeSequence(archetype);
         if (!sequence) {
-            return { status: "Skipped — unknown archetype", archetype };
+            return { status: "Skipped: unknown archetype", archetype };
         }
 
         // Build HMAC unsubscribe URL inline (mirrors escapeKitNurtureProcess pattern)
@@ -2763,7 +2763,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
-                // @ts-ignore — bookedAt added to schema; Prisma client regenerates on deploy
+                // @ts-ignore: bookedAt added to schema; Prisma client regenerates on deploy
                 select: { status: true, bookedAt: true },
             });
             if ((lead as any)?.bookedAt) return { stop: true, reason: "booked" };
@@ -2782,7 +2782,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             });
         }
 
-        // ── Email 2 — Day 3: advisor's-perspective story per archetype ──────────
+        // ── Email 2: Day 3: advisor's-perspective story per archetype ──────────
         await step.sleep("wait-for-archetype-email-2", "3d");
 
         await step.run("send-archetype-email-2", async () => {
@@ -2808,7 +2808,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             return { sent: true, step: 2 };
         });
 
-        // ── Email 3 — Day 5: archetype-specific strength + trap insight ─────────
+        // ── Email 3: Day 5: archetype-specific strength + trap insight ─────────
         await step.sleep("wait-for-archetype-email-3", "2d");
 
         await step.run("send-archetype-email-3", async () => {
@@ -2834,7 +2834,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             return { sent: true, step: 3 };
         });
 
-        // ── Email 4 — Day 7: soft discovery-call invite, last in series ─────────
+        // ── Email 4: Day 7: soft discovery-call invite, last in series ─────────
         await step.sleep("wait-for-archetype-email-4", "2d");
 
         await step.run("send-archetype-email-4", async () => {

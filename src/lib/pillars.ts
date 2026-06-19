@@ -1,7 +1,7 @@
 // Pillar ↔ cluster mapping. The new pillar pages (/franchise-financing and the
 // /industries/[slug] hubs) link DOWN to their supporting articles. This module
-// provides the reverse direction — given an article slug, which pillar it belongs
-// to — so the article template can render an "up-link" back to its pillar. The
+// provides the reverse direction (given an article slug, which pillar it belongs
+// to) so the article template can render an "up-link" back to its pillar. The
 // topic-cluster model only consolidates authority if the cluster links up, not
 // just down.
 //

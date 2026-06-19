@@ -45,7 +45,7 @@ export function buildNurtureFooter(unsubscribeUrl: string): string {
   ].join("\n");
 }
 
-// ── Email 2 — "One thing worth checking" ──────────────────────────────────────
+// ── Email 2: "One thing worth checking" ──────────────────────────────────────
 // Sent Day 3. Category-specific insight, no ask.
 export const NURTURE_EMAIL_2: Record<string, { subject: string; body: string }> = {
   universal: {
@@ -100,7 +100,7 @@ The question I'd ask: do you have existing relationships in a specific vertical 
   },
 };
 
-// ── Email 3 — "One question" ───────────────────────────────────────────────────
+// ── Email 3: "One question" ───────────────────────────────────────────────────
 // Sent Day 7. Single diagnostic question. CTA: reply with the answer.
 export const NURTURE_EMAIL_3: Record<string, { subject: string; body: string }> = {
   universal: {
@@ -155,7 +155,7 @@ If you have a number in mind, it narrows the field considerably. If you don't ye
   },
 };
 
-// ── Email 4 — "What the process looks like" (universal) ───────────────────────
+// ── Email 4: "What the process looks like" (universal) ───────────────────────
 // Sent Day 14. Sets expectations, soft CTA for a call.
 export const NURTURE_EMAIL_4 = {
   subject: "what the process looks like",
@@ -170,7 +170,7 @@ The whole process takes eight to twelve weeks for most people. Nobody buys anyth
 If any of this sounds worth exploring, reply and let me know. We can find a time.`,
 };
 
-// ── Email 5 — "Last note" (universal) ─────────────────────────────────────────
+// ── Email 5: "Last note" (universal) ─────────────────────────────────────────
 // Sent Day 21. Low-pressure close. Explicitly unsubscribe-friendly.
 export const NURTURE_EMAIL_5 = {
   subject: "last note",

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Copy, Check, AlertTriangle } from "lucide-react";
 
-// Phrases imported from templates.ts — duplicated here so this Client Component
+// Phrases imported from templates.ts. Duplicated here so this Client Component
 // doesn't bundle the full server-only templates module. Keep in sync with
 // PROHIBITED_PHRASES in src/lib/templates.ts.
 const PROHIBITED_PHRASES = [
@@ -108,12 +108,12 @@ export function EmailBlock({ draftEmail }: EmailBlockProps) {
 
     return (
         <div className="space-y-3">
-            {/* Voice QC warning — only shown when a banned phrase is detected */}
+            {/* Voice QC warning. Only shown when a banned phrase is detected */}
             {violations.length > 0 && (
                 <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 text-sm text-amber-800">
                     <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-amber-500" />
                     <div>
-                        <p className="font-semibold">Voice QC flag — prohibited phrase detected</p>
+                        <p className="font-semibold">Voice QC flag: prohibited phrase detected</p>
                         <ul className="mt-1 list-disc list-inside space-y-0.5">
                             {violations.map((v) => (
                                 <li key={v} className="font-mono text-xs text-amber-700">
@@ -133,7 +133,7 @@ export function EmailBlock({ draftEmail }: EmailBlockProps) {
                 {/* Toolbar */}
                 <div className="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-slate-50 rounded-t-xl">
                     <span className="text-xs font-medium text-slate-500 uppercase tracking-wide">
-                        Draft — plain text · {body.split(/\s+/).filter(Boolean).length} words
+                        Draft: plain text · {body.split(/\s+/).filter(Boolean).length} words
                     </span>
                     <button
                         onClick={handleCopy}
@@ -162,7 +162,7 @@ export function EmailBlock({ draftEmail }: EmailBlockProps) {
                     {body}
                 </div>
 
-                {/* CAN-SPAM footer — visually separated */}
+                {/* CAN-SPAM footer. Visually separated */}
                 {footer && (
                     <div className="px-5 pb-4 pt-3 border-t border-dashed border-slate-200">
                         <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide mb-1">

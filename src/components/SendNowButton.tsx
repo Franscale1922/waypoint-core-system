@@ -9,7 +9,7 @@ interface SendNowButtonProps {
 }
 
 /**
- * Manual test-send button — only active when lead status is SEQUENCED.
+ * Manual test-send button. Only active when lead status is SEQUENCED.
  * Fires workflow/lead.send.start via POST /api/admin/send-now,
  * which triggers senderProcess (push to Instantly + SEQUENCED→SENT).
  */
@@ -40,7 +40,7 @@ export function SendNowButton({ leadId, status }: SendNowButtonProps) {
             }
 
             setState("done");
-            setMessage("Queued — check Inngest dashboard for run status");
+            setMessage("Queued. Check Inngest dashboard for run status");
         } catch {
             setState("error");
             setMessage("Network error");
@@ -61,7 +61,7 @@ export function SendNowButton({ leadId, status }: SendNowButtonProps) {
                 onClick={handleSend}
                 disabled={state === "loading" || state === "done"}
                 className={styles[state]}
-                title="Trigger senderProcess now — bypasses warmupScheduler"
+                title="Trigger senderProcess now. Bypasses warmupScheduler"
             >
                 <Send className="w-3.5 h-3.5" />
                 {state === "loading" ? "Queueing…" : state === "done" ? "Sent to Inngest ✓" : "Send Now"}

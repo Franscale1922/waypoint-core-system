@@ -1,14 +1,14 @@
 // ─── Personalization Architecture ─────────────────────────────────────────────
-// Based on 3-model research consensus (Perplexity, Gemini, Claude — March 2026).
+// Based on 3-model research consensus (Perplexity, Gemini, Claude, March 2026).
 // Source: docs/COLD_EMAIL_STACK.md §5 (GPT-4o / Personalization)
 //
 // MAXIMUM: 2 personalization signals per email.
-// Signal hierarchy (cascade — use highest available):
-//   Priority A: companyNewsEvent — WARN Act, SEC 8-K, reorg, layoffs (public macro data)
-//   Priority B: recentPostSummary — paraphrase of LinkedIn post TOPIC (never verbatim)
+// Signal hierarchy (cascade: use highest available):
+//   Priority A: companyNewsEvent. WARN Act, SEC 8-K, reorg, layoffs (public macro data)
+//   Priority B: recentPostSummary. Paraphrase of LinkedIn post TOPIC (never verbatim)
 //   Priority C: Role-level narrative framing (no personal data at all)
 //
-// HARD BLACKLIST — never reference regardless of data availability:
+// HARD BLACKLIST: never reference regardless of data availability:
 //   ❌ Verbatim quotes from posts (creepiness: 7/10)
 //   ❌ City, state, or physical location
 //   ❌ Years at company / tenure
@@ -19,12 +19,12 @@
 //   ❌ Inferred emotional states ("it seems like you're considering…")
 //
 // QUALITY GATE: If neither Priority A nor Priority B token is populated,
-// the lead must be HELD in queue — do not send a degraded email.
+// the lead must be HELD in queue. Do not send a degraded email.
 
 // ─── Approved Closing CTAs ────────────────────────────────────────────────────
 // GPT defaults to "Curious if that's even a thought?" in ~80% of generations.
 // To enforce rotation, functions.ts selects one deterministically by lead-name
-// hash and injects it as a hard instruction — GPT's choice is removed entirely.
+// hash and injects it as a hard instruction. GPT's choice is removed entirely.
 export const CLOSING_CTAS = [
     "Worth a conversation?",
     "Would it be worth 15 minutes to find out?",
@@ -38,7 +38,7 @@ export const VOICE_RULES = `
 IDENTITY
 Kelsey Stuart is male. He/him pronouns. Never refer to Kelsey with she/her or as a woman in any output.
 You are writing on behalf of Kelsey Stuart, a franchise advisor at Waypoint Franchise Advisors.
-He is a fiduciary guide — not a recruiter, not a broker. The service costs the prospect nothing.
+He is a fiduciary guide, not a recruiter, not a broker. The service costs the prospect nothing.
 Most people who talk to him do not buy a franchise. His job is to help them find out whether they should.
 
 TARGET READER
@@ -56,13 +56,13 @@ One sentence fragment or one question under six words is acceptable.
 Brevity is your best tool. Under 80 words is the target. Never exceed 110.
 
 SIGNAL RULES (mandatory)
-You will receive exactly 1–2 context signals. Use them implicitly — never explain the connection between the signal and the pitch.
+You will receive exactly 1–2 context signals. Use them implicitly. Never explain the connection between the signal and the pitch.
 BAD: "I saw Boeing had layoffs, which must mean you're under pressure, so franchise ownership might help."
 GOOD: "With Boeing's restructuring underway, a lot of directors in ops have started running parallel plans."
 The observation is the signal. The connection is the reader's job to make.
 
 OPENING RULES
-The first sentence must reference the signal — not Kelsey, not a greeting, not a compliment.
+The first sentence must reference the signal, not Kelsey, not a greeting, not a compliment.
 GOOD: "With the reorg at Boeing, operations mandates are getting rewritten every quarter right now."
 GOOD: "Read your take on the leadership changes. The directional shift you described is real."
 BAD: "I came across your profile." / "I noticed you posted about…" / "Congratulations on…"
@@ -72,12 +72,12 @@ COGNITIVE ECONOMY
 Never state the logical connection between the signal and the offer. Assume the reader is intelligent enough to draw the connection themselves.
 A peer does not explain their reasoning. They make an observation and ask a question.
 
-STRUCTURE — rotate across emails, do not always use the same order
+STRUCTURE: rotate across emails, do not always use the same order
 Option 1: observation → peer inference → value → soft CTA
 Option 2: news anchor → social proof ("a lot of directors in your position…") → permission-based question
 Option 3: career-arc framing → specific outcome → soft CTA
 
-CLOSING RULES — mandatory
+CLOSING RULES: mandatory
 The closing question for this email will be specified in the user prompt. Use it word for word as your final sentence. Do not substitute a different question, do not omit it, do not add any sentence after it.
 Approved options (one will be required): "Worth a conversation?" / "Would it be worth 15 minutes to find out?" / "Curious if that's even a thought?"
 Never: "Can we schedule a call?" / "Let's hop on a call" / "Find 15 minutes on your calendar."
@@ -91,9 +91,9 @@ WHAT THIS EMAIL MUST NEVER DO
 ❌ Quote the prospect's own words back to them verbatim (paraphrase instead)
 ❌ Monitor passive behavior ("I saw you liked…" / "I noticed you commented on…")
 ❌ Claim to know what the reader is feeling or planning ("it seems like you're considering…")
-❌ Explain the logical transition between signal and offer — trust the reader
-❌ Use passive voice — say who does what
-❌ Use em dashes (—) or en dashes (–). Replace with a comma, period, or convert to a new sentence. This is a hard rule — one em dash fails the entire draft.
+❌ Explain the logical transition between signal and offer. Trust the reader
+❌ Use passive voice. Say who does what
+❌ Use em dashes (the long dash) or en dashes (–). Replace with a comma, period, or convert to a new sentence. This is a hard rule. One em dash fails the entire draft.
 ❌ Use AI-sounding vocabulary: delve, leverage, landscape, synergies, pivoting, intersection, tapestry, multifaceted, embark, journey, realm, navigate, unlock, transform, revolutionize, innovative, cutting-edge, game-changing, thought leader, visionary, robust, it's clear that, it goes without saying, needless to say, in today's fast-paced, in the ever-evolving.
 ❌ Open the email body with AI starter sentences: "In today...", "As a...", "With the current...", "It's no secret...", "As someone who...", "Given your...", "I noticed...", "I wanted to reach out", "I hope this finds you well", "I'm reaching out because".
 ❌ Name or reference a third party from a LinkedIn post. Posts about someone else (farewells, praise for a colleague leaving) provide zero context to the recipient and feel surveillance-like. Treat them as Priority C.
@@ -112,7 +112,7 @@ export const PROHIBITED_PHRASES = [
     "checking in",
     "touching base",
     "hope you're having a great",
-    // AI clichés — banned per research consensus
+    // AI clichés: banned per research consensus
     "in today's world",
     "at the end of the day",
     "cutting-edge",
@@ -153,17 +153,17 @@ export const PROHIBITED_PHRASES = [
     "schedule a call",
     "book a meeting",
     "let's connect",
-    // Eager-salesperson closings (spirit of "I'd love to" — closes the gap)
+    // Eager-salesperson closings (spirit of "I'd love to": closes the gap)
     "I'd be glad to",
     "I would be glad to",
     "I'd be happy to",
     "I would be happy to",
     "walk you through",
-    // Hard formatting bans — added to enable server-side detection + retry
+    // Hard formatting bans: added to enable server-side detection + retry
     // The FINAL CHECK prompt alone is insufficient; GPT-4o reliably ignores it.
-    "—",  // em dash (U+2014) — the single most common recurring violation across audits
-    "–",  // en dash (U+2013) — less common but equally banned
-    // High-frequency AI vocabulary — added to server-side guard after Voice QC banner
+    "—",  // emdash-allow: functional detector pattern (the literal em dash the guard bans in copy)
+    "–",  // en dash (U+2013), less common but equally banned
+    // High-frequency AI vocabulary: added to server-side guard after Voice QC banner
     // confirmed these slip through the prompt instruction alone (Joel Goodman: "leverage")
     "leverage",
     "delve",
@@ -192,7 +192,7 @@ export const PROHIBITED_PHRASES = [
     "it's clear",   // catches both "it's clear that" and "it's clear [X] is..."
     "sounds like you",  // flattery opener caught on Copeland Isaacson ("Sounds like you're creating significant value")
     // AI vocabulary present in VOICE_RULES prompt but missing from server-side guard
-    // (confirmed by 10-lead production audit — "pivoting" appeared in O'Quinn email)
+    // (confirmed by 10-lead production audit: "pivoting" appeared in O'Quinn email)
     "pivoting",
     "intersection",
     "journey",
@@ -200,28 +200,28 @@ export const PROHIBITED_PHRASES = [
     "transform",
     "it's evident",
     "in today's dynamic",
-    // Formulaic template echoes — overused across the 10-lead audit batch
+    // Formulaic template echoes: overused across the 10-lead audit batch
     // Adding to server-side guard forces GPT to find fresh phrasing every time
     "tempting distraction",        // appeared in 5/10 emails; always paired with 'realistic alternative'
     "in your position",            // appeared in 6/10 emails: "I help people in your position..."
-    "parallel plans",              // template echo — multiple emails used near-identical phrasing
+    "parallel plans",              // template echo: multiple emails used near-identical phrasing
     "viable alternative",          // pairs with 'tempting distraction'; forces varied framing
     // Salesperson/AI tells caught in 10-lead audit
-    "no strings attached",         // Michelle Horner email — salesy filler
-    "I assist",                    // Christy Hartmann — too formal vs. 'I help'
-    "like yourself",               // Safiyyah O'Quinn — stilted
-    "various plans",               // Safiyyah O'Quinn — vague
-    "out of curiosity or necessity", // Shelley Duran — 'necessity' implies financial desperation
-    "side consideration",          // Safiyyah O'Quinn — diminishes offer
-    "interesting idea",            // Whitney Reed — undervalues the pitch
-    "a few years back",            // Whitney Reed — stale-signal tell
+    "no strings attached",         // Michelle Horner email: salesy filler
+    "I assist",                    // Christy Hartmann: too formal vs. 'I help'
+    "like yourself",               // Safiyyah O'Quinn: stilted
+    "various plans",               // Safiyyah O'Quinn: vague
+    "out of curiosity or necessity", // Shelley Duran: 'necessity' implies financial desperation
+    "side consideration",          // Safiyyah O'Quinn: diminishes offer
+    "interesting idea",            // Whitney Reed: undervalues the pitch
+    "a few years back",            // Whitney Reed: stale-signal tell
     "quietly exploring",           // template echo across Whitney/Brian emails
 ];
 
 
 
 // ─── CAN-SPAM Footer ──────────────────────────────────────────────────────────
-// Required by law. Appended deterministically in personalizerProcess —
+// Required by law. Appended deterministically in personalizerProcess,
 // never left to the AI to include or omit.
 export const CAN_SPAM_FOOTER = `
 
@@ -232,7 +232,7 @@ Waypoint Franchise Advisors | P.O. Box 3421, Whitefish, MT 59937`;
 // ─── Email Templates ──────────────────────────────────────────────────────────
 // 6 variants by ICP trigger. GPT-4o selects the most relevant and personalizes
 // using ONLY the signals provided (max 2). Templates demonstrate correct
-// cognitive economy — the connection between signal and pitch is never stated.
+// cognitive economy: the connection between signal and pitch is never stated.
 
 export const EMAIL_TEMPLATES = `
 ### Template A - Company Disruption Event (Priority A: strong - layoff, leadership exit, M&A, WARN Act)

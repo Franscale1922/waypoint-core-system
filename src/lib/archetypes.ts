@@ -1,5 +1,5 @@
 // ============================================================
-// Waypoint Franchise Advisors — Archetype Data Layer
+// Waypoint Franchise Advisors: Archetype Data Layer
 // Research basis: FranNet personality matching, DISC profiles,
 // Perplexity franchise industry analysis, validated brand fit data.
 // ============================================================

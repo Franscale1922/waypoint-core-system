@@ -1,4 +1,4 @@
-// Markdown views — renders site content as clean markdown for agents.
+// Markdown views: renders site content as clean markdown for agents.
 //
 // Every public, content-rich surface (articles, the resources index, glossary,
 // FAQ) has a markdown representation here. Route handlers and llms-full.txt call
@@ -42,7 +42,7 @@ export function estimateTokens(text: string): number {
 
 // Links point at the .md variant so an agent following a link stays in markdown.
 function articleBullet(a: Article): string {
-  return `- [${a.title}](${SITE_URL}/resources/${a.slug}.md) — ${a.excerpt}`;
+  return `- [${a.title}](${SITE_URL}/resources/${a.slug}.md): ${a.excerpt}`;
 }
 
 /** Markdown for a single article, or null if the slug doesn't exist. */
@@ -148,7 +148,7 @@ export function financingMarkdown(): string {
     "# How to Finance a Franchise",
     "",
     "The main ways people fund a franchise, from Waypoint Franchise Advisors. " +
-      "Educational only — not financial advice or a promise of approval.",
+      "Educational only: not financial advice or a promise of approval.",
     "",
     "## Five ways franchises get funded",
     "",
@@ -213,7 +213,7 @@ export function industriesIndexMarkdown(): string {
     "",
   ];
   for (const i of industries) {
-    lines.push(`- [${i.name}](${SITE_URL}/industries/${i.slug}.md) — ${i.heroTagline}`);
+    lines.push(`- [${i.name}](${SITE_URL}/industries/${i.slug}.md): ${i.heroTagline}`);
   }
   lines.push("");
   return lines.join("\n").trim() + "\n";
@@ -293,7 +293,7 @@ export function industryCostMarkdown(slug: string): string | null {
 /** The entire public corpus as one markdown document (for /llms-full.txt). */
 export function fullSiteMarkdown(): string {
   const parts: string[] = [
-    "# Waypoint Franchise Advisors — Full Content Export",
+    "# Waypoint Franchise Advisors: Full Content Export",
     "",
     "Complete markdown of every public educational page: all articles, the industry " +
       "category guides, the financing guide, the glossary, and the FAQ. " +
