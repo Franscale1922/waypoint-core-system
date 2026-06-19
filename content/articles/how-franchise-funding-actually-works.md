@@ -3,7 +3,7 @@ title: "How Franchise Funding Works"
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "sba-loan-vs-robs-franchise-funding-comparison"
-  - "one-unit-or-multi-unit-what-first-timers-get-wrong"
+  - "franchise-investment-by-category"
 slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
 category: "Going Deeper"

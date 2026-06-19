@@ -3,7 +3,7 @@ title: "The True Cost of Buying a Franchise"
 relatedSlugs:
   - "how-franchise-funding-actually-works"
   - "understanding-franchise-royalties-what-youre-paying-for"
-  - "fdd-decoded-what-actually-matters"
+  - "franchise-investment-by-category"
 slug: "the-true-cost-of-buying-a-franchise"
 date: "2025-10-10"
 category: "Getting Started"

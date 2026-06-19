@@ -9,18 +9,18 @@ date: "2026-06-18"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "What a franchise costs depends almost entirely on category. As of 2026, ranges run from roughly $60,000 for an asset-light home service to $800,000 or more for a build-out-heavy food or fitness concept. Here is the range by category, and what actually moves the number."
+excerpt: "What a franchise costs depends almost entirely on category. As of 2026, ranges run from roughly $60,000 for an asset-light home service to well over $1,000,000 for a real-estate-heavy concept like food service or a car wash. Here is the range by category, and what actually moves the number."
 faqs:
   - q: "How much does it cost to open a franchise?"
-    a: "It depends on the category more than anything else. As of 2026, asset-light, home-based, and mobile service franchises typically run $60,000 to $250,000 all-in, while capital-heavy concepts that require a built-out physical location (food service, full-service fitness, tunnel car washes) run $300,000 to $800,000 or more. The single biggest driver of the number is whether the business needs real estate and build-out. Always confirm the specific figure in the franchise disclosure document the franchisor is required to share before you sign."
+    a: "It depends on the category more than anything else. As of 2026, asset-light, home-based, and mobile service franchises typically run $60,000 to $250,000 all-in, while capital-heavy concepts that require a built-out physical location (food service, full-service fitness, car washes) run from $250,000 to well over $1,000,000. The single biggest driver of the number is whether the business needs real estate and build-out. Always confirm the specific figure in the franchise disclosure document the franchisor is required to share before you sign."
   - q: "What is the cheapest type of franchise to start?"
     a: "Asset-light service franchises with no storefront are typically the lowest cost to open. Home services, B2B and back-office services such as staffing, payroll, and bookkeeping, mobile pet care, and property management commonly start in the $60,000 to $250,000 range as of 2026, because there is no lease, no build-out, and little or no equipment. Lower entry cost does not always mean lower difficulty, and these categories often face easier competitive entry, so the trade-off is real."
   - q: "How much does a payroll, bookkeeping, or staffing franchise cost?"
-    a: "Staffing, payroll, and bookkeeping franchises are asset-light B2B service businesses, so they sit at the lower end of the cost spectrum. As of 2026 they typically run a total investment of $75,000 to $250,000, with most of the capital going toward working capital and technology rather than real estate. The exact figure is disclosed in the franchise disclosure document, and the amount you need in liquid form depends on how you plan to fund it."
+    a: "Staffing, payroll, and bookkeeping franchises are asset-light B2B service businesses, so they sit at the lower end of the cost spectrum. As of 2026 they typically run a total investment of $75,000 to $200,000, with most of the capital going toward working capital and technology rather than real estate. The exact figure is disclosed in the franchise disclosure document, and the amount you need in liquid form depends on how you plan to fund it."
   - q: "Does a higher franchise investment mean a better business?"
-    a: "No. A larger investment usually reflects real estate, build-out, and equipment, not the quality of the opportunity or what an owner takes home. A $90,000 asset-light service business and a $600,000 build-out concept are simply different businesses with different operating models and different risk profiles. Match the investment level to your capital position and the role you want to play, then validate the specific economics with existing franchisees during due diligence."
+    a: "No. A larger investment usually reflects real estate, build-out, and equipment, not the quality of the opportunity itself. A $90,000 asset-light service business and a $600,000 build-out concept are simply different businesses with different operating models and different risk profiles. Match the investment level to your capital position and the role you want to play, then validate the specific economics with existing franchisees during due diligence."
 ---
-What does a franchise cost? The honest answer is that it depends almost entirely on category. As of 2026, the franchise investments we screen run from roughly $60,000 for an asset-light, home-based service to $800,000 or more for a build-out-heavy food or fitness concept. The category you choose sets the range before you ever compare two brands.
+What does a franchise cost? The honest answer is that it depends almost entirely on category. As of 2026, the franchise investments we screen run from roughly $60,000 for an asset-light, home-based service to well over $1,000,000 for a real-estate-heavy concept like food service or a car wash. The category you choose sets the range before you ever compare two brands.
 
 Here is the investment range by category, and what actually moves the number. Every figure below reflects total investment, not the franchise fee alone. The franchise fee is one line item. Total investment includes the fee plus everything it takes to open: build-out, equipment, initial inventory, licensing, and the working capital you need to survive the first year. For the full breakdown of those four numbers, see [the total investment](/investment) overview.
 
@@ -28,21 +28,19 @@ Here is the investment range by category, and what actually moves the number. Ev
 
 | Category | Typical total investment (as of 2026) | Model |
 |---|---|---|
-| Home services (mobile, in-home) | $60,000 to $200,000 | Asset-light |
 | Property management | $60,000 to $200,000 | Asset-light |
-| Staffing, payroll, and bookkeeping services | $75,000 to $250,000 | Asset-light B2B |
-| B2B services and consulting | $75,000 to $250,000 | Asset-light |
-| Senior care (non-medical, home-based) | $80,000 to $180,000 | Asset-light |
-| Pet care (mobile grooming, services) | $80,000 to $150,000 | Asset-light |
+| Home services (mobile, in-home) | $75,000 to $200,000 | Asset-light |
+| Staffing, payroll, and bookkeeping services | $75,000 to $200,000 | Asset-light B2B |
+| B2B services and consulting | $75,000 to $200,000 | Asset-light |
+| Pet care (mobile grooming, services) | $75,000 to $200,000 | Asset-light |
+| Senior care (non-medical, home-based) | $100,000 to $250,000 | Asset-light |
 | IT services and managed services (MSP) | $100,000 to $250,000 | Asset-light B2B |
 | Junk removal and hauling | $80,000 to $350,000 | Equipment-based |
-| Restoration | $150,000 to $400,000 | Equipment-based service |
-| Boutique fitness studio | $100,000 to $250,000 | Capital-heavy (build-out) |
-| Full-service gym | $250,000 to $600,000 | Capital-heavy |
-| Car wash (express or in-bay) | $90,000 to $150,000 | Varies |
-| Car wash (tunnel) | $250,000 to $700,000 | Capital-heavy |
-| Pet care (boarding, daycare facility) | $400,000 to $900,000 | Capital-heavy |
-| Food and beverage | $300,000 to $800,000 or more | Capital-heavy |
+| Restoration | $150,000 to $350,000 | Equipment-based service |
+| Fitness and wellness (studio to full facility) | $250,000 to $600,000 or more | Capital-heavy |
+| Food and beverage | $250,000 to $1,000,000 or more | Capital-heavy |
+| Pet care (boarding, daycare facility) | $300,000 to $700,000 or more | Capital-heavy |
+| Car wash (express, real estate and equipment) | $1,000,000 to $7,000,000 or more | Capital-heavy |
 
 These are typical ranges across the brands we screen as of 2026. The specific number for any one brand is disclosed in the franchise disclosure document the franchisor is required to give you before you sign or pay anything, and federal law requires that under the [FTC Franchise Rule](https://www.ftc.gov/business-guidance/resources/franchise-rule-compliance-guide). For a category-by-category look at how each business actually operates and what drives its costs, see the [industry guides](/industries).
 
@@ -56,7 +54,7 @@ Across the categories we screen, the pattern holds almost without exception: the
 
 ## Asset-light or capital-heavy: the fork that sets your range
 
-Before you compare specific brands, the more useful question is which side of the cost spectrum fits you. Asset-light businesses (home services, B2B and back-office services, mobile concepts) open for less and break even on lower volume, but they often face easier competitive entry. Capital-heavy businesses (food, full-service fitness, facility-based care) cost far more to open and carry more fixed overhead, but a physical location and equipment can create a more defensible position. We walk through that decision in [asset-light vs. capital-heavy](/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type).
+Before you compare specific brands, the more useful question is which side of the cost spectrum fits you. Asset-light businesses (home services, B2B and back-office services, mobile concepts) open for less and carry lower fixed costs, but they often face easier competitive entry. Capital-heavy businesses (food, full-service fitness, facility-based care) cost far more to open and carry more fixed overhead, but a physical location and equipment can create a more defensible position. We walk through that decision in [asset-light vs. capital-heavy](/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type).
 
 ## What the investment range does not tell you
 
