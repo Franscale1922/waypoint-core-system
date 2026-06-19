@@ -11,7 +11,7 @@ export default function Image() {
       <OgCard
         eyebrow="Franchise Categories"
         title="The major franchise categories, explained"
-        tagline="Home services, senior care, fitness, food, B2B and more — what each is really like and who it fits."
+        tagline="Home services, senior care, fitness, food, B2B and more: what each is really like and who it fits."
       />
     ),
     { ...OG_SIZE },

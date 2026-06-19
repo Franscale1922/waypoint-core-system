@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     const checklistContent = loadChecklist(slug);
     const checklistLabel = CHECKLIST_LABELS[slug] ?? "Franchise Readiness";
 
-    // Write a lead record — ChecklistDownload is separate from the cold-outreach Lead model
+    // Write a lead record. ChecklistDownload is separate from the cold-outreach Lead model
     let downloadId: string | null = null;
     try {
       const record = await prisma.checklistDownload.create({
@@ -80,20 +80,20 @@ export async function POST(req: Request) {
       console.error("[capture-email] DB write failed:", dbErr);
     }
 
-    // ── CRM sync — fire-and-forget ─────────────────────────────────────────
+    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
     notifyCrm({
       name: name || "Website Visitor",
       email,
-      source: `Checklist Download — ${checklistLabel}`,
+      source: `Checklist Download: ${checklistLabel}`,
       notes: articleSlug ? `Article: ${articleSlug}` : undefined,
     });
 
-    // Beehiiv subscriber sync — fire-and-forget, skipped for Kelsey's own address
+    // Beehiiv subscriber sync (fire-and-forget), skipped for Kelsey's own address
     if (email.toLowerCase() !== TO.toLowerCase()) {
       subscribeToBeehiiv(email, name || undefined).catch(() => {});
     }
 
-    // Fire the nurture sequence — fire-and-forget, does not block checklist delivery
+    // Fire the nurture sequence (fire-and-forget), does not block checklist delivery
     // Skip for Kelsey's own address (test submissions)
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
       try {
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
           },
         });
       } catch (nurtureErr) {
-        // Non-fatal — checklist delivery succeeds regardless
+        // Non-fatal: checklist delivery succeeds regardless
         console.error("[capture-email] Nurture trigger failed:", nurtureErr);
       }
     }
@@ -118,7 +118,7 @@ export async function POST(req: Request) {
       from: FROM,
       to: TO,
       replyTo: email,
-      subject: `Checklist download — ${checklistLabel}`,
+      subject: `Checklist download: ${checklistLabel}`,
       text: [
         `Name:      ${name || "Not provided"}`,
         `Email:     ${email}`,
@@ -153,7 +153,7 @@ export async function POST(req: Request) {
         replyTo: TO,
         subject: `Your ${checklistLabel} Checklist`,
         headers: {
-          // RFC 8058 one-click unsubscribe — the #1 inbox provider trust signal
+          // RFC 8058 one-click unsubscribe: the #1 inbox provider trust signal
           "List-Unsubscribe": `<${unsubUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
         },

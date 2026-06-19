@@ -51,7 +51,7 @@ export default async function ArticlePage({ params }: Props) {
   const pillar = pillarForArticle(slug);
   const articleUrl = `${SITE_URL}/resources/${slug}`;
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
-  // plus optional FAQ/Video and breadcrumbs — all via the shared helpers/escaping.
+  // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
   const articleGraph = jsonLdGraph(
     {
       "@type": "Article",
@@ -104,7 +104,7 @@ export default async function ArticlePage({ params }: Props) {
       <article className="max-w-3xl mx-auto px-6 pb-12 sm:pb-16 prose prose-slate prose-headings:font-playfair prose-headings:text-[#0c1929] prose-a:text-[#8E3012] prose-a:no-underline hover:prose-a:underline prose-hr:border-[#e8e0d0] max-w-none">
         <MDXRemote source={content} options={{ mdxOptions: { remarkPlugins: [remarkGfm] } }} />
       </article>
-      {/* Pillar up-link — points the article back to the topic-cluster pillar it
+      {/* Pillar up-link: points the article back to the topic-cluster pillar it
           belongs to (derived from the same data the pillar uses to link down). */}
       {pillar && (
         <section className="max-w-3xl mx-auto px-6 pb-4">
@@ -124,7 +124,7 @@ export default async function ArticlePage({ params }: Props) {
       <section className="max-w-3xl mx-auto px-6">
         <InlineCapture />
       </section>
-      {/* Visible FAQ — same `faqs` array feeds the FAQPage schema above, so on-page
+      {/* Visible FAQ: same `faqs` array feeds the FAQPage schema above, so on-page
           content and structured data stay in lockstep (Google requires the FAQ to be
           present on the page for the markup to be eligible). */}
       {faqs && faqs.length > 0 && (
@@ -141,13 +141,13 @@ export default async function ArticlePage({ params }: Props) {
         </section>
       )}
       <RelatedArticles articles={related} />
-      {/* Newsletter subscribe callout — appears on every article */}
+      {/* Newsletter subscribe callout: appears on every article */}
       <section className="border-t border-[#e8e0d0] bg-white py-10 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-5">
             <p className="text-xs font-semibold tracking-widest text-[#8E3012] uppercase">Free Newsletter</p>
             <span className="hidden sm:inline text-[#d0c8b8] text-xs">·</span>
-            <p className="text-xs text-[#9a9a8a] tracking-wide">The Franchise Dispatch — honest takes, no pitch</p>
+            <p className="text-xs text-[#9a9a8a] tracking-wide">The Franchise Dispatch: honest takes, no pitch</p>
           </div>
           <p className="font-playfair text-lg sm:text-xl text-[#0c1929] mb-4 leading-snug">
             Want the real numbers, not the brochure?
@@ -179,7 +179,7 @@ export default async function ArticlePage({ params }: Props) {
           </Link>
         </div>
       </section>
-      {/* Corporate Escape Kit callout — targeted early-journey articles only */}
+      {/* Corporate Escape Kit callout: targeted early-journey articles only */}
       {meta.escapeKit && (
         <section className="border-t border-[#e8e0d0] bg-[#f2ede3] py-10 px-6">
           <div className="max-w-3xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">

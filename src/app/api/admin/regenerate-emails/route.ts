@@ -6,10 +6,10 @@
  * with the latest prompt programming.
  *
  * Body (JSON):
- *   { leadId: string }          — regenerate a single lead
- *   { all: true }               — regenerate ALL SEQUENCED leads
+ *   { leadId: string }          : regenerate a single lead
+ *   { all: true }               : regenerate ALL SEQUENCED leads
  *
- * Auth: NextAuth session required (admin only — same protection as admin pages).
+ * Auth: NextAuth session required (admin only, same protection as admin pages).
  */
 
 import { NextResponse } from "next/server";
@@ -66,21 +66,21 @@ export async function POST(req: Request) {
             }
             if (lead.score < 50) {
                 return NextResponse.json(
-                    { error: "Lead did not clear the 50-point gate — cannot generate email." },
+                    { error: "Lead did not clear the 50-point gate. Cannot generate email." },
                     { status: 400 }
                 );
             }
 
             // Clear the draft and reset status to SEQUENCED so personalizerProcess
             // will accept the lead. personalizerProcess only processes ENRICHED or
-            // SEQUENCED leads — SENT leads are silently skipped. After regeneration
+            // SEQUENCED leads; SENT leads are silently skipped. After regeneration
             // completes, personalizerProcess will set status back to SEQUENCED, which
             // is correct (the lead can still be re-sent via the Send Now button).
             await prisma.lead.update({
                 where: { id: body.leadId },
                 data: {
                     draftEmail: null,
-                    // Only downgrade status if the lead is SENT — don't touch ENRICHED/SEQUENCED
+                    // Only downgrade status if the lead is SENT; don't touch ENRICHED/SEQUENCED
                     ...(lead.status === "SENT" ? { status: "SEQUENCED" } : {}),
                 },
             });

@@ -1,5 +1,5 @@
 /**
- * Waypoint Analytics — GA4 event helpers
+ * Waypoint Analytics: GA4 event helpers
  * Usage: import { trackEvent } from "@/app/lib/analytics"
  */
 

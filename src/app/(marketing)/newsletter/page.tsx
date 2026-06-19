@@ -68,14 +68,14 @@ export default function NewsletterPage() {
             The Franchise Dispatch
           </h1>
           <p className="text-base sm:text-lg md:text-xl text-[#5a5a4a] leading-relaxed max-w-2xl mb-10">
-            No hype. No pitch decks. Just the honest mechanics of franchise ownership —
+            No hype. No pitch decks. Just the honest mechanics of franchise ownership:
             financial models, FDD red flags, market analysis, and what Corporate Refugees
             actually need to know before they sign anything.
           </p>
 
           <div className="bg-white border border-[#e2ddd2] rounded-2xl p-8 sm:p-10 max-w-2xl shadow-sm">
             <p className="text-sm font-semibold text-[#0c1929] mb-6">
-              Join free — cancel any time.
+              Join free. Cancel any time.
             </p>
             <NewsletterForm variant="page" />
           </div>

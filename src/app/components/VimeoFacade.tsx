@@ -2,12 +2,12 @@
 import { useState } from "react";
 
 /**
- * VimeoFacade — D-8 CRO
+ * VimeoFacade: D-8 CRO
  *
  * Click-to-load Vimeo embed. Shows a static poster image (zero video overhead)
  * until the visitor clicks play, then loads the Vimeo iframe.
  *
- * Text is anchored bottom-left (label + short headline) — never wraps at any width.
+ * Text is anchored bottom-left (label + short headline) and never wraps at any width.
  */
 export default function VimeoFacade({
   videoId,
@@ -28,7 +28,7 @@ export default function VimeoFacade({
    * Optional plain-text transcript of the spoken content. When provided it is
    * rendered in a crawlable <details> block below the player so AI answer
    * engines (Ask YouTube, AI Overviews) can extract it from the DOM. Only pass
-   * a real, verified transcript — never fabricated speech.
+   * a real, verified transcript, never fabricated speech.
    */
   transcript?: string;
 }) {
@@ -61,10 +61,10 @@ export default function VimeoFacade({
             />
           )}
 
-          {/* Gradient scrim — bottom only, keeps thumbnail bright at top */}
+          {/* Gradient scrim: bottom only, keeps thumbnail bright at top */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-          {/* Clickable overlay — entire card is the play target */}
+          {/* Clickable overlay: entire card is the play target */}
           <button
             onClick={() => setPlaying(true)}
             aria-label={`Play: ${title}`}
@@ -85,7 +85,7 @@ export default function VimeoFacade({
               </div>
             </div>
 
-            {/* Bottom-left text — fixed two lines, never wraps */}
+            {/* Bottom-left text: fixed two lines, never wraps */}
             <div className="absolute bottom-0 left-0 right-0 px-4 sm:px-5 pb-4 sm:pb-5">
               <p className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.18em] text-[#CC6535] mb-0.5">
                 {label}

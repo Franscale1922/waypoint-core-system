@@ -90,8 +90,8 @@ export default async function ScorecardSubmissionsPage() {
                   </span>
                   <span className="text-slate-400 text-xs">/100</span>
                 </td>
-                <td className="px-6 py-4 text-slate-500 max-w-[160px] truncate">{s.primaryDriver ?? "—"}</td>
-                <td className="px-6 py-4 text-slate-500 max-w-[160px] truncate">{s.biggestFear ?? "—"}</td>
+                <td className="px-6 py-4 text-slate-500 max-w-[160px] truncate">{s.primaryDriver ?? "-"}</td>
+                <td className="px-6 py-4 text-slate-500 max-w-[160px] truncate">{s.biggestFear ?? "-"}</td>
                 <td className="px-6 py-4">
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${STEP_STYLES[s.nurtureStep] ?? "bg-slate-100 text-slate-600"}`}>
                     {STEP_LABELS[s.nurtureStep] ?? `Step ${s.nurtureStep}`}

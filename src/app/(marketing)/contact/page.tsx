@@ -55,7 +55,7 @@ export default function ContactPage() {
             <ContactForm />
           </div>
 
-          {/* Sidebar — faster options */}
+          {/* Sidebar: faster options */}
           <div className="space-y-6">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-3">

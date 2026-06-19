@@ -32,7 +32,7 @@ export default function ArchetypeClient() {
     if (currentStep < QUIZ_QUESTIONS.length - 1) {
       setTimeout(() => setCurrentStep(currentStep + 1), 280);
     } else {
-      // All questions answered — go to email capture
+      // All questions answered: go to email capture
       setTimeout(() => setPhase("capture"), 280);
     }
   };
@@ -62,16 +62,16 @@ export default function ArchetypeClient() {
       trackQuizCompleted(0); // re-use existing analytics event
       setPhase("result");
     } catch {
-      // Show result anyway — don't block the user on API failure
+      // Show result anyway: don't block the user on API failure
       setPhase("result");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // ——————————————
+  // ==============
   // RESULT SCREEN
-  // ——————————————
+  // ==============
   if (phase === "result" && archetypeId) {
     const archetype = ARCHETYPES[archetypeId];
     return (
@@ -178,9 +178,9 @@ export default function ArchetypeClient() {
     );
   }
 
-  // ——————————————
+  // ==============
   // EMAIL CAPTURE
-  // ——————————————
+  // ==============
   if (phase === "capture") {
     return (
       <section className="py-16 sm:py-24 bg-gradient-to-br from-[#f2f7fc] via-white to-[#fbf5ea]/40 min-h-[80vh]">
@@ -228,9 +228,9 @@ export default function ArchetypeClient() {
     );
   }
 
-  // ——————————————
+  // ==============
   // QUIZ SCREEN
-  // ——————————————
+  // ==============
   const q = QUIZ_QUESTIONS[currentStep];
   const progress = Math.round((currentStep / QUIZ_QUESTIONS.length) * 100);
 

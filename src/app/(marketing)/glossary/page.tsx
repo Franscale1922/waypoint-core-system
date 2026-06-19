@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     description:
       "Every term a franchise buyer needs to understand, explained in plain language. 90+ definitions from FDD to unit economics.",
     url: "https://www.waypointfranchise.com/glossary",
-    images: [{ url: "/og/og-glossary.png", width: 1200, height: 630, alt: "Franchise Glossary — Plain-English Definitions | Waypoint" }],
+    images: [{ url: "/og/og-glossary.png", width: 1200, height: 630, alt: "Franchise Glossary: Plain-English Definitions | Waypoint" }],
   },
 };
 

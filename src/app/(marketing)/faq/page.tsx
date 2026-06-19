@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     description:
       "No jargon, no pitch. Straight answers about what franchise consulting costs, how the process works, and what it takes to get started.",
     url: "https://www.waypointfranchise.com/faq",
-    images: [{ url: "/og/og-faq.png", width: 1200, height: 630, alt: "Waypoint FAQ — Honest Answers" }],
+    images: [{ url: "/og/og-faq.png", width: 1200, height: 630, alt: "Waypoint FAQ: Honest Answers" }],
   },
 };
 
@@ -73,7 +73,7 @@ export default function FAQPage() {
         </div>
       </section>
 
-      {/* G.1 — Category anchor nav */}
+      {/* G.1: Category anchor nav */}
       <div className="sticky top-0 z-10 bg-[#FAF8F4] border-b border-[#e2ddd2] overflow-x-auto">
         <div className="flex gap-2 px-6 py-3 no-scrollbar">
           {[

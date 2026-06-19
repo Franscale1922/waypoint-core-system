@@ -29,7 +29,7 @@ export async function POST(req: Request) {
         });
 
         if (!lead) {
-            // No matching lead found — log it but don't error.
+            // No matching lead found: log it but don't error.
             // This could be a direct website visitor who was never in the outbound pipeline.
             console.log(
                 `[TidyCal] Booking received for unknown lead: ${invitee.email} | Event: ${event_type}`
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         await prisma.lead.update({
             where: { id: lead.id },
             data: {
-                // @ts-ignore — BOOKED added to schema; migration runs on next Vercel deploy
+                // @ts-ignore: BOOKED added to schema; migration runs on next Vercel deploy
                 status: "BOOKED" as any, // Meeting booked is a higher-intent terminal state than REPLIED
             },
         });

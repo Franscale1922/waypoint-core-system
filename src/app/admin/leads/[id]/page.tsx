@@ -92,7 +92,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 <Section icon={<TrendingUp className="w-4 h-4 text-blue-500" />} title="ICP Score">
                     <ScoreBar score={lead.score} />
                     <p className="text-xs text-slate-400">
-                        Gate threshold: 50 · {lead.score >= 50 ? "✅ Cleared — eligible to send" : "❌ Below gate — suppressed"}
+                        Gate threshold: 50 · {lead.score >= 50 ? "✅ Cleared: eligible to send" : "❌ Below gate: suppressed"}
                     </p>
                     {lead.yearsInCurrentRole != null && (
                         <p className="text-xs text-slate-500 flex items-center gap-1">
@@ -139,21 +139,21 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                     </div>
                     <p className="text-sm text-slate-400 italic">
                         {lead.score >= 50
-                            ? "Email not generated yet — personalizerProcess may still be running."
-                            : "No email generated — lead did not clear the 50-point gate."}
+                            ? "Email not generated yet. personalizerProcess may still be running."
+                            : "No email generated. Lead did not clear the 50-point gate."}
                     </p>
                 </div>
             )}
 
             {/* Enrichment Signals */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <Section icon={<Newspaper className="w-4 h-4 text-orange-500" />} title="Priority A — Company News">
+                <Section icon={<Newspaper className="w-4 h-4 text-orange-500" />} title="Priority A: Company News">
                     {lead.companyNewsEvent
                         ? <p className="text-sm text-slate-700 leading-relaxed">{lead.companyNewsEvent}</p>
                         : <p className="text-sm text-slate-400 italic">No company news signal captured</p>}
                 </Section>
 
-                <Section icon={<MessageSquare className="w-4 h-4 text-purple-500" />} title="Priority B — Recent Post">
+                <Section icon={<MessageSquare className="w-4 h-4 text-purple-500" />} title="Priority B: Recent Post">
                     {lead.recentPostSummary
                         ? <p className="text-sm text-slate-700 leading-relaxed">{lead.recentPostSummary}</p>
                         : <p className="text-sm text-slate-400 italic">No LinkedIn post signal captured</p>}
@@ -166,7 +166,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
                 </Section>
             )}
 
-            {/* Intelligence Layer — Outcome Attribution + Sales Nav Attributes */}
+            {/* Intelligence Layer: Outcome Attribution + Sales Nav Attributes */}
             {/* Only renders if any intelligence data has been captured for this lead */}
             {((lead as any).signalType || (lead as any).sentAt || (lead as any).suppressionReason || (lead as any).companySizeRange || (lead as any).seniorityLevel) && (
                 <Section icon={<BarChart2 className="w-4 h-4 text-indigo-500" />} title="Intelligence Layer">

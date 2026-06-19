@@ -10,9 +10,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "The Financial Safety Nets of Franchising vs. W2 | Waypoint Franchise Advisors",
     description:
-      "Free guide: five sections on franchise economics, capital deployment, and the W2 safety net myth — for corporate professionals evaluating ownership as a next chapter.",
+      "Free guide: five sections on franchise economics, capital deployment, and the W2 safety net myth, for corporate professionals evaluating ownership as a next chapter.",
     url: "https://www.waypointfranchise.com/escape-kit",
-    images: [{ url: "/og/og-escape-kit.png", width: 1200, height: 630, alt: "The Financial Safety Nets of Franchising vs. W2 — Waypoint Franchise Advisors" }],
+    images: [{ url: "/og/og-escape-kit.png", width: 1200, height: 630, alt: "The Financial Safety Nets of Franchising vs. W2: Waypoint Franchise Advisors" }],
   },
   alternates: { canonical: "https://www.waypointfranchise.com/escape-kit" },
 };
@@ -26,7 +26,7 @@ const escapeKitSchema = {
       url: "https://www.waypointfranchise.com/escape-kit",
       name: "The Financial Safety Nets of Franchising vs. W2 | Waypoint Franchise Advisors",
       description:
-        "A free guide for corporate professionals evaluating franchise ownership — covering franchise economics, capital deployment, and the W2 safety net myth.",
+        "A free guide for corporate professionals evaluating franchise ownership, covering franchise economics, capital deployment, and the W2 safety net myth.",
       inLanguage: "en-US",
       isPartOf: { "@id": "https://www.waypointfranchise.com/#website" },
     },
@@ -77,7 +77,7 @@ export default function EscapeKitPage() {
       <section className="bg-[#0c1929] pt-20 pb-16 px-6">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-4">
-            The Corporate Escape Kit — Free Guide
+            The Corporate Escape Kit: Free Guide
           </p>
           <h1 className="font-playfair text-4xl sm:text-5xl text-white mb-5 leading-tight">
             The Financial Safety Nets<br className="hidden sm:block" /> of Franchising vs. W2
@@ -114,9 +114,9 @@ export default function EscapeKitPage() {
         </div>
       </section>
 
-      {/* ── Capture form — trust signals ABOVE the submit button ── */}
+      {/* ── Capture form: trust signals ABOVE the submit button ── */}
       <section className="max-w-2xl mx-auto px-5 sm:px-10 pb-20">
-        {/* Trust strip — above the form */}
+        {/* Trust strip: above the form */}
         <div className="bg-[#0c1929]/5 border border-[#e2ddd2] rounded-xl px-6 py-5 mb-6 flex flex-col sm:flex-row gap-4 sm:gap-6 items-start sm:items-center">
           <div className="flex-shrink-0">
             <div className="w-10 h-10 rounded-full bg-[#CC6535]/15 flex items-center justify-center">

@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lower = industry.name.toLowerCase();
   return {
     title: `How Much Does a ${industry.name} Franchise Cost? | Waypoint Franchise Advisors`,
-    description: `What a ${lower} franchise actually costs — the typical investment range, what drives the cost, and the components to budget for. Educational ranges only; the brand-specific figure is in FDD Item 7.`,
+    description: `What a ${lower} franchise actually costs: the typical investment range, what drives the cost, and the components to budget for. Educational ranges only; the brand-specific figure is in FDD Item 7.`,
     alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {
       title: `How Much Does a ${industry.name} Franchise Cost?`,
@@ -49,7 +49,7 @@ export default async function IndustryCostPage({ params }: Props) {
           webPageSchema({
             url: pageUrl,
             name: `How Much Does a ${industry.name} Franchise Cost? | Waypoint Franchise Advisors`,
-            description: `What a ${lower} franchise actually costs — the typical investment range, what drives the cost, and the components to budget for.`,
+            description: `What a ${lower} franchise actually costs: the typical investment range, what drives the cost, and the components to budget for.`,
             breadcrumb: breadcrumbSchema([
               { name: "Home", url: SITE_URL },
               { name: "Industries", url: `${SITE_URL}/industries` },
@@ -92,7 +92,7 @@ export default async function IndustryCostPage({ params }: Props) {
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold tracking-widest text-[#CC6535] uppercase mb-2">A Note on Numbers</p>
           <p className="text-sm text-white/75 leading-relaxed max-w-3xl">
-            The ranges above are general, educational, and not a quote. Every franchisor publishes its exact estimated initial investment in Item 7 of its Franchise Disclosure Document, and your real cost depends on the specific brand, your market, and your build-out. Funding can cover much of it — see how franchises are typically financed.
+            The ranges above are general, educational, and not a quote. Every franchisor publishes its exact estimated initial investment in Item 7 of its Franchise Disclosure Document, and your real cost depends on the specific brand, your market, and your build-out. Funding can cover much of it. See how franchises are typically financed.
           </p>
           <Link href="/franchise-financing" className="inline-flex items-center text-[#CC6535] text-sm font-medium hover:text-[#D4724A] transition-colors mt-4">
             How to finance a franchise →

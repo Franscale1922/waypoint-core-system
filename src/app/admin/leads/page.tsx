@@ -100,7 +100,7 @@ export default async function LeadsManager({ searchParams }: Props) {
                 ))}
                 {activeStatus && (
                     <span className="ml-2 text-xs text-slate-500">
-                        Showing {leads.length} {activeStatus} leads — <Link href="/admin/leads" className="underline">clear filter</Link>
+                        Showing {leads.length} {activeStatus} leads · <Link href="/admin/leads" className="underline">clear filter</Link>
                     </span>
                 )}
             </div>
@@ -133,7 +133,7 @@ export default async function LeadsManager({ searchParams }: Props) {
                                     </Link>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <Link href={`/admin/leads/${lead.id}`} className="block w-full">{lead.company || "—"}</Link>
+                                    <Link href={`/admin/leads/${lead.id}`} className="block w-full">{lead.company || "-"}</Link>
                                 </td>
                                 <td className="px-6 py-4">
                                     <Link href={`/admin/leads/${lead.id}`} className="block w-full">

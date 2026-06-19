@@ -3,24 +3,24 @@
 
 /* ======================================
    WAYPOINT FRANCHISE ADVISORS
-   Design System — Rustic Editorial
+   Design System: Rustic Editorial
    Inspired by: Mollie Aspen, Xigera,
    Stash Wealth, Eleven Experience
    ====================================== */
 
 :root {
-  /* Canvas — warm cream, not sterile white */
+  /* Canvas: warm cream, not sterile white */
   --wp-cream: #F5F0E8;
   --wp-cream-light: #FAF8F4;
   --wp-cream-dark: #EDE7DA;
 
-  /* Navy Primary — deep, authoritative */
+  /* Navy Primary: deep, authoritative */
   --wp-navy-950: #0c1929;
   --wp-navy-900: #122640;
   --wp-navy-800: #1b3a5f;
   --wp-navy-700: #234e7e;
 
-  /* Copper Accent — deep red-brown, burnished metallic */
+  /* Copper Accent: deep red-brown, burnished metallic */
   --wp-copper-700: #4a1408;
   --wp-copper-600: #6e2210;
   --wp-copper-500: #8e3012;
@@ -29,10 +29,10 @@
   --wp-copper-200: #d99070;
   --wp-copper-100: #edc8b0;
 
-  /* Semantic copper — contrast-safe for each background context */
-  --wp-copper-on-dark: #CC6535;       /* hsl(19°,59%,50%) — ~4.7:1 on navy, red-brown not gold */
+  /* Semantic copper: contrast-safe for each background context */
+  --wp-copper-on-dark: #CC6535;       /* hsl(19°,59%,50%), ~4.7:1 on navy, red-brown not gold */
   --wp-copper-on-dark-hover: #D97545; /* lighter hover state */
-  --wp-copper-on-light: #8E3012;      /* ~6.2:1 on white — deep rust for light bg */
+  --wp-copper-on-light: #8E3012;      /* ~6.2:1 on white, deep rust for light bg */
 
   /* Text tones */
   --wp-charcoal: #1a1a1a;
@@ -45,7 +45,7 @@
   --wp-warning: #f59e0b;
   --wp-error: #ef4444;
 
-  /* Shadows — warmer, softer */
+  /* Shadows: warmer, softer */
   --wp-shadow-sm: 0 1px 3px 0 rgb(26 26 26 / 0.04);
   --wp-shadow-md: 0 4px 12px -2px rgb(26 26 26 / 0.06);
   --wp-shadow-lg: 0 12px 24px -4px rgb(26 26 26 / 0.08);
@@ -72,7 +72,7 @@ body {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* NO overflow on body — preserves viewport-relative positioning for position:fixed.
+  /* NO overflow on body: preserves viewport-relative positioning for position:fixed.
      Overflow clipping handled on the inner layout wrapper. */
 }
 
@@ -84,7 +84,7 @@ body {
    is always stable. body becomes the scroll container, which on iOS
    means position:fixed anchors to the stable, full-screen body.
    NOTE: body.scrollTop (not window.scrollY) is the scroll position
-   when this CSS is active — MobileStickyBar handles both.
+   when this CSS is active. MobileStickyBar handles both.
    Only applies to iOS Safari via @supports touch-callout detection.
    ====================================== */
 @supports (-webkit-touch-callout: none) {
@@ -101,7 +101,7 @@ body {
 }
 
 
-/* Serif headlines — editorial authority */
+/* Serif headlines: editorial authority */
 h1, h2 {
   font-family: var(--font-playfair), Georgia, 'Times New Roman', serif;
   letter-spacing: -0.02em;
@@ -320,7 +320,7 @@ a, button, [role="button"], input[type="submit"], .quiz-option {
 
 /* ======================================
    FRANCHISE MAP PIN PULSE
-   Single shared keyframe — replaces
+   Single shared keyframe: replaces
    per-element animate-pulse on SVG circles
    to avoid 146+ independent paint targets
    ====================================== */
@@ -336,7 +336,7 @@ a, button, [role="button"], input[type="submit"], .quiz-option {
 }
 
 /* ======================================
-   SCROLLBAR — subtle
+   SCROLLBAR: subtle
    ====================================== */
 
 ::-webkit-scrollbar { width: 5px; }

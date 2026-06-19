@@ -142,7 +142,7 @@ export default function ResourcesGrid({
             </div>
           </div>
 
-          {/* D-3: Category toggle filters — in-page, no navigation */}
+          {/* D-3: Category toggle filters: in-page, no navigation */}
           <div>
             <p className="text-xs text-[#7a7a7a] uppercase tracking-widest mb-4">Filter by where you are</p>
             <div className="flex flex-wrap gap-3">

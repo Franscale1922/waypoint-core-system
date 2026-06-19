@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 /**
- * MobileStickyBar — B-5 CRO
+ * MobileStickyBar: B-5 CRO
  *
  * Position:fixed works via two layered CSS fixes:
  *   1. overflow-x: clip moved from body → marketing layout wrapper
  *      (body overflow creates a scroll container on Safari, breaking
- *      viewport-relative position:fixed — CSS spec + Safari Bug #745729)
+ *      viewport-relative position:fixed; CSS spec + Safari Bug #745729)
  *   2. iOS-only @supports block in globals.css locks html/body to stable
  *      viewport dimensions, bypassing WebKit Bug #297779 (compositor
  *      drifts fixed GPU layers during scroll direction changes).
@@ -79,7 +79,7 @@ export default function MobileStickyBar() {
           gap: "6px",
         }}
       >
-        {/* Consent notice — TCPA compliance for the Text Kelsey CTA */}
+        {/* Consent notice: TCPA compliance for the Text Kelsey CTA */}
         <p
           style={{
             fontSize: "9px",
@@ -98,7 +98,7 @@ export default function MobileStickyBar() {
             alignItems: "center",
           }}
         >
-        {/* Text Kelsey — secondary */}
+        {/* Text Kelsey: secondary */}
         <a
           href="sms:+12149951062"
           aria-label="Text Kelsey at (214) 995-1062"
@@ -135,7 +135,7 @@ export default function MobileStickyBar() {
           Text Kelsey
         </a>
 
-        {/* Book a Free Call — primary copper */}
+        {/* Book a Free Call: primary copper */}
         <a
           href="/book"
           aria-label="Book a free call with Kelsey Stuart"

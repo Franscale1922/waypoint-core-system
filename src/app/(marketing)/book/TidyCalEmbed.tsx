@@ -3,7 +3,7 @@
 import Script from "next/script";
 
 /**
- * TidyCalEmbed — reliable TidyCal widget integration.
+ * TidyCalEmbed: reliable TidyCal widget integration.
  *
  * Why next/script instead of manual useEffect injection:
  * - next/script deduplicates the script tag, so it won't double-load
@@ -26,7 +26,7 @@ export default function TidyCalEmbed({ path }: { path: string }) {
         src="https://asset-tidycal.b-cdn.net/js/embed.js"
         strategy="afterInteractive"
         onLoad={() => {
-          // TidyCal exposes a global init function — call it after the
+          // TidyCal exposes a global init function; call it after the
           // script loads to guarantee the embed div is already in the DOM
           if (typeof window !== "undefined" && (window as Window & { TidyCal?: { init?: () => void } }).TidyCal?.init) {
             (window as Window & { TidyCal?: { init?: () => void } }).TidyCal!.init!();

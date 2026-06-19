@@ -56,7 +56,7 @@ export default function ResourcesPage() {
           style={{ objectPosition: "center 20%" }}
         />
         <div className="absolute inset-0 bg-gradient-to-b from-[#0c1929]/65 via-[#0c1929]/25 to-[#0c1929]/05" />
-        {/* Left scrim — covers the text zone over the bright sunset horizon */}
+        {/* Left scrim: covers the text zone over the bright sunset horizon */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-transparent" />
         <div className="relative z-10 max-w-4xl mx-auto">
           <h1
@@ -96,7 +96,7 @@ export default function ResourcesPage() {
         </Link>
       </section>
 
-      {/* Pillar guides — in-content links to the financing + industries hubs */}
+      {/* Pillar guides: in-content links to the financing + industries hubs */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 pt-12">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-8 h-[2px] bg-[#CC6535]" />
@@ -111,7 +111,7 @@ export default function ResourcesPage() {
               Browse franchises by industry
             </h3>
             <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
-              Category-by-category guides — home services, senior care, fitness, food, B2B and more — covering what each is really like and who it fits.
+              Category-by-category guides (home services, senior care, fitness, food, B2B and more) covering what each is really like and who it fits.
             </p>
             <span className="text-xs text-[#8E3012] font-medium tracking-wide">See the categories →</span>
           </Link>
@@ -123,14 +123,14 @@ export default function ResourcesPage() {
               How to finance a franchise
             </h3>
             <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
-              SBA loans, ROBS, home equity, securities-backed lines, and franchisor financing — the main funding paths, in plain English.
+              SBA loans, ROBS, home equity, securities-backed lines, and franchisor financing: the main funding paths, in plain English.
             </p>
             <span className="text-xs text-[#8E3012] font-medium tracking-wide">Read the guide →</span>
           </Link>
         </div>
       </section>
 
-      {/* B-6: Email capture — research-mode visitors */}
+      {/* B-6: Email capture, research-mode visitors */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-12">
         <EmailCapture />
       </section>
@@ -142,7 +142,7 @@ export default function ResourcesPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-1">Free Downloads</p>
             <p className="font-playfair text-lg text-[#0c1929] mb-1">Need a structured evaluation framework?</p>
             <p className="text-sm text-[#5a5a4a] leading-relaxed">
-              Six free franchise checklists — one universal and five industry-specific. Pick the one that matches your category and get it in your inbox within minutes.
+              Six free franchise checklists: one universal and five industry-specific. Pick the one that matches your category and get it in your inbox within minutes.
             </p>
           </div>
           <Link

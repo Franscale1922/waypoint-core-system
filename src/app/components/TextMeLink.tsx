@@ -1,9 +1,9 @@
 /**
- * TextMeLink — reusable "Text me" SMS button.
+ * TextMeLink: reusable "Text me" SMS button.
  * Uses the sms: protocol which opens iMessage on iPhone/Mac,
  * or the native SMS app on Android.
  *
- * showConsent — when true, renders TCPA-compliant consent language
+ * showConsent: when true, renders TCPA-compliant consent language
  * directly beneath the link. Required wherever this CTA appears on
  * a page (as opposed to inside a nav/header where space is limited).
  */

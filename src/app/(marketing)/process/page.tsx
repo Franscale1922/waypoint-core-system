@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     description:
       "Two hours before you see a single brand. A step-by-step look at how Kelsey guides candidates from curious to confident.",
     url: "https://www.waypointfranchise.com/process",
-    images: [{ url: "/og/og-process.png", width: 1200, height: 630, alt: "The Waypoint Process — No Pitch, No Hard Close" }],
+    images: [{ url: "/og/og-process.png", width: 1200, height: 630, alt: "The Waypoint Process: No Pitch, No Hard Close" }],
   },
   alternates: { canonical: "https://www.waypointfranchise.com/process" },
 };
@@ -211,7 +211,7 @@ export default function ProcessPage() {
         </div>
       </section>
 
-      {/* ── E-1: Prequalification — moved above steps ──── */}
+      {/* ── E-1: Prequalification: moved above steps ──── */}
       {/* Reassures the right visitor early; gently redirects the wrong one */}
       <section className="max-w-4xl mx-auto px-6 py-10 sm:py-14">
         <div className="bg-[#f7f5f1] border border-[#e2ddd2] rounded-xl p-6 sm:p-8">
@@ -297,7 +297,7 @@ export default function ProcessPage() {
                 )}
               </div>
             </div>
-            {/* Mid-page CTA — inserted after Step 04 (Validation Calls) */}
+            {/* Mid-page CTA: inserted after Step 04 (Validation Calls) */}
             {step.number === "04" && (
               <div className="bg-[#0c1929] rounded-xl p-8 sm:p-10 text-center">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-3">Sound like the right approach?</p>

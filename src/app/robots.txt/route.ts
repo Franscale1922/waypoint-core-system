@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-// /robots.txt — hand-rendered so we can declare AIPREF Content Signals.
+// /robots.txt: hand-rendered so we can declare AIPREF Content Signals.
 //
 // Next's metadata `robots.ts` convention only emits the standard directives
 // (Allow / Disallow / Sitemap) and has no field for `Content-Signal`, so this
@@ -12,7 +12,7 @@ import { NextResponse } from "next/server";
 // definitions and the published policy comment below track the IETF draft
 // "Vocabulary For Expressing Content Signals" (draft-romm-aipref-contentsignals).
 //
-// Waypoint's stance — discoverable, but not training fodder:
+// Waypoint's stance: discoverable, but not training fodder:
 //   search=yes    surface us in search results that link back here
 //   ai-input=yes  let AI assistants ground answers in our content (and cite us)
 //   ai-train=no   do not train or fine-tune models on our content

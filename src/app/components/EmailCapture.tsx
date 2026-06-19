@@ -3,16 +3,16 @@
 import { useState } from "react";
 
 /**
- * EmailCapture — Checklist lead magnet widget.
+ * EmailCapture: Checklist lead magnet widget.
  *
  * Renders the "Before You Go" widget below articles that have a checklistSlug
  * set in their frontmatter. The parent (article page) is responsible for
  * deciding whether to render this component at all.
  *
  * Props:
- *   checklistSlug  — which checklist to deliver (drives copy + API routing)
- *   articleSlug    — the article's slug, recorded for attribution in the DB
- *   variant        — "default" (resources index) | "article" (below article)
+ *   checklistSlug  : which checklist to deliver (drives copy + API routing)
+ *   articleSlug    : the article's slug, recorded for attribution in the DB
+ *   variant        : "default" (resources index) | "article" (below article)
  *
  * On submit, posts to /api/capture-email.
  * Falls back gracefully if the API is unavailable.
@@ -96,7 +96,7 @@ export default function EmailCapture({
     );
   }
 
-  // Card variant: always stacks vertically — used inside narrow grid cards
+  // Card variant: always stacks vertically, used inside narrow grid cards
   // where the viewport breakpoint (sm:flex-row) would trigger row mode but
   // the card's inner width is too narrow to fit all three elements in one row.
   const isCard = variant === "card";

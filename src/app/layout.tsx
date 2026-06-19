@@ -61,7 +61,7 @@ export const metadata: Metadata = {
         url: `/og_default_1773343895292.png`,
         width: 1200,
         height: 630,
-        alt: "Waypoint Franchise Advisors — Whitefish, Montana",
+        alt: "Waypoint Franchise Advisors: Whitefish, Montana",
       },
     ],
   },
@@ -88,7 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Preconnect to Google Fonts origin — eliminates TCP setup from critical path.
+        {/* Preconnect to Google Fonts origin: eliminates TCP setup from critical path.
             next/font/google inlines the CSS but still fetches font files from fonts.gstatic.com. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

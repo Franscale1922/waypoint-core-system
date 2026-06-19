@@ -37,7 +37,7 @@ export default function BookPage() {
         )}
       />
 
-      {/* Hero — compact, letting the content below breathe */}
+      {/* Hero: compact, letting the content below breathe */}
       <section className="relative py-14 sm:py-20 overflow-hidden">
         <Image
           src="/images/mountain-lake.jpg"
@@ -155,7 +155,7 @@ export default function BookPage() {
               <TidyCalEmbed path="m7v2jox/waypoint30" />
             </div>
 
-            {/* Crawlable booking fallback — the calendar above is a JS-injected
+            {/* Crawlable booking fallback: the calendar above is a JS-injected
                 widget that AI agents and no-JS crawlers cannot traverse. This
                 real anchor exposes the booking action to them and serves as a
                 graceful fallback if the embed fails to load. */}
@@ -170,14 +170,14 @@ export default function BookPage() {
               </a>
             </p>
 
-            {/* After you book — post-booking clarity */}
+            {/* After you book: post-booking clarity */}
             <div className="bg-white border border-[#e8e0d0] rounded-xl p-5">
               <p className="text-xs font-semibold text-[#CC6535] uppercase tracking-[0.15em] mb-3">After you book</p>
               <ul className="space-y-2.5">
                 {[
-                  "You\u2019ll get a confirmation email with a Zoom link — no setup needed on your end",
+                  "You\u2019ll get a confirmation email with a Zoom link. No setup needed on your end",
                   "Nothing to prepare. Just show up ready to talk honestly about where you are",
-                  "Need to reschedule? The link in your confirmation email handles it — no awkward ask",
+                  "Need to reschedule? The link in your confirmation email handles it. No awkward ask",
                   "Want to loop in your partner before booking? Completely normal. I\u2019m here when you\u2019re both ready",
                 ].map((item) => (
                   <li key={item} className="flex items-start gap-2.5 text-sm text-[#3a3a2e] leading-snug">
@@ -193,13 +193,13 @@ export default function BookPage() {
         </div>
       </section>
 
-      {/* Pre-call reading — optional context for curious visitors */}
+      {/* Pre-call reading: optional context for curious visitors */}
       <section className="border-t border-[#e8e0d0] bg-[#f7f5f1] py-10 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">Want to come prepared?</p>
           <div className="grid sm:grid-cols-3 gap-4">
             {[
-              { href: "/process", label: "See how the process works", desc: "What happens from first call to final decision — step by step." },
+              { href: "/process", label: "See how the process works", desc: "What happens from first call to final decision, step by step." },
               { href: "/investment", label: "Understand the investment", desc: "What a franchise actually costs, from fee to first year." },
               { href: "/scorecard", label: "Take the readiness quiz", desc: "A 2-minute score that tells you honestly where you stand." },
             ].map(({ href, label, desc }) => (

@@ -1,5 +1,5 @@
 /**
- * Scorecard Email 4 (Day 7): Early band (<40) — soft education-first invite
+ * Scorecard Email 4 (Day 7): Early band (<40), soft education-first invite
  * Sent ~7 days after scorecard completion
  * Tag: scorecard-email-4
  */

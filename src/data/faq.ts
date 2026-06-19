@@ -1,4 +1,4 @@
-// FAQ data — single source of truth.
+// FAQ data: single source of truth.
 // Consumed by the /faq React page AND the markdown view (src/lib/markdown-views.ts).
 export type FAQLink = { url: string; label: string };
 export type FAQQuestion = { q: string; a: string; link?: FAQLink; defaultOpen?: boolean; cta?: { text: string; href: string } };
@@ -21,7 +21,7 @@ export const faqs: { category: string; questions: FAQQuestion[] }[] = [
       },
       {
         q: "How much money do I need?",
-        a: "A practical starting point is $100,000 in liquid assets, though the right number depends on the business model we find together. If you have $250,000 or more in deployable capital, that opens up a lot of options — through direct funding, ROBS, HELOC, or if necessary, bank financing. Before we talk about any loan, we will take honest stock of what you have available. We will talk through your full financial picture during the discovery call.",
+        a: "A practical starting point is $100,000 in liquid assets, though the right number depends on the business model we find together. If you have $250,000 or more in deployable capital, that opens up a lot of options: direct funding, ROBS, HELOC, or if necessary, bank financing. Before we talk about any loan, we will take honest stock of what you have available. We will talk through your full financial picture during the discovery call.",
         link: { url: "/resources/the-true-cost-of-buying-a-franchise", label: "The true cost of buying a franchise" },
         defaultOpen: true,
       },
@@ -37,7 +37,7 @@ export const faqs: { category: string; questions: FAQQuestion[] }[] = [
     questions: [
       {
         q: "What happens after I book a call?",
-        a: "We start with a short intro call — usually 20 to 30 minutes — to understand where you are and whether going deeper makes sense. If it does, we schedule the full discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
+        a: "We start with a short intro call (usually 20 to 30 minutes) to understand where you are and whether going deeper makes sense. If it does, we schedule the full discovery conversation from there. That conversation is not a pitch. I am not going to show you franchises on that call. I am going to spend that time getting to know you: your background, what you are looking for, your financial picture, your preferences, and what you want the next chapter of your life to look like. After that call, I write a brief summary of what I heard and send it to you for review.",
         defaultOpen: true,
       },
       {
@@ -63,7 +63,7 @@ export const faqs: { category: string; questions: FAQQuestion[] }[] = [
       },
       {
         q: "What should I have done before attending discovery day?",
-        a: "Four things should be locked down before you register: your franchisee validation calls are complete, your territory is confirmed, you have retained a franchise attorney to review the agreement, and your funding is in position. Funding in position means your capital source is confirmed and ready — whether that is accessible liquid savings, a structured ROBS, a tapped HELOC, or in cases where those paths do not cover the full need, a pre-approved SBA loan. Showing up to discovery day with open questions in any of those areas puts you in a position of making decisions under pressure right after the visit. That is avoidable.",
+        a: "Four things should be locked down before you register: your franchisee validation calls are complete, your territory is confirmed, you have retained a franchise attorney to review the agreement, and your funding is in position. Funding in position means your capital source is confirmed and ready, whether that is accessible liquid savings, a structured ROBS, a tapped HELOC, or in cases where those paths do not cover the full need, a pre-approved SBA loan. Showing up to discovery day with open questions in any of those areas puts you in a position of making decisions under pressure right after the visit. That is avoidable.",
         link: { url: "/resources/what-to-expect-at-discovery-day", label: "What to expect at discovery day" },
       },
     ],
@@ -73,7 +73,7 @@ export const faqs: { category: string; questions: FAQQuestion[] }[] = [
     questions: [
       {
         q: "What are the most common ways to finance a franchise?",
-        a: "Before reaching for a loan, the right move is to inventory what you actually have. Liquid savings and cash are the cleanest path — no debt, no banker, no monthly payment. If you have home equity, a HELOC gives you access to it at lower rates than a business loan and without the underwriting marathon that SBA requires. If you have retirement savings, ROBS (Rollover for Business Startups) lets you invest those funds directly into your franchise with no debt and no credit score requirement — and it closes in weeks. SBA 7(a) loans are the most widely used path for buyers who need capital beyond what those options provide. They are also the most demanding: full documentation, 60 to 90 days of bank underwriting, collateral, and a personal guarantee. The right path depends on what you have available — and we work through that together before any lender conversation happens.",
+        a: "Before reaching for a loan, the right move is to inventory what you actually have. Liquid savings and cash are the cleanest path: no debt, no banker, no monthly payment. If you have home equity, a HELOC gives you access to it at lower rates than a business loan and without the underwriting marathon that SBA requires. If you have retirement savings, ROBS (Rollover for Business Startups) lets you invest those funds directly into your franchise with no debt and no credit score requirement, and it closes in weeks. SBA 7(a) loans are the most widely used path for buyers who need capital beyond what those options provide. They are also the most demanding: full documentation, 60 to 90 days of bank underwriting, collateral, and a personal guarantee. The right path depends on what you have available, and we work through that together before any lender conversation happens.",
         link: { url: "/resources/how-franchise-funding-actually-works", label: "How franchise funding actually works" },
         defaultOpen: true,
       },
@@ -84,12 +84,12 @@ export const faqs: { category: string; questions: FAQQuestion[] }[] = [
       },
       {
         q: "What credit score do I need to get an SBA loan for a franchise?",
-        a: "Most SBA lenders require a minimum credit score around 680, though 700 or higher will get you better terms and faster decisions. Beyond the score, SBA requires collateral, a personal guarantee, a liquidity cushion of around 10% of the loan amount, and a full documentation package: 2 to 3 years of personal tax returns, a business plan, and financial projections. The process takes 60 to 90 days minimum — often longer. If your score is below 680, SBA will be harder and slower. And even if you qualify, it is worth asking whether ROBS, a HELOC, or a combination of direct capital could cover the need without the documentation burden and debt service that SBA carries.",
+        a: "Most SBA lenders require a minimum credit score around 680, though 700 or higher will get you better terms and faster decisions. Beyond the score, SBA requires collateral, a personal guarantee, a liquidity cushion of around 10% of the loan amount, and a full documentation package: 2 to 3 years of personal tax returns, a business plan, and financial projections. The process takes 60 to 90 days minimum, often longer. If your score is below 680, SBA will be harder and slower. And even if you qualify, it is worth asking whether ROBS, a HELOC, or a combination of direct capital could cover the need without the documentation burden and debt service that SBA carries.",
         link: { url: "/resources/how-franchise-funding-actually-works", label: "How franchise funding actually works" },
       },
       {
         q: "Does the way I fund my franchise affect what I pay the franchisor?",
-        a: "No. The franchise fee, royalty rate, and other brand fees are fixed regardless of how you financed the purchase. What your funding choice does affect is your monthly cash flow and your business's ability to breathe during the ramp-up period. Cash or ROBS means no fixed monthly payment — the business gets to generate revenue before any financial obligation runs against it. A HELOC carries interest but is typically lower and more flexible than a business loan. SBA creates a fixed debt payment that starts immediately and runs whether or not the business has a good month. For a business still finding its footing, that fixed payment is real pressure. The right choice comes down to what you have available and which path preserves the most operational flexibility.",
+        a: "No. The franchise fee, royalty rate, and other brand fees are fixed regardless of how you financed the purchase. What your funding choice does affect is your monthly cash flow and your business's ability to breathe during the ramp-up period. Cash or ROBS means no fixed monthly payment: the business gets to generate revenue before any financial obligation runs against it. A HELOC carries interest but is typically lower and more flexible than a business loan. SBA creates a fixed debt payment that starts immediately and runs whether or not the business has a good month. For a business still finding its footing, that fixed payment is real pressure. The right choice comes down to what you have available and which path preserves the most operational flexibility.",
         link: { url: "/resources/how-franchise-funding-actually-works", label: "How franchise funding actually works" },
       },
     ],

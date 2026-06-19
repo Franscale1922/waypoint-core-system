@@ -5,7 +5,7 @@ import VimeoFacade from "../../components/VimeoFacade";
 import { videoObjectSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
 
-// Revalidate every hour — re-fetches Vimeo oEmbed metadata if it ever changes
+// Revalidate every hour: re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
 
 const VIDEO_ID = "1174270863";
@@ -185,7 +185,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* Pull-quote — B.3 */}
+      {/* Pull-quote: B.3 */}
       <section className="bg-white border-b border-[#e2ddd2]">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
           <div className="flex gap-5 sm:gap-6 items-start">
@@ -200,7 +200,7 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* D-8: Kelsey video — click-to-load facade, zero perf cost on initial render */}
+      {/* D-8: Kelsey video, click-to-load facade, zero perf cost on initial render */}
       <section className="bg-[#FAF8F4] py-10 sm:py-14">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#CC6535] mb-3">Hear it from Kelsey directly</p>
@@ -256,7 +256,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          {/* Credential block — AEO entity extraction target */}
+          {/* Credential block: AEO entity extraction target */}
           <div className="mb-6 sm:mb-8 bg-[#f0ede8] rounded-xl p-6 sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-5">Credentials &amp; Background</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -278,7 +278,7 @@ export default async function AboutPage() {
             </div>
           </div>
 
-          {/* D.2 — 30% stat callout */}
+          {/* D.2: 30% stat callout */}
           <div className="mb-10 sm:mb-12 bg-[#0c1929] rounded-xl p-6 sm:p-8">
             <p className="font-playfair text-xl sm:text-2xl italic text-white leading-snug mb-2">
               &ldquo;Roughly 7 in 10 people I work with decide not to buy a franchise.&rdquo;
@@ -288,7 +288,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          {/* Photo Zone A — After "The Short Version" — community/life context */}
+          {/* Photo Zone A, After "The Short Version", community/life context */}
           <div className="mb-10 sm:mb-12 overflow-hidden rounded-xl sm:rounded-2xl">
             <Image
               src="/images/kelsey-campfire-group.jpg"
@@ -322,7 +322,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          {/* 2-up Testimonials — B.4 */}
+          {/* 2-up Testimonials: B.4 */}
           <div className="mb-10 sm:mb-12 grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               {
@@ -359,7 +359,7 @@ export default async function AboutPage() {
             ))}
           </div>
 
-          {/* Why I Do This from Montana — editorial split with Zone B photo */}
+          {/* Why I Do This from Montana: editorial split with Zone B photo */}
           <div className="mb-10 sm:mb-12 flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
             <div className="flex-1">
               <h2 className="text-xl sm:text-2xl font-bold text-[#1b3a5f] mb-3 sm:mb-4">
@@ -373,7 +373,7 @@ export default async function AboutPage() {
                 chapter has been my own business, my own risk, my own call.
               </p>
             </div>
-            {/* Photo Zone B — trail overlook selfie */}
+            {/* Photo Zone B: trail overlook selfie */}
             <div className="w-full lg:w-64 lg:flex-shrink-0 overflow-hidden rounded-xl shadow-sm">
               <Image
                 src="/images/kelsey-trail-selfie.jpg"

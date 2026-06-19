@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
         if (lead.status !== "SEQUENCED") {
             return NextResponse.json(
-                { error: `Lead is ${lead.status} — only SEQUENCED leads can be sent now` },
+                { error: `Lead is ${lead.status}; only SEQUENCED leads can be sent now` },
                 { status: 400 }
             );
         }
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
 
         if (!lead.draftEmail) {
             return NextResponse.json(
-                { error: "Lead has no draft email — regenerate first" },
+                { error: "Lead has no draft email. Regenerate first" },
                 { status: 400 }
             );
         }

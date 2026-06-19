@@ -3,19 +3,19 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
 export async function POST(req: NextRequest) {
-    // Simple secret-header guard — set RETRIGGER_SECRET in Vercel env vars
+    // Simple secret-header guard: set RETRIGGER_SECRET in Vercel env vars
     const secret = process.env.RETRIGGER_SECRET;
     if (secret && req.headers.get("x-retrigger-secret") !== secret) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     try {
-        // RAW leads — re-run leadHunterProcess (scoring + personalization)
+        // RAW leads: re-run leadHunterProcess (scoring + personalization)
         const rawLeads = await prisma.lead.findMany({
             where: { status: "RAW" },
             select: { id: true },
         });
 
-        // ENRICHED leads — personalizerProcess crashed before they reached WARMING.
+        // ENRICHED leads: personalizerProcess crashed before they reached WARMING.
         // Skip leadHunterProcess (score is already set) and drive directly into personalizer.
         const enrichedLeads = await prisma.lead.findMany({
             where: { status: "ENRICHED" },
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
 
         if (total === 0) {
             return NextResponse.json(
-                { triggered: 0, message: "No RAW or ENRICHED leads found — nothing to retrigger." },
+                { triggered: 0, message: "No RAW or ENRICHED leads found; nothing to retrigger." },
                 { status: 200 }
             );
         }

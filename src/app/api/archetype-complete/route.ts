@@ -44,7 +44,7 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 2. CRM sync — fire-and-forget ─────────────────────────────────────────
+    // ── 2. CRM sync (fire-and-forget) ─────────────────────────────────────────
     notifyCrm({
       name,
       email,
@@ -139,12 +139,12 @@ export async function POST(req: Request) {
           <p style="margin-top: 24px;">
             <a href="https://waypointfranchise.com/book" style="background: #CC6535; color: #0c1929; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block;">Book a Free Call</a>
           </p>
-          <p style="margin-top: 28px; color: #888; font-size: 14px;">— Kelsey<br/>Waypoint Franchise Advisors</p>
+          <p style="margin-top: 28px; color: #888; font-size: 14px;">Kelsey<br/>Waypoint Franchise Advisors</p>
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 24px 0;" />
           <p style="font-size: 11px; color: #aaa;">Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color: #aaa;">Unsubscribe</a></p>
         </div>
       `,
-      text: `Your Franchise Archetype: ${archetypeName}\n\n${name.split(" ")[0]},\n\nBased on how you answered, your franchise archetype is ${archetypeName}.\n\nIndustries that tend to fit you: ${strongFitsText}\nIndustries that often don't align: ${weakFitsText}\n\nI'll follow up over the next week with a few more notes specific to your archetype. If you want to skip ahead, book a free call at waypointfranchise.com/book.\n\n— Kelsey\nWaypoint Franchise Advisors\n\n---\nWaypoint Franchise Advisors\nP.O. Box 3421, Whitefish, MT 59937\nTo stop receiving these notes: ${unsubscribeUrl}`,
+      text: `Your Franchise Archetype: ${archetypeName}\n\n${name.split(" ")[0]},\n\nBased on how you answered, your franchise archetype is ${archetypeName}.\n\nIndustries that tend to fit you: ${strongFitsText}\nIndustries that often don't align: ${weakFitsText}\n\nI'll follow up over the next week with a few more notes specific to your archetype. If you want to skip ahead, book a free call at waypointfranchise.com/book.\n\nKelsey\nWaypoint Franchise Advisors\n\n---\nWaypoint Franchise Advisors\nP.O. Box 3421, Whitefish, MT 59937\nTo stop receiving these notes: ${unsubscribeUrl}`,
       tags: [{ name: "sequence", value: "archetype-email-1" }],
     });
 

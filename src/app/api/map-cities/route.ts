@@ -14,7 +14,7 @@ function extractFirstColumn(line: string): string {
     const closeQuote = line.indexOf('"', 1);
     return closeQuote >= 0 ? line.slice(1, closeQuote).trim() : line.slice(1).trim();
   }
-  // Unquoted — return the whole line (single-column, no internal commas)
+  // Unquoted: return the whole line (single-column, no internal commas)
   return line.trim();
 }
 

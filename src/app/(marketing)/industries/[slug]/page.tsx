@@ -102,7 +102,7 @@ export default async function IndustryPage({ params }: Props) {
         </div>
       </section>
 
-      {/* Checklist callout — category-specific checklist when one exists, else the
+      {/* Checklist callout: category-specific checklist when one exists, else the
           universal franchise readiness checklist. */}
       <section className="bg-[#0c1929] py-12 px-6">
         <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-6">
@@ -115,8 +115,8 @@ export default async function IndustryPage({ params }: Props) {
             </p>
             <p className="text-sm text-white/70 leading-relaxed">
               {industry.checklistSlug
-                ? `A structured framework for evaluating ${industry.name.toLowerCase()} concepts — the questions to ask and the items to verify before you commit.`
-                : `A structured framework for evaluating any franchise — the questions to ask and the items to verify before you commit, applied to ${industry.name.toLowerCase()} concepts.`}
+                ? `A structured framework for evaluating ${industry.name.toLowerCase()} concepts: the questions to ask and the items to verify before you commit.`
+                : `A structured framework for evaluating any franchise: the questions to ask and the items to verify before you commit, applied to ${industry.name.toLowerCase()} concepts.`}
             </p>
           </div>
           <Link

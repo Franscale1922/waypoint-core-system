@@ -74,7 +74,7 @@ const jsonLd = {
     {
       "@type": "HowTo",
       "name": "How to Refer Someone to Waypoint Franchise Advisors",
-      "description": "Three simple ways to send a friend or colleague to speak with Kelsey Stuart about franchise ownership — no formal process required.",
+      "description": "Three simple ways to send a friend or colleague to speak with Kelsey Stuart about franchise ownership, no formal process required.",
       "step": [
         {
           "@type": "HowToStep",
@@ -224,7 +224,7 @@ export default function ReferPage() {
               Ready to make an intro?
             </h2>
             <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-6">
-              The easiest way is a quick email. Here&apos;s a template you can use — just fill in their name and contact info.
+              The easiest way is a quick email. Here&apos;s a template you can use: just fill in their name and contact info.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 flex-wrap">
               <a

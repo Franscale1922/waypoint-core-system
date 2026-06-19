@@ -91,7 +91,7 @@ export function scoreResultsHtml({ name, score, primaryDriver, biggestFear }: Sc
 
     <!-- Footer -->
     <div style="border-top:1px solid #e2ddd2;margin-top:40px;padding-top:24px;">
-      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">— Kelsey Stuart</p>
+      <p style="margin:0 0 4px;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">Kelsey Stuart</p>
       <p style="margin:0;font-family:Arial,sans-serif;font-size:12px;color:#7a7a7a;">
         Waypoint Franchise Advisors · Whitefish, Montana
       </p>
@@ -122,7 +122,7 @@ ${tier.cta}
 
 Book a free 30-min call: https://waypointfranchise.com/book
 
-— Kelsey Stuart
+Kelsey Stuart
 Waypoint Franchise Advisors · Whitefish, Montana
 
 Free to candidates. Franchise brands pay the referral fee, not you.

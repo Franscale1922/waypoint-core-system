@@ -36,7 +36,7 @@ export default function NewsletterForm({ variant = "page", className = "" }: Pro
       <div className={`text-center ${className}`}>
         <p className="text-[#8E3012] font-semibold text-sm mb-1">You&apos;re in.</p>
         <p className="text-[#5a5a4a] text-sm leading-relaxed">
-          Check your inbox — first issue lands when it&apos;s ready.
+          Check your inbox. First issue lands when it&apos;s ready.
         </p>
       </div>
     );
@@ -136,7 +136,7 @@ export default function NewsletterForm({ variant = "page", className = "" }: Pro
         disabled={status === "loading"}
         className="w-full sm:w-auto sm:self-start inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-white bg-[#0c1929] hover:bg-[#122640] rounded-lg transition-all press-effect disabled:opacity-60 min-h-[52px]"
       >
-        {status === "loading" ? "Subscribing…" : "Subscribe — it's free"}
+        {status === "loading" ? "Subscribing…" : "Subscribe, it's free"}
       </button>
       {status === "error" && (
         <p className="text-sm text-red-600">Something went wrong. Please try again.</p>

@@ -13,7 +13,7 @@ const faqSchema = faqPageSchema(faqs, `${SITE_URL}/franchise-financing`);
 export const metadata: Metadata = {
   title: "How to Finance a Franchise: SBA, ROBS, HELOC & More | Waypoint Franchise Advisors",
   description:
-    "The main ways people fund a franchise — SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing — and how to think about which fits your situation.",
+    "The main ways people fund a franchise (SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing) and how to think about which fits your situation.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/franchise-financing",
     types: { "text/markdown": "https://www.waypointfranchise.com/franchise-financing.md" },
@@ -36,7 +36,7 @@ export default function FranchiseFinancingPage() {
             url: `${SITE_URL}/franchise-financing`,
             name: "How to Finance a Franchise | Waypoint Franchise Advisors",
             description:
-              "The main ways people fund a franchise — SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing — and how to think about which fits your situation.",
+              "The main ways people fund a franchise (SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing) and how to think about which fits your situation.",
             breadcrumb: breadcrumbSchema([
               { name: "Home", url: SITE_URL },
               { name: "Franchise Financing", url: `${SITE_URL}/franchise-financing` },
@@ -56,7 +56,7 @@ export default function FranchiseFinancingPage() {
             How to finance a franchise: the real options, in plain English
           </h1>
           <p className="text-base sm:text-lg text-[#4a4a3e] leading-relaxed max-w-2xl mb-4">
-            Most people do not buy a franchise entirely in cash. They combine some liquid capital with one or more financing methods. The five paths below cover how the large majority of franchises actually get funded — what each one is, who it tends to fit, and what to watch for.
+            Most people do not buy a franchise entirely in cash. They combine some liquid capital with one or more financing methods. The five paths below cover how the large majority of franchises actually get funded: what each one is, who it tends to fit, and what to watch for.
           </p>
           <p className="text-base text-[#4a4a3e] leading-relaxed max-w-2xl">
             This is educational, not financial advice or a promise of approval. Eligibility depends on your situation and the specific brand. The point is to walk into a lender or advisor conversation already knowing the vocabulary.

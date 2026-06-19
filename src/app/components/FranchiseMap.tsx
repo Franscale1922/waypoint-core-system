@@ -34,7 +34,7 @@ function albersProject(lat: number, lng: number): [number, number] {
 
 // Generate the US outline as a projected polygon from actual border coordinates
 function generateUSOutlinePath(): string {
-  // Continental US border points (lat, lng) — simplified outline
+  // Continental US border points (lat, lng): simplified outline
   const borderPoints: [number, number][] = [
     // Pacific Northwest
     [48.99, -124.7], [48.99, -123.0], [49.0, -117.0], [49.0, -116.05],
@@ -204,7 +204,7 @@ export default function FranchiseMap() {
               </filter>
             </defs>
 
-            {/* Continental US outline — projected from real border coordinates */}
+            {/* Continental US outline: projected from real border coordinates */}
             <path
               d={usOutlinePath}
               fill="#122640"

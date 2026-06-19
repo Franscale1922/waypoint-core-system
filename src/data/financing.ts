@@ -1,8 +1,8 @@
-// Franchise financing content — single source of truth.
+// Franchise financing content: single source of truth.
 // Consumed by the /franchise-financing React page AND its markdown view
 // (src/lib/markdown-views.ts), so HTML and markdown can never drift.
 //
-// FTC note: educational only — no earnings claims, no promises of approval.
+// FTC note: educational only, no earnings claims, no promises of approval.
 
 export type FinancingMethod = {
   method: string;
@@ -44,7 +44,7 @@ export const financingMethods: FinancingMethod[] = [
   },
   {
     method: "Franchisor financing",
-    how: "Financing offered directly by the brand — fee deferral, reduced or waived fees for certain candidates, or in-house equipment financing.",
+    how: "Financing offered directly by the brand: fee deferral, reduced or waived fees for certain candidates, or in-house equipment financing.",
     bestFor: "Candidates buying brands that publish financing in Item 10 of their FDD, or who qualify for incentive programs (e.g., veterans).",
     watch: "Less common and varies brand to brand. Always confirm the specifics in Item 10 rather than assuming.",
   },
@@ -75,8 +75,8 @@ export const financingGuides: FinancingGuide[] = [
     name: "SBA Loans",
     metaTitle: "SBA Loans for Franchises: How the 7(a) Program Works",
     metaDescription:
-      "How SBA 7(a) loans work for buying a franchise — eligibility, the franchise directory, down payment and collateral, and what to expect from underwriting.",
-    heroTagline: "The most common franchise loan — bank-issued, partially SBA-guaranteed, for directory-listed brands.",
+      "How SBA 7(a) loans work for buying a franchise: eligibility, the franchise directory, down payment and collateral, and what to expect from underwriting.",
+    heroTagline: "The most common franchise loan: bank-issued, partially SBA-guaranteed, for directory-listed brands.",
     intro:
       "The SBA 7(a) program is the path most people mean when they say they are 'getting a loan' for a franchise. The loan itself comes from a bank or SBA-preferred lender; the Small Business Administration guarantees a portion, which lowers the lender's risk and makes longer terms and competitive rates possible for a first-time business owner.",
     howItWorks:
@@ -84,11 +84,11 @@ export const financingGuides: FinancingGuide[] = [
     whoItFits:
       "It tends to fit buyers with solid personal credit, some liquid capital for the down payment, and a clean financial history, who want to preserve cash by financing the bulk of the investment over a long term. It is less of a fit if you cannot cover the down payment or want zero personal liability.",
     watchFor:
-      "Underwriting takes time — weeks, sometimes longer — so start early. The brand must be SBA-eligible; confirm its current directory status (the rules and process have changed in recent years). The personal guarantee means your personal assets are on the line. And SBA eligibility for you personally is never guaranteed — it depends on your full financial picture.",
+      "Underwriting takes time (weeks, sometimes longer), so start early. The brand must be SBA-eligible; confirm its current directory status (the rules and process have changed in recent years). The personal guarantee means your personal assets are on the line. And SBA eligibility for you personally is never guaranteed. It depends on your full financial picture.",
     faqs: [
       {
         q: "Can I use an SBA loan to buy a franchise?",
-        a: "Often, yes — if the brand is listed on the SBA Franchise Directory and you personally qualify. The SBA 7(a) program is the most common loan used to buy a franchise. The loan is issued by a bank or SBA-preferred lender with a partial SBA guarantee; you apply through the lender, not the SBA.",
+        a: "Often, yes, if the brand is listed on the SBA Franchise Directory and you personally qualify. The SBA 7(a) program is the most common loan used to buy a franchise. The loan is issued by a bank or SBA-preferred lender with a partial SBA guarantee; you apply through the lender, not the SBA.",
       },
       {
         q: "How much of a down payment does an SBA franchise loan require?",
@@ -96,7 +96,7 @@ export const financingGuides: FinancingGuide[] = [
       },
       {
         q: "How long does SBA loan approval take?",
-        a: "It varies, but SBA underwriting generally takes several weeks and sometimes longer, depending on the lender and how complete your documentation is. Starting the conversation early — before you have picked a brand — helps avoid delays later in the process.",
+        a: "It varies, but SBA underwriting generally takes several weeks and sometimes longer, depending on the lender and how complete your documentation is. Starting the conversation early (before you have picked a brand) helps avoid delays later in the process.",
       },
     ],
     relatedArticleSlug: "sba-loan-vs-robs-franchise-funding-comparison",
@@ -107,16 +107,16 @@ export const financingGuides: FinancingGuide[] = [
     name: "ROBS (401k Rollover)",
     metaTitle: "ROBS: Using 401(k) Funds to Buy a Franchise (Penalty-Free)",
     metaDescription:
-      "How ROBS (Rollover for Business Startups) lets you fund a franchise with retirement savings without an early-withdrawal penalty — how it works, who it fits, and the compliance to know.",
-    heroTagline: "Fund the business with retirement savings — penalty-free, tax-deferred, debt-free — via an IRS-recognized rollover.",
+      "How ROBS (Rollover for Business Startups) lets you fund a franchise with retirement savings without an early-withdrawal penalty: how it works, who it fits, and the compliance to know.",
+    heroTagline: "Fund the business with retirement savings (penalty-free, tax-deferred, debt-free) via an IRS-recognized rollover.",
     intro:
-      "ROBS (Rollover for Business Startups) lets you use eligible retirement funds to capitalize a franchise without triggering an early-withdrawal penalty or income tax. Because it is structured as a rollover rather than a distribution, the money moves into the business as equity, not debt — which is why people who want to avoid or reduce a loan often reach for it.",
+      "ROBS (Rollover for Business Startups) lets you use eligible retirement funds to capitalize a franchise without triggering an early-withdrawal penalty or income tax. Because it is structured as a rollover rather than a distribution, the money moves into the business as equity, not debt, which is why people who want to avoid or reduce a loan often reach for it.",
     howItWorks:
-      "A specialist provider sets up a new C-corporation and a 401(k) plan for that corporation. Your existing eligible retirement funds roll into the new plan, which then invests in the company's stock — capitalizing the business with your own retirement money. It is an IRS-recognized structure, but the mechanics are specific and must be done correctly, which is why people use a ROBS provider rather than attempting it alone.",
+      "A specialist provider sets up a new C-corporation and a 401(k) plan for that corporation. Your existing eligible retirement funds roll into the new plan, which then invests in the company's stock, capitalizing the business with your own retirement money. It is an IRS-recognized structure, but the mechanics are specific and must be done correctly, which is why people use a ROBS provider rather than attempting it alone.",
     whoItFits:
       "It tends to fit buyers with substantial retirement savings who want to inject equity and minimize debt, or who need the funds for an SBA down payment. It is also used in combination with a loan rather than alone.",
     watchFor:
-      "You are putting retirement capital at business risk — if the business struggles, those funds are exposed. ROBS carries setup costs and ongoing compliance and administration requirements (the C-corp and plan must be maintained properly). This is a structure to enter with eyes open and professional guidance, not a loophole.",
+      "You are putting retirement capital at business risk. If the business struggles, those funds are exposed. ROBS carries setup costs and ongoing compliance and administration requirements (the C-corp and plan must be maintained properly). This is a structure to enter with eyes open and professional guidance, not a loophole.",
     faqs: [
       {
         q: "Can I use my 401(k) to buy a franchise without a penalty?",
@@ -124,11 +124,11 @@ export const financingGuides: FinancingGuide[] = [
       },
       {
         q: "Is ROBS risky?",
-        a: "It carries a real, specific risk: you are putting retirement capital into the business, so if the business fails those funds are exposed. It also has setup costs and ongoing compliance obligations. Many buyers still choose it to avoid debt or fund an SBA down payment — but it is a decision to make deliberately, with professional advice.",
+        a: "It carries a real, specific risk: you are putting retirement capital into the business, so if the business fails those funds are exposed. It also has setup costs and ongoing compliance obligations. Many buyers still choose it to avoid debt or fund an SBA down payment, but it is a decision to make deliberately, with professional advice.",
       },
       {
         q: "Can I combine ROBS with an SBA loan?",
-        a: "Yes — a common approach is to use ROBS for the equity injection or down payment and an SBA loan for the balance. A funding specialist can model the mix once they know the total investment a given concept requires.",
+        a: "Yes. A common approach is to use ROBS for the equity injection or down payment and an SBA loan for the balance. A funding specialist can model the mix once they know the total investment a given concept requires.",
       },
     ],
     relatedArticleSlug: "sba-loan-vs-robs-franchise-funding-comparison",
@@ -139,8 +139,8 @@ export const financingGuides: FinancingGuide[] = [
     name: "Home Equity",
     metaTitle: "Using Home Equity (HELOC) to Finance a Franchise",
     metaDescription:
-      "How home equity — a HELOC or cash-out refinance — can fund a franchise, who it fits, and the risks of borrowing against your residence.",
-    heroTagline: "Flexible, relatively low-rate capital from the equity in your home — with your residence as collateral.",
+      "How home equity (a HELOC or cash-out refinance) can fund a franchise, who it fits, and the risks of borrowing against your residence.",
+    heroTagline: "Flexible, relatively low-rate capital from the equity in your home, with your residence as collateral.",
     intro:
       "For homeowners with significant equity, a home equity line of credit (HELOC) or a cash-out refinance can be a flexible, relatively low-cost way to fund part of a franchise investment. It is often used to supplement other sources rather than as the sole funding method.",
     howItWorks:
@@ -148,11 +148,11 @@ export const financingGuides: FinancingGuide[] = [
     whoItFits:
       "It tends to fit homeowners with substantial equity who want flexible access to capital at a lower rate than unsecured borrowing, and who are comfortable with the tradeoff of securing business funding against their home.",
     watchFor:
-      "The central risk is straightforward: your home is the collateral. HELOC rates are often variable, so payments can rise. Borrowing against your residence to fund a business raises the personal stakes meaningfully — weigh it carefully and consider how it fits alongside other sources before committing.",
+      "The central risk is straightforward: your home is the collateral. HELOC rates are often variable, so payments can rise. Borrowing against your residence to fund a business raises the personal stakes meaningfully. Weigh it carefully and consider how it fits alongside other sources before committing.",
     faqs: [
       {
         q: "Can I use a HELOC to buy a franchise?",
-        a: "Yes. Many homeowners use a HELOC or a cash-out refinance to fund part of a franchise investment, often alongside other sources. It converts your home equity into available capital, typically at a lower rate than unsecured borrowing — but your home secures the debt.",
+        a: "Yes. Many homeowners use a HELOC or a cash-out refinance to fund part of a franchise investment, often alongside other sources. It converts your home equity into available capital, typically at a lower rate than unsecured borrowing, but your home secures the debt.",
       },
       {
         q: "Is using home equity to fund a franchise a good idea?",

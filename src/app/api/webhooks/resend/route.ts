@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     try {
         const body = await req.json();
 
-        // Log full payload during early production — useful for verifying Instantly payload shape.
+        // Log full payload during early production: useful for verifying Instantly payload shape.
         // Remove or gate behind a DEBUG env var after confirming correctness.
         console.log("[inbound-reply] Payload received:", JSON.stringify(body).slice(0, 600));
 
@@ -85,22 +85,22 @@ export async function POST(req: Request) {
                 });
 
                 if (lead) {
-                    // @ts-ignore — suppressionReason added to schema; Prisma client regenerates on deploy
+                    // @ts-ignore: suppressionReason added to schema; Prisma client regenerates on deploy
                     await prisma.lead.update({
                         where: { id: lead.id },
                         data: { status: "SUPPRESSED", suppressionReason: reason } as any,
                     });
-                    console.log(`[inbound-reply] Suppressed lead ${lead.name} (${normalized}) — reason: ${reason}`);
+                    console.log(`[inbound-reply] Suppressed lead ${lead.name} (${normalized}), reason: ${reason}`);
                 }
 
-                // Add to suppression list (upsert — safe if already present)
+                // Add to suppression list (upsert, safe if already present)
                 await prisma.suppressionList.upsert({
                     where: { email: normalized },
                     update: { reason },
                     create: { email: normalized, reason },
                 });
 
-                console.log(`[inbound-reply] Added ${normalized} to SuppressionList — reason: ${reason}`);
+                console.log(`[inbound-reply] Added ${normalized} to SuppressionList, reason: ${reason}`);
             }
 
             return NextResponse.json({ success: true, action: `suppressed:${reason}`, email: lead_email });
@@ -128,8 +128,8 @@ export async function POST(req: Request) {
 
         if (!lead) {
             console.log(`[inbound-reply] No lead found for: ${lead_email} (campaign: ${campaign_id ?? "unknown"})`);
-            // Not an error — could be a direct website contact who was never in the pipeline
-            return NextResponse.json({ success: true, message: "No matching lead — ignored" });
+            // Not an error: could be a direct website contact who was never in the pipeline
+            return NextResponse.json({ success: true, message: "No matching lead, ignored" });
         }
 
         // Use full reply text; fall back to snippet if full text is absent

@@ -2,7 +2,7 @@ export const SITE_URL = "https://www.waypointfranchise.com";
 
 /**
  * Normalize any same-site URL to the canonical www host. The bare apex
- * (waypointfranchise.com) 301-redirects to www, so JSON-LD must always use www —
+ * (waypointfranchise.com) 301-redirects to www, so JSON-LD must always use www;
  * otherwise @id references and `url`/`item` values point at a redirecting host
  * and don't deduplicate against the rest of the entity graph.
  */
@@ -18,7 +18,7 @@ export const localBusinessSchema = {
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. We match burned-out professionals to franchise opportunities that fit their life, capital, and goals.",
   url: SITE_URL,
-  // Real brand/portrait assets in /public — gives Google and AI a visual entity
+  // Real brand/portrait assets in /public: gives Google and AI a visual entity
   // anchor and clears the "Missing field image" rich-results notice. (No
   // dedicated logo file exists yet; the header is a text wordmark.)
   image: [
@@ -125,7 +125,7 @@ export const personSchema = {
   ],
 };
 
-// Scorecard FAQ — flat source array; the visible accordion on /scorecard and the
+// Scorecard FAQ: flat source array; the visible accordion on /scorecard and the
 // FAQPage JSON-LD are both built from this (the page maps scorecardFaqs; the schema
 // is faqPageSchema(scorecardFaqs)).
 export const scorecardFaqs = [
@@ -156,7 +156,7 @@ export const franchiseConsultingServiceSchema = {
   name: "Franchise Consulting",
   alternateName: "Free Franchise Advisory",
   description:
-    "Free, personalized franchise consulting for corporate professionals and career changers. Kelsey Stuart evaluates your capital, goals, and life situation, then curates 3–4 franchise concepts that fit. No pitch, no pressure. Brands pay the referral fee — candidates pay nothing.",
+    "Free, personalized franchise consulting for corporate professionals and career changers. Kelsey Stuart evaluates your capital, goals, and life situation, then curates 3–4 franchise concepts that fit. No pitch, no pressure. Brands pay the referral fee; candidates pay nothing.",
   url: `${SITE_URL}/process`,
   serviceType: "Franchise Consulting",
   provider: {
@@ -166,7 +166,7 @@ export const franchiseConsultingServiceSchema = {
   },
   // Reference the business by @id only (no explicit @type). The `brand` property
   // accepts an Organization, and #business is a LocalBusiness (⊂ Organization), so
-  // this stays valid WITHOUT re-typing #business as a Brand — which would otherwise
+  // this stays valid WITHOUT re-typing #business as a Brand, which would otherwise
   // collapse the merged #business node into a cross-branch LocalBusiness+Brand type.
   brand: { "@id": `${SITE_URL}/#business` },
   areaServed: {
@@ -178,7 +178,7 @@ export const franchiseConsultingServiceSchema = {
     price: "0",
     priceCurrency: "USD",
     description:
-      "Franchise consulting is 100% free to candidates. Franchise brands pay the referral fee at purchase — your cost does not change whether you come through Waypoint or go direct.",
+      "Franchise consulting is 100% free to candidates. Franchise brands pay the referral fee at purchase. Your cost does not change whether you come through Waypoint or go direct.",
   },
   hasOfferCatalog: {
     "@type": "OfferCatalog",
@@ -222,7 +222,7 @@ export const franchiseConsultingServiceSchema = {
  * video to be eligible for video rich results and AI/Ask-YouTube surfacing.
  *
  * IMPORTANT: pass `transcript` ONLY when a real, verified transcript of the
- * spoken content is available. Never fabricate spoken words — an inaccurate
+ * spoken content is available. Never fabricate spoken words; an inaccurate
  * transcript misrepresents what was said and breaks trust/E-E-A-T.
  */
 export function videoObjectSchema({
@@ -265,7 +265,7 @@ export function videoObjectSchema({
 }
 
 /**
- * WebSite node — the top of the entity graph. Declares the site as a distinct
+ * WebSite node: the top of the entity graph. Declares the site as a distinct
  * entity published by the business, so search and AI crawlers can resolve
  * "what site is this" separately from "what business runs it".
  *
@@ -279,7 +279,7 @@ export const webSiteSchema = {
   url: SITE_URL,
   name: "Waypoint Franchise Advisors",
   description:
-    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor — matching corporate professionals and career changers to franchise opportunities that fit their life, capital, and goals.",
+    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor, matching corporate professionals and career changers to franchise opportunities that fit their life, capital, and goals.",
   publisher: { "@id": `${SITE_URL}/#business` },
   inLanguage: "en-US",
 };
@@ -314,7 +314,7 @@ export function fragmentId(canonical: string, fragment: string): string {
 }
 
 /**
- * BreadcrumbList node (no `@context` — meant to nest in a `@graph` or a WebPage).
+ * BreadcrumbList node (no `@context`; meant to nest in a `@graph` or a WebPage).
  * URLs are normalized to the canonical www host.
  */
 export function breadcrumbSchema(items: { name: string; url: string }[]) {
@@ -365,7 +365,7 @@ export function webPageSchema({
 }
 
 /**
- * CollectionPage node with an embedded ItemList — for listing pages (the
+ * CollectionPage node with an embedded ItemList, for listing pages (the
  * resources hub and the three category pages). `items` are the listed articles.
  */
 export function collectionPageSchema({
@@ -405,7 +405,7 @@ export function collectionPageSchema({
 }
 
 /**
- * FAQPage node built from a flat {q,a}[] array — the one shape used everywhere FAQ
+ * FAQPage node built from a flat {q,a}[] array: the one shape used everywhere FAQ
  * content appears (articles, the FAQ page, scorecard, comparison, financing, and
  * the industry/category pages). Returns a node WITHOUT `@context` so it composes
  * inside `jsonLdGraph(...)`.

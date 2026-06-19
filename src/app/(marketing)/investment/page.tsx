@@ -35,9 +35,9 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Franchise Investment Guide | Waypoint Franchise Advisors",
     description:
-      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and your real funding options — explained plainly.",
+      "How much does a franchise actually cost? Initial fees, setup costs, royalties, working capital, and your real funding options, explained plainly.",
     url: "https://www.waypointfranchise.com/investment",
-    images: [{ url: "/og/og-investment.png", width: 1200, height: 630, alt: "Franchise Investment Guide — What It Actually Costs | Waypoint" }],
+    images: [{ url: "/og/og-investment.png", width: 1200, height: 630, alt: "Franchise Investment Guide: What It Actually Costs | Waypoint" }],
   },
 };
 
@@ -218,10 +218,10 @@ export default function InvestmentPage() {
         </p>
       </section>
 
-      {/* Investment tiers — interactive toggle */}
+      {/* Investment tiers: interactive toggle */}
       <InvestmentTierToggle tiers={investmentTiers} />
 
-      {/* Mid-page CTA — bridge between tiers and financing */}
+      {/* Mid-page CTA: bridge between tiers and financing */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 py-10">
         <div className="bg-white border border-[#d8d2c8] rounded-xl p-7 sm:p-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
           <div>
@@ -259,7 +259,7 @@ export default function InvestmentPage() {
             </p>
             <p className="text-sm text-[#4a4a3e] leading-relaxed">
               Most franchisors set a minimum liquid capital requirement in their{" "}
-              <a href="/resources/fdd-decoded-what-actually-matters" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">FDD</a>. This is the amount they expect you to have available before financing, not the total investment. The goal is to fund as much of the purchase as possible without borrowing — and to borrow only what you genuinely cannot cover otherwise.
+              <a href="/resources/fdd-decoded-what-actually-matters" className="text-[#8E3012] font-medium hover:text-[#CC6535] transition-colors">FDD</a>. This is the amount they expect you to have available before financing, not the total investment. The goal is to fund as much of the purchase as possible without borrowing, and to borrow only what you genuinely cannot cover otherwise.
             </p>
           </div>
           <div>
@@ -271,7 +271,7 @@ export default function InvestmentPage() {
                   oneliner: "The cleanest path. No debt, no banker, no monthly payment.",
                   range: "Whatever you have available without penalties",
                   bestFor: "Anyone with sufficient liquid capital. Start here before considering any loan.",
-                  watchOut: "Wiping yourself out of reserves is its own risk — keep 6–12 months of operating capital aside.",
+                  watchOut: "Wiping yourself out of reserves is its own risk; keep 6–12 months of operating capital aside.",
                 },
                 {
                   title: "ROBS (Rollover for Business Startups)",
@@ -282,17 +282,17 @@ export default function InvestmentPage() {
                 },
                 {
                   title: "Home Equity / HELOC",
-                  oneliner: "Draw against existing home equity — lower rates than business loans, no SBA underwriting.",
+                  oneliner: "Draw against existing home equity: lower rates than business loans, no SBA underwriting.",
                   range: "Depends on equity; typically $50K\u2013$250K",
                   bestFor: "Buyers with home equity and limited liquid savings who want to avoid the SBA process.",
                   watchOut: "Your home is on the line. Model both the business cash flow and the HELOC repayment before you draw.",
                 },
                 {
                   title: "SBA 7(a) Loan",
-                  oneliner: "A government-backed bank loan. Useful when no other path covers the capital need — but the most demanding path available.",
+                  oneliner: "A government-backed bank loan. Useful when no other path covers the capital need, but the most demanding path available.",
                   range: "Up to 90% of total project cost",
                   bestFor: "Buyers who have exhausted cleaner options and have the credit, collateral, and documentation to qualify.",
-                  watchOut: "Personal guarantee required. Expect 60–90 days minimum for underwriting — often longer. Full documentation package: 2–3 years of tax returns, business plan, projections, and collateral evaluation.",
+                  watchOut: "Personal guarantee required. Expect 60–90 days minimum for underwriting, often longer. Full documentation package: 2–3 years of tax returns, business plan, projections, and collateral evaluation.",
                 },
               ].map(({ title, oneliner, range, bestFor, watchOut }) => (
                 <div key={title} className="bg-white border border-[#e2ddd2] rounded-lg p-5">
@@ -370,7 +370,7 @@ export default function InvestmentPage() {
         </div>
       </section>
 
-      {/* Related resources — card format */}
+      {/* Related resources: card format */}
       <section className="max-w-4xl mx-auto px-5 sm:px-10 pb-16 sm:pb-20 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-8 h-[2px] bg-[#CC6535]" />

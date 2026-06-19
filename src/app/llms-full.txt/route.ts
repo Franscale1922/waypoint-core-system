@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { fullSiteMarkdown, estimateTokens } from "@/lib/markdown-views";
 
-// /llms-full.txt — the companion to /llms.txt. Where llms.txt is the index,
+// /llms-full.txt: the companion to /llms.txt. Where llms.txt is the index,
 // this is the entire public corpus (all articles + glossary + FAQ) as one
 // markdown document, so an agent can ingest the whole knowledge base in a
 // single fetch. Served as text/plain (the llms.txt convention) so it renders

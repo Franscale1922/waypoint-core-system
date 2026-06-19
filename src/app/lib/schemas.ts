@@ -6,7 +6,7 @@ export const LeadSchema = z.object({
   name: z.string().min(1, "Name is required"),
   linkedinUrl: z.string().url("Must be a valid URL"),
   email: z.string().email().optional(),              // Captured from Evaboot CSV when available
-  emailStatus: z.enum(["safe", "riskier"]).optional(), // Evaboot tier — only "safe" is sent during warmup
+  emailStatus: z.enum(["safe", "riskier"]).optional(), // Evaboot tier: only "safe" is sent during warmup
   title: z.string().optional(),
   company: z.string().optional(),
   country: z.string().optional(),
@@ -14,11 +14,11 @@ export const LeadSchema = z.object({
   companyNewsEvent: z.string().optional(),       // Priority A: WARN Act, 8-K, reorg, layoffs
   recentPostSummary: z.string().optional(),      // Priority B: paraphrase of post topic only
   careerTrigger: z.string().optional(),          // Signal type: layoff / burnout / opentowork
-  franchiseAngle: z.string().optional(),         // Internal framing context — not sent in email
-  // Scoring signal — from Evaboot "Years in Position" or Sales Nav "Years in Current Position"
+  franchiseAngle: z.string().optional(),         // Internal framing context: not sent in email
+  // Scoring signal: from Evaboot "Years in Position" or Sales Nav "Years in Current Position"
   // +20 pts if ≥8 yrs, +10 pts if ≥5 yrs. NEVER referenced in email body.
   yearsInCurrentRole: z.union([z.number(), z.string().transform(v => parseInt(v, 10))]).optional(),
-  // Legacy blacklisted fields — kept for existing rows, not populated going forward
+  // Legacy blacklisted fields: kept for existing rows, not populated going forward
   pulledQuoteFromPost: z.string().optional(),
   specificProjectOrMetric: z.string().optional(),
   placeOrPersonalDetail: z.string().optional(),

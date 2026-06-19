@@ -19,7 +19,7 @@
  *        "yearsInCurrentRole": "{{years_in_current_role}}"
  *      }
  *      NOTE: If you have a formula/text column that already extracts posts[0].text,
- *      map that instead. Either shape works — the webhook handles both.
+ *      map that instead. Either shape works; the webhook handles both.
  *   5. Trigger this action after enrichment is complete on each row.
  *
  * Security: CLAY_WEBHOOK_SECRET env var must match the x-clay-secret header.
@@ -57,13 +57,13 @@ export async function POST(req: NextRequest) {
         yearsInCurrentRole,
         // ── Sales Navigator Attribute Fields (Intelligence Layer) ─────────────
         // These come from Clay enrichment columns or Evaboot export data.
-        // Each field is optional — Clay may not return all of them for every lead.
+        // Each field is optional; Clay may not return all of them for every lead.
         companySizeRange,   // e.g. "51-200" | "201-500" | "501-1000" etc.
         industryVertical,   // e.g. "Manufacturing" | "Financial Services"
         functionArea,       // e.g. "Operations" | "Finance" | "Sales"
         seniorityLevel,     // e.g. "VP" | "Director" | "C-Suite"
-        isOpenToWork,       // boolean — OpenToWork badge detected
-        wasRecentlyPromoted, // boolean — promoted < 6 months ago
+        isOpenToWork,       // boolean: OpenToWork badge detected
+        wasRecentlyPromoted, // boolean: promoted < 6 months ago
         yearsAtCompany,     // total years at company (vs. yearsInCurrentRole = years in title)
         geoMarket,          // US region bucket
     } = body as {
@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!lead) {
-        // Clay may process contacts that were never imported — silently ignore.
+        // Clay may process contacts that were never imported; silently ignore.
         return NextResponse.json({ status: "skipped", reason: "No matching lead found" });
     }
 
@@ -128,19 +128,19 @@ export async function POST(req: NextRequest) {
     // how it is configured. We handle all cases here so no Clay formula change
     // is needed on Kelsey's end.
     //
-    // Shape 1 — JSON array string (raw `posts` column mapped directly):
+    // Shape 1: JSON array string (raw `posts` column mapped directly):
     //   "[{\"text\":\"...\",\"date\":\"...\", ...}]"
     //   → extract posts[0].text
     //
-    // Shape 2 — JSON object string (single post object):
+    // Shape 2: JSON object string (single post object):
     //   "{\"text\":\"...\",\"date\":\"...\"}"
     //   → extract .text
     //
-    // Shape 3 — Plain text (correctly summarized post or bio):
+    // Shape 3: Plain text (correctly summarized post or bio):
     //   "Post about leadership and franchise..." or full bio text
     //   → keep if it passes the bio-detection filter below
     //
-    // Bio-detection filter — discard if it looks like a LinkedIn bio:
+    // Bio-detection filter: discard if it looks like a LinkedIn bio:
     //   • >300 chars  →  bios are verbose; post summaries should be 1–2 sentences
     //   • Contains bio boilerplate keywords
     const BIO_BOILERPLATE = [
@@ -172,11 +172,11 @@ export async function POST(req: NextRequest) {
                 // JSON parsed but no useful text field found → discard
                 return undefined;
             } catch {
-                // Not valid JSON — fall through to plain-text handling
+                // Not valid JSON; fall through to plain-text handling
             }
         }
 
-        // Shape 3: plain text — apply bio-detection filter
+        // Shape 3: plain text, apply bio-detection filter
         const lower = trimmed.toLowerCase();
         const looksLikeBio =
             trimmed.length > 300 ||
@@ -201,7 +201,7 @@ export async function POST(req: NextRequest) {
 
     // ── Sales Navigator Attribute Fields ─────────────────────────────────────
     // Write each field only if Clay provided a non-empty value.
-    // Pattern: never overwrite existing data for string attributes — first write wins.
+    // Pattern: never overwrite existing data for string attributes; first write wins.
     if (companySizeRange)               updateData.companySizeRange   = String(companySizeRange).trim();
     if (industryVertical)               updateData.industryVertical    = String(industryVertical).trim();
     if (functionArea)                   updateData.functionArea        = String(functionArea).trim();
@@ -219,12 +219,12 @@ export async function POST(req: NextRequest) {
 
     // ── Update lead and advance through the pipeline hold state ───────────────
     // PENDING_CLAY: The webhook call itself is proof Clay processed this lead.
-    //              Advance to RAW unconditionally — even if Clay found no signals.
+    //              Advance to RAW unconditionally, even if Clay found no signals.
     //              Scoring will run and may score low, but the lead won't be stuck.
     // RAW/ENRICHED/SUPPRESSED: Only retrigger if a quality-gate signal arrived.
     // SENT/REPLIED/BOOKED: Update enrichment fields but never retrigger.
     const isPendingClay = lead.status === ("PENDING_CLAY" as any);
-    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+    // @ts-ignore: PENDING_CLAY added to schema; Prisma client regenerates on deploy
     const retriggerable = ["PENDING_CLAY", "RAW", "ENRICHED", "SUPPRESSED"].includes(lead.status);
     const hasNewSignal = !!(
         updateData.recentPostSummary ||
@@ -232,7 +232,7 @@ export async function POST(req: NextRequest) {
     );
 
     // Always advance PENDING_CLAY → RAW on any webhook call (even empty payload).
-    // Previously this only fired if updateData was non-empty — which silently
+    // Previously this only fired if updateData was non-empty, which silently
     // stranded leads when Clay found no enrichment signals for a row.
     if (isPendingClay) {
         updateData.status = "RAW";
@@ -243,7 +243,7 @@ export async function POST(req: NextRequest) {
     if (Object.keys(updateData).length > 0) {
         await prisma.lead.update({
             where: { id: lead.id },
-            // @ts-ignore — companyNewsEvent / yearsInCurrentRole are in schema
+            // @ts-ignore: companyNewsEvent / yearsInCurrentRole are in schema
             data: updateData as any,
         });
     }

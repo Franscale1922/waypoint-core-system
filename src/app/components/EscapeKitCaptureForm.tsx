@@ -3,9 +3,9 @@
 import { useState } from "react";
 
 /**
- * EscapeKitCaptureForm — email capture form for the Corporate Escape Kit.
+ * EscapeKitCaptureForm: email capture form for the Corporate Escape Kit.
  * Posts to /api/escape-kit (name + email).
- * Renders a stacked full-width layout — designed for the /escape-kit landing page.
+ * Renders a stacked full-width layout, designed for the /escape-kit landing page.
  */
 export default function EscapeKitCaptureForm({
   articleSlug = "",
@@ -57,7 +57,7 @@ export default function EscapeKitCaptureForm({
         </div>
         <p className="font-playfair text-xl text-[#0c1929] mb-2">You&apos;re all set.</p>
         <p className="text-sm text-[#5a5a4a] leading-relaxed">
-          Check your inbox — the guide is on its way. If you have questions before we talk,
+          Check your inbox. The guide is on its way. If you have questions before we talk,
           reply to that email directly.
         </p>
       </div>

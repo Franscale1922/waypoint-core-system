@@ -7,7 +7,7 @@ import { FAQItem } from "../faq/FAQItem";
 const faqs = [
   {
     q: "Is buying a franchise worth it?",
-    a: "It depends entirely on the fit between you, the brand, and your market — there is no universal yes or no. A franchise can be worth it when the system is genuinely strong, the economics work in your area, and the day-to-day role matches how you want to work. It is not worth it when you are buying a logo you like without validating the numbers, or when the operating reality clashes with your life. The work of deciding is doing the diligence, not finding a blanket answer.",
+    a: "It depends entirely on the fit between you, the brand, and your market. There is no universal yes or no. A franchise can be worth it when the system is genuinely strong, the economics work in your area, and the day-to-day role matches how you want to work. It is not worth it when you are buying a logo you like without validating the numbers, or when the operating reality clashes with your life. The work of deciding is doing the diligence, not finding a blanket answer.",
   },
   {
     q: "What makes a franchise 'worth it'?",
@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "How do I know if a franchise is a good investment for me?",
-    a: "Validate, do not assume. Read the Franchise Disclosure Document, call a range of current and former franchisees, confirm the total investment and your funding path, and be honest about whether the daily work fits your life. A good advisor or consultant can help you pressure-test the fit before you commit. The goal is an informed decision, not a hopeful one — and sometimes the right call is to walk away.",
+    a: "Validate, do not assume. Read the Franchise Disclosure Document, call a range of current and former franchisees, confirm the total investment and your funding path, and be honest about whether the daily work fits your life. A good advisor or consultant can help you pressure-test the fit before you commit. The goal is an informed decision, not a hopeful one, and sometimes the right call is to walk away.",
   },
   {
     q: "Do most franchises succeed?",
@@ -26,20 +26,20 @@ const faqs = [
 export const metadata: Metadata = {
   title: "Is a Franchise Worth It? How to Decide Honestly | Waypoint Franchise Advisors",
   description:
-    "Is buying a franchise worth it? An honest framework for deciding — what makes a franchise worthwhile, what to validate, and how to tell if it fits you. No hype, no earnings claims.",
+    "Is buying a franchise worth it? An honest framework for deciding: what makes a franchise worthwhile, what to validate, and how to tell if it fits you. No hype, no earnings claims.",
   alternates: { canonical: "https://www.waypointfranchise.com/is-a-franchise-worth-it" },
   openGraph: {
     title: "Is a Franchise Worth It? | Waypoint Franchise Advisors",
     description:
-      "There is no universal answer — only fit. Here is how to decide honestly, with the diligence that actually matters.",
+      "There is no universal answer, only fit. Here is how to decide honestly, with the diligence that actually matters.",
     url: "https://www.waypointfranchise.com/is-a-franchise-worth-it",
   },
 };
 
 const factors = [
-  { title: "A franchisor you can verify", body: "Track record, transparency, and a Franchise Disclosure Document that holds up to scrutiny — not just a polished pitch." },
+  { title: "A franchisor you can verify", body: "Track record, transparency, and a Franchise Disclosure Document that holds up to scrutiny, not just a polished pitch." },
   { title: "Economics that work in your market", body: "Unit-level performance in the brand's Item 19 and in validation calls, plus territory actually available where you are." },
-  { title: "A role you would enjoy", body: "The honest daily reality — hours, staffing, customer type — matching how you want to spend your time, not just the brand's image." },
+  { title: "A role you would enjoy", body: "The honest daily reality (hours, staffing, customer type) matching how you want to spend your time, not just the brand's image." },
   { title: "A funding path that fits", body: "A clear way to reach the total investment without overextending, whether that is liquidity, an SBA loan, ROBS, or a mix." },
 ];
 
@@ -52,7 +52,7 @@ export default function IsAFranchiseWorthItPage() {
             url: `${SITE_URL}/is-a-franchise-worth-it`,
             name: "Is a Franchise Worth It? | Waypoint Franchise Advisors",
             description:
-              "An honest framework for deciding whether a franchise is worth it — what makes one worthwhile, what to validate, and how to tell if it fits you.",
+              "An honest framework for deciding whether a franchise is worth it: what makes one worthwhile, what to validate, and how to tell if it fits you.",
             breadcrumb: breadcrumbSchema([
               { name: "Home", url: SITE_URL },
               { name: "Is a Franchise Worth It?", url: `${SITE_URL}/is-a-franchise-worth-it` },
@@ -70,7 +70,7 @@ export default function IsAFranchiseWorthItPage() {
             Is a franchise worth it?
           </h1>
           <p className="text-base sm:text-lg text-[#4a4a3e] leading-relaxed max-w-2xl mb-4">
-            There is no universal answer — only fit. A franchise can be one of the smartest ways into business ownership, or an expensive mistake, depending on the brand, your market, and you. Anyone who gives you a blanket yes is selling something.
+            There is no universal answer, only fit. A franchise can be one of the smartest ways into business ownership, or an expensive mistake, depending on the brand, your market, and you. Anyone who gives you a blanket yes is selling something.
           </p>
           <p className="text-base text-[#4a4a3e] leading-relaxed max-w-2xl">
             What follows is the honest way to decide: the factors that make a franchise worthwhile, and the diligence that turns a hopeful guess into an informed call.
@@ -97,10 +97,10 @@ export default function IsAFranchiseWorthItPage() {
         <div className="max-w-3xl mx-auto">
           <h2 className="font-playfair text-2xl text-white mb-4">Sometimes the right answer is no</h2>
           <p className="text-white/70 text-sm leading-relaxed mb-4">
-            A real advisor will tell you when a franchise is not the right move — when the numbers do not work in your market, when the role would make you miserable, or when you are better off keeping your capital. Roughly speaking, a large share of people who seriously explore franchising decide not to buy, and that is a healthy outcome, not a failed one.
+            A real advisor will tell you when a franchise is not the right move: when the numbers do not work in your market, when the role would make you miserable, or when you are better off keeping your capital. Roughly speaking, a large share of people who seriously explore franchising decide not to buy, and that is a healthy outcome, not a failed one.
           </p>
           <p className="text-white/70 text-sm leading-relaxed">
-            The point of the process is to reach the right decision for you — including walking away — not to talk you into a purchase.
+            The point of the process is to reach the right decision for you, including walking away, not to talk you into a purchase.
           </p>
         </div>
       </section>
@@ -142,7 +142,7 @@ export default function IsAFranchiseWorthItPage() {
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Want a straight answer for your situation?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
-          Thirty minutes. No pitch. We will pressure-test whether a franchise is worth it for you — including if the answer is no.
+          Thirty minutes. No pitch. We will pressure-test whether a franchise is worth it for you, including if the answer is no.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>

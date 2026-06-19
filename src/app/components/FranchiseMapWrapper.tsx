@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 
-// Loading skeleton — matches the dark bg and layout of FranchiseMap section
+// Loading skeleton: matches the dark bg and layout of FranchiseMap section
 // so the page never shows a blank void while the component hydrates
 function MapSkeleton() {
   return (

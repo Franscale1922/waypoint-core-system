@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       console.error("[escape-kit] DB write failed:", dbErr);
     }
 
-    // ── CRM sync — fire-and-forget ─────────────────────────────────────────
+    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
     notifyCrm({
       name: name || "Website Visitor",
       email,
@@ -52,12 +52,12 @@ export async function POST(req: Request) {
       notes: articleSlug ? `Article: ${articleSlug}` : undefined,
     });
 
-    // Beehiiv subscriber sync — fire-and-forget, skipped for Kelsey's own address
+    // Beehiiv subscriber sync (fire-and-forget), skipped for Kelsey's own address
     if (email.toLowerCase() !== TO.toLowerCase()) {
       subscribeToBeehiiv(email, name || undefined).catch(() => {});
     }
 
-    // Fire nurture sequence — fire-and-forget, does not block guide delivery
+    // Fire nurture sequence (fire-and-forget), does not block guide delivery
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
       try {
         await inngest.send({
@@ -78,7 +78,7 @@ export async function POST(req: Request) {
       from: FROM,
       to: TO,
       replyTo: email,
-      subject: `Escape Kit download — ${name || email}`,
+      subject: `Escape Kit download: ${name || email}`,
       text: [
         `Name:    ${name || "Not provided"}`,
         `Email:   ${email}`,
@@ -104,7 +104,7 @@ export async function POST(req: Request) {
         from: FROM,
         to: email,
         replyTo: TO,
-        subject: "The Corporate Escape Kit — your guide is inside",
+        subject: "The Corporate Escape Kit: your guide is inside",
         headers: {
           "List-Unsubscribe": `<${unsubUrl}>`,
           "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",

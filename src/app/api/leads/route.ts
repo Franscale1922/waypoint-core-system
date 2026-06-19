@@ -34,7 +34,7 @@ export async function POST(req: Request) {
                     country: leadData.country,
                     // Only overwrite email if we have one and the lead doesn't yet
                     ...(leadData.email && { email: leadData.email.toLowerCase().trim() }),
-                    // Store emailStatus if provided — used to gate riskier emails in senderProcess
+                    // Store emailStatus if provided: used to gate riskier emails in senderProcess
                     ...(leadData.emailStatus && { emailStatus: leadData.emailStatus }),
                     // ── Personalization signals ──────────────────────────────
                     companyNewsEvent: leadData.companyNewsEvent,         // Priority A
@@ -43,7 +43,7 @@ export async function POST(req: Request) {
                     franchiseAngle: leadData.franchiseAngle,
                     // ── Scoring signals ──────────────────────────────────────
                     ...(leadData.yearsInCurrentRole != null && { yearsInCurrentRole: leadData.yearsInCurrentRole }),
-                    // Legacy blacklisted fields — kept for existing rows
+                    // Legacy blacklisted fields: kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
                     placeOrPersonalDetail: leadData.placeOrPersonalDetail,
@@ -63,20 +63,20 @@ export async function POST(req: Request) {
                     franchiseAngle: leadData.franchiseAngle,
                     // ── Scoring signals ──────────────────────────────────────
                     ...(leadData.yearsInCurrentRole != null && { yearsInCurrentRole: leadData.yearsInCurrentRole }),
-                    // Legacy blacklisted fields — kept for existing rows
+                    // Legacy blacklisted fields: kept for existing rows
                     pulledQuoteFromPost: leadData.pulledQuoteFromPost,
                     specificProjectOrMetric: leadData.specificProjectOrMetric,
                     placeOrPersonalDetail: leadData.placeOrPersonalDetail,
-                    // Hold at PENDING_CLAY — Clay enrichment must arrive before scoring.
+                    // Hold at PENDING_CLAY: Clay enrichment must arrive before scoring.
                     // The Clay webhook (/api/webhooks/clay) triggers the pipeline once
                     // enrichment signals are received. A fallback cron (pendingClayFallback)
                     // advances leads after 24h if Clay never sends enrichment.
-                    // @ts-ignore — PENDING_CLAY added to schema; Prisma client regenerates on deploy
+                    // @ts-ignore: PENDING_CLAY added to schema; Prisma client regenerates on deploy
                     status: "PENDING_CLAY",
                 }
             });
 
-            // Do NOT trigger Inngest here — scoring waits for Clay enrichment.
+            // Do NOT trigger Inngest here: scoring waits for Clay enrichment.
             // Pipeline entry point is now: Clay webhook → leadHunterProcess.
 
             results.push({ success: true, id: lead.id });
@@ -89,7 +89,7 @@ export async function POST(req: Request) {
     }
 }
 
-// ── DELETE /api/leads?status=PENDING_CLAY — bulk delete by status ──────────
+// ── DELETE /api/leads?status=PENDING_CLAY: bulk delete by status ──────────
 // Used to clear bad imports before a clean re-import.
 // Pass ?status=PENDING_CLAY to wipe just that cohort, or ?status=ALL to delete everything.
 export async function DELETE(req: Request) {

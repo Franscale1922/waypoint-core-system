@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 // Real, first-party figures only (as of 2026). No earnings/profitability claims,
-// no brand names — per content standards. These mirror the credentials block on
+// no brand names, per content standards. These mirror the credentials block on
 // /about and the figures stated in Kelsey's own video.
 const STATS = [
   { value: "250+", label: "Franchise brands screened", note: "The active set we evaluate candidates against" },
@@ -80,7 +80,7 @@ export default function FranchiseMatchingReport2026() {
           <span>·</span>
           <span>Published <time dateTime={PUBLISHED}>May 29, 2026</time></span>
         </div>
-        {/* Atomic summary — direct, extractable answer for AI engines */}
+        {/* Atomic summary: direct, extractable answer for AI engines */}
         <div className="bg-white border border-[#e8e0d0] rounded-xl p-6">
           <p className="text-base leading-relaxed text-[#3a3a2e]">
             Across the brands we screen and the people we have placed, one pattern holds: matching works best

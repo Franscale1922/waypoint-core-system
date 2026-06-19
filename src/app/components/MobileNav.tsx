@@ -31,7 +31,7 @@ export default function MobileNav() {
 
   return (
     <>
-      {/* Hamburger button — stays above overlay */}
+      {/* Hamburger button: stays above overlay */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close menu" : "Open menu"}
@@ -73,7 +73,7 @@ export default function MobileNav() {
         ))}
       </button>
 
-      {/* Full-screen overlay — uses ONLY inline styles to avoid all CSS inheritance */}
+      {/* Full-screen overlay: uses ONLY inline styles to avoid all CSS inheritance */}
       <div
         className="sm:hidden"
         style={{
@@ -92,7 +92,7 @@ export default function MobileNav() {
           WebkitBackdropFilter: "none",
         }}
       >
-        {/* Top bar — logo + close */}
+        {/* Top bar: logo + close */}
         <div style={{
           display: "flex",
           justifyContent: "space-between",

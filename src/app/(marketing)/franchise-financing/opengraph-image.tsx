@@ -11,7 +11,7 @@ export default function Image() {
       <OgCard
         eyebrow="Funding Guide"
         title="How to Finance a Franchise"
-        tagline="SBA loans, ROBS, home equity, securities-backed lines, and franchisor financing — in plain English."
+        tagline="SBA loans, ROBS, home equity, securities-backed lines, and franchisor financing, in plain English."
       />
     ),
     { ...OG_SIZE },

@@ -44,7 +44,7 @@ export default function ScorecardPage() {
         )}
       />
       <ScorecardClient />
-      {/* Visible FAQ — rendered from the same scorecardFaqSchema source that feeds the
+      {/* Visible FAQ: rendered from the same scorecardFaqSchema source that feeds the
           FAQPage markup above, so on-page content and structured data cannot drift. */}
       <section className="max-w-3xl mx-auto px-6 py-14 sm:py-20 border-t border-[#e8e0d0]">
         <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">

@@ -85,7 +85,7 @@ export default function GettingStartedPage() {
         </div>
       </section>
 
-      {/* Related pages — card format */}
+      {/* Related pages: card format */}
       <section className="max-w-4xl mx-auto px-6 pb-10 border-t border-[#e8e0d0] pt-12">
         <div className="flex items-center gap-4 mb-8">
           <div className="w-8 h-[2px] bg-[#CC6535]" />

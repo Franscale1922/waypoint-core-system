@@ -4,16 +4,16 @@ import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema }
 import JsonLd from "../../components/JsonLd";
 import { FAQItem } from "../faq/FAQItem";
 
-// Single source for this page's FAQ — drives both the visible accordion and the
+// Single source for this page's FAQ: drives both the visible accordion and the
 // FAQPage JSON-LD.
 const faqs = [
   {
     q: "Is it better to buy a franchise or start your own business?",
-    a: "Neither is universally better — they trade different things. A franchise gives you a proven system, brand, and support in exchange for fees, royalties, and rules you have to follow. An independent startup gives you full control and no royalties in exchange for building everything yourself and carrying more unknowns. The right answer depends on your risk tolerance, how much you value a playbook versus autonomy, and what you want to spend your time on.",
+    a: "Neither is universally better; they trade different things. A franchise gives you a proven system, brand, and support in exchange for fees, royalties, and rules you have to follow. An independent startup gives you full control and no royalties in exchange for building everything yourself and carrying more unknowns. The right answer depends on your risk tolerance, how much you value a playbook versus autonomy, and what you want to spend your time on.",
   },
   {
     q: "Is a franchise less risky than starting a business from scratch?",
-    a: "A franchise reduces some specific risks — you are following a tested model, not inventing one, and you can study the brand's disclosures and talk to existing owners before you commit. That lowers the odds of certain first-timer mistakes. But it does not remove risk: you still have to execute, fund the business, and operate in your local market. No business model guarantees an outcome.",
+    a: "A franchise reduces some specific risks: you are following a tested model, not inventing one, and you can study the brand's disclosures and talk to existing owners before you commit. That lowers the odds of certain first-timer mistakes. But it does not remove risk: you still have to execute, fund the business, and operate in your local market. No business model guarantees an outcome.",
   },
   {
     q: "What do you give up by choosing a franchise over your own business?",
@@ -28,7 +28,7 @@ const faqs = [
 export const metadata: Metadata = {
   title: "Franchise vs. Starting Your Own Business: How to Decide | Waypoint Franchise Advisors",
   description:
-    "Franchise or independent startup? An honest comparison of control, risk, cost, and support — the real tradeoffs between buying a franchise and building a business from scratch.",
+    "Franchise or independent startup? An honest comparison of control, risk, cost, and support: the real tradeoffs between buying a franchise and building a business from scratch.",
   alternates: { canonical: "https://www.waypointfranchise.com/franchise-vs-starting-a-business" },
   openGraph: {
     title: "Franchise vs. Starting Your Own Business | Waypoint Franchise Advisors",
@@ -42,7 +42,7 @@ const rows = [
   { dimension: "The system", franchise: "Proven, documented playbook you follow.", independent: "You build and test it yourself." },
   { dimension: "Brand & demand", franchise: "Established brand and marketing from day one.", independent: "You build awareness from zero." },
   { dimension: "Control", franchise: "Operate within the franchisor's rules and standards.", independent: "Full control over every decision." },
-  { dimension: "Ongoing cost", franchise: "Royalties and fees on revenue, ongoing.", independent: "No royalties — you keep it all." },
+  { dimension: "Ongoing cost", franchise: "Royalties and fees on revenue, ongoing.", independent: "No royalties. You keep it all." },
   { dimension: "Support & network", franchise: "Training, support, and a peer network of owners.", independent: "You assemble your own advisors." },
   { dimension: "Diligence before you commit", franchise: "FDD + validation calls with existing owners.", independent: "No standardized disclosure to study." },
 ];
@@ -56,7 +56,7 @@ export default function FranchiseVsStartingPage() {
             url: `${SITE_URL}/franchise-vs-starting-a-business`,
             name: "Franchise vs. Starting Your Own Business | Waypoint Franchise Advisors",
             description:
-              "An honest comparison of control, risk, cost, and support — the real tradeoffs between buying a franchise and building a business from scratch.",
+              "An honest comparison of control, risk, cost, and support: the real tradeoffs between buying a franchise and building a business from scratch.",
             breadcrumb: breadcrumbSchema([
               { name: "Home", url: SITE_URL },
               { name: "Franchise vs. Starting a Business", url: `${SITE_URL}/franchise-vs-starting-a-business` },
@@ -161,7 +161,7 @@ export default function FranchiseVsStartingPage() {
       <section className="bg-[#0c1929] py-14 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Not sure which path fits you?</p>
         <p className="text-white/70 mb-8 max-w-sm mx-auto text-sm leading-relaxed">
-          Thirty minutes. No pitch. We will talk through how you want to work and whether a franchise fits — honestly.
+          Thirty minutes. No pitch. We will talk through how you want to work and whether a franchise fits, honestly.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link href="/book" className="inline-flex items-center justify-center px-8 py-4 text-sm font-semibold tracking-wide text-[#0c1929] bg-[#CC6535] hover:bg-[#D4724A] rounded-lg transition-all min-h-[48px]">Book a Free Call</Link>

@@ -1,5 +1,5 @@
 /**
- * Scorecard Email 4 (Day 7): Strong band (≥80) — soft discovery-call invite
+ * Scorecard Email 4 (Day 7): Strong band (≥80), soft discovery-call invite
  * Sent ~7 days after scorecard completion
  * Tag: scorecard-email-4
  */

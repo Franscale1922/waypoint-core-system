@@ -6,7 +6,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Free Franchise Checklists | Waypoint Franchise Advisors",
   description:
-    "Download free franchise readiness checklists for every major category — food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
+    "Download free franchise readiness checklists for every major category: food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
   openGraph: {
     title: "Free Franchise Checklists | Waypoint Franchise Advisors",
     description:
@@ -78,7 +78,7 @@ const checklistsSchema = {
       url: "https://www.waypointfranchise.com/checklists",
       name: "Free Franchise Checklists | Waypoint Franchise Advisors",
       description:
-        "Download free franchise readiness checklists for every major category — food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
+        "Download free franchise readiness checklists for every major category: food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
       inLanguage: "en-US",
       isPartOf: { "@id": "https://www.waypointfranchise.com/#website" },
     },
@@ -92,7 +92,7 @@ const checklistsSchema = {
     {
       "@type": "ItemList",
       name: "Franchise Evaluation Checklists",
-      description: "Six free franchise readiness checklists — one universal and five industry-specific — for serious franchise candidates.",
+      description: "Six free franchise readiness checklists (one universal and five industry-specific) for serious franchise candidates.",
       numberOfItems: 6,
       itemListElement: [
         {
@@ -156,7 +156,7 @@ export default function ChecklistsPage() {
             The checklists I use<br className="hidden sm:block" /> before every first conversation.
           </h1>
           <p className="text-white/65 text-lg max-w-2xl leading-relaxed">
-            Six checklists — one universal and five industry-specific. Pick the one that matches
+            Six checklists: one universal and five industry-specific. Pick the one that matches
             the category you are exploring. Enter your email and it lands in your inbox within minutes.
           </p>
         </div>
@@ -197,7 +197,7 @@ export default function ChecklistsPage() {
         </div>
       </section>
 
-      {/* Bottom CTA — matches resources page */}
+      {/* Bottom CTA: matches resources page */}
       <section className="bg-[#0c1929] py-16 px-6 text-center">
         <p className="font-playfair text-2xl text-white mb-4">Rather talk it through?</p>
         <p className="text-white/70 mb-8 max-w-md mx-auto">

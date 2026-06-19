@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
   }
 
   // Check the record exists
-  // @ts-ignore — unsubscribed / unsubscribedAt added to schema; Prisma client regenerates on deploy
+  // @ts-ignore: unsubscribed / unsubscribedAt added to schema; Prisma client regenerates on deploy
   const record = await prisma.checklistDownload.findUnique({ where: { id } }) as any;
   if (!record) {
     return new NextResponse(unsubscribePage("We couldn't find that subscription. You may have already been removed.", false), {
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
 
   // Mark as unsubscribed
   if (!record.unsubscribed) {
-    // @ts-ignore — unsubscribed / unsubscribedAt added to schema; Prisma client regenerates on deploy
+    // @ts-ignore: unsubscribed / unsubscribedAt added to schema; Prisma client regenerates on deploy
     await prisma.checklistDownload.update({
       where: { id },
       data: {

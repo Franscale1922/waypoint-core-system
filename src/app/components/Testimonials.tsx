@@ -1,10 +1,10 @@
-// Server Component — fetches live stats from Google Sheet, no "use client"
+// Server Component: fetches live stats from Google Sheet, no "use client"
 import TestimonialsCarousel, { type Testimonial } from "./TestimonialsCarousel";
 
 const testimonials: Testimonial[] = [
   {
     quote:
-      "I came in excited about two different concepts. Kelsey helped me walk through the real numbers and the day-to-day reality of each one. Honestly I still had doubts walking out of the first call — but by the second conversation something clicked. The one I chose has been a great fit.",
+      "I came in excited about two different concepts. Kelsey helped me walk through the real numbers and the day-to-day reality of each one. Honestly I still had doubts walking out of the first call, but by the second conversation something clicked. The one I chose has been a great fit.",
     name: "Marcus T.",
     role: "Former Regional Director, now franchise owner",
     location: "Denver, CO",
@@ -12,7 +12,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "I thought I wanted a food concept. Ten minutes into the call Kelsey basically talked me out of it — not in a pushy way, just walked me through what the hours actually look like. Ended up with a service brand I'd never heard of. Two years in, it works.",
+      "I thought I wanted a food concept. Ten minutes into the call Kelsey basically talked me out of it, not in a pushy way, just walked me through what the hours actually look like. Ended up with a service brand I'd never heard of. Two years in, it works.",
     name: "Jennifer R.",
     role: "Corporate expat, franchise owner since 2023",
     location: "Austin, TX",
@@ -20,7 +20,7 @@ const testimonials: Testimonial[] = [
   },
   {
     quote:
-      "Most consultants send you a list and disappear. Kelsey stayed involved through the whole thing. There were a few moments where I wasn't sure we'd get it across the finish line — he was the one who kept it moving.",
+      "Most consultants send you a list and disappear. Kelsey stayed involved through the whole thing. There were a few moments where I wasn't sure we'd get it across the finish line, and he was the one who kept it moving.",
     name: "David K.",
     role: "Trailing spouse, now owner of two units",
     location: "Nashville, TN",

@@ -1,6 +1,6 @@
 /**
- * GET  /api/admin/settings  — read current SystemSettings
- * PATCH /api/admin/settings  — update one or more SystemSettings fields
+ * GET  /api/admin/settings  : read current SystemSettings
+ * PATCH /api/admin/settings  : update one or more SystemSettings fields
  *
  * Body (PATCH, JSON):
  *   { maxSendsPerDay?: number }

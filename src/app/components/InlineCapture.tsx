@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 /**
- * InlineCapture — B-6 CRO
+ * InlineCapture: B-6 CRO
  *
  * Designed to be injected into the reading flow of resource articles.
  * Specifically promotes the "Corporate Escape Kit".

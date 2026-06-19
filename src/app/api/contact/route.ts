@@ -5,7 +5,7 @@ import { Resend } from "resend";
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
 // FROM must use the verified Resend sending domain (mail.waypointfranchise.com).
-// waypointfranchise.com root is not verified — Resend silently drops those sends.
+// waypointfranchise.com root is not verified; Resend silently drops those sends.
 const FROM = "Waypoint Website <noreply@mail.waypointfranchise.com>";
 
 export async function POST(req: Request) {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name, email, and message are required." }, { status: 400 });
     }
 
-    // ── CRM sync — fire-and-forget ─────────────────────────────────────────
+    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
     notifyCrm({
       name,
       email,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
       console.error("[contact] Resend notify error:", JSON.stringify(notifyResult.error));
     }
 
-    // Skip auto-reply when submitter is the same address as TO — avoids same-domain
+    // Skip auto-reply when submitter is the same address as TO; avoids same-domain
     // filtering when testing the form from kelsey@waypointfranchise.com
     if (email.toLowerCase() !== TO.toLowerCase()) {
       const replyResult = await resend.emails.send({

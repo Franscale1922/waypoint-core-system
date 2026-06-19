@@ -1,14 +1,14 @@
 /**
  * POST /api/admin/suppress-lead
  *
- * Manually suppresses a lead — marks SUPPRESSED in leads table and
+ * Manually suppresses a lead: marks SUPPRESSED in leads table and
  * adds to SuppressionList. Used to handle bounces and unsubscribes
  * discovered outside of the automatic Instantly webhook flow.
  *
  * Body (JSON):
- *   { email: string; reason?: string }   — suppress by email address
+ *   { email: string; reason?: string }   : suppress by email address
  *   OR
- *   { leadId: string; reason?: string }  — suppress by lead ID
+ *   { leadId: string; reason?: string }  : suppress by lead ID
  *
  * Auth: NextAuth session required (admin only).
  */
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
                 create: { email: normalized, reason },
             });
 
-            console.log(`[suppress-lead] Suppressed ${normalized} — reason: ${reason}`);
+            console.log(`[suppress-lead] Suppressed ${normalized}, reason: ${reason}`);
 
             return NextResponse.json({
                 success: true,
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
                 });
             }
 
-            console.log(`[suppress-lead] Suppressed lead ${lead.name} (${lead.id}) — reason: ${reason}`);
+            console.log(`[suppress-lead] Suppressed lead ${lead.name} (${lead.id}), reason: ${reason}`);
 
             return NextResponse.json({
                 success: true,

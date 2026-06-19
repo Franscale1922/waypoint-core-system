@@ -16,7 +16,7 @@ interface Props {
   tiers: InvestmentTier[];
 }
 
-// SVG icons — inline so we avoid an extra import
+// SVG icons: inline so we avoid an extra import
 function CashIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -38,7 +38,7 @@ function ChartIcon() {
   );
 }
 
-// Animated range display — remounted by the parent via a changing `key` prop
+// Animated range display: remounted by the parent via a changing `key` prop
 function AnimatedRange({ value }: { value: string }) {
   return (
     <span
@@ -73,7 +73,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
   return (
     <section className="bg-[#0c1929] py-14 sm:py-20 px-5 sm:px-6">
 
-      {/* Keyframe injected at component level — self-contained */}
+      {/* Keyframe injected at component level: self-contained */}
       <style>{`
         @keyframes rangeReveal {
           from { opacity: 0; transform: translateY(6px) scale(0.97); }
@@ -139,14 +139,14 @@ export default function InvestmentTierToggle({ tiers }: Props) {
           </div>
         </div>
 
-        {/* Contextual caption — different copy per mode */}
+        {/* Contextual caption: different copy per mode */}
         <p className="text-sm text-white/60 leading-relaxed mb-3 max-w-2xl transition-opacity duration-300">
           {isCash
-            ? "Most franchisors require roughly 20% of the total investment in liquid personal capital — the cash you actually control today."
+            ? "Most franchisors require roughly 20% of the total investment in liquid personal capital: the cash you actually control today."
             : "Total investment includes all costs to open: franchise fee, build-out, equipment, working capital, and pre-opening expenses."}
         </p>
 
-        {/* Explanation pill — only in cash mode */}
+        {/* Explanation pill: only in cash mode */}
         <div
           className="flex items-center gap-2 mb-10 overflow-hidden"
           style={{
@@ -157,7 +157,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
         >
           <div className="w-1 h-1 rounded-full bg-[#CC6535] flex-shrink-0" />
           <p className="text-xs text-white/40 leading-relaxed">
-            Cash ranges below use a 20% rule with a $50K floor. Actual franchisor minimums vary — confirm in the FDD.
+            Cash ranges below use a 20% rule with a $50K floor. Actual franchisor minimums vary. Confirm in the FDD.
           </p>
         </div>
 
@@ -169,7 +169,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
               className="group bg-[#0f2035] border border-[#1b3a5f] rounded-xl p-6 hover:border-[#CC6535]/40 hover:bg-[#112238] transition-all duration-300"
               style={{ transitionDelay: `${i * 30}ms` }}
             >
-              {/* Badge — only in cash mode */}
+              {/* Badge: only in cash mode */}
               <div
                 style={{
                   maxHeight: isCash ? "32px" : "0px",
@@ -181,7 +181,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
                 <CashBadge />
               </div>
 
-              {/* Range number — keyed by mode+label so React remounts and replays animation */}
+              {/* Range number: keyed by mode+label so React remounts and replays animation */}
               <AnimatedRange
                 key={`${mode}-${tier.label}`}
                 value={isCash ? tier.cashRange : tier.investmentRange}
@@ -197,7 +197,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
               <ul className="space-y-1">
                 {tier.examples.map((ex) => (
                   <li key={ex} className="text-xs text-white/50 flex items-start gap-2">
-                    <span className="text-[#CC6535] mt-0.5 flex-shrink-0">—</span>
+                    <span className="text-[#CC6535] mt-0.5 flex-shrink-0">•</span>
                     {ex}
                   </li>
                 ))}
@@ -209,7 +209,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
           ))}
         </div>
 
-        {/* Bottom note — total investment mode only */}
+        {/* Bottom note: total investment mode only */}
         <div
           style={{
             maxHeight: !isCash ? "60px" : "0px",

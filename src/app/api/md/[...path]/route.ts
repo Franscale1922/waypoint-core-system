@@ -17,7 +17,7 @@ import {
 //
 // middleware.ts rewrites a page request here when an agent (a) sends
 // `Accept: text/markdown` or (b) appends `.md` to the URL. The URL the agent
-// typed never changes for the Accept path — this is content negotiation, not a
+// typed never changes for the Accept path; this is content negotiation, not a
 // separate page. Browsers (Accept: text/html) are never rewritten.
 
 function render(path: string[]): string | null {
@@ -74,7 +74,7 @@ export async function GET(
     status: 200,
     headers: {
       "Content-Type": "text/markdown; charset=utf-8",
-      // The same URL serves HTML or markdown — caches must key on Accept.
+      // The same URL serves HTML or markdown; caches must key on Accept.
       Vary: "Accept",
       // HTML is the canonical, indexable representation; keep the markdown
       // variant (and its direct .md URL) out of the search index.

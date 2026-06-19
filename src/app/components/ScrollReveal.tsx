@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 
 /**
- * ScrollReveal — Intersection Observer that adds .visible
+ * ScrollReveal: Intersection Observer that adds .visible
  * to any element with .reveal, .reveal-left, or .reveal-right
  * when it scrolls into view.
  *
@@ -44,7 +44,7 @@ export default function ScrollReveal() {
     );
 
     // Small rAF delay so the DOM settles after navigation before we
-    // snapshot element positions — avoids a race on fast machines where
+    // snapshot element positions; avoids a race on fast machines where
     // the observer fires before layout is complete.
     const raf = requestAnimationFrame(() => {
       elements.forEach((el) => {

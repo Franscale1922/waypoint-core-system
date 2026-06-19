@@ -1,7 +1,7 @@
 // Shared layout for dynamically generated Open Graph / social cards (next/og
 // ImageResponse). Used by the route-colocated opengraph-image.tsx files so each
 // pillar/category page gets a distinct, on-brand card instead of the generic
-// default. JSX here is rendered by Satori (ImageResponse) — only inline styles,
+// default. JSX here is rendered by Satori (ImageResponse): only inline styles,
 // every multi-child element must set display:flex.
 
 export const OG_SIZE = { width: 1200, height: 630 } as const;

@@ -52,7 +52,7 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 1b. CRM sync — fire-and-forget ───────────────────────────────────────
+    // ── 1b. CRM sync (fire-and-forget) ───────────────────────────────────────
     notifyCrm({
       name,
       email,
@@ -64,14 +64,14 @@ export async function POST(req: Request) {
       ].filter(Boolean).join(" | "),
     });
 
-    // ── 1c. Beehiiv subscriber sync — fire-and-forget ─────────────────────────
+    // ── 1c. Beehiiv subscriber sync (fire-and-forget) ─────────────────────────
     // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
-    // Never throws — errors are caught inside subscribeToBeehiiv.
+    // Never throws; errors are caught inside subscribeToBeehiiv.
     subscribeToBeehiiv(email, name).catch(() => {});
 
     // ── 2. Deduplicate: only start a new nurture sequence if none is active ───
     // "Active" = not completed and not unsubscribed. If a sequence is already
-    // sleeping for this email, skip creating another one — prevents double emails
+    // sleeping for this email, skip creating another one; prevents double emails
     // when someone re-submits the scorecard.
     const activeSubmission = await (prisma as any).scorecardSubmission.findFirst({
       where: {
@@ -116,7 +116,7 @@ export async function POST(req: Request) {
       });
     }
 
-    // ── 3. Send Email 1 immediately (scorecard results) — always sent ─────────
+    // ── 3. Send Email 1 immediately (scorecard results), always sent ─────────
     await resend.emails.send({
       from: FROM,
       replyTo: REPLY_TO,
@@ -133,7 +133,7 @@ export async function POST(req: Request) {
       const slackWebhook = process.env.SLACK_WEBHOOK_URL;
 
       if (slackWebhook) {
-        // Non-blocking — don't let Slack failure break the API
+        // Non-blocking: don't let Slack failure break the API
         fetch(slackWebhook, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -143,7 +143,7 @@ export async function POST(req: Request) {
                 type: "section",
                 text: {
                   type: "mrkdwn",
-                  text: `*${tier} scorecard submission* — ${firstName} scored *${score}/100*`,
+                  text: `*${tier} scorecard submission*: ${firstName} scored *${score}/100*`,
                 },
               },
               {
@@ -152,8 +152,8 @@ export async function POST(req: Request) {
                   { type: "mrkdwn", text: `*Name:*\n${name}` },
                   { type: "mrkdwn", text: `*Email:*\n${email}` },
                   { type: "mrkdwn", text: `*Score:*\n${score}/100` },
-                  { type: "mrkdwn", text: `*Driver:*\n${primaryDriver ?? "—"}` },
-                  { type: "mrkdwn", text: `*Biggest fear:*\n${biggestFear ?? "—"}` },
+                  { type: "mrkdwn", text: `*Driver:*\n${primaryDriver ?? "-"}` },
+                  { type: "mrkdwn", text: `*Biggest fear:*\n${biggestFear ?? "-"}` },
                   { type: "mrkdwn", text: `*Sequence started:*\n${sequenceStarted ? "Yes" : "Already active"}` },
                 ],
               },

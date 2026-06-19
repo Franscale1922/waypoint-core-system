@@ -1,6 +1,6 @@
 /**
  * Verifies a Bearer token in the Authorization header.
- * Used by webhook routes — they can't use session auth because external
+ * Used by webhook routes; they can't use session auth because external
  * services can't hold a browser session.
  *
  * Usage:

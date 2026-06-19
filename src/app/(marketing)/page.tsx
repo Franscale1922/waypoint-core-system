@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     description:
       "Free franchise consulting. 146+ owners helped across 35 states. Former franchisor. Book a free 30-min discovery call from Whitefish, Montana.",
     url: "https://www.waypointfranchise.com",
-    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors — Find the Franchise That Fits Your Life" }],
+    images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: "Waypoint Franchise Advisors: Find the Franchise That Fits Your Life" }],
   },
 };
 
@@ -46,7 +46,7 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Homepage WebPage node — ties the landing page into the site graph and
+      {/* Homepage WebPage node: ties the landing page into the site graph and
           names the business as its primary entity. */}
       <JsonLd
         data={jsonLdGraph(
@@ -61,13 +61,13 @@ export default function HomePage() {
         )}
       />
       {/* ============================================
-          HERO — Full-screen Montana, text overlaid
+          HERO: Full-screen Montana, text overlaid
           Inspired by: Eleven Experience, Under Canvas
           ============================================ */}
       <section className="relative min-h-[80vh] sm:min-h-screen flex items-center sm:items-end overflow-hidden">
         <Image
           src="/images/hero-mountains-dark-lake.webp"
-          alt="Dark mountain lake at twilight with alpenglow peaks — Waypoint Franchise Advisors, Whitefish Montana"
+          alt="Dark mountain lake at twilight with alpenglow peaks: Waypoint Franchise Advisors, Whitefish Montana"
           fill
           priority
           fetchPriority="high"
@@ -113,7 +113,7 @@ export default function HomePage() {
             By texting, you consent to receive SMS messages from Waypoint Franchise Advisors. Msg &amp; data rates may apply. Reply STOP to opt out.
           </p>
 
-          {/* B-3: 70% stat — safety/permission signal, not a proof credential */}
+          {/* B-3: 70% stat (safety/permission signal, not a proof credential) */}
           <p className="mt-5 sm:mt-7 animate-fade-in-up stagger-4 text-[11px] sm:text-xs leading-snug">
             <span className="text-[#CC6535] font-medium">7 in 10 people I work with don&apos;t buy a franchise.</span>
             <br />
@@ -125,7 +125,7 @@ export default function HomePage() {
 
 
       {/* ============================================
-          ZERO COST BAR — thin, quiet
+          ZERO COST BAR: thin, quiet
           Inspired by: Mollie Aspen hairlines
           ============================================ */}
       <section className="py-4 sm:py-5 border-b border-[#e2ddd2]">
@@ -138,7 +138,7 @@ export default function HomePage() {
         </div>
       </section>
       {/* ============================================
-          ENTITY BLOCK — AEO answer extraction target
+          ENTITY BLOCK: AEO answer extraction target
           Crawlable, factual, standalone. Not a hero.
           ============================================ */}
       <section className="py-10 sm:py-12 border-b border-[#e2ddd2] bg-[#f7f5f1]">
@@ -163,7 +163,7 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          THE REAL TALK — Bold, direct, "not your typical consultant"
+          THE REAL TALK: Bold, direct, "not your typical consultant"
           ============================================ */}
       <section className="py-16 sm:py-24 md:py-32">
         <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -178,7 +178,7 @@ export default function HomePage() {
               life-changing decision.
             </h2>
             <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
-            {/* Honest portrait — full width between headline and body text */}
+            {/* Honest portrait: full width between headline and body text */}
             <div className="w-full overflow-hidden rounded-xl mb-8 sm:mb-12">
               <Image
                 src="/images/kelsey-honest-portrait.webp"
@@ -215,7 +215,7 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          WHO THIS IS FOR — Persona cards
+          WHO THIS IS FOR: Persona cards
           Asymmetric grid, editorial feel
           ============================================ */}
       <section className="py-16 sm:py-24 md:py-32 bg-[#0c1929]">
@@ -287,7 +287,7 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          HOW THIS WORKS — editorial layout
+          HOW THIS WORKS: editorial layout
           Staggered, not a boring 3-column grid
           ============================================ */}
       <section className="py-16 sm:py-24 md:py-32">
@@ -301,7 +301,7 @@ export default function HomePage() {
             </h2>
           </div>
           <hr className="hairline mt-8 mb-8 sm:mt-12 sm:mb-12" />
-          {/* Process hero image — full width */}
+          {/* Process hero image: full width */}
           <div className="reveal w-full overflow-hidden rounded-xl mb-12 sm:mb-20">
             {/* Mobile: sign fully readable, full head + body, open forest above */}
             <Image
@@ -312,7 +312,7 @@ export default function HomePage() {
               sizes="100vw"
               className="w-full h-auto block sm:hidden"
             />
-            {/* Desktop: wide panoramic crop — full head + open forest above */}
+            {/* Desktop: wide panoramic crop, full head + open forest above */}
             <Image
               src="/images/kelsey-trail-desktop.jpg"
               alt="Kelsey Stuart leading the way down a forest trail"
@@ -375,12 +375,12 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          TESTIMONIALS — social proof after process steps
+          TESTIMONIALS: social proof after process steps
           ============================================ */}
       <Testimonials />
 
       {/* ============================================
-          WHY ME — photo-forward, asymmetric
+          WHY ME: photo-forward, asymmetric
           The fly fishing image IS the section
           ============================================ */}
       <section className="relative overflow-hidden">
@@ -438,12 +438,12 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          FRANCHISE MAP — dynamic pins from Google Sheet
+          FRANCHISE MAP: dynamic pins from Google Sheet
           ============================================ */}
       <FranchiseMapWrapper />
 
       {/* ============================================
-          ESCAPE KIT — Free guide CTA
+          ESCAPE KIT: Free guide CTA
           Cream strip, breaks rhythm before final CTA
           ============================================ */}
       <section className="py-16 sm:py-20 bg-[#f2ede3] border-t border-b border-[#e2ddd2]">
@@ -479,7 +479,7 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          EXPLORE BY TOPIC — in-content links to the pillar pages
+          EXPLORE BY TOPIC: in-content links to the pillar pages
           (homepage authority → financing + industries hubs)
           ============================================ */}
       <section className="py-16 sm:py-20">
@@ -502,7 +502,7 @@ export default function HomePage() {
                 Browse by industry
               </h3>
               <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
-                Home services, senior care, fitness, food, B2B and more — what each category is really like and who it fits.
+                Home services, senior care, fitness, food, B2B and more: what each category is really like and who it fits.
               </p>
               <span className="text-xs text-[#8E3012] font-medium tracking-wide">See the categories →</span>
             </Link>
@@ -515,7 +515,7 @@ export default function HomePage() {
                 How to finance a franchise
               </h3>
               <p className="text-sm text-[#5a5a4a] leading-relaxed mb-3">
-                SBA loans, ROBS, home equity, and more — the main ways franchises get funded, in plain English.
+                SBA loans, ROBS, home equity, and more: the main ways franchises get funded, in plain English.
               </p>
               <span className="text-xs text-[#8E3012] font-medium tracking-wide">Read the guide →</span>
             </Link>
@@ -537,7 +537,7 @@ export default function HomePage() {
       </section>
 
       {/* ============================================
-          FINAL CTA — mountain lake background
+          FINAL CTA: mountain lake background
           Inspired by: Under Canvas location pages
           ============================================ */}
       <section className="relative py-20 sm:py-28 md:py-36 overflow-hidden">

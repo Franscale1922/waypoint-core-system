@@ -1,4 +1,4 @@
-// Franchise glossary data — single source of truth.
+// Franchise glossary data: single source of truth.
 // Consumed by the /glossary React page AND the markdown view (src/lib/markdown-views.ts).
 export type GlossaryEntry = { term: string; definition: string; related?: string | null; relatedLabel?: string | null };
 export type GlossaryGroup = { letter: string; entries: GlossaryEntry[] };
@@ -402,7 +402,7 @@ export const terms: GlossaryGroup[] = [
       {
         term: "HELOC (Home Equity Line of Credit)",
         definition:
-          "A revolving credit line borrowed against the equity in your home, often used to fund part or all of a franchise purchase. HELOCs offer access to capital at lower interest rates than most business loans and without the 60-to-90-day underwriting process that an SBA loan requires. Your home is collateral — if the business underperforms, that obligation is real — but for buyers with meaningful home equity and limited liquid savings, a HELOC is frequently the faster and less burdensome path. When combined with direct capital or a ROBS structure, it can eliminate the need for an SBA loan entirely.",
+          "A revolving credit line borrowed against the equity in your home, often used to fund part or all of a franchise purchase. HELOCs offer access to capital at lower interest rates than most business loans and without the 60-to-90-day underwriting process that an SBA loan requires. Your home is collateral (if the business underperforms, that obligation is real), but for buyers with meaningful home equity and limited liquid savings, a HELOC is frequently the faster and less burdensome path. When combined with direct capital or a ROBS structure, it can eliminate the need for an SBA loan entirely.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },
@@ -664,7 +664,7 @@ export const terms: GlossaryGroup[] = [
       {
         term: "SBA Loan (Small Business Administration)",
         definition:
-          "A federally backed loan program used to finance franchise purchases when no cleaner funding path covers the full capital need. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost. It is also the most demanding path available: it requires a credit score above 680, collateral, a personal guarantee, and a full documentation package including 2–3 years of personal tax returns, a business plan, and financial projections. The underwriting process typically takes 60 to 90 days, often longer. For buyers who have liquid savings, home equity, or retirement funds available, those options should be explored first. SBA is valuable as a last resort — when the capital need genuinely exceeds what those paths can cover.",
+          "A federally backed loan program used to finance franchise purchases when no cleaner funding path covers the full capital need. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost. It is also the most demanding path available: it requires a credit score above 680, collateral, a personal guarantee, and a full documentation package including 2–3 years of personal tax returns, a business plan, and financial projections. The underwriting process typically takes 60 to 90 days, often longer. For buyers who have liquid savings, home equity, or retirement funds available, those options should be explored first. SBA is valuable as a last resort, for when the capital need genuinely exceeds what those paths can cover.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
       },

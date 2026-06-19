@@ -94,7 +94,7 @@ export default function MarketingLayout({
       {/* Page Content */}
       <main className="flex-1">{children}</main>
 
-      {/* Mobile sticky CTA — portal to document.body, iOS visualViewport corrected */}
+      {/* Mobile sticky CTA: portal to document.body, iOS visualViewport corrected */}
       <MobileStickyBar />
 
       {/* Footer */}

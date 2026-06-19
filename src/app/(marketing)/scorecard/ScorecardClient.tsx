@@ -157,7 +157,7 @@ export default function ScorecardClient() {
               <p className="mt-3 text-xs text-slate-400">
                 This call is free. Franchise brands pay the referral fee, not you.
               </p>
-              {/* Escape Kit — softer next step for not-yet-ready */}
+              {/* Escape Kit: softer next step for not-yet-ready */}
               <div className="mt-8 border border-[#e2ddd2] rounded-xl p-5 sm:p-6 text-left max-w-md mx-auto bg-[#FAF8F4]">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8E3012] mb-2">Not ready to call yet?</p>
                 <p className="font-playfair text-lg text-[#0c1929] mb-2 leading-snug">Read the Corporate Escape Kit first.</p>
