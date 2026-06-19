@@ -20,7 +20,9 @@ faqs:
   - q: "Does a higher franchise investment mean a better business?"
     a: "No. A larger investment usually reflects real estate, build-out, and equipment, not the quality of the opportunity itself. A $90,000 asset-light service business and a $600,000 build-out concept are simply different businesses with different operating models and different risk profiles. Match the investment level to your capital position and the role you want to play, then validate the specific economics with existing franchisees during due diligence."
 ---
-What does a franchise cost? The honest answer is that it depends almost entirely on category. As of 2026, the franchise investments we screen run from roughly $60,000 for an asset-light, home-based service to well over $1,000,000 for a real-estate-heavy concept like food service or a car wash. The category you choose sets the range before you ever compare two brands.
+What does a franchise cost? It depends almost entirely on category.
+
+As of 2026, the franchise investments we screen run from roughly $60,000 for an asset-light, home-based service to well over $1,000,000 for a real-estate-heavy concept like food service or a car wash. The category you choose sets the range before you ever compare two brands.
 
 Here is the investment range by category, and what actually moves the number. Every figure below reflects total investment, not the franchise fee alone. The franchise fee is one line item. Total investment includes the fee plus everything it takes to open: build-out, equipment, initial inventory, licensing, and the working capital you need to survive the first year. For the full breakdown of those four numbers, see [the total investment](/investment) overview.
 
