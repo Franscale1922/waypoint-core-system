@@ -68,3 +68,40 @@ console.log(`\nEm dashes in body (banned): ${emdashed.length}${list(emdashed, (r
 console.log(`\nDate qualifier "as of YYYY": present in ${rows.filter((r) => r.hasAsOf).length}/${n}`);
 console.log(`\nThin (<900 words): ${thin.length}${list(thin, (r) => `${r.f}(${r.words})`)}`);
 console.log(`Long lead paragraph (>320 chars): ${longLead.length}${list(longLead, (r) => `${r.f}(${r.leadLen})`)}`);
+
+// ─── Section 11 em-dash guard across rendered code (src/app, src/data) ───────
+// CONTENT-STANDARDS Section 11 bans em dashes in ALL public-facing and
+// agent-generated copy, not just markdown. The per-article scan above only
+// covers content/articles, which is exactly why UI and data-layer violations
+// accumulated undetected. This walks the code that renders to users/agents and
+// FAILS the run (exit 1) if any em dash remains, so the rule is enforceable in CI.
+const EMDASH = String.fromCharCode(0x2014); // avoid putting a literal em dash in this file
+const CODE_DIRS = ["src/app", "src/data"];
+const CODE_EXT = /\.(tsx?|css)$/;
+function walk(dir, acc = []) {
+  if (!fs.existsSync(dir)) return acc;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) walk(full, acc);
+    else if (CODE_EXT.test(e.name)) acc.push(full);
+  }
+  return acc;
+}
+const codeFiles = CODE_DIRS.flatMap((d) => walk(d));
+const emdashViolations = codeFiles
+  .map((f) => ({ f, count: fs.readFileSync(f, "utf8").split(EMDASH).length - 1 }))
+  .filter((r) => r.count > 0)
+  .sort((a, b) => b.count - a.count);
+const totalCodeEmdash = emdashViolations.reduce((s, r) => s + r.count, 0);
+const articleEmdash = rows.reduce((s, r) => s + r.emdash, 0);
+
+console.log(`\nSection 11 em dashes in src/app + src/data (banned): ${totalCodeEmdash} across ${emdashViolations.length} files`);
+for (const r of emdashViolations.slice(0, 20)) console.log(`  ${r.f} (${r.count})`);
+if (emdashViolations.length > 20) console.log(`  ... and ${emdashViolations.length - 20} more`);
+
+if (totalCodeEmdash > 0 || articleEmdash > 0) {
+  console.log(`\nFAIL Section 11: ${totalCodeEmdash + articleEmdash} em dashes total (articles: ${articleEmdash}, code: ${totalCodeEmdash}). Remove every em dash.`);
+  process.exitCode = 1;
+} else {
+  console.log(`\nPASS Section 11: 0 em dashes in articles, src/app, or src/data.`);
+}
