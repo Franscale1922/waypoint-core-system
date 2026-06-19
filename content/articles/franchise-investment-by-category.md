@@ -35,7 +35,7 @@ Here is the investment range by category, and what actually moves the number. Ev
 | Pet care (mobile grooming, services) | $75,000 to $200,000 | Asset-light |
 | Senior care (non-medical, home-based) | $100,000 to $250,000 | Asset-light |
 | IT services and managed services (MSP) | $100,000 to $250,000 | Asset-light B2B |
-| Junk removal and hauling | $80,000 to $350,000 | Equipment-based |
+| Junk removal and hauling | $150,000 to $350,000 | Equipment-based |
 | Restoration | $150,000 to $350,000 | Equipment-based service |
 | Fitness and wellness (studio to full facility) | $250,000 to $600,000 or more | Capital-heavy |
 | Food and beverage | $250,000 to $1,000,000 or more | Capital-heavy |
@@ -46,7 +46,7 @@ These are typical ranges across the brands we screen as of 2026. The specific nu
 
 ## Why does the same category show such a wide range?
 
-Notice that most categories above span a two-to-three-times range. That spread is not noise. It tells you what to ask about.
+Notice that most categories above span a two-to-four-times range, and the real-estate-heavy ones (food service, car washes) span wider still. That spread is not noise. It tells you what to ask about.
 
 Three things move a franchise to the high end of its category range. The first is real estate and build-out: any concept that needs a leased space, construction, and fixtures starts hundreds of thousands of dollars higher than one run from a van or a home office. The second is equipment: restoration, car washes, and food service carry equipment costs that service businesses do not. The third is working capital for a management layer. If you intend to run the business semi-absentee, you are funding a manager's salary from day one, which raises the practical capital you need well above the headline figure.
 
