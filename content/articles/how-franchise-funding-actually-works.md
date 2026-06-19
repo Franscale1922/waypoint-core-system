@@ -6,6 +6,7 @@ relatedSlugs:
   - "franchise-investment-by-category"
 slug: "how-franchise-funding-actually-works"
 date: "2025-11-14"
+updatedAt: "2026-06-19"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"

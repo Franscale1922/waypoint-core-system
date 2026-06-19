@@ -6,6 +6,7 @@ relatedSlugs:
   - "how-to-tell-if-a-franchisor-actually-cares"
 slug: "fdd-decoded-what-actually-matters"
 date: "2025-09-11"
+updatedAt: "2026-06-19"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"

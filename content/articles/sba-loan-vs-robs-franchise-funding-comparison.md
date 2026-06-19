@@ -2,6 +2,7 @@
 title: "SBA Loan vs. ROBS: Which Franchise Funding Path Fits You"
 slug: "sba-loan-vs-robs-franchise-funding-comparison"
 date: "2026-03-22"
+updatedAt: "2026-06-19"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
