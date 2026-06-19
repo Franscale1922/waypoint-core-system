@@ -1,0 +1,12 @@
+#!/bin/sh
+# Pre-push guard: enforce CONTENT-STANDARDS §11 (no em dashes) before every push.
+# CI cannot enforce this here (GitHub Actions is billing-disabled, and a free-plan
+# private repo cannot set required status checks / branch protection), so this
+# local hook is the real gate. Auto-installed via the package.json postinstall
+# (core.hooksPath=.githooks). Bypass in an emergency with: git push --no-verify
+if ! node scripts/aeo-audit.mjs; then
+  echo ""
+  echo "PUSH BLOCKED: CONTENT-STANDARDS section 11 violation (em dashes) above."
+  echo "Fix them, or mark a genuinely-functional em dash with the token: emdash-allow"
+  exit 1
+fi

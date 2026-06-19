@@ -8,7 +8,7 @@
     "build:check": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && (git config core.hooksPath .githooks || true)",
     "gsc-report": "node scripts/gsc-report.mjs",
     "ai-citation-check": "node scripts/ai-citation-check.mjs",
     "aeo-audit": "node scripts/aeo-audit.mjs",
