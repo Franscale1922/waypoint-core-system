@@ -16,3 +16,5 @@ jobs:
           node-version: 20
       - name: Verify Links
         run: node scripts/verify-links.mjs
+      - name: Enforce Content Standards (no em dashes, §11)
+        run: node scripts/aeo-audit.mjs
