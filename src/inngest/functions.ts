@@ -2700,6 +2700,286 @@ export const escapeKitNurtureProcess = inngest.createFunction(
     }
 );
 
+// ─── Pitch Decoder Nurture Process ──────────────────────────────────────────────
+// Triggered by: nurture/pitch-decoder.download
+// Short 2-email sequence (Day 3, Day 7) following the PDF delivery.
+// Suppression: stops on unsubscribe, TidyCal booking, or REPLIED lead status.
+
+export const pitchDecoderNurtureProcess = inngest.createFunction(
+    { id: "pitch-decoder-nurture-process", retries: 2 },
+    { event: "nurture/pitch-decoder.download" },
+    async ({ event, step }) => {
+        const { downloadId, email, name } = event.data as {
+            downloadId: string;
+            email: string;
+            name: string | null;
+        };
+
+        const firstName = name ? name.split(" ")[0] : "there";
+        const unsubscribeUrl = (() => {
+            const secret = process.env.UNSUBSCRIBE_SECRET;
+            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            const crypto = require("crypto");
+            const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
+            const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
+            return `${base}/api/pitch-decoder-unsubscribe?id=${downloadId}&token=${token}`;
+        })();
+
+        const footer = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            `To stop receiving these notes: ${unsubscribeUrl}`,
+        ].join("\n");
+
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            const record = await (prisma as any).pitchDecoderDownload.findUnique({
+                where: { id: downloadId },
+                select: { unsubscribed: true },
+            });
+            if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                select: { status: true, bookedAt: true } as any,
+            }) as any;
+            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
+        }
+
+        async function markStep(stepNum: number, completed = false) {
+            await (prisma as any).pitchDecoderDownload.update({
+                where: { id: downloadId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                },
+            });
+        }
+
+        // ── Email 2: Day 3 ──────────────────────────────────────────────────────
+        await step.sleep("wait-for-pd-email-2", "3d");
+
+        await step.run("send-pd-email-2", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `A quick follow-up on the Pitch Decoder.`,
+                "",
+                `The thing most people notice once they start using it is how much of a pitch is built to keep you nodding. Slowing down and asking that one question changes the tone of the whole conversation, in a good way.`,
+                "",
+                `If you want a sense of where you stand before any of those conversations, the readiness scorecard takes about four minutes and gives you a real number to work from. waypointfranchise.com/scorecard`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "the part of the pitch worth slowing down on",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3: Day 7 ──────────────────────────────────────────────────────
+        await step.sleep("wait-for-pd-email-3", "4d");
+
+        await step.run("send-pd-email-3", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `Last note on this one.`,
+                "",
+                `If you have a specific pitch in front of you and want a second set of eyes, that is most of what I do. No cost, no pressure. You ask questions, I ask questions, and at the end you have a clearer read on whether it holds up.`,
+                "",
+                `Reply here if you want to find a time, or book one directly at waypointfranchise.com/book.`,
+                "",
+                `Either way, I hope the Decoder was useful.`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "a second set of eyes",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(3, true);
+            return { sent: true, step: 3 };
+        });
+
+        return { status: "Pitch Decoder nurture complete", downloadId };
+    }
+);
+
+// ─── AI Paperwork Reader Nurture Process ────────────────────────────────────────
+// Triggered by: nurture/ai-fdd-reader.download
+// Short 2-email sequence (Day 3, Day 7) following the prompt-pack delivery.
+// Suppression: stops on unsubscribe, TidyCal booking, or REPLIED lead status.
+
+export const aiFddReaderNurtureProcess = inngest.createFunction(
+    { id: "ai-fdd-reader-nurture-process", retries: 2 },
+    { event: "nurture/ai-fdd-reader.download" },
+    async ({ event, step }) => {
+        const { downloadId, email, name } = event.data as {
+            downloadId: string;
+            email: string;
+            name: string | null;
+        };
+
+        const firstName = name ? name.split(" ")[0] : "there";
+        const unsubscribeUrl = (() => {
+            const secret = process.env.UNSUBSCRIBE_SECRET;
+            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            const crypto = require("crypto");
+            const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
+            const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
+            return `${base}/api/ai-fdd-reader-unsubscribe?id=${downloadId}&token=${token}`;
+        })();
+
+        const footer = [
+            "",
+            "---",
+            "Waypoint Franchise Advisors",
+            "P.O. Box 3421, Whitefish, MT 59937",
+            `To stop receiving these notes: ${unsubscribeUrl}`,
+        ].join("\n");
+
+        async function shouldSuppress(): Promise<{ stop: boolean; reason?: string }> {
+            const record = await (prisma as any).aiFddReaderDownload.findUnique({
+                where: { id: downloadId },
+                select: { unsubscribed: true },
+            });
+            if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+
+            const lead = await prisma.lead.findFirst({
+                where: { email },
+                select: { status: true, bookedAt: true } as any,
+            }) as any;
+            if (lead?.bookedAt) return { stop: true, reason: "booked" };
+            if (lead?.status === "REPLIED") return { stop: true, reason: "replied" };
+
+            return { stop: false };
+        }
+
+        async function markStep(stepNum: number, completed = false) {
+            await (prisma as any).aiFddReaderDownload.update({
+                where: { id: downloadId },
+                data: {
+                    nurtureStep: stepNum,
+                    ...(completed ? { nurtureCompletedAt: new Date() } : {}),
+                },
+            });
+        }
+
+        // ── Email 2: Day 3 ──────────────────────────────────────────────────────
+        await step.sleep("wait-for-fdd-email-2", "3d");
+
+        await step.run("send-fdd-email-2", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `Quick follow-up on the prompt pack.`,
+                "",
+                `Once people run an FDD through AI, the long document stops feeling like a wall. You get plain summaries and a short list of things worth a closer look, which is exactly the right place to bring your attorney in rather than asking them to read all 200 pages cold.`,
+                "",
+                `If you want a sense of where you stand before you get that far, the readiness scorecard takes about four minutes. waypointfranchise.com/scorecard`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "where the AI hands off to your attorney",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(2);
+            return { sent: true, step: 2 };
+        });
+
+        // ── Email 3: Day 7 ──────────────────────────────────────────────────────
+        await step.sleep("wait-for-fdd-email-3", "4d");
+
+        await step.run("send-fdd-email-3", async () => {
+            const s = await shouldSuppress();
+            if (s.stop) return { skipped: true, reason: s.reason };
+
+            const body = [
+                `Hi ${firstName},`,
+                "",
+                `Last note on this one.`,
+                "",
+                `If you have a document in front of you and want help reading what the AI surfaced, that is a good chunk of what I do. No cost, no pressure. We talk through what stood out and what is worth asking about.`,
+                "",
+                `Reply here if you want to find a time, or book one directly at waypointfranchise.com/book.`,
+                "",
+                `Either way, I hope the prompt pack saved you an afternoon.`,
+                "",
+                `Kelsey`,
+                footer,
+            ].join("\n");
+
+            const resendClient = new Resend(process.env.RESEND_API_KEY);
+            await resendClient.emails.send({
+                from: NURTURE_FROM,
+                to: email,
+                replyTo: NURTURE_REPLY_TO,
+                subject: "reading what the AI surfaced",
+                headers: {
+                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
+                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+                text: body,
+            });
+
+            await markStep(3, true);
+            return { sent: true, step: 3 };
+        });
+
+        return { status: "AI Paperwork Reader nurture complete", downloadId };
+    }
+);
+
 // ─── Archetype Quiz Nurture Process ─────────────────────────────────────────
 // Triggered by: nurture/archetype.complete
 // Sends 3 archetype-specific timed follow-ups: Day 3, Day 5, Day 7.

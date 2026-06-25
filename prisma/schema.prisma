@@ -184,3 +184,35 @@ model EscapeKitDownload {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 }
+
+// ─── Pitch Decoder Download ─────────────────────────────────────────────────
+// Mirrors EscapeKitDownload. PDF lead magnet: Franchise-Pitch-Decoder.pdf.
+// 2-email nurture sequence (Day 3, Day 7).
+model PitchDecoderDownload {
+  id                  String    @id @default(uuid())
+  email               String
+  name                String?
+  articleSlug         String?   // referral source — which page the form was on
+  unsubscribed        Boolean   @default(false)
+  unsubscribedAt      DateTime?
+  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7
+  nurtureCompletedAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
+
+// ─── AI Paperwork Reader Download ───────────────────────────────────────────
+// Mirrors EscapeKitDownload. PDF lead magnet: AI-Paperwork-Reader.pdf.
+// 2-email nurture sequence (Day 3, Day 7).
+model AiFddReaderDownload {
+  id                  String    @id @default(uuid())
+  email               String
+  name                String?
+  articleSlug         String?   // referral source — which page the form was on
+  unsubscribed        Boolean   @default(false)
+  unsubscribedAt      DateTime?
+  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7
+  nurtureCompletedAt  DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+}
