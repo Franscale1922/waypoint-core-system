@@ -80,7 +80,10 @@ async function getStats(): Promise<{ ownersHelped: number; statesServed: number 
     });
 
     if (!res.ok) throw new Error("stats fetch failed");
-    return res.json();
+    // `await` so a malformed-JSON response (e.g. an HTML error page returned
+    // mid-deploy) rejects INSIDE this try and falls back, instead of escaping
+    // as an unhandled rejection that fails the build-time prerender of "/".
+    return await res.json();
   } catch {
     return { ownersHelped: 146, statesServed: 35 };
   }
