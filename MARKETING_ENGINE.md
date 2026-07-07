@@ -310,6 +310,8 @@ Full calendar + queue: `content/CONTENT-CALENDAR.md`
 
 A beehiiv newsletter that converts content readers, scorecard takers, and "not now" cold email replies into a warm, nurtured subscriber base. These are franchise-curious professionals not ready to book today but want to stay connected.
 
+> **Sibling beehiiv buildout, paired 2026-07-07 (SEPARATE publication, do not merge).** Kelsey also runs **aiworkweek**, a faceless AI-at-work Instagram channel with its OWN beehiiv publication (`pub_2534fa67-4305-4803-8fd1-aeff0a84b9da`, `aiworkweek-12696e.beehiiv.com`), tracked in the separate `faceless-infotainment` repo. Its newsletter funnel (lead magnet published; the capture leg is not yet wired) is a DEFERRED sibling of THIS buildout program and is meant to reuse this program's methodology (platform choice, beehiiv MCP integration, welcome/nurture wiring), adapted to its own audience. It is NOT part of the Waypoint funnel; the two publications and their subscribers never mix. Full aiworkweek record: `faceless-infotainment` repo, `docs/BUILD_STATE.md` section "DEFERRED ... beehiiv newsletter funnel". When you next work the newsletter here, pick up the aiworkweek funnel as a parallel task.
+
 **Publication ID:** `pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d`  
 **Platform:** beehiiv (paid plan required — free tier does not include API write access)
 
