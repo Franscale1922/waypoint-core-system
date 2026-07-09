@@ -6,7 +6,10 @@
 # (core.hooksPath=.githooks). Bypass in an emergency with: git push --no-verify
 if ! node scripts/aeo-audit.mjs; then
   echo ""
-  echo "PUSH BLOCKED: CONTENT-STANDARDS section 11 violation (em dashes) above."
-  echo "Fix them, or mark a genuinely-functional em dash with the token: emdash-allow"
+  echo "PUSH BLOCKED: content audit failed (see details above). Common causes:"
+  echo "  - em dashes (CONTENT-STANDARDS section 11): remove them, or mark a"
+  echo "    genuinely-functional one with the token: emdash-allow"
+  echo "  - a metaTitle / article frontmatter title that hard-codes the brand"
+  echo "    (the title template already appends it): remove the brand suffix"
   exit 1
 fi
