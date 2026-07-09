@@ -1,4 +1,4 @@
-import { terms } from "@/data/glossary";
+import { terms, glossarySlug } from "@/data/glossary";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../lib/structured-data";
@@ -113,7 +113,11 @@ export default function GlossaryPage() {
               {entries.map(({ term, definition, related, relatedLabel }) => (
                 <div key={term} className="grid sm:grid-cols-[200px_1fr] gap-4 sm:gap-8 pl-4">
                   <div>
-                    <h2 className="font-playfair text-lg text-[#0c1929] leading-snug">{term}</h2>
+                    <h2 className="font-playfair text-lg text-[#0c1929] leading-snug">
+                      <Link href={`/glossary/${glossarySlug(term)}`} className="hover:text-[#8E3012] transition-colors">
+                        {term}
+                      </Link>
+                    </h2>
                   </div>
                   <div>
                     <p className="text-sm text-[#3a3a2e] leading-relaxed mb-3">{definition}</p>
