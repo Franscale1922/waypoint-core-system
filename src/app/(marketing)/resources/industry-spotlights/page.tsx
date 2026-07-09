@@ -5,7 +5,7 @@ import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from ".
 import JsonLd from "../../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Franchise Industry Spotlights | Waypoint Franchise Advisors",
+  title: "Franchise Industry Spotlights",
   description:
     "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
   alternates: {

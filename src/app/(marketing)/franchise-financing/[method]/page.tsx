@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!guide) return {};
   const url = `https://www.waypointfranchise.com/franchise-financing/${method}`;
   return {
-    title: `${guide.metaTitle} | Waypoint Franchise Advisors`,
+    title: guide.metaTitle,
     description: guide.metaDescription,
     alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {

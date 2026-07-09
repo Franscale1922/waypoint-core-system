@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Waypoint Franchise Advisors",
+  title: "Privacy Policy",
   description: "Privacy policy for waypointfranchise.com",
   alternates: { canonical: "https://www.waypointfranchise.com/privacy" },
   robots: { index: false },

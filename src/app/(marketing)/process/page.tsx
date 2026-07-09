@@ -46,7 +46,7 @@ const howToSchema = {
 };
 
 export const metadata: Metadata = {
-  title: "How It Works | Waypoint Franchise Advisors",
+  title: "How It Works",
   description:
     "Two hours before you see a single brand. Here is exactly what happens from your first conversation to the day you make a decision.",
   openGraph: {

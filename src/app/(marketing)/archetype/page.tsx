@@ -4,7 +4,7 @@ import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../li
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "What Kind of Franchise Owner Are You? | Waypoint Franchise Advisors",
+  title: "What Kind of Franchise Owner Are You?",
   description:
     "Take the Franchise Archetype Quiz. 8 questions to discover your franchise personality type, the industries you're wired for, and the ones to avoid. Free, no sales pitch.",
   alternates: { canonical: "https://www.waypointfranchise.com/archetype" },

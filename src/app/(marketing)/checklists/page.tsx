@@ -4,7 +4,7 @@ import EmailCapture from "../../components/EmailCapture";
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Free Franchise Checklists | Waypoint Franchise Advisors",
+  title: "Free Franchise Checklists",
   description:
     "Download free franchise readiness checklists for every major category: food and beverage, home services, fitness, senior care, and B2B. Built from real advisory experience.",
   openGraph: {

@@ -7,7 +7,7 @@ import { SITE_URL, jsonLdGraph, webPageSchema } from "../lib/structured-data";
 import JsonLd from "../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",
+  title: "Find the Franchise That Fits Your Life",
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners across 35 states find the right franchise. No pitch, no pressure.",
   alternates: { canonical: "https://www.waypointfranchise.com" },

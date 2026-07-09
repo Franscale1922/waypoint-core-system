@@ -4,7 +4,7 @@ import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../li
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Contact | Waypoint Franchise Advisors",
+  title: "Contact",
   description: "Ask a question, share where you are in the process, or just say hello. Kelsey responds within one business day.",
   alternates: { canonical: "https://www.waypointfranchise.com/contact" },
   openGraph: {

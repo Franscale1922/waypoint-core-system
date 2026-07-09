@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const article = getArticleBySlug(slug);
   if (!article) return {};
   return {
-    title: `${article.meta.title} | Waypoint Franchise Advisors`,
+    title: article.meta.title,
     description: article.meta.excerpt,
     alternates: {
       canonical: `https://www.waypointfranchise.com/resources/${slug}`,

@@ -4,7 +4,7 @@ import EscapeKitCaptureForm from "../../components/EscapeKitCaptureForm";
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "The Financial Safety Nets of Franchising vs. W2 | Waypoint Franchise Advisors",
+  title: "The Financial Safety Nets of Franchising vs. W2",
   description:
     "A free guide for corporate professionals: what franchising actually costs, how SBA financing works, and what most W2 employees don't understand about their financial position.",
   openGraph: {

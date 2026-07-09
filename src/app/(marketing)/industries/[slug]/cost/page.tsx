@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `https://www.waypointfranchise.com/industries/${slug}/cost`;
   const lower = industry.name.toLowerCase();
   return {
-    title: `How Much Does a ${industry.name} Franchise Cost? | Waypoint Franchise Advisors`,
+    title: `How Much Does a ${industry.name} Franchise Cost?`,
     description: `What a ${lower} franchise actually costs: the typical investment range, what drives the cost, and the components to budget for. Educational ranges only; the brand-specific figure is in FDD Item 7.`,
     alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {
