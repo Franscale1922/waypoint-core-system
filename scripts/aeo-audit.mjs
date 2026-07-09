@@ -120,6 +120,7 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 }
 
 // ─── Brand-duplication guard (title template safety) ────────────────────────
+// Enforces CONTENT-STANDARDS Section 14.
 // The root layout applies title.template "%s | Waypoint Franchise Advisors".
 // Any title fed into that %s that ALSO hard-codes the brand renders it twice,
 // e.g. "Foo | Waypoint Franchise Advisors | Waypoint Franchise Advisors".
