@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllArticles } from "../lib/articles";
 import { industries, getIndustryCost } from "../data/industries";
 import { financingGuides } from "../data/financing";
+import { allGlossaryEntries } from "../data/glossary";
 
 const SITE_URL = "https://www.waypointfranchise.com";
 
@@ -211,11 +212,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.75,
     }));
 
+  const glossaryTermPages: MetadataRoute.Sitemap = allGlossaryEntries.map((e) => ({
+    url: `${SITE_URL}/glossary/${e.slug}`,
+    lastModified: new Date("2026-03-15"),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   return [
     ...corePages,
     ...articlePages,
     ...industryPages,
     ...financingGuidePages,
     ...industryCostPages,
+    ...glossaryTermPages,
   ];
 }

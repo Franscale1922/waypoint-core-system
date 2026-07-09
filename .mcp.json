@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "search-console": {
+      "type": "stdio",
+      "command": "search-console-mcp",
+      "env": {
+        "SC_SITE": "https://www.waypointfranchise.com/"
+      }
+    }
+  }
+}

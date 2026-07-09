@@ -803,3 +803,29 @@ export const terms: GlossaryGroup[] = [
     ],
   },
 ];
+
+// --- Per-term addressing (for /glossary/[slug] pages) ---------------------------------------
+// Each term gets its own indexable URL so "<term> meaning"-style queries land on a focused page
+// instead of the 99-entry index. Slug derived from the term; e.g. "Average Unit Volume (AUV)"
+// -> "average-unit-volume-auv".
+export const glossarySlug = (term: string): string =>
+  term.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+export type FlatGlossaryEntry = GlossaryEntry & { slug: string; letter: string };
+
+export const allGlossaryEntries: FlatGlossaryEntry[] = (() => {
+  const seen = new Set<string>();
+  const out: FlatGlossaryEntry[] = [];
+  for (const g of terms) {
+    for (const e of g.entries) {
+      const slug = glossarySlug(e.term);
+      if (seen.has(slug)) continue; // defensive: never emit a colliding slug
+      seen.add(slug);
+      out.push({ ...e, slug, letter: g.letter });
+    }
+  }
+  return out;
+})();
+
+export const getGlossaryEntry = (slug: string): FlatGlossaryEntry | undefined =>
+  allGlossaryEntries.find((e) => e.slug === slug);
