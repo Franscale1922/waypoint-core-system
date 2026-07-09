@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | Waypoint Franchise Advisors",
+  title: "Terms of Use",
   description: "Terms of use for waypointfranchise.com",
   alternates: { canonical: "https://www.waypointfranchise.com/terms" },
   robots: { index: false },

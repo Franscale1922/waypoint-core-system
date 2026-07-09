@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!industry) return {};
   const url = `https://www.waypointfranchise.com/industries/${slug}`;
   return {
-    title: `${industry.metaTitle} | Waypoint Franchise Advisors`,
+    title: industry.metaTitle,
     description: industry.metaDescription,
     alternates: {
       canonical: url,

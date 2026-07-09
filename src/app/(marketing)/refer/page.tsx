@@ -4,7 +4,7 @@ import Image from "next/image";
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Refer a Friend | Waypoint Franchise Advisors",
+  title: "Refer a Friend",
   description:
     "Know someone who's been quietly thinking about franchise ownership? Here's a simple way to point them in the right direction.",
   alternates: { canonical: "https://www.waypointfranchise.com/refer" },

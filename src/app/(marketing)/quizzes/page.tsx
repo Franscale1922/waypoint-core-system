@@ -4,7 +4,7 @@ import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema } from "../../li
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Free Franchise Quizzes | Waypoint Franchise Advisors",
+  title: "Free Franchise Quizzes",
   description:
     "Two free assessments to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz scores your capital, mindset, and timing. The Owner Type Quiz tells you which franchise categories fit the way you naturally work.",
   alternates: { canonical: "https://www.waypointfranchise.com/quizzes" },

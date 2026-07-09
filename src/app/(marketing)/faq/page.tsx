@@ -7,7 +7,7 @@ import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema }
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "FAQ | Waypoint Franchise Advisors",
+  title: "FAQ",
   description:
     "Honest answers to common questions about franchise consulting, cost, capital requirements, funding paths, territory, semi-absentee ownership, the FDD, and how the process works.",
   alternates: {

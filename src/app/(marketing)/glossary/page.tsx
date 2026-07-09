@@ -20,7 +20,7 @@ const glossarySchema = {
 };
 
 export const metadata: Metadata = {
-  title: "Franchise Glossary: 90+ Key Terms Explained | Waypoint Franchise Advisors",
+  title: "Franchise Glossary: 90+ Key Terms Explained",
   description:
     "The most complete plain-language franchise glossary for buyers: FDD items 5–21, royalty, territory, Item 19, discovery day, ROBS, SBA loans, unit economics, semi-absentee, non-compete, transfer fee, and more.",
   alternates: {

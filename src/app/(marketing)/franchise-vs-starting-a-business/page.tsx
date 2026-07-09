@@ -26,7 +26,7 @@ const faqs = [
 ];
 
 export const metadata: Metadata = {
-  title: "Franchise vs. Starting Your Own Business: How to Decide | Waypoint Franchise Advisors",
+  title: "Franchise vs. Starting Your Own Business: How to Decide",
   description:
     "Franchise or independent startup? An honest comparison of control, risk, cost, and support: the real tradeoffs between buying a franchise and building a business from scratch.",
   alternates: { canonical: "https://www.waypointfranchise.com/franchise-vs-starting-a-business" },

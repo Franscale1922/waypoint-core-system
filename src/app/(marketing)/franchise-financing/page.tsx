@@ -11,7 +11,7 @@ import { financingMethods as methods, financingFaqs as faqs } from "../../../dat
 const faqSchema = faqPageSchema(faqs, `${SITE_URL}/franchise-financing`);
 
 export const metadata: Metadata = {
-  title: "How to Finance a Franchise: SBA, ROBS, HELOC & More | Waypoint Franchise Advisors",
+  title: "How to Finance a Franchise: SBA, ROBS, HELOC & More",
   description:
     "The main ways people fund a franchise (SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing) and how to think about which fits your situation.",
   alternates: {

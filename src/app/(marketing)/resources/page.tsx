@@ -8,7 +8,7 @@ import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from ".
 import JsonLd from "../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Franchise Resources | Waypoint Franchise Advisors",
+  title: "Franchise Resources",
   description: "Guides, articles, and tools for anyone seriously exploring franchise ownership. No pitch, no agenda.",
   openGraph: {
     title: "Franchise Resources | Waypoint Franchise Advisors",

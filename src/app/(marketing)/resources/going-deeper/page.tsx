@@ -5,7 +5,7 @@ import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from ".
 import JsonLd from "../../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Going Deeper: Advanced Franchise Guides | Waypoint Franchise Advisors",
+  title: "Going Deeper: Advanced Franchise Guides",
   description:
     "You know the basics. Now go deeper. Guides covering funding, territory selection, multi-unit strategy, the franchise agreement, what to look for at Discovery Day, and how to read an FDD.",
   alternates: {

@@ -5,7 +5,7 @@ import { SITE_URL, jsonLdGraph, collectionPageSchema, breadcrumbSchema } from ".
 import JsonLd from "../../../components/JsonLd";
 
 export const metadata: Metadata = {
-  title: "Getting Started with Franchising | Waypoint Franchise Advisors",
+  title: "Getting Started with Franchising",
   description:
     "If you are new to franchising, start here. Practical guides covering readiness, costs, how consultants work, FDD review, and what type of franchise fits your situation.",
   alternates: {

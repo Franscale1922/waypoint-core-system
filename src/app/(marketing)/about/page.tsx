@@ -82,7 +82,7 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
 
 
 export const metadata: Metadata = {
-  title: "About Kelsey Stuart | Waypoint Franchise Advisors",
+  title: "About Kelsey Stuart",
   description:
     "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life. Honest, no-pitch consulting.",
   alternates: { canonical: "https://www.waypointfranchise.com/about" },
