@@ -34,7 +34,8 @@ export async function generateMetadata({
   const entry = getGlossaryEntry(slug);
   if (!entry) return {};
   const url = `${SITE_URL}/glossary/${entry.slug}`;
-  const title = `${entry.term}: Meaning in Franchising | Waypoint Franchise Advisors`;
+  // Root layout applies title.template "%s | Waypoint Franchise Advisors"; do NOT repeat the brand here.
+  const title = `${entry.term}: Meaning in Franchising`;
   const description = metaDesc(entry.definition);
   return {
     title,
