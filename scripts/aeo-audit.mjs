@@ -118,3 +118,53 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 } else {
   console.log(`\nPASS Section 11: 0 em dashes in articles or src/.`);
 }
+
+// ─── Brand-duplication guard (title template safety) ────────────────────────
+// Enforces CONTENT-STANDARDS Section 14.
+// The root layout applies title.template "%s | Waypoint Franchise Advisors".
+// Any title fed into that %s that ALSO hard-codes the brand renders it twice,
+// e.g. "Foo | Waypoint Franchise Advisors | Waypoint Franchise Advisors".
+// Page-level metadata titles are visible in a page diff and caught in review;
+// the data-layer sources below are invisible there, so they are the real
+// regression risk and get guarded here.
+//
+// Scope is deliberately narrow to avoid false positives: only article
+// frontmatter `title:` and `metaTitle:` in src/data feed the template. openGraph
+// and JSON-LD schema titles legitimately keep the brand and are NOT scanned.
+const BRAND = "Waypoint Franchise Advisors";
+const brandDupes = [];
+
+// (a) article frontmatter titles
+for (const f of files) {
+  const { fm } = splitFM(fs.readFileSync(path.join(DIR, f), "utf8"));
+  const titleLine = fm.split("\n").find((l) => /^\s*title:/.test(l));
+  if (titleLine && titleLine.includes(BRAND)) {
+    brandDupes.push(`content/articles/${f} (frontmatter title)`);
+  }
+}
+
+// (b) metaTitle values in the data layer (any src/data/*.ts, so new data files
+//     are covered automatically)
+const DATA_DIR = "src/data";
+const dataFiles = fs.existsSync(DATA_DIR)
+  ? fs.readdirSync(DATA_DIR).filter((f) => f.endsWith(".ts"))
+  : [];
+for (const f of dataFiles) {
+  fs.readFileSync(path.join(DATA_DIR, f), "utf8")
+    .split("\n")
+    .forEach((line, i) => {
+      if (/metaTitle:/.test(line) && line.includes(BRAND)) {
+        brandDupes.push(`src/data/${f}:${i + 1} (metaTitle)`);
+      }
+    });
+}
+
+console.log(`\nBrand duplication in template-fed titles (banned): ${brandDupes.length}`);
+for (const d of brandDupes) console.log(`  ${d}`);
+
+if (brandDupes.length > 0) {
+  console.log(`\nFAIL: ${brandDupes.length} title source(s) hard-code "${BRAND}". The root layout's title.template already appends it, so these render the brand twice. Remove the brand from the metaTitle/frontmatter title and let the template add it once.`);
+  process.exitCode = 1;
+} else {
+  console.log(`PASS: no brand duplication in template-fed titles.`);
+}

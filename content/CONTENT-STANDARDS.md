@@ -372,3 +372,41 @@ If a section fails the test, the fix is not to add more words. It is to replace 
 ### Relationship to other sections
 
 This section sharpens Section 3 (Reader-First) and Section 4 (AEO). Those tell you to answer directly and write for extraction. This one tells you *what* to put in the extractable slot: a non-commodity insight, not a paraphrase. A piece can satisfy every other rule and still be commodity. It is not done until it passes the commodity test above.
+
+---
+
+## Section 14 — Page Titles and Brand Duplication
+
+**This is a hard rule, enforced by the pre-push audit.**
+
+The site's root layout applies a title template: `%s | Waypoint Franchise Advisors`. Every page and article title automatically gets the brand appended once. Do **not** add the brand yourself to any title that feeds this template, or it renders twice, e.g. `Franchise Glossary | Waypoint Franchise Advisors | Waypoint Franchise Advisors`. Duplicated branding wastes the title tag, looks like spam in search results, and lowers click-through.
+
+### The rule
+
+Never write `| Waypoint Franchise Advisors` (or any brand suffix) into a title that the template will brand for you. This applies to:
+
+- **Article frontmatter `title:`** in `content/articles/*.md`
+- **`metaTitle:` fields** in the data layer (`src/data/*.ts`, e.g. `industries.ts`, `financing.ts`)
+
+Write the bare, descriptive title only. The template supplies the brand.
+
+- ❌ `title: "How to Finance a Franchise | Waypoint Franchise Advisors"`
+- ✅ `title: "How to Finance a Franchise"`
+
+### Where the brand IS allowed
+
+Some fields do **not** pass through the template and legitimately include the brand. Leave these as-is:
+
+- `openGraph` titles and `twitter` titles (social-share cards, not the `<title>` tag)
+- JSON-LD structured-data `name` fields
+- The root layout's `title.default` (the fallback for pages with no title of their own)
+
+If a page genuinely needs a custom title with no brand appended at all, use `title: { absolute: "..." }` in that page's metadata rather than hard-coding the brand.
+
+### Verification
+
+The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains `Waypoint Franchise Advisors`. To check manually before committing:
+
+`grep -rn "Waypoint Franchise Advisors" content/articles src/data`
+
+and confirm no `title:` or `metaTitle:` line appears in the results.
