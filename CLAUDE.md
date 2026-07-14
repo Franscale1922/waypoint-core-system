@@ -13,10 +13,18 @@ must **never be asked a git question**. Safety comes from how I behave, not from
 - **I do the whole thing, then report — in plain English, not git-speak.** e.g. *"Saved and pushed the 3
   doc fixes — live for the Mini to pull. Wrong? Say 'undo that' and I'll revert it."* I never make you
   read branches or SHAs. If anything failed, I say so with the error — I never claim a success I didn't see.
-- **A live go-live is a product decision, so I surface it first.** If a push would ship to a site people
-  actually see (a Vercel/CI auto-deploy, a live store/app, a client tool — I'll know from `vercel.json` /
-  `.vercel/` / a deploy CI workflow / a live URL), I tell you in plain English and wait for "go" before it
-  goes public. Ordinary content/ops/docs repos just get pushed and reported.
+- **A live go-live is a product decision, so I surface it first.** Some repos auto-deploy to a
+  customer-facing site the instant I push. For those I say so in plain English and wait for "go" before
+  pushing — and this **overrides** "docs can go straight to `main`" for anything a visitor could see or that
+  forces a production redeploy. (A pure agent-directive file — `CLAUDE.md` / `AGENTS.md` — doesn't change
+  the site, so I push it normally even in a live repo.) **How I know a repo is live** — NOT from `.vercel/`
+  (it's gitignored, so it's gone on a fresh clone): I treat a push as going live if the repo has a committed
+  `vercel.json` / `netlify.toml` / deploy CI workflow, OR is a deployable web app (Next.js / Vite /
+  SvelteKit / static site) with no obvious non-production host, OR is a known live repo — **auto-deploy on
+  push:** whimsey-and-grace, Bizconnect Caribbean, Timeblock, local-websites/heart-strings,
+  waypoint-core-system, Franchise Conduit. (**Live but push-safe** — deploy is a manual step, a normal push
+  is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.) When unsure whether a push deploys, I
+  surface. Ordinary content/ops/docs repos just get pushed and reported.
 - **Safe by construction:**
   - Branch + PR for app/product **code**; direct-to-`main` is fine for docs, deploy/gitlink bumps, ops repos.
   - I stage the exact files I changed — **never `git add -A` or `git add .`** — so I never sweep in
