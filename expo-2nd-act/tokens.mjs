@@ -45,13 +45,20 @@ export const BRAND = {
   wordmarkBottom: 'Franchise Advisors',
 };
 
-// QR targets from the brief.
+// QR targets. Kelsey approved the first-party /guide redirect (NOT a third-party
+// shortener): waypointfranchise.com/guide -> the Doc. We encode `docShort` everywhere
+// (background + slide 4) because it scans on both decoders with margin and prints as a
+// human-typeable fallback URL. `docTarget` is what the live-site redirect must point to.
 export const URLS = {
-  doc: 'https://docs.google.com/document/d/1zGcw_SuQ_sec_VPz6IVAH732koLZIT5tsd_rllD9Tr8/edit?usp=sharing',
+  docShort: 'https://waypointfranchise.com/guide', // encoded in the Doc QR + printed
+  docTarget: 'https://docs.google.com/document/d/1zGcw_SuQ_sec_VPz6IVAH732koLZIT5tsd_rllD9Tr8/edit?usp=sharing', // redirect destination
   booking: 'https://tidycal.com/m7v2jox/2nd-act-expo-meeting',
-  // Candidate first-party redirect (NOT a third-party shortener). Only used if the
-  // long Doc URL fails the compression-simulated decode test at background size.
-  redirectCandidate: 'https://waypointfranchise.com/guide',
+};
+
+// Plain-URL fallbacks printed under each QR (what a person would type).
+export const PRINT_URLS = {
+  doc: 'waypointfranchise.com/guide',
+  booking: 'tidycal.com/m7v2jox/2nd-act-expo-meeting',
 };
 
 export const CANVAS = { width: 1920, height: 1080 };

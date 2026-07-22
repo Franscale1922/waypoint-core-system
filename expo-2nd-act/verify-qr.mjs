@@ -10,10 +10,11 @@ import { makeQR, decodeBoth, compositeOnCanvas, downscale, compress } from './qr
 const JPEG_QUALITIES = [70, 45, 30];
 const mark = (v) => (v === true ? '✓' : v === false ? '✗' : '·'); // · = engine n/a
 
+// Doc QR encodes the /guide short redirect (Kelsey-approved, first-party). Background QR
+// is the hardest case (smallest + video-compressed), so it gets the 640x360 stage too.
 const CASES = [
-  { name: 'doc-background', url: URLS.doc, px: QR_SIZES.backgroundDoc, stages: [[960, 540], [640, 360]] },
-  { name: 'redirect-background', url: URLS.redirectCandidate, px: QR_SIZES.backgroundDoc, stages: [[960, 540], [640, 360]] },
-  { name: 'doc-slide', url: URLS.doc, px: QR_SIZES.slideDoc, stages: [[960, 540]] },
+  { name: 'doc-background', url: URLS.docShort, px: QR_SIZES.backgroundDoc, stages: [[960, 540], [640, 360]] },
+  { name: 'doc-slide', url: URLS.docShort, px: QR_SIZES.slideDoc, stages: [[960, 540]] },
   { name: 'booking-slide', url: URLS.booking, px: QR_SIZES.slideBooking, stages: [[960, 540]] },
 ];
 
