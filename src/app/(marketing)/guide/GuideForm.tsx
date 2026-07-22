@@ -84,8 +84,11 @@ export default function GuideForm() {
 
   // Restore any saved draft on this device.
   useEffect(() => {
+    // Restoring persisted state on mount is a legitimate client-only hydration pattern
+    // (reading localStorage during render would cause a server/client mismatch).
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       if (raw) setValues({ ...emptyState(), ...JSON.parse(raw) });
     } catch {
       /* ignore */
@@ -137,11 +140,23 @@ export default function GuideForm() {
     <div ref={formRef}>
       {/* Print-only: hide site chrome + controls, tidy the worksheet for PDF */}
       <style>{`
+        .print-answer { display: none; }
         @media print {
           header, footer, .no-print { display: none !important; }
           .print-only { display: block !important; }
-          .guide-card { break-inside: avoid; box-shadow: none !important; border-color: #ccc !important; }
-          textarea { border: none !important; padding-left: 0 !important; }
+          /* Textareas don't reliably print their content at the narrower print width,
+             so hide them and print a plain text mirror that flows without clipping. */
+          textarea { display: none !important; }
+          input { border: none !important; padding-left: 0 !important; }
+          .print-answer {
+            display: block !important; white-space: pre-wrap; word-break: break-word;
+            min-height: 1.3em; color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 3px;
+          }
+          .guide-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
+          /* Closing card is navy-on-white on screen; browsers drop backgrounds in print,
+             so force it dark-on-white so the booking URL + contact stay visible. */
+          .guide-close { background: #fff !important; color: #1a1a1a !important; padding: 0 !important; border: none !important; }
+          .guide-close a, .guide-close p, .guide-close span, .guide-close .print-only { color: #1a1a1a !important; }
           body { background: #fff !important; }
         }
       `}</style>
@@ -162,7 +177,7 @@ export default function GuideForm() {
       </div>
 
       {/* Action bar */}
-      <div className="no-print sticky top-[64px] z-30 -mx-4 sm:mx-0 mb-8 px-4 sm:px-5 py-3 bg-[#FAF8F4]/90 backdrop-blur border-y sm:border border-[#e8e0d0] sm:rounded-xl flex flex-wrap items-center gap-3">
+      <div className="no-print sticky top-[52px] sm:top-[60px] z-30 -mx-4 sm:mx-0 mb-8 px-4 sm:px-5 py-3 bg-[#FAF8F4]/90 backdrop-blur border-y sm:border border-[#e8e0d0] sm:rounded-xl flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={() => window.print()}
@@ -219,6 +234,7 @@ export default function GuideForm() {
                   placeholder="Notes…"
                   className="w-full resize-none overflow-hidden text-[#3a3a2e] bg-[#faf9f6] border border-[#e8e0d0] rounded-lg px-3 py-2.5 leading-relaxed outline-none focus:border-[#8E3012] focus:bg-white transition-colors"
                 />
+                <div className="print-answer" aria-hidden="true">{values[f.key] || " "}</div>
               </div>
             ))}
           </div>
@@ -226,7 +242,7 @@ export default function GuideForm() {
       ))}
 
       {/* Closing: Kelsey's note + booking */}
-      <div className="guide-card mt-10 bg-[#0c1929] text-white rounded-xl p-6 sm:p-8">
+      <div className="guide-card guide-close mt-10 bg-[#0c1929] text-white rounded-xl p-6 sm:p-8">
         <p className="text-[#e9d9c8] leading-relaxed">
           I have owned a franchise and I have built one. I have helped 150 people work through
           this decision, and I have helped award more than 220 franchise territories. I am
