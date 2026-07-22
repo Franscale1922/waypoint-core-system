@@ -85,11 +85,27 @@ async function render(context, asset) {
   const page = await context.newPage();
   await page.goto(T(asset.template), { waitUntil: 'load' });
   await waitFonts(page);
-  const shot = await page.screenshot({ type: 'png', clip: { x: 0, y: 0, width: CANVAS.width, height: CANVAS.height } });
+  // QR slots: any element with data-qr reserves space in the layout; we composite the exact
+  // QR PNG (out/<name>.png) over it with sharp at an INTEGER pixel offset. This keeps the QR
+  // pixels identical to the standalone (which decodes on both engines) instead of letting the
+  // browser sub-pixel-resample an <img>, which degrades stricter decoders.
+  const slots = await page.$$eval('[data-qr]', (els) =>
+    els.map((el) => {
+      const r = el.getBoundingClientRect();
+      return { name: el.getAttribute('data-qr'), x: Math.round(r.x), y: Math.round(r.y) };
+    }),
+  );
+  let shot = await page.screenshot({ type: 'png', clip: { x: 0, y: 0, width: CANVAS.width, height: CANVAS.height } });
   await page.close();
+  if (slots.length) {
+    shot = await sharp(shot)
+      .composite(slots.map((s) => ({ input: join(OUT, `${s.name}.png`), left: s.x, top: s.y })))
+      .png()
+      .toBuffer();
+  }
   const outPath = join(OUT, asset.out);
   const { ok, m } = await normalize(shot, outPath, asset.bg);
-  console.log(`  ${asset.out.padEnd(24)} ${m.width}x${m.height} space=${m.space} alpha=${m.hasAlpha} ch=${m.channels} icc=${!!m.icc} ${ok ? '✓' : '✗ FAIL'}`);
+  console.log(`  ${asset.out.padEnd(24)} ${m.width}x${m.height} space=${m.space} alpha=${m.hasAlpha} ch=${m.channels} icc=${!!m.icc}${slots.length ? ` qr=${slots.length}` : ''} ${ok ? '✓' : '✗ FAIL'}`);
   return ok;
 }
 
