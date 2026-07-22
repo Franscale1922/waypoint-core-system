@@ -142,7 +142,8 @@ export default function GuideForm() {
       <style>{`
         .print-answer { display: none; }
         @media print {
-          header, footer, .no-print { display: none !important; }
+          /* Hide the site header/footer, on-screen-only controls, and the chat widget. */
+          header, footer, .no-print, #my-secure-widget-root { display: none !important; }
           .print-only { display: block !important; }
           /* Textareas don't reliably print their content at the narrower print width,
              so hide them and print a plain text mirror that flows without clipping. */
@@ -153,10 +154,7 @@ export default function GuideForm() {
             min-height: 1.3em; color: #1a1a1a; border-bottom: 1px solid #ddd; padding-bottom: 3px;
           }
           .guide-card { break-inside: avoid; box-shadow: none !important; border: 1px solid #ccc !important; }
-          /* Closing card is navy-on-white on screen; browsers drop backgrounds in print,
-             so force it dark-on-white so the booking URL + contact stay visible. */
-          .guide-close { background: #fff !important; color: #1a1a1a !important; padding: 0 !important; border: none !important; }
-          .guide-close a, .guide-close p, .guide-close span, .guide-close .print-only { color: #1a1a1a !important; }
+          .guide-close a, .guide-close a * { color: #8E3012 !important; }
           body { background: #fff !important; }
         }
       `}</style>
@@ -241,16 +239,21 @@ export default function GuideForm() {
         </div>
       ))}
 
-      {/* Closing: Kelsey's note + booking */}
-      <div className="guide-card guide-close mt-10 bg-[#0c1929] text-white rounded-xl p-6 sm:p-8">
-        <p className="text-[#e9d9c8] leading-relaxed">
+      {/* Closing: Kelsey's note + booking (light card, matches the site; the site's own
+          navy footer renders below this) */}
+      <div className="guide-card guide-close mt-10 bg-white border border-[#e8e0d0] rounded-xl p-6 sm:p-8">
+        <div className="w-8 h-[3px] bg-[#CC6535] mb-5" />
+        <p className="text-xs font-semibold text-[#8E3012] uppercase tracking-[0.2em] mb-4">
+          Your advisor
+        </p>
+        <p className="text-[#3a3a2e] leading-relaxed">
           I have owned a franchise and I have built one. I have helped 150 people work through
           this decision, and I have helped award more than 220 franchise territories. I am
           partnered with over 250 brands. There is no cost to you. Franchise brands pay
           referral fees, so there is no invoice and no contract. The goal is to find the one
           that fits like a glass slipper.
         </p>
-        <p className="mt-4 text-white/90 leading-relaxed">
+        <p className="mt-4 text-[#3a3a2e] leading-relaxed">
           If you want to talk through what you heard today, I would love to get together.
         </p>
         <a
@@ -261,19 +264,23 @@ export default function GuideForm() {
         >
           Grab 30 minutes with me →
         </a>
-        <p className="print-only hidden mt-4 text-white/90">
-          Book 30 minutes: tidycal.com/m7v2jox/2nd-act-expo-meeting
-        </p>
+        {/* Print/PDF: a real, clickable underlined link (the button above is hidden in print) */}
+        <a
+          href="https://tidycal.com/m7v2jox/2nd-act-expo-meeting"
+          className="print-only hidden mt-5 text-[#8E3012] font-semibold underline"
+        >
+          Book 30 minutes → tidycal.com/m7v2jox/2nd-act-expo-meeting
+        </a>
 
-        <div className="mt-6 pt-6 border-t border-white/15 text-sm text-white/80 leading-relaxed">
-          <p className="font-playfair text-lg text-white">Kelsey Stuart</p>
+        <div className="mt-6 pt-6 border-t border-[#e8e0d0] text-sm text-[#5a5a4a] leading-relaxed">
+          <p className="font-playfair text-xl text-[#0c1929]">Kelsey Stuart</p>
           <p>Waypoint Franchise Advisors</p>
-          <p>
-            <a href="https://www.waypointfranchise.com" className="hover:text-white" rel="noopener">waypointfranchise.com</a>
+          <p className="mt-1">
+            <a href="https://www.waypointfranchise.com" className="text-[#8E3012] hover:underline" rel="noopener">waypointfranchise.com</a>
             {" · "}
-            <a href="mailto:kelsey@waypointfranchise.com" className="hover:text-white">kelsey@waypointfranchise.com</a>
+            <a href="mailto:kelsey@waypointfranchise.com" className="text-[#8E3012] hover:underline">kelsey@waypointfranchise.com</a>
             {" · "}
-            <a href="tel:+12149951062" className="hover:text-white">(214) 995-1062</a>
+            <a href="tel:+12149951062" className="text-[#8E3012] hover:underline">(214) 995-1062</a>
           </p>
         </div>
       </div>
