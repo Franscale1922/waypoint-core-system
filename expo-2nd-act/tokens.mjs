@@ -51,7 +51,9 @@ export const BRAND = {
 // human-typeable fallback URL. `docTarget` is what the live-site redirect must point to.
 export const URLS = {
   docShort: 'https://waypointfranchise.com/guide', // encoded in the Doc QR + printed
-  docTarget: 'https://docs.google.com/document/d/1zGcw_SuQ_sec_VPz6IVAH732koLZIT5tsd_rllD9Tr8/edit?usp=sharing', // redirect destination
+  // Redirect destination = the Doc's /copy endpoint, so each visitor is prompted to make
+  // their OWN editable copy (take notes; one copy per brand), not a shared read-only view.
+  docTarget: 'https://docs.google.com/document/d/1zGcw_SuQ_sec_VPz6IVAH732koLZIT5tsd_rllD9Tr8/copy',
   booking: 'https://tidycal.com/m7v2jox/2nd-act-expo-meeting',
 };
 

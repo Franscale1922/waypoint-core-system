@@ -34,8 +34,11 @@ Individual steps: `npm run qr`, `npm run images`, `npm run verify-qr`, `npm run 
   the live site — see below), so the QR never changes when the Doc moves; just repoint the
   redirect. To change the booking link, edit `URLS.booking` in `tokens.mjs` and `npm run all`.
 - **The `/guide` redirect** lives in the repo-root `next.config.ts` (on `main`, deployed to
-  production): `waypointfranchise.com/guide` → the Google Doc (307 temporary). Change the
-  destination there to repoint the guide without touching any asset.
+  production): `waypointfranchise.com/guide` → the Google Doc's **`/copy`** endpoint (307
+  temporary). `/copy` makes every visitor get their **own editable copy** of the guide (take
+  notes; one copy per brand) instead of a shared read-only view — visitors must be signed
+  into a Google account to copy. Change the destination there to repoint the guide without
+  touching any asset. (The Doc must stay shared "Anyone with the link — Viewer" to be copyable.)
 
 ## Colors (from the live site `src/app/globals.css`, "Rustic Editorial")
 Defined in `tokens.mjs`. Every graphic/type color maps to one of these; the mountain plate
