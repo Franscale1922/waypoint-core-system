@@ -1,0 +1,25 @@
+/* Shared styling for the four screenshare slides (flat / typographic on cream).
+   Legibility floor: primary reading text >= 46px at 1920 (survives halving to 960x540).
+   Colors are the live-site tokens; copper as text is #8E3012 only (6.2:1 on cream). */
+:root {
+  --cream:#FAF8F4; --cream2:#F5F0E8; --navy:#0c1929; --navy800:#1b3a5f;
+  --ink:#1a1a1a; --stone:#4a4a4a; --muted:#7a7a7a; --copper:#8E3012; --line:#e3d9c8;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; }
+body {
+  position:relative; background:var(--cream); color:var(--ink);
+  font-family:'Inter', sans-serif; overflow:hidden;
+  padding:96px 132px 108px;
+}
+.serif { font-family:'Playfair Display', serif; }
+
+/* cohesion elements shared by every slide */
+.rule { position:absolute; left:132px; top:0; width:96px; height:8px; background:var(--copper); }
+.footer {
+  position:absolute; left:132px; right:132px; bottom:52px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:26px; color:var(--muted); font-weight:500; letter-spacing:.5px;
+}
+.footer .brand { color:var(--stone); font-weight:600; }
+.footer .brand b { font-family:'Playfair Display', serif; font-weight:800; color:var(--navy); letter-spacing:0; }

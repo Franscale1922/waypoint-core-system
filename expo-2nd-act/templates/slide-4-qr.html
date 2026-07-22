@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="fonts.css" />
+<link rel="stylesheet" href="slide-base.css" />
+<style>
+  body { display:flex; flex-direction:column; align-items:center; padding-top:56px; padding-bottom:56px; }
+  .kicker { font-family:'Playfair Display',serif; font-style:italic; font-weight:500; font-size:46px; color:var(--copper); }
+  .row { display:flex; gap:150px; align-items:center; justify-content:center; margin-top:52px; }
+  .block { text-align:center; }
+  .card { background:#ffffff; border:1px solid var(--line); border-radius:20px; box-shadow:0 14px 40px rgba(12,25,41,.10); display:inline-block; padding:26px; }
+  .card img { display:block; image-rendering:pixelated; }
+  /* Doc = dominant "give" */
+  .give .label { margin-top:26px; font-size:52px; font-weight:700; color:var(--navy); }
+  .give .sub { margin-top:6px; font-size:34px; font-weight:500; color:var(--stone); }
+  .give .url { margin-top:14px; font-size:36px; font-weight:600; color:var(--copper); }
+  /* Booking = quieter "ask" */
+  .ask { margin-top:44px; }
+  .ask .label { margin-top:24px; font-size:42px; font-weight:600; color:var(--stone); }
+  .ask .url { margin-top:12px; font-size:29px; font-weight:500; color:var(--muted); }
+</style>
+</head>
+<body>
+  <div class="rule"></div>
+  <div class="kicker">Before you go</div>
+  <div class="row">
+    <div class="block give">
+      <div class="card"><img src="../out/qr-doc.png" width="540" height="540" alt=""></div>
+      <div class="label">Free interview guide</div>
+      <div class="sub">15 questions for any brand</div>
+      <div class="url">waypointfranchise.com/guide</div>
+    </div>
+    <div class="block ask">
+      <div class="card"><img src="../out/qr-booking.png" width="441" height="441" alt=""></div>
+      <div class="label">Book a private call</div>
+      <div class="url">tidycal.com/m7v2jox/2nd-act-expo-meeting</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -13,6 +13,13 @@ const OUT = join(__dirname, 'out');
 
 // Asset manifest. Slides are added as they are designed (Phase 5). bg = flatten color.
 const ASSETS = [
+  // Final deliverables
+  { name: 'background', template: 'background.html', out: 'background.png', bg: '#0c1929' },
+  { name: 'slide-1-intro', template: 'slide-1-intro.html', out: 'slide-1-intro.png', bg: '#FAF8F4' },
+  { name: 'slide-2-method', template: 'slide-2-method.html', out: 'slide-2-method.png', bg: '#FAF8F4' },
+  { name: 'slide-3-questions', template: 'slide-3-questions.html', out: 'slide-3-questions.png', bg: '#FAF8F4' },
+  { name: 'slide-4-qr', template: 'slide-4-qr.html', out: 'slide-4-qr.png', bg: '#FAF8F4' },
+  // Utility / drafts
   { name: 'calibration-grid', template: 'calibration-grid.html', out: 'calibration-grid.png', bg: '#ffffff' },
   { name: 'draft-background', template: 'draft-background.html', out: 'draft-background.png', bg: '#FAF8F4' },
   { name: 'preview-background', template: 'preview-background.html', out: 'preview-background.png', bg: '#0c1929' },
