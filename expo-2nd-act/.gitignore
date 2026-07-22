@@ -1,0 +1,10 @@
+# Isolated build folder — keep native binaries and generated output out of git.
+# NOTE: the repo-root .gitignore uses "/node_modules" (root-anchored), which does
+# NOT cover this nested node_modules. This file is required.
+node_modules/
+package-lock.json
+out/
+cal-frames/
+*.jpg
+*.jpeg
+.DS_Store

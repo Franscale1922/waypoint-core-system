@@ -1,0 +1,23 @@
+{
+  "name": "expo-2nd-act-assets",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Standalone build for Waypoint 2nd Act Expo Zoom presentation assets. Isolated from the Next.js app — never add these deps to the root package.json.",
+  "scripts": {
+    "qr": "node build-qr.mjs",
+    "verify-qr": "node verify-qr.mjs",
+    "images": "node build-images.mjs",
+    "grid": "node build-images.mjs --only=calibration-grid",
+    "all": "node build-qr.mjs && node build-images.mjs && node verify-qr.mjs"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "5.2.6",
+    "@fontsource/playfair-display": "5.2.6",
+    "@undecaf/zbar-wasm": "0.11.0",
+    "@zxing/library": "0.23.0",
+    "playwright": "1.61.1",
+    "qrcode": "1.5.4",
+    "sharp": "0.35.3"
+  }
+}

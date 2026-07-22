@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="fonts.css" />
+<style>
+  :root { --minor: #d8dee6; --major: #9aa7b5; --ink: #1b3a5f; --accent: #CC6535; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1920px; height: 1080px; }
+  body { position: relative; background: #ffffff; font-family: 'Inter', sans-serif; overflow: hidden; }
+
+  /* 60px minor grid + 120px major grid, drawn with gradients (no DOM nodes) */
+  .grid {
+    position: absolute; inset: 0;
+    background-image:
+      repeating-linear-gradient(to right, var(--major) 0 1px, transparent 1px 120px),
+      repeating-linear-gradient(to bottom, var(--major) 0 1px, transparent 1px 120px),
+      repeating-linear-gradient(to right, var(--minor) 0 1px, transparent 1px 60px),
+      repeating-linear-gradient(to bottom, var(--minor) 0 1px, transparent 1px 60px);
+  }
+  /* center crosshair (helps the presenter self-center) */
+  .cx { position: absolute; background: var(--accent); opacity: .5; }
+  .cx.v { left: 959px; top: 0; width: 2px; height: 1080px; }
+  .cx.h { top: 539px; left: 0; height: 2px; width: 1920px; }
+
+  .lbl { position: absolute; font-size: 13px; font-weight: 500; color: var(--ink); transform: translate(4px, 3px); white-space: nowrap; }
+
+  /* solid frame + corner registration marks for crop-and-rescale normalization */
+  .frame { position: absolute; inset: 0; border: 3px solid var(--ink); }
+  .reg { position: absolute; width: 90px; height: 90px; }
+  .reg::before, .reg::after { content: ''; position: absolute; background: var(--accent); }
+  .reg::before { width: 90px; height: 4px; } /* horizontal arm */
+  .reg::after  { width: 4px; height: 90px; } /* vertical arm */
+  .reg.tl { top: 0; left: 0; }
+  .reg.tr { top: 0; right: 0; } .reg.tr::before { right: 0; } .reg.tr::after { right: 0; }
+  .reg.bl { bottom: 0; left: 0; } .reg.bl::before { bottom: 0; } .reg.bl::after { bottom: 0; }
+  .reg.br { bottom: 0; right: 0; } .reg.br::before { right: 0; bottom: 0; } .reg.br::after { right: 0; bottom: 0; }
+  .corner { position: absolute; font-size: 20px; font-weight: 700; color: var(--ink); }
+  .corner.tl { top: 12px; left: 100px; }
+  .corner.tr { top: 12px; right: 100px; }
+  .corner.bl { bottom: 12px; left: 100px; }
+  .corner.br { bottom: 12px; right: 100px; }
+
+  .title { position: absolute; top: 500px; left: 50%; transform: translateX(-50%); text-align: center; color: var(--ink); }
+  .title .k { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 40px; letter-spacing: .5px; }
+  .title .s { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 18px; color: #4a4a4a; margin-top: 6px; }
+</style>
+</head>
+<body>
+  <div class="grid"></div>
+  <div class="cx v"></div>
+  <div class="cx h"></div>
+  <div class="frame"></div>
+
+  <div class="reg tl"></div><div class="reg tr"></div><div class="reg bl"></div><div class="reg br"></div>
+  <div class="corner tl">0, 0</div>
+  <div class="corner tr">1920, 0</div>
+  <div class="corner bl">0, 1080</div>
+  <div class="corner br">1920, 1080</div>
+
+  <div class="title">
+    <div class="k">Waypoint · Calibration Grid</div>
+    <div class="s">1920 × 1080 · lines every 60px · labels every 120px · align the orange corner marks</div>
+  </div>
+
+  <script>
+    // Coordinate labels at every 120px intersection (kept off the extreme edges).
+    const g = document.body;
+    for (let x = 120; x <= 1800; x += 120) {
+      for (let y = 120; y <= 960; y += 120) {
+        const d = document.createElement('div');
+        d.className = 'lbl';
+        d.style.left = x + 'px';
+        d.style.top = y + 'px';
+        d.textContent = x + ',' + y;
+        g.appendChild(d);
+      }
+    }
+  </script>
+</body>
+</html>
