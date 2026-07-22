@@ -25,18 +25,13 @@ Narrate: who you are, the founder-who-built-a-brand arc, why that makes this roo
 
 ON SLIDE
 - Hook (huge):  Pilates or popcorn?
-- Full line (smaller, beneath):  If you love operating the business and it fits your lifestyle, do you care what the widget is?
+- Full line (beneath):  If you love operating the business and it fits your lifestyle, do you care what the widget is?
+- Small line (beneath, quieter):  Economic engine or passion play?
 
-NOTE (flag): this revised line no longer contains the words "pilates or popcorn" — the huge
-hook carries them. This diverges from the brief's locked verbatim line ("...do you care if
-it's pilates or popcorn?"). Kelsey owns the line and revised it on purpose; confirm and it
-becomes the new locked slide-2 line.
-
-POSSIBLE second layer (Kelsey added, placement TBD):
-  "First decision: Is this an economic engine or a passion play?"
-  -> Options: (a) keep slide 2 stark = this is your spoken narration only; or
-     (b) put it on the slide as one smaller line beneath the hook line.
-  Recommend (a) to preserve the stark, single-idea hold. Your call.
+NOTE: revised line no longer contains the words "pilates or popcorn" — the huge hook carries
+them (Kelsey-approved, diverges from the brief's original verbatim, intentional). The
+"economic engine or passion play?" line is ON the slide per Kelsey (2026-07-22), kept small
+so the hook still dominates.
 
 Narrate: most people pick by the product/widget. Start with the role and life you want, then
 filter brands against that. First decision: economic engine or passion play.

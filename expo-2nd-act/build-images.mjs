@@ -15,6 +15,8 @@ const OUT = join(__dirname, 'out');
 const ASSETS = [
   { name: 'calibration-grid', template: 'calibration-grid.html', out: 'calibration-grid.png', bg: '#ffffff' },
   { name: 'draft-background', template: 'draft-background.html', out: 'draft-background.png', bg: '#FAF8F4' },
+  { name: 'preview-background', template: 'preview-background.html', out: 'preview-background.png', bg: '#0c1929' },
+  { name: 'preview-background-v2', template: 'preview-background-v2.html', out: 'preview-background-v2.png', bg: '#0c1929' },
 ];
 
 // Critical font weights every template may use — gate the screenshot until they are laid out.

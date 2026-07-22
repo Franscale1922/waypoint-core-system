@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="fonts.css" />
+<style>
+  :root { --cream:#FAF8F4; --cream2:#F5F0E8; --navy:#0c1929; --ink:#1a1a1a; --stone:#4a4a4a; --copper:#8E3012; --line:#e3d9c8; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1920px; height:1080px; }
+  body { position:relative; font-family:'Inter',sans-serif; color:var(--ink); overflow:hidden;
+    background:url('../plate/plate-v1-1920.png') center/cover no-repeat; }
+
+  /* soft top + bottom scrims to seat type and add depth (kept subtle) */
+  .scrim-top { position:absolute; left:0; top:0; width:1920px; height:340px;
+    background:linear-gradient(180deg, rgba(250,248,244,.72), rgba(250,248,244,0)); }
+  .scrim-bottom { position:absolute; left:0; bottom:0; width:1920px; height:220px;
+    background:linear-gradient(0deg, rgba(12,25,41,.28), rgba(12,25,41,0)); }
+
+  /* ---- top-left wordmark ---- */
+  .wordmark { position:absolute; left:80px; top:60px; }
+  .wordmark .k { font-family:'Playfair Display',serif; font-weight:800; font-size:62px; color:var(--navy); line-height:1; }
+  .wordmark .s { font-family:'Inter',sans-serif; font-weight:600; font-size:25px; letter-spacing:4px; color:var(--stone); text-transform:uppercase; margin-top:8px; }
+  .anchor { position:absolute; left:82px; top:182px; font-family:'Playfair Display',serif; font-style:italic; font-weight:500; font-size:34px; color:var(--copper); }
+
+  /* ---- top-right contact block on a cream card ---- */
+  .contact { position:absolute; right:70px; top:56px; text-align:right;
+    background:rgba(250,248,244,.90); border:1px solid var(--line); border-radius:14px;
+    padding:22px 30px; box-shadow:0 10px 30px rgba(12,25,41,.10); }
+  .contact div { font-size:40px; font-weight:600; color:var(--ink); line-height:1.42; }
+
+  /* ---- right-band QR card ---- */
+  .qrcard { position:absolute; left:1408px; top:452px; width:444px;
+    background:rgba(250,248,244,.94); border:1px solid var(--line); border-radius:18px;
+    padding:26px 26px 30px; text-align:center; box-shadow:0 12px 34px rgba(12,25,41,.14); }
+  .qrbox { width:300px; height:300px; margin:0 auto; background:#ffffff; border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center; }
+  .qrbox span { font-size:30px; color:#9aa7b5; font-weight:600; }
+  .qrlabel { margin-top:18px; font-size:38px; font-weight:700; color:var(--ink); }
+  .qrurl { margin-top:4px; font-size:28px; font-weight:600; color:var(--copper); white-space:nowrap; }
+</style>
+</head>
+<body>
+  <div class="scrim-top"></div>
+  <div class="scrim-bottom"></div>
+
+  <div class="wordmark"><div class="k">Waypoint</div><div class="s">Franchise Advisors</div></div>
+  <div class="anchor">Franchise guidance. Not a sales pitch.</div>
+
+  <div class="contact">
+    <div>waypointfranchise.com</div>
+    <div>kelsey@waypointfranchise.com</div>
+    <div>(214) 995-1062</div>
+  </div>
+
+  <div class="qrcard">
+    <div class="qrbox"><span>QR 300×300</span></div>
+    <div class="qrlabel">Free interview guide</div>
+    <div class="qrurl">waypointfranchise.com/guide</div>
+  </div>
+</body>
+</html>
