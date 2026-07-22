@@ -5,17 +5,26 @@ import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import sharp from 'sharp';
-import { URLS, QR_SIZES, CANVAS } from './tokens.mjs';
+import QRCode from 'qrcode';
+import { URLS, QR_SIZES, CANVAS, SLIDE_QR_DISPLAY } from './tokens.mjs';
 import { makeQR, decodeBoth, compositeOnCanvas, downscale, compress } from './qr-lib.mjs';
+
+// Make the two slide codes the SAME crisp size: pad both to a common total module count
+// (max symbol size + a >=4 quiet zone) and render at one integer scale.
+const SLIDE_URLS = [URLS.docShort, URLS.booking];
+const commonTotal = Math.max(...SLIDE_URLS.map((u) => QRCode.create(u, { errorCorrectionLevel: 'H' }).modules.size + 8));
+const slideScale = Math.max(1, Math.round(SLIDE_QR_DISPLAY / commonTotal));
+const slidePad = { padTotal: commonTotal, scale: slideScale };
 
 const OUT = join(dirname(fileURLToPath(import.meta.url)), 'out');
 const mark = (v) => (v === true ? '✓' : v === false ? '✗' : '·');
 
 // name -> file. Doc QR encodes the /guide short redirect everywhere. Two doc renders
 // (slide + smaller background) so each is crisp at its native display size.
+// Slide codes render at an EXACT width so both are the same on-slide size (Kelsey).
 const TARGETS = [
-  { name: 'qr-doc', url: URLS.docShort, px: QR_SIZES.slideDoc, use: 'slide 4 (dominant)' },
-  { name: 'qr-booking', url: URLS.booking, px: QR_SIZES.slideBooking, use: 'slide 4 (secondary)' },
+  { name: 'qr-doc', url: URLS.docShort, px: QR_SIZES.slideDoc, pad: slidePad, use: 'slide 4 (equal size)' },
+  { name: 'qr-booking', url: URLS.booking, px: QR_SIZES.slideBooking, pad: slidePad, use: 'slide 4 (equal size)' },
   { name: 'qr-doc-bg', url: URLS.docShort, px: QR_SIZES.backgroundDoc, use: 'virtual background' },
 ];
 
@@ -38,7 +47,7 @@ async function verifyFile(url, buf, stages) {
 async function main() {
   let allOk = true;
   for (const t of TARGETS) {
-    const { buffer, version, totalModules, scale, sizePx } = await makeQR(t.url, t.px);
+    const { buffer, version, totalModules, scale, sizePx } = await makeQR(t.url, t.px, t.pad || {});
     // Flatten to opaque sRGB+ICC (no alpha) so the standalone PNG obeys the house rule too.
     // (QR light is already white and modules are opaque, so pixels are unchanged.)
     const flat = await sharp(buffer)

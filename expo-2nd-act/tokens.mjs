@@ -68,6 +68,9 @@ export const CANVAS = { width: 1920, height: 1080 };
 // QR display sizes (px on the 1920x1080 canvas).
 export const QR_SIZES = {
   backgroundDoc: 360, // virtual background fallback (brief min 300; larger survives video)
-  slideDoc: 540, // slide 4 dominant "give" (brief min 400; sized larger for dominance)
-  slideBooking: 420, // slide 4 secondary "ask" (brief min 400)
+  // Slide 4: both codes the SAME size (Kelsey). Rendered crisp near this target, then both
+  // displayed at the same fixed px in the slide so their outer squares match exactly.
+  slideDoc: 490,
+  slideBooking: 490,
 };
+export const SLIDE_QR_DISPLAY = 490; // both slide-4 QRs displayed at this exact pixel size

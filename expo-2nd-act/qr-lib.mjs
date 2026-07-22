@@ -7,19 +7,32 @@ import { COLORS } from './tokens.mjs';
 // Generate a crisp QR PNG buffer at (or just above) a target pixel size.
 // Uses an INTEGER pixels-per-module scale so modules stay square with no anti-alias blur.
 // ECC level H, quiet zone = 4 modules (brief spec).
-export async function makeQR(url, targetPx) {
+export async function makeQR(url, targetPx, opts = {}) {
   const qr = QRCode.create(url, { errorCorrectionLevel: 'H' });
   const modules = qr.modules.size; // symbol modules (no quiet zone)
   const margin = 4; // quiet zone in modules
   const totalModules = modules + margin * 2;
+  const color = { dark: COLORS.qrDark + 'ff', light: COLORS.qrLight + 'ff' };
+
+  // padTotal + scale: make two different-version codes the SAME crisp size by padding the
+  // smaller code's quiet zone so both reach the same total module count, then rendering at
+  // a whole-pixel integer scale. This keeps modules crisp black/white (no anti-alias, no
+  // post-resize) so even strict decoders read it. A bigger quiet zone is harmless.
+  if (opts.padTotal && opts.scale) {
+    const m = (opts.padTotal - modules) / 2;
+    if (!Number.isInteger(m) || m < 4) {
+      throw new Error(`makeQR: cannot pad ${modules} modules to total ${opts.padTotal} with quiet zone >= 4`);
+    }
+    const buffer = await QRCode.toBuffer(url, {
+      errorCorrectionLevel: 'H', margin: m, scale: opts.scale, color, type: 'png',
+    });
+    return { buffer, version: qr.version, modules, totalModules: opts.padTotal, scale: opts.scale, sizePx: opts.padTotal * opts.scale };
+  }
+
   const scale = Math.max(1, Math.round(targetPx / totalModules));
   const sizePx = scale * totalModules;
   const buffer = await QRCode.toBuffer(url, {
-    errorCorrectionLevel: 'H',
-    margin,
-    scale,
-    color: { dark: COLORS.qrDark + 'ff', light: COLORS.qrLight + 'ff' },
-    type: 'png',
+    errorCorrectionLevel: 'H', margin, scale, color, type: 'png',
   });
   return { buffer, version: qr.version, modules, totalModules, scale, sizePx };
 }
