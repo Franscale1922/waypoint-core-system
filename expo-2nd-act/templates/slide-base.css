@@ -3,7 +3,7 @@
    Colors are the live-site tokens; copper as text is #8E3012 only (6.2:1 on cream). */
 :root {
   --cream:#FAF8F4; --cream2:#F5F0E8; --navy:#0c1929; --navy800:#1b3a5f;
-  --ink:#1a1a1a; --stone:#4a4a4a; --muted:#7a7a7a; --copper:#8E3012; --line:#e3d9c8;
+  --ink:#1a1a1a; --stone:#4a4a4a; --muted:#7a7a7a; --copper:#8E3012; --line:#EDE7DA;
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 html, body { width:1920px; height:1080px; }

@@ -47,7 +47,7 @@ async function run() {
       for (const q of JPEG_QUALITIES) {
         const jc = await compress(comp, w, h, q);
         const rj = await decodeBoth(jc, c.url);
-        const pass = rj.zbarOk === true; // zbar is the primary gate
+        const pass = rj.zbarOk === true && rj.zxingOk === true; // require BOTH engines
         if (pass) { passedAnyJpeg = true; lowestGoodQuality[`${w}x${h}`] = q; }
         console.log(`  ${w}x${h} jpeg q${String(q).padStart(2)}      zbar ${mark(rj.zbarOk)}  zxing ${mark(rj.zxingOk)}${pass ? '' : '   <-- FAIL'}`);
       }

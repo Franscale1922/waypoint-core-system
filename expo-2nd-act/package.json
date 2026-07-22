@@ -9,7 +9,7 @@
     "verify-qr": "node verify-qr.mjs",
     "images": "node build-images.mjs",
     "grid": "node build-images.mjs --only=calibration-grid",
-    "all": "node build-qr.mjs && node build-images.mjs && node verify-qr.mjs"
+    "all": "node build-qr.mjs && node build-images.mjs && node verify-qr.mjs && node verify-final.mjs"
   },
   "devDependencies": {
     "@fontsource/inter": "5.2.6",

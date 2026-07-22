@@ -4,6 +4,7 @@
 import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import sharp from 'sharp';
 import { URLS, QR_SIZES, CANVAS } from './tokens.mjs';
 import { makeQR, decodeBoth, compositeOnCanvas, downscale, compress } from './qr-lib.mjs';
 
@@ -38,13 +39,21 @@ async function main() {
   let allOk = true;
   for (const t of TARGETS) {
     const { buffer, version, totalModules, scale, sizePx } = await makeQR(t.url, t.px);
+    // Flatten to opaque sRGB+ICC (no alpha) so the standalone PNG obeys the house rule too.
+    // (QR light is already white and modules are opaque, so pixels are unchanged.)
+    const flat = await sharp(buffer)
+      .flatten({ background: '#ffffff' })
+      .toColourspace('srgb')
+      .withIccProfile('srgb')
+      .png({ compressionLevel: 9 })
+      .toBuffer();
     const outPath = join(OUT, `${t.name}.png`);
-    await writeFile(outPath, buffer);
+    await writeFile(outPath, flat);
     console.log(`\n━━━ ${t.name}.png (${t.use}) ━━━`);
     console.log(`  ${t.url}`);
     console.log(`  version ${version} · ${totalModules} modules · ${scale}px/module · ${sizePx}px · written`);
     const stages = t.name === 'qr-doc-bg' ? [[960, 540], [640, 360]] : [[960, 540]];
-    const rows = await verifyFile(t.url, buffer, stages);
+    const rows = await verifyFile(t.url, flat, stages); // verify the exact bytes we wrote
     for (const [label, zb, zx] of rows) {
       console.log(`  ${label.padEnd(20)} zbar ${mark(zb)}  zxing ${mark(zx)}`);
       if (zb !== true || zx !== true) allOk = false; // both engines must agree at every stage
