@@ -20,17 +20,22 @@
   .wordmark .s { font-family:'Inter',sans-serif; font-weight:600; font-size:25px; letter-spacing:4px; color:var(--stone); text-transform:uppercase; margin-top:8px; }
   .anchor { position:absolute; left:82px; top:182px; font-family:'Playfair Display',serif; font-style:italic; font-weight:500; font-size:34px; color:var(--copper); }
 
+  /* frosted-glass panels (soft over the plate, not hard blocks) */
   .contact { position:absolute; right:70px; top:56px; text-align:left;
-    background:rgba(250,248,244,.90); border:1px solid var(--line); border-radius:14px;
-    padding:22px 34px; box-shadow:0 10px 30px rgba(12,25,41,.10); }
+    background:rgba(250,248,244,.58); border-radius:24px; padding:22px 32px;
+    box-shadow:0 20px 54px rgba(12,25,41,.16);
+    backdrop-filter:blur(14px) saturate(1.05); -webkit-backdrop-filter:blur(14px) saturate(1.05); }
   .contact div { font-size:40px; font-weight:600; color:var(--ink); line-height:1.42; text-decoration:none; }
 
-  .qrcard { position:absolute; left:1460px; top:452px; width:400px;
-    background:rgba(250,248,244,.94); border:1px solid var(--line); border-radius:18px;
-    padding:22px; text-align:center; box-shadow:0 12px 34px rgba(12,25,41,.14); }
-  .qrcard img { display:block; margin:0 auto; image-rendering:pixelated; background:#fff; }
-  .qrlabel { margin-top:16px; font-size:36px; font-weight:700; color:var(--ink); }
-  .qrurl { margin-top:4px; font-size:27px; font-weight:600; color:var(--copper); white-space:nowrap; }
+  .qrcard { position:absolute; left:1452px; top:452px; width:420px;
+    background:rgba(250,248,244,.62); border-radius:26px; padding:22px 20px 24px; text-align:center;
+    box-shadow:0 20px 54px rgba(12,25,41,.18);
+    backdrop-filter:blur(14px) saturate(1.05); -webkit-backdrop-filter:blur(14px) saturate(1.05); }
+  /* the QR keeps a solid white tile so it always scans */
+  .qrcard .tile { background:#fff; border-radius:12px; padding:20px; display:inline-block; box-shadow:0 4px 14px rgba(12,25,41,.10); }
+  .qrcard img { display:block; image-rendering:pixelated; }
+  .qrlabel { margin-top:18px; font-size:36px; font-weight:700; color:var(--ink); }
+  .qrurl { margin-top:4px; font-size:25px; font-weight:600; color:var(--copper); white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -47,7 +52,7 @@
   </div>
 
   <div class="qrcard">
-    <img src="../out/qr-doc-bg.png" width="360" height="360" alt="">
+    <div class="tile"><img src="../out/qr-doc-bg.png" width="360" height="360" alt=""></div>
     <div class="qrlabel">Free interview guide</div>
     <div class="qrurl">waypointfranchise.com/guide</div>
   </div>
