@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="fonts.css" />
+<style>
+  :root { --cream:#FAF8F4; --cream2:#F5F0E8; --navy:#0c1929; --ink:#1a1a1a; --stone:#4a4a4a; --copper:#8E3012; --line:#d9cfbf; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1920px; height:1080px; }
+  body { position:relative; background:var(--cream); font-family:'Inter',sans-serif; color:var(--ink); overflow:hidden; }
+
+  /* ---- keep-clear guide (DRAFT ONLY — shows where your body should stay) ---- */
+  .keepclear { position:absolute; left:440px; top:240px; width:1030px; height:840px;
+    border:3px dashed #c9a08a; border-radius:8px; opacity:.55; }
+  .kc-tag { position:absolute; left:452px; top:250px; font-size:20px; font-weight:600; color:#b06a4a; opacity:.7; }
+  .draft { position:absolute; left:50%; top:1030px; transform:translateX(-50%); font-size:18px; letter-spacing:2px; color:#b06a4a; opacity:.7; text-transform:uppercase; }
+
+  /* ---- top-left wordmark ---- */
+  .wordmark { position:absolute; left:80px; top:64px; }
+  .wordmark .k { font-family:'Playfair Display',serif; font-weight:800; font-size:60px; color:var(--navy); line-height:1; }
+  .wordmark .s { font-family:'Inter',sans-serif; font-weight:500; font-size:26px; letter-spacing:3px; color:var(--stone); text-transform:uppercase; margin-top:8px; }
+  .anchor { position:absolute; left:80px; top:176px; font-family:'Playfair Display',serif; font-style:italic; font-weight:400; font-size:34px; color:var(--copper); }
+
+  /* ---- top-right contact block (clear, above your head) ---- */
+  .contact { position:absolute; right:80px; top:70px; text-align:right; }
+  .contact div { font-size:42px; font-weight:600; color:var(--ink); line-height:1.5; }
+
+  /* ---- right-band QR card (clear of your body) ---- */
+  .qrcard { position:absolute; left:1400px; top:470px; width:460px; text-align:center; }
+  .qrbox { width:300px; height:300px; margin:0 auto; background:#ffffff; border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center; }
+  .qrbox span { font-size:34px; color:#9aa7b5; font-weight:600; }
+  .qrlabel { margin-top:18px; font-size:40px; font-weight:600; color:var(--ink); }
+  .qrurl { margin-top:6px; font-size:29px; font-weight:600; color:var(--copper); white-space:nowrap; }
+</style>
+</head>
+<body>
+  <!-- guides (draft only) -->
+  <div class="keepclear"></div>
+  <div class="kc-tag">keep your body inside this box</div>
+  <div class="draft">Draft · clearance test · not final art</div>
+
+  <!-- real content footprint -->
+  <div class="wordmark"><div class="k">Waypoint</div><div class="s">Franchise Advisors</div></div>
+  <div class="anchor">Franchise guidance. Not a sales pitch.</div>
+
+  <div class="contact">
+    <div>waypointfranchise.com</div>
+    <div>kelsey@waypointfranchise.com</div>
+    <div>(214) 995-1062</div>
+  </div>
+
+  <div class="qrcard">
+    <div class="qrbox"><span>QR 300×300</span></div>
+    <div class="qrlabel">Free interview guide</div>
+    <div class="qrurl">waypointfranchise.com/guide</div>
+  </div>
+</body>
+</html>

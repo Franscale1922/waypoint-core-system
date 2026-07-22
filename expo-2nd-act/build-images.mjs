@@ -14,6 +14,7 @@ const OUT = join(__dirname, 'out');
 // Asset manifest. Slides are added as they are designed (Phase 5). bg = flatten color.
 const ASSETS = [
   { name: 'calibration-grid', template: 'calibration-grid.html', out: 'calibration-grid.png', bg: '#ffffff' },
+  { name: 'draft-background', template: 'draft-background.html', out: 'draft-background.png', bg: '#FAF8F4' },
 ];
 
 // Critical font weights every template may use — gate the screenshot until they are laid out.

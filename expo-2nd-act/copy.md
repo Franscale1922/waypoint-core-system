@@ -6,31 +6,40 @@ Rules honored: 7th-grade or lower, no em dashes, no banned AI words, every line 
 
 ---
 
-## Slide 1 — Introduction  (0:00–1:00)
+## Slide 1 — Introduction  (0:00–1:00)   [revised by Kelsey 2026-07-22]
 
 ON SLIDE
-- Kicker:  40 rooms. 39 are brands.
 - Headline:  This one is not a pitch.
-- Line 1:  I built a franchise. I owned one too.
-- Line 2:  I am the only advisor here. Everyone else is a brand.
-- Line 3:  My help costs you nothing. The brands pay me, not you.
-- Name:  Kelsey Stuart
-- Wordmark:  Waypoint · Franchise Advisors
+- Line 1:  I built a franchise brand.
+- Line 2:  No invoice, no contract.
+- Line 3:  Free to you. Franchise brands pay referral fees.
+- Line 4:  My role is to simplify your search.
+- Name:  Kelsey Stuart · Waypoint
 
-Narrate: who you are, the founder-plus-owner-plus-advisor arc, why that makes this room different.
+Narrate: who you are, the founder-who-built-a-brand arc, why that makes this room different.
+(Optional kicker available if wanted: "40 rooms. 39 are brands." — dropped in this revision.)
 
 ---
 
-## Slide 2 — Method  (1:00–3:00)   [load-bearing, stark, single layer]
+## Slide 2 — Method  (1:00–3:00)   [load-bearing, stark]   [revised by Kelsey 2026-07-22]
 
 ON SLIDE
 - Hook (huge):  Pilates or popcorn?
-- Full line (smaller, beneath):  If you love operating the business and it fits your lifestyle, do you care if it's pilates or popcorn?
+- Full line (smaller, beneath):  If you love operating the business and it fits your lifestyle, do you care what the widget is?
 
-(Nothing else on this slide. You hold it two minutes and talk over it.)
+NOTE (flag): this revised line no longer contains the words "pilates or popcorn" — the huge
+hook carries them. This diverges from the brief's locked verbatim line ("...do you care if
+it's pilates or popcorn?"). Kelsey owns the line and revised it on purpose; confirm and it
+becomes the new locked slide-2 line.
 
-Narrate: most people pick by the product. Start with the role and the life you want, then
-filter brands against that.
+POSSIBLE second layer (Kelsey added, placement TBD):
+  "First decision: Is this an economic engine or a passion play?"
+  -> Options: (a) keep slide 2 stark = this is your spoken narration only; or
+     (b) put it on the slide as one smaller line beneath the hook line.
+  Recommend (a) to preserve the stark, single-idea hold. Your call.
+
+Narrate: most people pick by the product/widget. Start with the role and life you want, then
+filter brands against that. First decision: economic engine or passion play.
 
 ---
 
