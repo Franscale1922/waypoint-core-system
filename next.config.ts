@@ -60,16 +60,6 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
 
-      // 2nd Act Expo QR target: a short, human-typeable link to the free 15-question
-      // interview guide (Google Doc). Points at the Doc's "/copy" endpoint so each visitor
-      // is prompted to make their OWN editable copy (take notes; one copy per brand) rather
-      // than opening a shared read-only view. Temporary (307) so the target can change.
-      {
-        source: '/guide',
-        destination:
-          'https://docs.google.com/document/d/1zGcw_SuQ_sec_VPz6IVAH732koLZIT5tsd_rllD9Tr8/copy',
-        permanent: false,
-      },
 
       // Suppress WordPress 404s from old bot crawls (GSC "Not found" errors)
       {
