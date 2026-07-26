@@ -26,6 +26,8 @@ describe("deploy guard SQL parser (unit)", () => {
       `ALTER TABLE "MatchScore" ALTER COLUMN "rank" SET DATA TYPE bigint;`,
       `ALTER TABLE "MatchDecision" ADD COLUMN "note" TEXT, DROP COLUMN "reason";`, // drop as 2nd clause
       `DROP TYPE "MatchOutcomeType";`,
+      `ALTER TABLE "MatchScore" RENAME TO "MatchScoreArchive";`, // rename table (defense-in-depth)
+      `ALTER TABLE "MatchRun" RENAME COLUMN "actor" TO "who";`, // rename column
     ];
     for (const sql of destructive) {
       expect(findDestructiveOps(sql).length, sql).toBeGreaterThan(0);

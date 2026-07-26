@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { randomUUID } from "node:crypto";
 import { prisma } from "../setup/test-db";
+import { MATCH_WORKSPACE_TABLES } from "../setup/test-db";
 import { makeRun, makeScore, isPrismaCode, captureError } from "./_helpers";
 
 describe("candidate privacy & config governance (C-7, C-14 partial)", () => {
@@ -50,5 +51,24 @@ describe("candidate privacy & config governance (C-7, C-14 partial)", () => {
       }),
     );
     expect(isPrismaCode(err, "P2003")).toBe(true); // foreign key constraint failed
+  });
+
+  it("C-2: no match-workspace table has a foreign key to the cold-lead Lead model", async () => {
+    // C-2 is enforced structurally (no relation to Lead exists). This introspection test
+    // guards against a future edit silently adding one, coupling placement outcomes to
+    // cold-outreach leads.
+    // Table names are our own trusted constants (no injection surface).
+    const inList = MATCH_WORKSPACE_TABLES.map((t) => `'${t}'`).join(", ");
+    const rows = await prisma.$queryRawUnsafe<Array<{ table_name: string }>>(
+      `SELECT tc.table_name
+         FROM information_schema.table_constraints tc
+         JOIN information_schema.constraint_column_usage ccu
+           ON tc.constraint_name = ccu.constraint_name
+          AND tc.table_schema = ccu.table_schema
+        WHERE tc.constraint_type = 'FOREIGN KEY'
+          AND ccu.table_name = 'Lead'
+          AND tc.table_name IN (${inList})`,
+    );
+    expect(rows).toHaveLength(0);
   });
 });

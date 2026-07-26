@@ -87,7 +87,9 @@ describe("append-only supersession (C-8, C-12)", () => {
     // Phase 1 has no write-path service layer, and the roadmap rules out Postgres triggers,
     // so nothing prevents a decision from superseding a DIFFERENT score's decision. This test
     // documents the gap honestly (asserts it currently SUCCEEDS) so Phase 2's service layer
-    // must add the same-lineage (same scoreId) invariant. TODO(Phase 2): enforce + flip this.
+    // must add the same-lineage invariant. The identical gap exists on MatchCorrection
+    // (scoreId), MatchOutcomeEvent (candidateId), and CandidateInputVersion (candidateId) —
+    // Phase 2 must enforce it across ALL FOUR chains. TODO(Phase 2): enforce + flip this.
     const { run } = await makeRun();
     const scoreA = await makeScore(run.id, { waypointBrandId: "wpb_lineageA" });
     const scoreB = await makeScore(run.id, { waypointBrandId: "wpb_lineageB" });

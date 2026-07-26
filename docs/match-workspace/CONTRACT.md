@@ -107,6 +107,15 @@ historical record is never updated in place.
   intermediate (`preMsaScore`, `msaModifier`, `finalScore`) is stored, and confidence is stored **separately**
   and never multiplied into the score.
 
+  > **Phase-1 implementation note (2026-07-26).** The Stage-4C combined-score formula selects its weight set
+  > from the **Item-19 disclosure-tier** confidence (COMPREHENSIVE→HIGH / MODERATE→MEDIUM / MINIMAL→LOW),
+  > which is distinct from the overall run `confidence` and is therefore stored in its own field
+  > (`MatchScore.i19DisclosureConfidence`). Reconstruction of `preMsaScore` from `fit`/`i19Score`/`i20Score`
+  > applies to EST/GROW brands. For **EMERGING** brands the skill's formula is `fit×0.85 + (available FDD
+  > data)×0.15`, whose "available FDD data" term has no separately-typed scalar input; for those, the frozen
+  > `preMsaScore` intermediate is the authoritative stored value (not re-derived from scalars). The
+  > `finalScore = preMsaScore + msaModifier` identity is reconstructed for **all** maturities.
+
 ## 6. ScoringConfig governance
 
 Decision (open item #2): the scoring weights/caps/confidence-bands live in the matcher skill, not this DB.

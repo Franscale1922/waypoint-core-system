@@ -375,9 +375,11 @@ model MatchCorrection {
 // INSERT, honoring "never a mutation of the prior row" literally. @@unique on
 // supersedesId still guarantees at most one successor per row. "Current for a lineage"
 // is a query (rows whose id is not referenced by any supersedesId), not a stored flag.
-// KNOWN Phase-2 gap: nothing here forces a supersession to stay within one scoreId
-// lineage — that same-lineage invariant belongs to the Phase-2 write-path service
-// (triggers are ruled out by the roadmap; no service layer exists yet in Phase 1).
+// KNOWN Phase-2 gap (applies to ALL FOUR append-only chains — MatchDecision,
+// MatchCorrection, MatchOutcomeEvent, and CandidateInputVersion): nothing here forces a
+// supersession to stay within one parent lineage (same scoreId / same candidateId). That
+// same-lineage invariant belongs to the Phase-2 write-path service (triggers are ruled out
+// by the roadmap; no service layer exists yet in Phase 1).
 model MatchDecision {
   id           String             @id @default(uuid())
   scoreId      String

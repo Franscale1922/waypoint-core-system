@@ -175,6 +175,11 @@ export function findDestructiveOps(sql) {
           // A column type change may be lossy; losslessness isn't reliably knowable from
           // SQL text, so treat every type change on a protected table as destructive.
           findings.push({ table, statement: stmt, reason: "ALTER COLUMN TYPE (possibly lossy)" });
+        } else if (/^RENAME\b/i.test(c)) {
+          // Renaming a protected table/column breaks the immutable identity contract.
+          // `prisma migrate diff` currently emits DROP+CREATE (already caught above) rather
+          // than RENAME, so this is defense-in-depth against the diff source ever changing.
+          findings.push({ table, statement: stmt, reason: "RENAME (breaks immutable identity)" });
         }
       }
     }
@@ -243,11 +248,8 @@ async function main() {
     console.warn(
       `guard: could not reach the database (attempt ${attempt}/${MAX_ATTEMPTS}); retrying in ${backoffMs}ms…`,
     );
-    // Synchronous backoff so the guard stays a simple pre-`db push` gate.
-    const until = Date.now() + backoffMs;
-    while (Date.now() < until) {
-      /* busy-wait; short and build-time only */
-    }
+    // Async backoff (no CPU-pegging busy-wait) — main() is async and build-time only.
+    await new Promise((resolve) => setTimeout(resolve, backoffMs));
   }
 
   if (!result.ok) {
