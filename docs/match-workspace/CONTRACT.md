@@ -158,3 +158,21 @@ fail-closed at import (Phase 2).
 Production reconciles the schema via `prisma db push --accept-data-loss` on every deploy. An immutable-record
 domain cannot sit unguarded on that path. Phase 1 adds a **fail-closed build guard** that refuses to `db
 push` a destructive change (DROP TABLE/COLUMN, lossy ALTER TYPE) to any table in this domain.
+
+> **Correction (2026-07-26, Phase 1 grounding).** The premise above was verified against the live Vercel
+> project rather than trusted, and is partly inaccurate as stated — the guard requirement stands regardless,
+> for still-valid (in fact broader) reasons:
+> - What production actually runs is **`vercel.json`'s `buildCommand`**: `prisma generate && prisma db push
+>   && next build` — **without** `--accept-data-loss` (confirmed in the latest production deployment's build
+>   log). Only `package.json`'s local `build` script carries that flag, and Vercel ignores a project's
+>   `package.json` build script when `vercel.json` sets an explicit `buildCommand`. So today a destructive
+>   change makes `prisma db push` *refuse and fail the build* — blunt, but not a silent data drop.
+> - Because of that, the guard is wired into **`vercel.json`'s `buildCommand`** (the command that actually
+>   runs), before `db push` — wiring it only into `package.json` would never execute on a real deploy. It is
+>   also added to `package.json`'s `build` for local parity.
+> - Independently verified: this repo has **no separate preview/staging database** — both DB URLs point at
+>   the same Neon instance production uses — and Vercel's deployment history shows non-`main` branches do
+>   produce live deployments that run the same `buildCommand`. So the guard protects against an *accidental
+>   branch push*, not only the eventual approved go-live. The guard is `scripts/guard-immutable-tables.mjs`
+>   (fail-closed; distinguishes a detected destructive change from an infra failure, and refuses the build
+>   either way).

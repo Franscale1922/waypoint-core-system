@@ -216,3 +216,217 @@ model AiFddReaderDownload {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MATCH WORKSPACE & OUTCOME LOOP (Stage-7 match-workspace-outcomes roadmap, Phase 1)
+// ═══════════════════════════════════════════════════════════════════════════════
+// A durable, immutable record of each completed candidate-matcher run — inputs,
+// per-brand scores, corrections, slate decisions, and later real-world outcomes.
+// This is NOT a placement CRM (see docs/match-workspace/CONTRACT.md [C-1]).
+//
+// Authoritative spec: docs/match-workspace/CONTRACT.md — 18 numbered [C-n] rules.
+// Each departure from repo house style below is deliberate and annotated:
+//   • Two Postgres enums (frozen decision/outcome vocabularies) — [C-4].
+//   • @@unique constraints (repo had none) — [C-10], [C-11].
+//   • One `Json detail` column on MatchScore (repo's first) — roadmap-sanctioned.
+//   • `supersedesId` backward-pointing supersession so every append is a pure
+//     INSERT (never a mutation of a prior row) — [C-12]. See note on MatchDecision.
+//   • Brands referenced by opaque `wpb_` string — NO FK, no Brand table here; the
+//     authority is the brand-intelligence pipeline / BrandDB — CONTRACT §9.
+//   • Enum values are lowercase snake_case taken VERBATIM from CONTRACT §3, not
+//     reformatted to LeadStatus's SCREAMING_CASE: the contract text is authoritative.
+
+// Frozen decision vocabulary (CONTRACT §3, [C-4]). Adding a value later is a
+// deliberate, reviewed change (accepts the known enum-under-`db push` caution).
+enum MatchDecisionState {
+  shortlist
+  final_slate
+  rejected
+}
+
+// Frozen outcome vocabulary (CONTRACT §3, [C-4]).
+enum MatchOutcomeType {
+  introduced
+  advanced
+  placed
+  lost
+  withdrawn
+}
+
+// The stable person a match run is about. Ordinary MUTABLE row (not append-only):
+// deletion/right-to-be-forgotten = redact PII in place, preserving the immutable
+// runs/scores/outcomes that key on the opaque id — [C-7]. Minimal PII only — [C-6].
+model Candidate {
+  id          String    @id @default(uuid())
+  externalRef String?   @unique   // advisor-provided link key (CRM id / initials+date); unique when present so re-runs link to the same candidate — [C-5]
+  displayName String              // minimal PII; nulled/redacted on deletion — [C-6][C-7]
+  email       String?             // minimal PII; nulled/redacted on deletion — [C-6][C-7]
+  redactedAt  DateTime?           // set when a right-to-be-forgotten redaction is applied — [C-7]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  inputVersions CandidateInputVersion[]
+  runs          MatchRun[]
+  outcomeEvents MatchOutcomeEvent[]
+}
+
+// Versioned snapshot REFERENCE of a candidate's matcher inputs. The intelligence
+// summary / questionnaire bodies are referenced by hash/id, NEVER copied here — [C-6].
+// Append-only: a correction is a NEW superseding version, never an in-place edit — [C-8].
+model CandidateInputVersion {
+  id           String    @id @default(uuid())
+  candidateId  String
+  candidate    Candidate @relation(fields: [candidateId], references: [id])
+  sourceType   String              // e.g. "intelligence_summary" | "questionnaire" — Zod-validated at import (Phase 2), not a DB enum (evolving vocabulary)
+  sourceHash   String              // hash of the referenced input body — the body is NOT stored here — [C-6]
+  sourceRef    String?             // optional external pointer/id to the source
+  capturedAt   DateTime
+  approvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  // append-only — no updatedAt — [C-8]
+  supersedesId String?   @unique   // backward-pointing: THIS row supersedes the prior one (pure INSERT, no mutation) — [C-8][C-12]
+  supersedes   CandidateInputVersion? @relation("CivSupersession", fields: [supersedesId], references: [id])
+  supersededBy CandidateInputVersion? @relation("CivSupersession")
+
+  runs MatchRun[]
+}
+
+// An immutable snapshot of one completed match run — [C-9]. Re-running a candidate
+// creates a NEW MatchRun linked to the same Candidate; it never overwrites a prior
+// run — [C-5].
+model MatchRun {
+  id                      String                @id @default(uuid())
+  candidateId             String
+  candidate               Candidate             @relation(fields: [candidateId], references: [id])
+  candidateInputVersionId String
+  candidateInputVersion   CandidateInputVersion @relation(fields: [candidateInputVersionId], references: [id])
+  scoringConfigId         String
+  scoringConfig           ScoringConfig         @relation(fields: [scoringConfigId], references: [id]) // required FK — the DB-enforceable half of [C-14]: a run referencing a nonexistent config is rejected. The "version must be APPROVED" check is fail-closed at import (Phase 2).
+  brandDbVersionRef       String                // opaque BrandDB snapshot/version tag — no FK
+  idempotencyKey          String                @unique // content hash of the frozen package; re-import of the same package creates NO duplicate — [C-11]
+  status                  String                // Phase 1 writes the literal "completed" only; the full run-status vocabulary is a Phase-2 decision once the import adapter exists (deliberate deferral, not a gap)
+  actor                   String                // session.user.email — "the advisor initiated this", not "verified the data" (CONTRACT §2)
+  createdAt               DateTime              @default(now()) // doubles as run time
+  // immutable — no updatedAt — [C-9]
+
+  scores        MatchScore[]
+  outcomeEvents MatchOutcomeEvent[]
+}
+
+// One immutable per-brand score row — [C-9]. Exactly one per (run, brand) — [C-10].
+// Every scoring intermediate is stored so a historical final score reconstructs from
+// its own frozen inputs + ScoringConfig — [C-13].
+model MatchScore {
+  id                      String   @id @default(uuid())
+  runId                   String
+  run                     MatchRun @relation(fields: [runId], references: [id])
+  waypointBrandId         String   // opaque wpb_<hex> from the registry — NO FK, no Brand table in this DB (authority = BIP/BrandDB) — CONTRACT §9
+  rank                    Int
+  maturity                String   // EST | GROW | EMRG — Zod-validated (evolving skill vocab), not a DB enum
+  fitScore                Float    // Stage-3C fit (0-1)
+  i19Score                Int?     // Item-19 score (1-5); NULL for EMERGING brands with no I19 disclosure
+  i20Score                Int?     // Item-20 score (1-5); NULL for EMERGING brands with no I20 data
+  // Stage-4A Item-19 DISCLOSURE-TIER confidence (COMPREHENSIVE→HIGH / MODERATE→MEDIUM /
+  // MINIMAL→LOW). This selects the Stage-4C combined-score FORMULA row and is stored
+  // SEPARATELY from the overall `confidence` below — the two genuinely diverge (e.g. a
+  // GROWING brand with COMPREHENSIVE I19 has i19DisclosureConfidence=HIGH but overall
+  // confidence=MEDIUM). Required for faithful reconstruction — [C-13].
+  i19DisclosureConfidence String?
+  preMsaScore             Float    // combined score before the MSA modifier — [C-13]
+  msaModifier             Float    // confirmed MSA modifier (-0.10..+0.10) — [C-13]
+  finalScore              Float    // preMsaScore + msaModifier — [C-13]
+  confidence              String   // OVERALL Stage-4C confidence (HIGH/MED/LOW), driven by maturity + data gaps + red-flag override; stored separately and NEVER multiplied into any score — [C-13]
+  flags                   String[] // e.g. data_gap | red_flag | msa_flag — Zod-validated, String[] (house precedent)
+  exclusions              String[] // hard-filter exclusions (roadmap Core-records field: "caps, exclusions")
+  detail                  Json     // frozen full per-brand object: alignments / friction / i19-block / i20-block / msa-findings / correction-summary / evidenceRefs. Repo's FIRST Json column — roadmap-sanctioned ("dimension JSON/rows").
+  createdAt               DateTime @default(now())
+  // immutable — no updatedAt — [C-9]
+
+  corrections MatchCorrection[]
+  decisions   MatchDecision[]
+
+  @@unique([runId, waypointBrandId]) // exactly one score per run/brand — [C-10]
+}
+
+// Append-only advisor correction to a score field — [C-12]. reason/source/actor/
+// timestamp are REQUIRED (roadmap: "Make correction reason, source, actor, and
+// timestamp required fields"). A "change" is a new superseding row, never a mutation.
+model MatchCorrection {
+  id           String     @id @default(uuid())
+  scoreId      String
+  score        MatchScore @relation(fields: [scoreId], references: [id])
+  field        String
+  beforeValue  Json
+  afterValue   Json
+  reason       String
+  source       String
+  actor        String
+  effectiveAt  DateTime   @default(now()) // effective-dated; caller may override
+  createdAt    DateTime   @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId String?    @unique // backward-pointing supersession (pure INSERT) — [C-12]
+  supersedes   MatchCorrection? @relation("CorrectionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchCorrection? @relation("CorrectionSupersession")
+}
+
+// Append-only advisor decision on a score — [C-12]. state is a frozen enum — [C-4].
+// NOTE on supersession direction: `supersedesId` points BACKWARD (new row → the prior
+// row it replaces), NOT a forward `supersededById`. This keeps every write a pure
+// INSERT, honoring "never a mutation of the prior row" literally. @@unique on
+// supersedesId still guarantees at most one successor per row. "Current for a lineage"
+// is a query (rows whose id is not referenced by any supersedesId), not a stored flag.
+// KNOWN Phase-2 gap: nothing here forces a supersession to stay within one scoreId
+// lineage — that same-lineage invariant belongs to the Phase-2 write-path service
+// (triggers are ruled out by the roadmap; no service layer exists yet in Phase 1).
+model MatchDecision {
+  id           String             @id @default(uuid())
+  scoreId      String
+  score        MatchScore         @relation(fields: [scoreId], references: [id])
+  state        MatchDecisionState
+  reason       String?
+  actor        String
+  effectiveAt  DateTime           @default(now())
+  createdAt    DateTime           @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId String?            @unique
+  supersedes   MatchDecision?     @relation("DecisionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchDecision?     @relation("DecisionSupersession")
+}
+
+// Append-only real-world outcome event — [C-12]. Distinguishes at least the five
+// outcome types — [C-4]. Keys on the opaque waypointBrandId; NEVER writes to or reads
+// decision state from the cold-lead `Lead` model — [C-2].
+model MatchOutcomeEvent {
+  id               String           @id @default(uuid())
+  candidateId      String
+  candidate        Candidate        @relation(fields: [candidateId], references: [id])
+  waypointBrandId  String           // opaque wpb_ — no FK; separate from Lead outcomes — [C-2]
+  originatingRunId String
+  originatingRun   MatchRun         @relation(fields: [originatingRunId], references: [id]) // the run/slate that informed this outcome
+  type             MatchOutcomeType
+  reason           String?
+  actor            String
+  effectiveAt      DateTime         @default(now()) // real-world effective date; caller may override
+  createdAt        DateTime         @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId     String?          @unique
+  supersedes       MatchOutcomeEvent? @relation("OutcomeSupersession", fields: [supersedesId], references: [id])
+  supersededBy     MatchOutcomeEvent? @relation("OutcomeSupersession")
+}
+
+// A versioned, approval-gated record of a scoring configuration — CONTRACT §6. The
+// weights/caps/bands live in the matcher skill; this records the version a run scored
+// under. A config change is a deliberate NEW row (approval-gated), never an edit.
+model ScoringConfig {
+  id            String   @id @default(uuid())
+  version       String   @unique // the version string the matcher declares in its package — [C-14]
+  weights       Json
+  thresholds    Json
+  caps          Json
+  effectiveFrom DateTime
+  approvalState String   // "draft" | "approved" | "rejected" — String, not enum: CONTRACT §3 does NOT list this among the frozen vocabularies (unlike decision/outcome states), and its states may evolve. The fail-closed "must be approved" gate lives at import (Phase 2).
+  contentHash   String   @unique
+  createdAt     DateTime @default(now())
+
+  runs MatchRun[]
+}
