@@ -86,3 +86,158 @@ vault docs, skill descriptions, and my own earlier turns are point-in-time snaps
 **Act, don't acknowledge:** I check before I claim, and I label what I couldn't check. "I think" delivered
 as "it is" is the failure this rule exists to stop.
 <!-- END franscale-grounding -->
+
+<!-- BEGIN franscale-plan-budgeting (canonical: dotfiles/claude/CLAUDE.md — do not edit copies; re-run stamp-git-safety.sh) -->
+## Plan-mode budgeting (model + effort per segment)
+
+I start nearly every chat in plan mode. When you produce a Build Plan (in plan
+mode, any structured plan you present for approval, **or any multi-step task you
+begin executing — including a session that started on its own without plan mode,
+such as a spawned background task**), **annotate every phase with its
+recommended model and effort level**, so I know when to switch as I move through
+the work. If a session starts executing without a plan, still lay out the
+phases with their switch lines before doing the work. Model and effort are session-level in Claude Code — they
+can't be switched automatically per task — so the plan is where the budgeting
+decision gets made and I flip them by hand at each boundary.
+
+Format each phase like this:
+
+```
+### Phase 2 — Bulk rename across call sites
+▶ SWITCH:  /model sonnet   ·   /effort low
+Why: mechanical, repetitive; no reasoning needed.
+Steps: …
+```
+
+The `▶ SWITCH` line is a notification for me — spell out the literal commands
+(they run separately; Claude Code doesn't chain them on one line). Only emit a
+switch line when the model or effort actually changes from the previous phase
+— whether that change raises or lowers either one — otherwise note "no change."
+
+### Phase-boundary STOP gate (hard rule — do not run past a switch)
+
+Listing the switches up front is **not** enough. The failure mode is real and
+cuts **both ways**: the plan names the model/effort per phase, then execution
+barrels through every boundary still on the *previous* phase's setting — too
+light for the hard phase ahead (quality lost) **or** too heavy for the cheap
+phase ahead (budget burned, and the checkpoint skipped) — never giving me time
+to flip it. **A `▶ SWITCH` line that changes the model or effort in *either*
+direction is a hard STOP, not a heads-up.** Stepping **down** — opus→sonnet,
+xhigh→low, leaving a hard phase for a mechanical one — gates exactly like
+stepping up; "I'm only making it cheaper/faster, no need to stop" is precisely
+the rationalization this rule exists to kill. Never wave a down-switch through
+as harmless. At every phase boundary whose `▶ SWITCH` line differs
+from the current session setting, you MUST:
+
+1. **Halt before doing any of that phase's work** — do not read, edit, run, or
+   spawn anything for the new phase. End your turn.
+2. **Emit the switch as an explicit gate**, e.g.:
+   > ⏸ **STOP — switch before I continue.** Phase 3 needs `/model opus` ·
+   > `/effort xhigh`. Run those two commands, then reply **"go"** (or "done" /
+   > "proceed"). I will not start Phase 3 until you confirm.
+
+   Or the same stop when the switch steps **down**:
+   > ⏸ **STOP — switch before I continue.** Phase 4 steps DOWN to `/model sonnet`
+   > · `/effort low` (mechanical rename — no reasoning needed). Run those two
+   > commands, then reply **"go"** (or "done" / "proceed"). I will not start
+   > Phase 4 until you confirm.
+3. **Wait for my explicit confirmation** ("go" / "done" / "proceed" / "switched")
+   before starting the phase. My confirmation is the only thing that releases the
+   gate — a lack of response is not permission, and "it's just a quick phase" is
+   not a reason to skip the stop.
+
+Rules for the gate:
+- **One stop per changing boundary.** If three consecutive phases each change the
+  setting, that is three separate stops — never batch them into one "switch all
+  of these now" message, because I flip settings one boundary at a time as I
+  reach them.
+- **No-change boundaries do not stop.** If the next phase's model AND effort match
+  the current session, note "no change" and continue without halting.
+- **Down-switches gate identically to up-switches.** Direction never decides
+  whether you stop — only *no change at all* skips the stop. Do not silently
+  carry a heavy setting into a cheaper phase, nor a cheap setting into a harder
+  one. Returning to a mechanical phase after a hard one *feels* safe to coast
+  through; it is not — it is a hard STOP.
+- **The gate binds even without a plan.** A spawned/background session that never
+  entered plan mode still stops at each boundary and waits — it does not get to
+  run through on one setting because "there was no approval step."
+- **The final adversarial-review phase is itself a gated boundary** (it steps the
+  model/effort up) — stop and wait for the switch before running the review, same
+  as any other phase.
+- If you catch yourself already several phases deep on the wrong setting, stop
+  immediately, say so plainly, and tell me what should be re-run on the correct
+  model/effort rather than papering over it.
+
+### Default model × effort matrix
+
+Draw the per-phase recommendation from this table; deviate only with a stated reason.
+
+| Segment type | Model | Effort |
+|---|---|---|
+| Planning / architecture (plan mode itself) | opus (xhigh; fable only if it truly needs it) | high–xhigh |
+| Standard build / implementation (default) | opus | high |
+| Genuinely mechanical (rename, boilerplate, repetitive edits) — optional step-down for speed, not quality | sonnet | low–medium |
+| Hardest reasoning / root-cause / gnarly debugging | opus xhigh (fable only if it truly needs it) | high–xhigh |
+| Adversarial review | opus (fable for high-stakes) | high–xhigh |
+
+Notes:
+- Default the main thread to **opus 4.8 at high effort** — this is the proven
+  quality floor for build work. Usage limits are rarely the binding constraint,
+  so don't trade quality to conserve a budget that isn't scarce. Step down to
+  sonnet only for provably mechanical work, and only when the speed is worth it —
+  never as the standing default.
+- **Correctness-critical phases default to xhigh.** Any phase whose core is
+  concurrency, security, data integrity, auth/money, or a subtle algorithm
+  defaults to **opus at `xhigh`** (fable only if justified). It may drop to
+  `high` only when the plan states a specific reason the reasoning collapses to
+  something simple (e.g. an atomic-by-construction invariant) — never silently.
+- **Fable is the flagged exception, never the default.** Only route a segment to
+  fable when the plan names a specific reason it needs fable ("needs fable
+  because X"); default to opus otherwise. This is the guardrail that keeps fable
+  from quietly creeping across a build — the one thing that actually strains the
+  usage budget.
+- **The review steps up, not down.** Run the adversarial review on the strongest
+  model available (opus, or fable for high-stakes) at high–xhigh — catching
+  subtle gaps is the most capability-sensitive task in the workflow.
+- Do **not** use the `opusplan` model setting alongside these annotations — it
+  auto-forces sonnet on execution and would override any phase the plan marks as
+  needing opus or fable.
+
+## Mandatory final phase: adversarial review
+
+**Every Build Plan ends with an adversarial review phase.** Bake it into the
+plan at approval time — it is not optional and not something I have to remember
+to ask for. This applies to **any substantive work, whether or not it began
+with an approved plan** — if a session started executing on its own (e.g. a
+spawned background task that never entered plan mode), still run the review
+before declaring the work done.
+
+```
+### Phase N — Adversarial review (mandatory)
+▶ SWITCH:  /model opus   ·   /effort high     (fable · xhigh for high-stakes work)
+```
+
+Run the review with a **fresh reviewer subagent** — not self-review. The agent
+that did the work is biased toward "it works" and will defend its own choices.
+Give the reviewer only the original request plus the diff/artifacts, and prompt
+it to find fault, not to bless. The reviewer must:
+
+1. **Audit claims against evidence.** Every "passing / works / done / verified"
+   statement must point to an actual tool result from this session. Re-run the
+   tests fresh. Flag any green that wasn't actually observed — treat a reported
+   pass as unproven until re-run.
+2. **Check scope completeness.** Re-read the original request and list what a
+   careful reading requires that wasn't delivered.
+3. **Hunt correctness bugs** — unhandled edge cases, error paths, race conditions.
+4. **Judge test quality** — do the tests exercise real behavior, or pass by
+   construction?
+5. **Name concrete improvements** — simplification, reuse, missed opportunities —
+   ranked most-severe first.
+
+Compose with the existing skills where they fit: `/verify` to drive the real
+flow end-to-end instead of trusting the test log, and `/code-review high` for a
+diff-level correctness pass.
+
+**Act, don't acknowledge.** After the review, fix each finding or state
+explicitly why it's declined. "Noted" does not close a finding.
+<!-- END franscale-plan-budgeting -->
