@@ -15,7 +15,12 @@ import { join, relative, sep } from "node:path";
  */
 
 const ROOT = process.cwd();
-const API_DIR = join(ROOT, "src", "app", "api");
+// Scan ALL of src/app, not just src/app/api. App Router route handlers are legal anywhere under
+// src/app, and this repo already ships four of them outside /api (llms.txt, feed.xml, robots.txt,
+// llms-full.txt). Scanning only /api left a whole directory tree where a mutating route could be
+// added without this test ever seeing it, and those paths are outside the middleware matcher too.
+const APP_DIR = join(ROOT, "src", "app");
+const API_DIR = join(APP_DIR, "api");
 const MUTATING = ["POST", "PUT", "PATCH", "DELETE"] as const;
 
 /**
@@ -52,29 +57,75 @@ function walk(dir: string): string[] {
 }
 
 /**
- * Exported HTTP methods in a route file. Covers all three shapes Next.js accepts:
- *   export async function POST(…)          — the common one
- *   export const POST = withAdmin(…)       — what this branch introduces
- *   export const { GET, POST } = handlers  — destructured (NextAuth + Inngest use this)
- * The destructured form is included deliberately: an early version of this test missed it, which
- * would have let a whole class of mutating route ship without ever being classified.
+ * Exported HTTP methods in a route file. Covers every shape Next.js accepts:
+ *   export async function POST(…)            the common one
+ *   export const POST = withAdmin(…)         what this branch introduces
+ *   export const { GET, POST } = handlers    destructured (NextAuth + Inngest use this)
+ *   export { handler as POST }               aliased re-export
+ *   export { POST }                          plain re-export
+ * Every one of these was found by an adversarial reviewer who wrote a mutating route in that
+ * shape and watched this test stay green. Detection is deliberately over-inclusive: a false
+ * positive costs one line in PUBLIC_BY_DESIGN, a false negative ships an open endpoint.
  */
 function exportedMethods(src: string): string[] {
   const found = new Set<string>();
-  const destructured = [...src.matchAll(/export\s+const\s*\{([^}]*)\}\s*=/g)]
+  // `export const { GET, POST } = …` and `export { handler as POST, GET }`
+  const braced = [
+    ...src.matchAll(/export\s+(?:const\s*)?\{([^}]*)\}\s*(?:=|from|;|$)/gm),
+  ]
     .map((m) => m[1])
     .join(",");
   for (const m of MUTATING) {
     const asFunction = new RegExp(`export\\s+(?:async\\s+)?function\\s+${m}\\b`);
     const asConst = new RegExp(`export\\s+const\\s+${m}\\s*=`);
-    const inDestructured = new RegExp(`\\b${m}\\b`).test(destructured);
-    if (asFunction.test(src) || asConst.test(src) || inDestructured) found.add(m);
+    // Matches both `POST` and `handler as POST` inside a braced export clause.
+    const inBraced = new RegExp(`(?:\\bas\\s+)?\\b${m}\\b`).test(braced);
+    if (asFunction.test(src) || asConst.test(src) || inBraced) found.add(m);
   }
   return [...found];
 }
 
+/** Prisma calls that write. Used to catch a GET handler that mutates. */
+const WRITE_CALL = /prisma\s*\.\s*\w+\s*\.\s*(create|createMany|update|updateMany|upsert|delete|deleteMany)\b/;
+
+/** Does the file export a GET (in any shape)? */
+function exportsGet(src: string): boolean {
+  const braced = [...src.matchAll(/export\s+(?:const\s*)?\{([^}]*)\}\s*(?:=|from|;|$)/gm)]
+    .map((m) => m[1])
+    .join(",");
+  return (
+    /export\s+(?:async\s+)?function\s+GET\b/.test(src) ||
+    /export\s+const\s+GET\s*=/.test(src) ||
+    /(?:\bas\s+)?\bGET\b/.test(braced)
+  );
+}
+
+/**
+ * Route handlers outside src/app/api that are read-only content endpoints. Listed explicitly so
+ * a NEW file appearing outside /api has to be classified rather than silently trusted.
+ */
+const NON_API_READONLY = new Set([
+  "llms.txt/route.ts",
+  "llms-full.txt/route.ts",
+  "feed.xml/route.ts",
+  "robots.txt/route.ts",
+]);
+
+/**
+ * GET handlers that legitimately write. Each must be protected by something other than a
+ * session, because they are reached from an email link with no cookie.
+ */
+const MUTATING_GET_BY_DESIGN: Record<string, string> = {
+  "api/unsubscribe/route.ts": "One-click unsubscribe from an email link; HMAC-signed token.",
+  "api/scorecard-unsubscribe/route.ts": "Unsubscribe from an email link; HMAC-signed token.",
+  "api/archetype-unsubscribe/route.ts": "Unsubscribe from an email link; HMAC-signed token.",
+  "api/escape-kit-unsubscribe/route.ts": "Unsubscribe from an email link; HMAC-signed token.",
+  "api/pitch-decoder-unsubscribe/route.ts": "Unsubscribe from an email link; HMAC-signed token.",
+  "api/ai-fdd-reader-unsubscribe/route.ts": "Unsubscribe from an email link; HMAC-signed token.",
+};
+
 describe("API route auth coverage", () => {
-  const files = walk(API_DIR);
+  const files = walk(APP_DIR);
 
   it("finds route files to check (guards against a broken glob silently passing)", () => {
     expect(files.length).toBeGreaterThan(10);
@@ -84,34 +135,67 @@ describe("API route auth coverage", () => {
     const unprotected: string[] = [];
 
     for (const file of files) {
-      const key = relative(API_DIR, file).split(sep).join("/");
+      const key = relative(APP_DIR, file).split(sep).join("/");
       const src = readFileSync(file, "utf8");
       const methods = exportedMethods(src);
       if (methods.length === 0) continue; // read-only route
-      if (key in PUBLIC_BY_DESIGN) continue;
+      if (NON_API_READONLY.has(key)) continue;
+      // PUBLIC_BY_DESIGN keys are api-relative; normalize.
+      if (key.startsWith("api/") && key.slice(4) in PUBLIC_BY_DESIGN) continue;
 
-      // Each mutating export must be assigned from withAdmin(...)
+      // The export must be assigned from withAdmin(...) AND the file must actually import the
+      // real wrapper. A locally-defined `withAdmin` shadow would otherwise satisfy a text match.
+      const importsWrapper =
+        /import\s*\{[^}]*\bwithAdmin\b[^}]*\}\s*from\s*["']@\/lib\/with-admin["']/.test(src);
       for (const m of methods) {
         const wrapped = new RegExp(`export\\s+const\\s+${m}\\s*=\\s*withAdmin\\s*\\(`).test(src);
-        if (!wrapped) unprotected.push(`${key} → ${m}`);
+        if (!wrapped) unprotected.push(`${key} → ${m} (not wrapped)`);
+        else if (!importsWrapper) unprotected.push(`${key} → ${m} (withAdmin is not the real one)`);
       }
     }
 
     expect(
       unprotected,
-      `Unprotected mutating route handler(s). Wrap with withAdmin(), or add the file to ` +
-        `PUBLIC_BY_DESIGN with a reason:\n  ${unprotected.join("\n  ")}`,
+      `Unprotected mutating route handler(s). Wrap with withAdmin() imported from ` +
+        `@/lib/with-admin, or add the file to PUBLIC_BY_DESIGN with a reason:\n  ` +
+        unprotected.join("\n  "),
+    ).toEqual([]);
+  });
+
+  it("no GET handler writes to the database unless explicitly classified", () => {
+    // A mutating GET is invisible to the check above, since GET is not in MUTATING. The repo has
+    // six legitimate ones (email-link unsubscribes, HMAC-protected); anything new must be listed.
+    const offenders: string[] = [];
+    for (const file of files) {
+      const key = relative(APP_DIR, file).split(sep).join("/");
+      const src = readFileSync(file, "utf8");
+      if (!exportsGet(src) || !WRITE_CALL.test(src)) continue;
+      if (key in MUTATING_GET_BY_DESIGN) continue;
+      // A GET in a file whose writes all sit inside withAdmin-wrapped mutating handlers is fine.
+      if (/export\s+const\s+GET\s*=\s*withAdmin\s*\(/.test(src)) continue;
+      offenders.push(key);
+    }
+    expect(
+      offenders,
+      `GET handler(s) that write to the database. Gate them, or add to MUTATING_GET_BY_DESIGN ` +
+        `with the control that actually protects them:\n  ${offenders.join("\n  ")}`,
     ).toEqual([]);
   });
 
   it("PUBLIC_BY_DESIGN has no stale entries (every listed file still exists)", () => {
-    const existing = new Set(files.map((f) => relative(API_DIR, f).split(sep).join("/")));
+    const existing = new Set(
+      files
+        .map((f) => relative(APP_DIR, f).split(sep).join("/"))
+        .filter((k) => k.startsWith("api/"))
+        .map((k) => k.slice(4)),
+    );
     const stale = Object.keys(PUBLIC_BY_DESIGN).filter((k) => !existing.has(k));
     expect(stale, `Remove these from PUBLIC_BY_DESIGN — the files are gone: ${stale.join(", ")}`).toEqual([]);
   });
 
   it("the two verified-dead admin routes stay deleted", () => {
     const keys = files.map((f) => relative(API_DIR, f).split(sep).join("/"));
+    void APP_DIR;
     expect(keys).not.toContain("admin/suppress-lead/route.ts");
     expect(keys).not.toContain("admin/settings/route.ts");
   });
