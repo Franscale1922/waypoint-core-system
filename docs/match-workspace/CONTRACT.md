@@ -200,3 +200,20 @@ push` a destructive change (DROP TABLE/COLUMN, lossy ALTER TYPE) to any table in
 >   branch push*, not only the eventual approved go-live. The guard is `scripts/guard-immutable-tables.mjs`
 >   (fail-closed; distinguishes a detected destructive change from an infra failure, and refuses the build
 >   either way).
+>
+> **Correction (2026-07-27, Phase 2C-0 grounding). The note above describes this BRANCH, not production.**
+> The claim that the guard "is wired into `vercel.json`'s buildCommand (the command that actually runs)" is
+> true only here. Verified directly this session:
+> - `scripts/guard-immutable-tables.mjs` does **not** exist on `origin/main`, and `origin/main:vercel.json`
+>   runs `prisma generate && prisma db push && next build`. **Production reconciles its schema completely
+>   unguarded today.** Both facts close automatically when this branch merges, because the branch carries
+>   the script and the guarded buildCommand. Until then the guard protects this branch only.
+> - The Vercel project's dashboard Build Command is `prisma migrate deploy && next build`. That, not
+>   `package.json`'s `--accept-data-loss` script, is what would run if `vercel.json` were ever removed, so
+>   the fallback is two levels down and safer than previously assumed.
+> - `POSTGRES_PRISMA_URL` and `POSTGRES_URL_NON_POOLING` are each a **single Vercel value scoped to
+>   Production, Preview and Development at once** (confirmed via `vercel env ls`). Every preview deployment
+>   therefore both `db push`es and serves runtime traffic against the production database. Neon is not
+>   installed as a Vercel integration, so there is no automatic preview-branch feature to fall back on.
+>   Scoping the Preview values at a separate Neon branch is the approved fix and is tracked as an open item;
+>   it needs credential entry that only the operator can perform.

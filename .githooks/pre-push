@@ -1,8 +1,10 @@
 #!/bin/sh
 # Pre-push guard: enforce CONTENT-STANDARDS §11 (no em dashes) before every push.
-# CI cannot enforce this here (GitHub Actions is billing-disabled, and a free-plan
-# private repo cannot set required status checks / branch protection), so this
-# local hook is the real gate. Auto-installed via the package.json postinstall
+# A free-plan private repo cannot set required status checks / branch protection, so a
+# failing workflow cannot block a merge. This local hook is the real gate.
+# (Corrected 2026-07-27: this comment previously said GitHub Actions was billing-disabled.
+# It is not. The "Verify Internal Links" workflow does run on every PR and on main, and it
+# runs scripts/aeo-audit.mjs too. It just cannot be made blocking on this plan.) Auto-installed via the package.json postinstall
 # (core.hooksPath=.githooks). Bypass in an emergency with: git push --no-verify
 if ! node scripts/aeo-audit.mjs; then
   echo ""
