@@ -86,3 +86,226 @@ vault docs, skill descriptions, and my own earlier turns are point-in-time snaps
 **Act, don't acknowledge:** I check before I claim, and I label what I couldn't check. "I think" delivered
 as "it is" is the failure this rule exists to stop.
 <!-- END franscale-grounding -->
+
+<!-- BEGIN franscale-plan-budgeting (canonical: dotfiles/claude/CLAUDE.md — do not edit copies; re-run stamp-git-safety.sh) -->
+## Plan-mode budgeting (model + effort per segment)
+
+I start nearly every chat in plan mode. When you produce a Build Plan (in plan
+mode, any structured plan you present for approval, **or any multi-step task you
+begin executing — including a session that started on its own without plan mode,
+such as a spawned background task**), **annotate every phase with its
+recommended model and effort level**, so I know when to switch as I move through
+the work. If a session starts executing without a plan, still lay out the
+phases with their switch lines before doing the work. Model and effort are session-level in Claude Code — they
+can't be switched automatically per task — so the plan is where the budgeting
+decision gets made and I flip them by hand at each boundary.
+
+Format each phase like this:
+
+```
+### Phase 2 — Bulk rename across call sites
+▶ SWITCH:  /model sonnet   ·   /effort low
+Why: mechanical, repetitive; no reasoning needed.
+Steps: …
+```
+
+The `▶ SWITCH` line is a notification for me — spell out the literal commands
+(they run separately; Claude Code doesn't chain them on one line). Only emit a
+switch line when the model or effort actually changes from the previous phase
+— whether that change raises or lowers either one — otherwise note "no change."
+
+### Phase-boundary STOP gate (hard rule — do not run past a switch)
+
+Listing the switches up front is **not** enough. The failure mode is real and
+cuts **both ways**: the plan names the model/effort per phase, then execution
+barrels through every boundary still on the *previous* phase's setting — too
+light for the hard phase ahead (quality lost) **or** too heavy for the cheap
+phase ahead (budget burned, and the checkpoint skipped) — never giving me time
+to flip it. **A `▶ SWITCH` line that changes the model or effort in *either*
+direction is a hard STOP, not a heads-up.** Stepping **down** — opus→sonnet,
+xhigh→low, leaving a hard phase for a mechanical one — gates exactly like
+stepping up; "I'm only making it cheaper/faster, no need to stop" is precisely
+the rationalization this rule exists to kill. Never wave a down-switch through
+as harmless. At every phase boundary whose `▶ SWITCH` line differs
+from the current session setting, you MUST:
+
+1. **Halt before doing any of that phase's work** — do not read, edit, run, or
+   spawn anything for the new phase. End your turn.
+2. **Emit the switch as an explicit gate**, e.g.:
+   > ⏸ **STOP — switch before I continue.** Phase 3 needs `/model opus` ·
+   > `/effort xhigh`. Run those two commands, then reply **"go"** (or "done" /
+   > "proceed"). I will not start Phase 3 until you confirm.
+
+   Or the same stop when the switch steps **down**:
+   > ⏸ **STOP — switch before I continue.** Phase 4 steps DOWN to `/model sonnet`
+   > · `/effort low` (mechanical rename — no reasoning needed). Run those two
+   > commands, then reply **"go"** (or "done" / "proceed"). I will not start
+   > Phase 4 until you confirm.
+3. **Wait for my explicit confirmation** ("go" / "done" / "proceed" / "switched")
+   before starting the phase. My confirmation is the only thing that releases the
+   gate — a lack of response is not permission, and "it's just a quick phase" is
+   not a reason to skip the stop.
+
+Rules for the gate:
+- **One stop per changing boundary.** If three consecutive phases each change the
+  setting, that is three separate stops — never batch them into one "switch all
+  of these now" message, because I flip settings one boundary at a time as I
+  reach them.
+- **No-change boundaries do not stop.** If the next phase's model AND effort match
+  the current session, note "no change" and continue without halting.
+- **Down-switches gate identically to up-switches.** Direction never decides
+  whether you stop — only *no change at all* skips the stop. Do not silently
+  carry a heavy setting into a cheaper phase, nor a cheap setting into a harder
+  one. Returning to a mechanical phase after a hard one *feels* safe to coast
+  through; it is not — it is a hard STOP.
+- **The gate binds even without a plan.** A spawned/background session that never
+  entered plan mode still stops at each boundary and waits — it does not get to
+  run through on one setting because "there was no approval step."
+- **The final adversarial-review phase is itself a gated boundary** (it steps the
+  model/effort up) — stop and wait for the switch before running the review, same
+  as any other phase.
+- If you catch yourself already several phases deep on the wrong setting, stop
+  immediately, say so plainly, and tell me what should be re-run on the correct
+  model/effort rather than papering over it.
+
+### Model roster — capability, cost, and fit
+
+Token cost is a real selection input (we program heavily). **Relative cost**
+(vs Opus = 1×) is the durable signal; absolute prices are a dated snapshot —
+refresh from the `/model` picker + the Models API
+(https://platform.claude.com/docs/en/api/models). All 1M context except Haiku
+(200K). _Prices $/1M in·out, verified 2026-07-26._
+
+| Model | Rel. cost | $/1M in·out | Best fit | Watch-outs |
+|---|---|---|---|---|
+| Haiku 4.5 | ~⅕× | $1 / $5 | Trivial, high-volume, latency-bound, non-reasoning. | Not for real reasoning or coding. |
+| Sonnet 5 | **~⅖× now** (⅗× after 2026-08-31) | $3 / $15 — **intro $2/$10 thru 2026-08-31** | **The cost lever.** Near-Opus coding/agentic; well-scoped implementation, mechanical work, first-pass review. | Step below Opus on hardest reasoning / largest refactors. Literal — state scope. |
+| Opus 4.8 | 1× | $5 / $25 | **THE DEFAULT** (the floor for Opus-grade build work). Proven, stable; SOTA long-horizon agentic + knowledge work. | Now Anthropic-"legacy" (they push Opus 5) — revisit if it nears retirement. |
+| Opus 5 | 1× (same) | $5 / $25 | Same-cost step-up: deep reasoning, hard multi-file coding, large refactors, bug-finding (precision + recall). | Verbose; over-verifies; expands scope; over-delegates to subagents. low/medium effort unusually strong. |
+| Fable 5 | 2× | $10 / $50 | Highest ceiling — most demanding long-horizon autonomous work only. | **Budget strainer / flagged exception.** Minutes-long turns; always-on thinking; 30-day retention; classifiers can refuse. |
+
+### Choosing at every pass — start at the floor, justify every move
+
+1. **Default: Opus 4.8 @ high** — pin it: **`/model claude-opus-4-8`** ·
+   `/effort high`.
+2. **Down for cost** when the task is below Opus-grade: well-scoped / mechanical →
+   **Sonnet 5** (`/model sonnet`, ~⅖× during intro pricing); trivial / high-volume → **Haiku**
+   (`/model haiku`, ~⅕×).
+3. **Up for capability** when the task is genuinely hard: hardest reasoning / big
+   refactor / bug-hunt / review → **Opus 5** (`/model opus`, _same cost as 4.8_);
+   only the most demanding long-horizon work → **Fable 5** (`/model fable`, 2× —
+   name the reason).
+4. **Then set effort to task difficulty** — the within-model cost dial (below).
+
+### Default model × effort matrix
+
+Draw the per-phase recommendation from this table; deviate only with a stated reason.
+
+| Segment type | Model (switch command) | Effort |
+|---|---|---|
+| Trivial / high-volume / latency-bound | haiku 4.5 (`/model haiku`) | n/a — Haiku has no effort control |
+| Genuinely mechanical (rename, boilerplate, repetitive edits) | sonnet 5 (`/model sonnet`) | low–medium |
+| Well-scoped implementation (approach clear, not novel) | sonnet 5 (`/model sonnet`) | medium–high |
+| Standard build / implementation (default) | **opus 4.8 (`/model claude-opus-4-8`)** | high |
+| Planning / architecture (plan mode itself) | opus 4.8 — opus 5 (`/model opus`) for hard/novel design | high–xhigh |
+| Hardest reasoning / root-cause / gnarly debugging / large refactor | opus 5 (`/model opus`) | high–xhigh |
+| Adversarial review / bug-finding | opus 5 (`/model opus`); fable for high-stakes | high–xhigh |
+
+Notes:
+- **⚠ Alias drift + version gate — pin by full ID, and check what you're on.**
+  Bare `/model opus` / `/model sonnet` track whatever is *latest for your build*,
+  so the same command means different models on different machines:
+  **Claude Code ≥ v2.1.219** → `opus` = Opus 5; **below that** → `opus` = Opus 4.8
+  (Sonnet 5 needs ≥ v2.1.197). Claude Desktop versions separately and may already
+  be on Opus 5 while a CLI on the same machine is not. **Never infer the version —
+  run `claude --version` or open the `/model` picker.** If the build is too old,
+  an "up-switch to Opus 5" silently runs Opus 4.8; upgrade (`claude update`) or
+  say so in the plan rather than claiming a step-up that didn't happen. Pin the
+  floor and any load-bearing version by **full ID** (`/model claude-opus-4-8`);
+  there is no `opus-4-8` short alias.
+- **Opus 4.8 @ high is the floor — for predictability, not cost.** Opus 5 is the
+  same price ($5/$25), so cost never argues for 4.8 over Opus 5. 4.8 stays the
+  default because it's the proven, stable baseline; Opus 5's behavioral shifts
+  (verbosity, scope-expansion, eager subagent delegation) make it a deliberate
+  up-select, not a blind floor-swap. (4.8 is now Anthropic-"legacy"; revisit if it
+  heads toward retirement.)
+- **Cost is two-axis: tier × effort.** Effort is the within-model cost dial —
+  higher effort means materially more thinking/tool tokens (it's a behavioral
+  signal, not a published multiplier). Set it to task difficulty, not habit:
+  `xhigh` is **not** the reflexive default — start at `high` and step up with a
+  stated reason, or down for routine work (on Opus 5, `low`/`medium` are
+  unusually strong). Dropping effort a notch on well-understood work is often a
+  bigger, safer saving than switching models.
+- **Switching isn't free — it dumps the prompt cache.** Changing model *or*
+  effort mid-conversation invalidates cached prefixes, so the next turn re-reads
+  the whole history at full input price. Budget switches like they cost
+  something: group work so each phase boundary is a real change of task, don't
+  bounce between tiers inside one phase, and on a long cached session weigh the
+  re-read against the gain before stepping up for a short detour.
+- **Cost is a real input at the low end — but capability wins on hard work.** For
+  mechanical / well-scoped work, down-tier to Sonnet 5 (~⅖× during intro pricing)
+  or Haiku (~⅕×) — that's the disciplined default, not a compromise. Never
+  under-power genuinely hard or correctness-critical work to save tokens.
+- **Opus 5 is a same-cost capability step-up, not a budget exception.** Reach for
+  it freely on a deterministic reason. Watch its tendencies: don't instruct it to
+  self-verify (it already does), and curb subagent spawning on cost-sensitive
+  runs.
+- **Correctness-critical phases are the standing exception to "start at high."**
+  Any phase whose core is concurrency, security, data integrity, auth/money, or a
+  subtle algorithm defaults to **opus 5 at `xhigh`** (fable only if justified) —
+  this is the one category that gets the up-switch without further argument,
+  because a defect there costs more than the tokens. It may drop to `high` only
+  when the plan states a specific reason the reasoning collapses to something
+  simple (e.g. an atomic-by-construction invariant) — never silently. Judge the
+  phase's *core*, not its blast radius: touching an app that happens to have auth
+  doesn't make a copy tweak correctness-critical.
+- **Fable is the flagged budget exception.** At 2× Opus ($10/$50) it's the one
+  move that strains the usage budget. Route to fable only when the plan names a
+  specific reason it needs fable ("needs fable because X"); default to opus
+  otherwise.
+- **The review steps up, not down.** Run the adversarial review on **opus 5**
+  (`/model opus`) at high–xhigh — best-in-class bug-finding at the same cost as
+  4.8 — or fable for high-stakes. Catching subtle gaps is the most
+  capability-sensitive task in the workflow.
+- Do **not** use the `opusplan` model setting alongside these annotations — it
+  auto-forces sonnet on execution (and now Opus 5 on planning) and would override
+  any phase the plan marks as needing a specific model.
+
+## Mandatory final phase: adversarial review
+
+**Every Build Plan ends with an adversarial review phase.** Bake it into the
+plan at approval time — it is not optional and not something I have to remember
+to ask for. This applies to **any substantive work, whether or not it began
+with an approved plan** — if a session started executing on its own (e.g. a
+spawned background task that never entered plan mode), still run the review
+before declaring the work done.
+
+```
+### Phase N — Adversarial review (mandatory)
+▶ SWITCH:  /model opus   ·   /effort high     (latest Opus — currently Opus 5, same cost as 4.8; fable · xhigh for high-stakes work)
+```
+
+Run the review with a **fresh reviewer subagent** — not self-review. The agent
+that did the work is biased toward "it works" and will defend its own choices.
+Give the reviewer only the original request plus the diff/artifacts, and prompt
+it to find fault, not to bless. The reviewer must:
+
+1. **Audit claims against evidence.** Every "passing / works / done / verified"
+   statement must point to an actual tool result from this session. Re-run the
+   tests fresh. Flag any green that wasn't actually observed — treat a reported
+   pass as unproven until re-run.
+2. **Check scope completeness.** Re-read the original request and list what a
+   careful reading requires that wasn't delivered.
+3. **Hunt correctness bugs** — unhandled edge cases, error paths, race conditions.
+4. **Judge test quality** — do the tests exercise real behavior, or pass by
+   construction?
+5. **Name concrete improvements** — simplification, reuse, missed opportunities —
+   ranked most-severe first.
+
+Compose with the existing skills where they fit: `/verify` to drive the real
+flow end-to-end instead of trusting the test log, and `/code-review high` for a
+diff-level correctness pass.
+
+**Act, don't acknowledge.** After the review, fix each finding or state
+explicitly why it's declined. "Noted" does not close a finding.
+<!-- END franscale-plan-budgeting -->
