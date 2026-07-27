@@ -34,7 +34,6 @@ function pkg(over: Record<string, unknown> = {}) {
     inputVersions: [{ sourceType: "intelligence_summary", capturedAt: "2026-07-01T00:00:00Z" }],
     brands: [brand()],
     confirmedSlate: [],
-    stage5: {},
     ...over,
   };
 }
@@ -187,17 +186,88 @@ describe("package schema: whole-package validation", () => {
     expect(JSON.stringify(r.error?.issues)).toMatch(/never scored through Stage 4C/);
   });
 
-  it("REJECTS Stage-5 text for a brand outside the confirmed slate (structural half of C-16)", () => {
-    const r = MatchPackageSchema.safeParse(pkg({ stage5: { "Alpha Brand": "two paragraphs..." } }));
-    expect(r.success).toBe(false);
-    expect(JSON.stringify(r.error?.issues)).toMatch(/not in the confirmed slate/);
+  it("accepts a confirmed slate naming a fully scored brand", () => {
+    expect(MatchPackageSchema.safeParse(pkg({ confirmedSlate: ["Alpha Brand"] })).success).toBe(true);
   });
 
-  it("accepts Stage-5 text for a confirmed slate brand", () => {
+  it("REJECTS a duplicated brand in the confirmed slate", () => {
+    const r = MatchPackageSchema.safeParse(
+      pkg({ confirmedSlate: ["Alpha Brand", "Alpha Brand"] }),
+    );
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/duplicate brand/);
+  });
+
+  it("carries NO candidate-facing text: July moved that to the brand-introduction-scripts skill", () => {
+    // The July matcher removed its Stage 5 outright. Any candidate-facing prose arriving in a
+    // match package would mean the emitter is following the stale June spec, so it is dropped
+    // rather than silently stored where the projection boundary [C-16] cannot govern it.
     const r = MatchPackageSchema.safeParse(
       pkg({ confirmedSlate: ["Alpha Brand"], stage5: { "Alpha Brand": "two paragraphs..." } }),
     );
     expect(r.success).toBe(true);
+    expect(r.success && "stage5" in r.data).toBe(false);
+  });
+});
+
+/**
+ * The July skill publishes four worked rows under the assertion "Every row reproduces from the
+ * formulas", with the arithmetic written out. Using the skill's own numbers is a stronger test
+ * than any fixture I could invent: if our understanding of the scoring drifts from the skill,
+ * these fail.
+ *
+ *   1 | EST  | .86 | 4   | 4   | 0.83 | +0.05 | 0.88 | HIGH | (COMPREHENSIVE)
+ *   2 | EMRG | .91 | N/A | N/A | 0.91 |  0.00 | 0.91 | LOW  | data_gap
+ *   3 | GROW | .84 | 3   | 5   | 0.85 | -0.05 | 0.80 | MED  | msa_flag (MODERATE)
+ *   4 | EST  | .82 | 1   | 2   | 0.56 | -0.03 | 0.53 | LOW  | red_flag (COMPREHENSIVE)
+ */
+describe("the skill's own four worked rows validate", () => {
+  const WORKED = [
+    { brandName: "R1", rank: 1, maturity: "EST", fitScore: 0.86, i19Score: 4, i20Score: 4, i19DisclosureLevel: "COMPREHENSIVE", preMsaScore: 0.83, msaModifier: 0.05, finalScore: 0.88, confidence: "HIGH", flags: [] },
+    { brandName: "R2", rank: 2, maturity: "EMRG", fitScore: 0.91, i19Score: null, i20Score: null, i19DisclosureLevel: null, preMsaScore: 0.91, msaModifier: 0.0, finalScore: 0.91, confidence: "LOW", flags: ["data_gap"] },
+    { brandName: "R3", rank: 3, maturity: "GROW", fitScore: 0.84, i19Score: 3, i20Score: 5, i19DisclosureLevel: "MODERATE", preMsaScore: 0.85, msaModifier: -0.05, finalScore: 0.8, confidence: "MED", flags: ["msa_flag"] },
+    { brandName: "R4", rank: 4, maturity: "EST", fitScore: 0.82, i19Score: 1, i20Score: 2, i19DisclosureLevel: "COMPREHENSIVE", preMsaScore: 0.56, msaModifier: -0.03, finalScore: 0.53, confidence: "LOW", flags: ["red_flag"], scoreCapApplied: 0.7 },
+  ].map((b) => ({ ...b, scoringStage: "stage_4c", exclusions: [], detail: {} }));
+
+  it("all four rows pass validation as a single package", () => {
+    const r = MatchPackageSchema.safeParse(pkg({ brands: WORKED }));
+    expect(r.success, JSON.stringify(r.error?.issues)).toBe(true);
+  });
+
+  it("R4's red-flag cap is expressed as min(sum, 0.70) even where it does not bind", () => {
+    // The skill writes "red-flag cap min(.53,.70)=.53". The cap is declared but not binding,
+    // which the reconciliation must accept rather than treat as a contradiction.
+    const r = BrandScoreSchema.safeParse(WORKED[3]);
+    expect(r.success, JSON.stringify(r.error?.issues)).toBe(true);
+  });
+
+  it("R2 pins the rule that pre-MSA equals fit when neither Item is scorable", () => {
+    expect(BrandScoreSchema.safeParse(WORKED[1]).success).toBe(true);
+    // Move pre-MSA off fit and it must be refused.
+    const drifted = { ...WORKED[1], preMsaScore: 0.75, finalScore: 0.75 };
+    const r = BrandScoreSchema.safeParse(drifted);
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/must equal fitScore/);
+  });
+
+  it("each row's pre-MSA reproduces from the published weight rows", () => {
+    const W = {
+      COMPREHENSIVE: { fit: 0.5, i19: 0.25, i20: 0.25 },
+      MODERATE: { fit: 0.55, i19: 0.15, i20: 0.3 },
+      MINIMAL: { fit: 0.6, i19: 0.1, i20: 0.3 },
+    } as const;
+    // The published table rounds to 2dp (R3 computes to .852 and is printed .85), so the
+    // tolerance here is half a display unit rather than full float precision.
+    const TWO_DP = 0.005 + 1e-9;
+    for (const b of WORKED) {
+      if (b.i19Score == null || b.i20Score == null) {
+        expect(b.preMsaScore, b.brandName).toBeCloseTo(b.fitScore, 6); // R2 rule
+        continue;
+      }
+      const w = W[b.i19DisclosureLevel as keyof typeof W];
+      const computed = b.fitScore * w.fit + (b.i19Score / 5) * w.i19 + (b.i20Score / 5) * w.i20;
+      expect(Math.abs(computed - b.preMsaScore), `${b.brandName}: ${computed}`).toBeLessThan(TWO_DP);
+    }
   });
 });
 

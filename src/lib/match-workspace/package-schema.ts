@@ -136,6 +136,22 @@ export const BrandScoreSchema = z
         ["i19DisclosureLevel"],
       );
     }
+
+    // When NEITHER Item is scorable the skill's own worked example states the rule outright:
+    // "R2 (neither scorable): pre-MSA = fit = .91". So pre-MSA must equal the fit score, and a
+    // package claiming otherwise is not reconstructable.
+    if (b.i19Score == null && b.i20Score == null) {
+      if (b.fitScore == null) {
+        fail("a stage_4c brand with no I19/I20 requires a fitScore (pre-MSA is derived from it)", [
+          "fitScore",
+        ]);
+      } else if (Math.abs(b.preMsaScore - b.fitScore) > EPSILON) {
+        fail(
+          `with neither I19 nor I20 scorable, preMsaScore must equal fitScore (got ${b.preMsaScore} vs ${b.fitScore})`,
+          ["preMsaScore"],
+        );
+      }
+    }
   });
 
 export const CandidateRefSchema = z.object({
@@ -165,10 +181,18 @@ export const MatchPackageSchema = z
     candidate: CandidateRefSchema,
     inputVersions: z.array(InputVersionSchema).min(1),
     brands: z.array(BrandScoreSchema).min(1),
-    /** Brand NAMES the advisor confirmed for presentation. Subset of `brands`. */
+    /**
+     * Brand NAMES the advisor confirmed for presentation ("4C: Final Ranking -> Top 3
+     * recommendation -> [You confirm brands] -> DONE"). Subset of `brands`.
+     *
+     * NOTE: candidate-facing talking points are deliberately NOT part of this package. The
+     * July matcher removed its Stage 5 entirely and hands that job downstream to the
+     * brand-introduction-scripts skill, which consumes the confirmed slate. The
+     * candidate-safe projection is therefore a SEPARATE, later capture keyed to this slate,
+     * not a field the matcher emits. That split actually strengthens [C-16]: the projection
+     * can only be generated from a confirmed slate, because that is its only input.
+     */
     confirmedSlate: z.array(z.string().min(1)).default([]),
-    /** Stage-5 candidate-facing text, keyed by brand name. Only slate brands may appear. */
-    stage5: z.record(z.string(), z.string()).default({}),
   })
   .superRefine((pkg, ctx) => {
     const fail = (message: string, path: string[] = []) =>
@@ -203,12 +227,10 @@ export const MatchPackageSchema = z
       }
     }
 
-    // Stage-5 text may exist ONLY for confirmed-slate brands. This is the structural half of
-    // [C-16]: the candidate-facing projection is generated from the confirmed slate alone.
-    for (const brandName of Object.keys(pkg.stage5)) {
-      if (!pkg.confirmedSlate.includes(brandName)) {
-        fail(`stage5 text for "${brandName}", which is not in the confirmed slate`, ["stage5"]);
-      }
+    const slateSeen = new Set<string>();
+    for (const n of pkg.confirmedSlate) {
+      if (slateSeen.has(n)) fail(`duplicate brand "${n}" in confirmedSlate`, ["confirmedSlate"]);
+      slateSeen.add(n);
     }
   });
 
