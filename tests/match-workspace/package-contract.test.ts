@@ -66,8 +66,11 @@ describe("package schema: per-brand validation", () => {
   });
 
   it("accepts a red-flag-capped brand where the arithmetic alone would be wrong", () => {
-    // 0.615 + 0.10 = 0.715, capped to 0.70. Without scoreCapApplied this must fail.
+    // fit .90 with I19 2 / I20 1 at MODERATE: .90*.55 + (2/5)*.15 + (1/5)*.30 = .615
+    // Then .615 + .10 = .715, capped to .70. Without scoreCapApplied this must fail.
     const capped = brand({
+      fitRaw: 0.9,
+      fitScore: 0.9,
       preMsaScore: 0.615,
       msaModifier: 0.1,
       finalScore: 0.7,
@@ -80,13 +83,16 @@ describe("package schema: per-brand validation", () => {
     });
     expect(BrandScoreSchema.safeParse(capped).success).toBe(true);
 
+    // Same numbers with the cap removed must fail: 0.615 + 0.10 = 0.715, not 0.70.
     const uncapped = { ...capped, scoreCapApplied: undefined };
-    expect(BrandScoreSchema.safeParse(uncapped).success).toBe(false);
+    const r = BrandScoreSchema.safeParse(uncapped);
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/does not reconcile/);
   });
 
   it("REJECTS a cap declared without the red_flag flag", () => {
     const r = BrandScoreSchema.safeParse(
-      brand({ preMsaScore: 0.615, msaModifier: 0.1, finalScore: 0.7, scoreCapApplied: 0.7, flags: [] }),
+      brand({ fitScore: 0.9, i19Score: 2, i20Score: 1, i19DisclosureLevel: "MODERATE", preMsaScore: 0.615, msaModifier: 0.1, finalScore: 0.7, scoreCapApplied: 0.7, flags: [] }),
     );
     expect(r.success).toBe(false);
     expect(JSON.stringify(r.error?.issues)).toMatch(/red_flag flag is absent/);
@@ -247,7 +253,7 @@ describe("the skill's own four worked rows validate", () => {
     const drifted = { ...WORKED[1], preMsaScore: 0.75, finalScore: 0.75 };
     const r = BrandScoreSchema.safeParse(drifted);
     expect(r.success).toBe(false);
-    expect(JSON.stringify(r.error?.issues)).toMatch(/must equal fitScore/);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/does not follow from the frozen inputs/);
   });
 
   it("each row's pre-MSA reproduces from the published weight rows", () => {
@@ -311,7 +317,7 @@ describe("idempotency key", () => {
 
   it("CHANGES when any score changes (a genuine re-run is a new run) [C-5]", () => {
     const a = parse(pkg());
-    const b = parse(pkg({ brands: [brand({ preMsaScore: 0.86, finalScore: 0.81 })] }));
+    const b = parse(pkg({ brands: [brand({ fitScore: 0.82, preMsaScore: 0.86, finalScore: 0.81 })] }));
     expect(buildIdempotencyKey(a, hashes)).not.toBe(buildIdempotencyKey(b, hashes));
   });
 
@@ -336,5 +342,84 @@ describe("idempotency key", () => {
       '{"a":{"c":"3.0000","d":"2.0000"},"b":"1.0000"}',
     );
     expect(canonicalJson({ z: -0 })).toBe('{"z":"0.0000"}');
+  });
+
+  // ---- regressions from the adversarial review ----
+
+  it("CHANGES when the advisor's confirmed slate changes (a slate edit is a decision, not prose)", () => {
+    const two = [brand({ rank: 1 }), brand({ brandName: "Beta", rank: 2 })];
+    const a = parse(pkg({ brands: two, confirmedSlate: ["Alpha Brand"] }));
+    const b = parse(pkg({ brands: two, confirmedSlate: ["Beta"] }));
+    const both = parse(pkg({ brands: two, confirmedSlate: ["Alpha Brand", "Beta"] }));
+    expect(buildIdempotencyKey(a, hashes)).not.toBe(buildIdempotencyKey(b, hashes));
+    expect(buildIdempotencyKey(a, hashes)).not.toBe(buildIdempotencyKey(both, hashes));
+    // ...but slate ORDER is not part of the identity.
+    const reordered = parse(pkg({ brands: two, confirmedSlate: ["Beta", "Alpha Brand"] }));
+    expect(buildIdempotencyKey(both, hashes)).toBe(buildIdempotencyKey(reordered, hashes));
+  });
+
+  it("canonicalJson serializes Dates distinctly (a plain object walk turns every Date into {})", () => {
+    const early = canonicalJson({ d: new Date("1999-01-01T00:00:00Z") });
+    const late = canonicalJson({ d: new Date("2026-01-01T00:00:00Z") });
+    expect(early).not.toBe(late);
+    expect(early).toBe('{"d":"1999-01-01T00:00:00.000Z"}');
+    expect(() => canonicalJson({ d: new Date("nonsense") })).toThrow(/Invalid Date/);
+  });
+
+  it("binds each input hash to its sourceType (swapping roles must change the key)", () => {
+    const p = parse(
+      pkg({
+        inputVersions: [
+          { sourceType: "intelligence_summary", capturedAt: "2026-07-01T00:00:00Z" },
+          { sourceType: "questionnaire", capturedAt: "2026-07-01T00:00:00Z" },
+        ],
+      }),
+    );
+    const straight = buildIdempotencyKey(p, ["hash-A", "hash-B"]);
+    const swapped = buildIdempotencyKey(p, ["hash-B", "hash-A"]);
+    expect(straight).not.toBe(swapped);
+  });
+});
+
+describe("pre-MSA reconciliation (all three formula branches)", () => {
+  it("REJECTS a pre-MSA that does not follow from the frozen inputs", () => {
+    // fit .86 with I19 4 / I20 4 COMPREHENSIVE gives .83, not .20.
+    const r = BrandScoreSchema.safeParse(
+      brand({ fitScore: 0.86, i19Score: 4, i20Score: 4, preMsaScore: 0.2, msaModifier: 0, finalScore: 0.2 }),
+    );
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/does not follow from the frozen inputs/);
+  });
+
+  it("handles the ONE-scorable branch (fit 0.70 + the available item 0.30)", () => {
+    // .86*.70 + (4/5)*.30 = .602 + .24 = .842
+    const ok = BrandScoreSchema.safeParse(
+      brand({ fitScore: 0.86, i19Score: 4, i20Score: null, i19DisclosureLevel: "COMPREHENSIVE", preMsaScore: 0.842, msaModifier: 0, finalScore: 0.842 }),
+    );
+    expect(ok.success, JSON.stringify(ok.error?.issues)).toBe(true);
+
+    const bad = BrandScoreSchema.safeParse(
+      brand({ fitScore: 0.86, i19Score: 4, i20Score: null, i19DisclosureLevel: "COMPREHENSIVE", preMsaScore: 0.2, msaModifier: 0, finalScore: 0.2 }),
+    );
+    expect(bad.success).toBe(false);
+  });
+
+  it("tolerates the skill's 2dp display rounding (R3 computes .852 and prints .85)", () => {
+    const r = BrandScoreSchema.safeParse(
+      brand({ fitScore: 0.84, i19Score: 3, i20Score: 5, i19DisclosureLevel: "MODERATE", preMsaScore: 0.85, msaModifier: -0.05, finalScore: 0.8, confidence: "MED", flags: ["msa_flag"] }),
+    );
+    expect(r.success, JSON.stringify(r.error?.issues)).toBe(true);
+  });
+
+  it("REJECTS an arbitrary score cap: the red-flag ceiling is pinned to 0.70", () => {
+    const r = BrandScoreSchema.safeParse(
+      brand({
+        fitScore: 0.9, i19Score: 2, i20Score: 1, i19DisclosureLevel: "MODERATE",
+        preMsaScore: 0.615, msaModifier: 0.1, finalScore: 0.1,
+        scoreCapApplied: 0.1, flags: ["red_flag"], confidence: "LOW",
+      }),
+    );
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toMatch(/must be the red-flag cap 0\.7/);
   });
 });

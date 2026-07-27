@@ -52,6 +52,14 @@ export function canonicalJson(value: unknown): string {
     if (typeof v === "string") return str(v);
     if (typeof v === "number") return num(v);
     if (typeof v === "boolean") return v;
+    // Dates MUST be handled before the generic object branch. A Date has no own enumerable
+    // keys, so the object branch would serialize every Date to `{}` and make two different
+    // timestamps hash identically. `capturedAt` is a Date after Zod coercion, so this is one
+    // field away from being reachable.
+    if (v instanceof Date) {
+      if (Number.isNaN(v.getTime())) throw new Error("Invalid Date cannot be canonicalized");
+      return v.toISOString();
+    }
     if (Array.isArray(v)) return v.map(walk);
     if (typeof v === "object") {
       const out: Record<string, unknown> = {};
@@ -120,8 +128,17 @@ export function buildIdempotencyKey(pkg: MatchPackage, inputHashes: string[]): s
     candidateExternalRef: pkg.candidate.externalRef,
     scoringConfigVersion: pkg.scoringConfigVersion,
     brandDbVersionRef: pkg.brandDbVersionRef,
-    // Sorted so input ordering is not part of the identity.
-    inputHashes: [...inputHashes].sort(),
+    // Pair each hash with the role it came from, then sort. Sorting bare hashes would lose the
+    // hash-to-sourceType binding, so swapping which artifact was the questionnaire and which
+    // was the intelligence summary would hash identically.
+    inputs: pkg.inputVersions
+      .map((iv, i) => [iv.sourceType, inputHashes[i]] as const)
+      .map(([sourceType, hash]) => `${sourceType}:${hash}`)
+      .sort(),
+    // The advisor's confirmed slate is a DECISION, not prose, and it belongs to the run's
+    // identity. Excluding it meant that swapping a brand in the Top 3 and re-importing
+    // deduped as "the same run", silently discarding the correction.
+    confirmedSlate: [...pkg.confirmedSlate].map(str).sort(),
     brands: brandsFingerprint(pkg),
   };
   return sha256Hex(canonicalJson(identity));

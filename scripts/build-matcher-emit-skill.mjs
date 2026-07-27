@@ -41,6 +41,67 @@ export function extractEmitBlock(specMarkdown) {
   return specMarkdown.slice(bodyStart, end).trimEnd() + "\n";
 }
 
+/** Claude Skills reject an upload whose YAML frontmatter description exceeds this. */
+export const DESCRIPTION_LIMIT = 1024;
+
+/** The compliant description from the spec doc, used to replace an over-limit one. */
+export function extractSkillDescription(specMarkdown) {
+  const m = /```skill-description\n([\s\S]*?)\n```/.exec(specMarkdown);
+  if (!m) throw new Error("MATCHER-EMIT-STAGE.md: no ```skill-description block found");
+  return m[1].trim();
+}
+
+/**
+ * Split a SKILL.md into its YAML frontmatter lines and the rest.
+ * Line-based on purpose: a folded `>` scalar spans indented continuation lines, and an earlier
+ * regex attempt used `\Z` (which is not a JavaScript anchor and silently matched a literal Z),
+ * corrupting the frontmatter.
+ */
+function splitFrontmatter(skillMarkdown) {
+  const lines = skillMarkdown.split("\n");
+  if (lines[0].trim() !== "---") return null;
+  const end = lines.indexOf("---", 1);
+  if (end === -1) return null;
+  return { fmLines: lines.slice(1, end), body: lines.slice(end + 1).join("\n") };
+}
+
+/** Index range of the `description:` key and its continuation lines. */
+function descriptionRange(fmLines) {
+  const start = fmLines.findIndex((l) => /^description:/.test(l));
+  if (start === -1) return null;
+  let end = start + 1;
+  // Continuation lines of a folded scalar are indented; a new key is not.
+  while (end < fmLines.length && /^\s/.test(fmLines[end])) end++;
+  return { start, end };
+}
+
+/** Measure the description as the platform sees it (folded scalar joined with single spaces). */
+export function measureDescription(skillMarkdown) {
+  const split = splitFrontmatter(skillMarkdown);
+  if (!split) return null;
+  const range = descriptionRange(split.fmLines);
+  if (!range) return null;
+  const first = split.fmLines[range.start].replace(/^description:\s*>?-?\s*/, "");
+  const rest = split.fmLines.slice(range.start + 1, range.end);
+  const text = [first, ...rest].map((l) => l.trim()).filter(Boolean).join(" ");
+  return { text, length: text.length };
+}
+
+/** Replace the frontmatter description with a single-line compliant one. */
+export function replaceDescription(skillMarkdown, description) {
+  const split = splitFrontmatter(skillMarkdown);
+  if (!split) throw new Error("SKILL.md has no YAML frontmatter");
+  const range = descriptionRange(split.fmLines);
+  if (!range) throw new Error("SKILL.md frontmatter has no description key");
+  if (description.includes("\n")) throw new Error("Replacement description must be a single line");
+  const fmLines = [
+    ...split.fmLines.slice(0, range.start),
+    `description: ${description}`,
+    ...split.fmLines.slice(range.end),
+  ];
+  return `---\n${fmLines.join("\n")}\n---\n${split.body.replace(/^\n/, "")}`;
+}
+
 /** The frozen scoring-config block the seed hashes. Kept here so both sides read one parser. */
 export function extractScoringConfigBlock(skillMarkdown) {
   const m = /```scoring-config\n([\s\S]*?)\n```/.exec(skillMarkdown);
@@ -99,8 +160,29 @@ function main() {
       throw new Error("Source skill already contains the export stage; refusing to append twice.");
     }
 
-    const block = extractEmitBlock(readFileSync(SPEC, "utf8"));
-    writeFileSync(skillPath, `${original.trimEnd()}\n\n${block}`);
+    const spec = readFileSync(SPEC, "utf8");
+    const block = extractEmitBlock(spec);
+    let built = `${original.trimEnd()}\n\n${block}`;
+
+    // The upload is rejected outright when the frontmatter description is over the limit, and
+    // the July skill ships at 1138. Substitute the compliant one from the spec when needed.
+    const before = measureDescription(built);
+    if (before && before.length > DESCRIPTION_LIMIT) {
+      console.log(`description was ${before.length} chars (limit ${DESCRIPTION_LIMIT}); substituting the compliant one`);
+      built = replaceDescription(built, extractSkillDescription(spec));
+    }
+
+    // Fail rather than emit an unuploadable artifact.
+    const after = measureDescription(built);
+    if (!after) throw new Error("Built skill has no readable frontmatter description");
+    if (after.length > DESCRIPTION_LIMIT) {
+      throw new Error(
+        `description is ${after.length} chars, over the ${DESCRIPTION_LIMIT} limit. Shorten the ` +
+          "```skill-description block in docs/match-workspace/MATCHER-EMIT-STAGE.md.",
+      );
+    }
+
+    writeFileSync(skillPath, built);
 
     // Sanity: the appended content must parse as a scoring-config block.
     const cfg = parseScoringConfig(extractScoringConfigBlock(readFileSync(skillPath, "utf8")));
@@ -109,9 +191,18 @@ function main() {
     rmSync(out, { force: true });
     execFileSync("zip", ["-q", "-r", out, INNER_DIR], { cwd: work });
 
+    // Also write a .zip twin: some upload dialogs only accept that extension.
+    const zipTwin = out.replace(/\.skill$/, ".zip");
+    if (zipTwin !== out) {
+      rmSync(zipTwin, { force: true });
+      writeFileSync(zipTwin, readFileSync(out));
+    }
+
     console.log(`Built ${out}`);
+    console.log(`  and ${zipTwin}`);
     console.log(`  scoringConfigVersion: ${cfg.version}`);
     console.log(`  weight rows: ${Object.keys(cfg.weights).join(", ")}`);
+    console.log(`  description: ${after.length}/${DESCRIPTION_LIMIT} chars`);
     console.log("\nNext step (manual, and required):");
     console.log("  Re-upload that file to replace the installed matcher skill.");
     console.log("  Editing files on disk does NOT change the skill Claude runs.");

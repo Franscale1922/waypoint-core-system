@@ -8,6 +8,22 @@ match run can be imported into the match workspace.
 and `.zip` files are untracked and sit beside a `Candidates/` folder holding real candidate
 material. This file is the reviewable copy; the built artifact is for upload only.
 
+## The frontmatter description must be under 1024 characters
+
+Claude Skills reject an upload whose YAML `description` exceeds **1024 characters**. The July skill
+on disk is **1138**, so it cannot be uploaded as-is. This is pre-existing and unrelated to the export
+stage (which is appended at the end of the file, nowhere near the frontmatter), but it blocks the
+upload either way.
+
+The build script therefore substitutes the compliant description below and **fails the build** if the
+result is still over the limit, so this cannot regress silently. Every trigger phrase from the
+original is preserved verbatim, because those are what make the skill activate; only descriptive
+prose was condensed.
+
+```skill-description
+Complete franchise candidate-to-brand matching for Waypoint Franchise Advisors. Takes candidate intelligence, questionnaire, and Candidate Model as inputs. Establishes the candidate's involvement range on a three-rung ownership scale, scores emotional alignment, audits transcript-grounded verbal signals, applies per-brand neutralization and an explicit fit-score engine, filters BrandDB_Matching, ranks brands, validates with FDD analysis, runs MSA market viability, and outputs a final Top 3 recommendation with confirmed modifiers applied. Use when: user says "Match candidate to brands," "Run candidate matching," "Generate brand matches," "Run the matcher," "matching workflow," or provides candidate files for brand matching. Required inputs: Candidate Intelligence Summary, Candidate Questionnaire (CQ), Candidate Model, BrandDB_Matching subset (after Stage 3B). Candidate-facing talking points come downstream from the brand-introduction-scripts skill; this skill ends at the Top 3 recommendation.
+```
+
 ## How this reaches the live skill (a manual step, by design)
 
 There is **no installed local copy** of this skill. The version Kelsey actually runs is uploaded

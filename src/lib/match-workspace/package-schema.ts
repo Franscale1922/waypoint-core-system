@@ -33,6 +33,30 @@ export const SCORING_STAGE = ["stage_3c", "stage_4c"] as const;
 /** Tolerance for reconciling emitted floats against recomputed ones (values carry 2-4 dp). */
 const EPSILON = 1e-4;
 
+/** The red-flag override ceiling, pinned by the skill: "final_score cannot exceed 0.70". */
+const RED_FLAG_CAP = 0.7;
+
+/**
+ * Stage-4C weight rows, keyed by Item-19 disclosure level, plus the one-scorable fallback.
+ * Kept here so the boundary can RECONCILE pre-MSA rather than trust it: an emitted pre-MSA that
+ * does not follow from the frozen inputs is not reconstructable, and [C-13] would be unmet.
+ */
+const WEIGHT_ROWS = {
+  COMPREHENSIVE: { fit: 0.5, i19: 0.25, i20: 0.25 },
+  MODERATE: { fit: 0.55, i19: 0.15, i20: 0.3 },
+  MINIMAL: { fit: 0.6, i19: 0.1, i20: 0.3 },
+} as const;
+
+/** When exactly one Item is scorable the skill reweights to fit 0.70 / that item 0.30. */
+const ONE_SCORABLE = { fit: 0.7, item: 0.3 } as const;
+
+/**
+ * Reconciliation tolerance for pre-MSA. Looser than EPSILON because the skill's own published
+ * table rounds to 2dp (its R3 row computes to .852 and prints .85), so a faithful emitter that
+ * copies the displayed value is not wrong. Half a display unit.
+ */
+const TWO_DP_TOLERANCE = 0.005 + 1e-9;
+
 /**
  * Normalize the confidence spellings the skill uses interchangeably (`MED` in the 4C table,
  * `M` in the 4A/4B blocks, `MEDIUM` in the assignment table) to one canonical value.
@@ -123,9 +147,20 @@ export const BrandScoreSchema = z
       );
     }
 
-    // The red-flag override is the only cap that applies at this stage, and it is 0.70.
-    if (b.scoreCapApplied != null && !b.flags.includes("red_flag")) {
-      fail("scoreCapApplied is set but the red_flag flag is absent", ["scoreCapApplied"]);
+    // The red-flag override is the only cap that applies at this stage, and the skill pins it
+    // to exactly 0.70 ("final_score cannot exceed 0.70", written as min(post_MSA, 0.70)).
+    // Accepting an arbitrary ceiling would let a package suppress any score to any value while
+    // still reconciling, which defeats the point of storing the cap.
+    if (b.scoreCapApplied != null) {
+      if (!b.flags.includes("red_flag")) {
+        fail("scoreCapApplied is set but the red_flag flag is absent", ["scoreCapApplied"]);
+      }
+      if (Math.abs(b.scoreCapApplied - RED_FLAG_CAP) > EPSILON) {
+        fail(
+          `scoreCapApplied must be the red-flag cap ${RED_FLAG_CAP} (got ${b.scoreCapApplied})`,
+          ["scoreCapApplied"],
+        );
+      }
     }
 
     // A brand scored through 4C must say which weight row produced it, otherwise the score
@@ -137,20 +172,38 @@ export const BrandScoreSchema = z
       );
     }
 
-    // When NEITHER Item is scorable the skill's own worked example states the rule outright:
-    // "R2 (neither scorable): pre-MSA = fit = .91". So pre-MSA must equal the fit score, and a
-    // package claiming otherwise is not reconstructable.
-    if (b.i19Score == null && b.i20Score == null) {
-      if (b.fitScore == null) {
-        fail("a stage_4c brand with no I19/I20 requires a fitScore (pre-MSA is derived from it)", [
-          "fitScore",
-        ]);
-      } else if (Math.abs(b.preMsaScore - b.fitScore) > EPSILON) {
-        fail(
-          `with neither I19 nor I20 scorable, preMsaScore must equal fitScore (got ${b.preMsaScore} vs ${b.fitScore})`,
-          ["preMsaScore"],
-        );
-      }
+    // RECONCILE pre-MSA against the frozen inputs. Storing a pre-MSA that does not follow from
+    // fit/I19/I20 would leave the score unexplainable later, which is exactly what [C-13] forbids.
+    // All three branches of the Stage-4C formula are checked.
+    if (b.fitScore == null) {
+      // Only the support-floor case (no active soft variables) has no fit, and that brand
+      // cannot have been scored through 4C.
+      fail("a stage_4c brand requires a fitScore", ["fitScore"]);
+      return;
+    }
+
+    const bothScorable = b.i19Score != null && b.i20Score != null;
+    const neitherScorable = b.i19Score == null && b.i20Score == null;
+
+    let expectedPreMsa: number | null = null;
+    if (bothScorable && b.i19DisclosureLevel != null) {
+      const w = WEIGHT_ROWS[b.i19DisclosureLevel];
+      expectedPreMsa = b.fitScore * w.fit + (b.i19Score! / 5) * w.i19 + (b.i20Score! / 5) * w.i20;
+    } else if (neitherScorable) {
+      // "R2 (neither scorable): pre-MSA = fit = .91" -- the skill's own worked example.
+      expectedPreMsa = b.fitScore;
+    } else {
+      // Exactly one Item scorable: fit 0.70 plus the available item at 0.30.
+      const only = (b.i19Score ?? b.i20Score)!;
+      expectedPreMsa = b.fitScore * ONE_SCORABLE.fit + (only / 5) * ONE_SCORABLE.item;
+    }
+
+    if (expectedPreMsa != null && Math.abs(expectedPreMsa - b.preMsaScore) > TWO_DP_TOLERANCE) {
+      fail(
+        `preMsaScore ${b.preMsaScore} does not follow from the frozen inputs (expected about ` +
+          `${expectedPreMsa.toFixed(4)}); the score would not be reconstructable`,
+        ["preMsaScore"],
+      );
     }
   });
 
