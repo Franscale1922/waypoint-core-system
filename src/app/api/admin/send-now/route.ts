@@ -6,16 +6,19 @@
  * integration without waiting for the warmupScheduler cron.
  *
  * Body (JSON): { leadId: string }
- * Auth: NextAuth session required (admin only).
+ * Auth: ENFORCED by `withAdmin` below: an authenticated, allowlisted admin session.
+ *       (This docblock previously claimed auth that nothing actually enforced: the route was
+ *       publicly callable and would fire real email to real prospects.)
  */
 
 import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
 import { PrismaClient } from "@prisma/client";
+import { withAdmin } from "@/lib/with-admin";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+export const POST = withAdmin(async (req) => {
     try {
         const { leadId } = (await req.json()) as { leadId?: string };
 
@@ -62,4 +65,4 @@ export async function POST(req: Request) {
         console.error("[send-now]", err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
-}
+});

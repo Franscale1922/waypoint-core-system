@@ -3,8 +3,15 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 import { LeadSchema } from "@/app/lib/schemas";
 import { LeadStatus } from "@prisma/client";
+import { withAdmin } from "@/lib/with-admin";
 
-export async function POST(req: Request) {
+// Auth: both handlers are gated by `withAdmin`. The middleware matcher pattern
+// (`/api/leads/((?!retrigger$).*)`) compiles to a regex that REQUIRES a trailing slash, so the
+// bare `/api/leads` path these two handlers serve was never matched, leaving a public POST and,
+// worse, a public `DELETE ?status=ALL` that wipes the entire Lead table. The in-handler gate is
+// the primary control precisely because that matcher subtlety is invisible at a glance.
+
+export const POST = withAdmin(async (req) => {
     try {
         const body = await req.json();
         const rawLeads = Array.isArray(body) ? body : [body];
@@ -87,12 +94,12 @@ export async function POST(req: Request) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return NextResponse.json({ error: message }, { status: 500 });
     }
-}
+});
 
 // ── DELETE /api/leads?status=PENDING_CLAY: bulk delete by status ──────────
 // Used to clear bad imports before a clean re-import.
 // Pass ?status=PENDING_CLAY to wipe just that cohort, or ?status=ALL to delete everything.
-export async function DELETE(req: Request) {
+export const DELETE = withAdmin(async (req) => {
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
 
@@ -112,4 +119,4 @@ export async function DELETE(req: Request) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return NextResponse.json({ error: message }, { status: 500 });
     }
-}
+});

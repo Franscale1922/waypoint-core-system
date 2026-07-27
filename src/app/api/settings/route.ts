@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { withAdmin } from "@/lib/with-admin";
 
 /** Returns a masked version of an API key for display, never the real value. */
 function maskKey(key: string | null | undefined): string {
@@ -7,7 +8,7 @@ function maskKey(key: string | null | undefined): string {
     return `${key.slice(0, 3)}...${key.slice(-4)}`;
 }
 
-export async function GET() {
+export const GET = withAdmin(async () => {
     const settings = await prisma.systemSettings.upsert({
         where: { id: "singleton" },
         update: {},
@@ -21,9 +22,9 @@ export async function GET() {
         resendApiKey: maskKey(settings.resendApiKey),
         maxSendsPerDay: settings.maxSendsPerDay,
     });
-}
+});
 
-export async function POST(req: Request) {
+export const POST = withAdmin(async (req) => {
     const body = await req.json();
     const update: Record<string, string | number> = {
         maxSendsPerDay: parseInt(body.maxSendsPerDay) || 50,
@@ -53,5 +54,5 @@ export async function POST(req: Request) {
         resendApiKey: maskKey(settings.resendApiKey),
         maxSendsPerDay: settings.maxSendsPerDay,
     });
-}
+});
 

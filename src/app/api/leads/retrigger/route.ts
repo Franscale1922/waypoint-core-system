@@ -3,9 +3,15 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
 export async function POST(req: NextRequest) {
-    // Simple secret-header guard: set RETRIGGER_SECRET in Vercel env vars
+    // Secret-header guard, FAIL-CLOSED: set RETRIGGER_SECRET in Vercel env vars.
+    // Previously `if (secret && ...)`, which silently made this route fully public whenever the
+    // env var was missing, i.e. the one case where you most need the guard.
     const secret = process.env.RETRIGGER_SECRET;
-    if (secret && req.headers.get("x-retrigger-secret") !== secret) {
+    if (!secret) {
+        console.error("[retrigger] RETRIGGER_SECRET is not configured; refusing the request.");
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (req.headers.get("x-retrigger-secret") !== secret) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
     try {

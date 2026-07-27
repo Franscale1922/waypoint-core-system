@@ -14,7 +14,8 @@
     "aeo-audit": "node scripts/aeo-audit.mjs",
     "verify-schema": "node scripts/verify-schema.mjs",
     "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs",
-    "test": "node scripts/verify-links.mjs && node scripts/verify-schema.mjs"
+    "test": "node scripts/verify-links.mjs && node scripts/verify-schema.mjs",
+    "test:auth": "vitest run"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.41",
@@ -28,9 +29,9 @@
     "next": "16.2.4",
     "next-auth": "^5.0.0-beta.30",
     "next-mdx-remote": "^6.0.0",
-    "remark-gfm": "^4.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "remark-gfm": "^4.0.0",
     "resend": "^6.9.3",
     "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
@@ -46,7 +47,8 @@
     "googleapis": "^171.4.0",
     "prisma": "^6.19.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   },
   "browserslist": [
     "chrome >= 107",

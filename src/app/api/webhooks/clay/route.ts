@@ -23,7 +23,9 @@
  *   5. Trigger this action after enrichment is complete on each row.
  *
  * Security: CLAY_WEBHOOK_SECRET env var must match the x-clay-secret header.
- * If not set, the endpoint accepts all requests (dev-only behaviour).
+ * FAIL-CLOSED: if the secret is not configured, every request is rejected. (This previously
+ * accepted all requests when unset, which made the endpoint public in exactly the situation
+ * where the guard was most needed.)
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -31,13 +33,16 @@ import prisma from "@/lib/prisma";
 import { inngest } from "@/inngest/client";
 
 export async function POST(req: NextRequest) {
-    // ── Auth ──────────────────────────────────────────────────────────────────
+    // ── Auth (FAIL-CLOSED) ────────────────────────────────────────────────────
+    // Previously `if (secret) { ... }`, which left this webhook completely open whenever
+    // CLAY_WEBHOOK_SECRET was unset. An unconfigured secret now denies rather than admits.
     const secret = process.env.CLAY_WEBHOOK_SECRET;
-    if (secret) {
-        const incoming = req.headers.get("x-clay-secret");
-        if (incoming !== secret) {
-            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-        }
+    if (!secret) {
+        console.error("[clay] CLAY_WEBHOOK_SECRET is not configured; refusing the request.");
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    if (req.headers.get("x-clay-secret") !== secret) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // ── Parse body ────────────────────────────────────────────────────────────
