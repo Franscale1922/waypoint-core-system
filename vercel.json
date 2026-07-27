@@ -6,7 +6,7 @@
   "git": {
     "deploymentEnabled": {
       "main": true,
-      "feat/match-workspace-foundation": false
+      "feat/match-workspace-foundation": true
     }
   }
 }
