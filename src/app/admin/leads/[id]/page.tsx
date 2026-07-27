@@ -5,6 +5,8 @@ import { ExternalLink, ArrowLeft, Mail, Briefcase, Clock, TrendingUp, FileText, 
 import { EmailBlock } from "@/components/EmailBlock";
 import { RegenerateButton } from "@/components/RegenerateButton";
 import { SendNowButton } from "@/components/SendNowButton";
+import { ScoreBar } from "@/components/admin/ScoreBar";
+import { Section } from "@/components/admin/Section";
 
 export const dynamic = "force-dynamic";
 const prisma = new PrismaClient();
@@ -19,31 +21,6 @@ const STATUS_STYLES: Record<string, string> = {
     BOOKED:        "bg-emerald-100 text-emerald-800",
     SUPPRESSED:    "bg-red-100 text-red-800",
 };
-
-function ScoreBar({ score }: { score: number }) {
-    const pct = Math.min(100, score);
-    const color = score >= 70 ? "bg-emerald-500" : score >= 50 ? "bg-blue-500" : "bg-slate-300";
-    return (
-        <div className="flex items-center gap-3">
-            <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
-            </div>
-            <span className="text-2xl font-bold text-slate-900 w-10 text-right">{score}</span>
-        </div>
-    );
-}
-
-function Section({ icon, title, children }: { icon: React.ReactNode; title: string; children: React.ReactNode }) {
-    return (
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-3">
-            <div className="flex items-center gap-2 text-slate-700 font-semibold">
-                {icon}
-                <span>{title}</span>
-            </div>
-            {children}
-        </div>
-    );
-}
 
 export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

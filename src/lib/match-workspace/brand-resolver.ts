@@ -57,6 +57,15 @@ export const BRAND_MAP_PROVENANCE = {
 
 export const WAYPOINT_BRAND_ID_PATTERN = /^wpb_[0-9a-f]{32}$/;
 
+/**
+ * Display name for a stored `wpb_` id, for read-only surfaces like the worksheet. Falls back to
+ * the id rather than inventing a name: a run may reference a brand the current map no longer
+ * carries, and showing the raw id is honest where a guess would not be.
+ */
+export function brandDisplayName(waypointBrandId: string): string {
+  return MAP.brands[waypointBrandId]?.displayName ?? waypointBrandId;
+}
+
 export type RejectionReason =
   | "UNKNOWN_BRAND_NAME"
   | "AMBIGUOUS_BRAND_NAME"
