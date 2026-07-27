@@ -5,8 +5,10 @@ import prisma from "@/lib/prisma";
 import { Section } from "@/components/admin/Section";
 import { ScoreBar } from "@/components/admin/ScoreBar";
 import { DecisionControls } from "@/components/admin/DecisionControls";
+import { OutcomeControls } from "@/components/admin/OutcomeControls";
 import { brandDisplayName } from "@/lib/match-workspace/brand-resolver";
 import { currentHead } from "@/lib/match-workspace/append";
+import { outcomesForRun } from "@/lib/match-workspace/outcomes";
 
 export const dynamic = "force-dynamic";
 
@@ -54,6 +56,14 @@ export default async function MatchWorksheet({ params }: { params: Promise<{ run
     },
   });
   if (!run) notFound();
+
+  // Outcomes key on (candidate, brand), so they are fetched for the candidate and grouped per brand.
+  const outcomes = await outcomesForRun(prisma, run.id);
+  const outcomesByBrand = new Map<string, typeof outcomes>();
+  for (const o of outcomes) {
+    if (!outcomesByBrand.has(o.waypointBrandId)) outcomesByBrand.set(o.waypointBrandId, []);
+    outcomesByBrand.get(o.waypointBrandId)!.push(o);
+  }
 
   const scored = run.scores.filter((s) => s.scoringStage === "stage_4c");
   const rankedOnly = run.scores.filter((s) => s.scoringStage !== "stage_4c");
@@ -169,6 +179,30 @@ export default async function MatchWorksheet({ params }: { params: Promise<{ run
                       currentDecisionId={head?.id ?? null}
                     />
                   </div>
+
+                  {head?.state === "final_slate" ? (
+                    <div className="pl-9 space-y-2 border-t border-slate-100 pt-3">
+                      {(outcomesByBrand.get(score.waypointBrandId) ?? []).length > 0 ? (
+                        <ul className="text-xs text-slate-600 space-y-0.5">
+                          {(outcomesByBrand.get(score.waypointBrandId) ?? []).map((o) => (
+                            <li key={o.id} className={o.supersedesId ? "text-slate-400" : ""}>
+                              <span className="font-medium">{o.type}</span>{" "}
+                              {o.effectiveAt.toISOString().slice(0, 10)}
+                              {o.reason ? `, ${o.reason}` : ""}
+                              {o.supersedesId ? " (correction)" : ""}
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-xs text-slate-400">No outcome recorded yet.</p>
+                      )}
+                      <OutcomeControls
+                        candidateId={run.candidateId}
+                        waypointBrandId={score.waypointBrandId}
+                        originatingRunId={run.id}
+                      />
+                    </div>
+                  ) : null}
 
                   {score.decisions.length > 1 ? (
                     <p className="text-xs text-slate-400 pl-9">

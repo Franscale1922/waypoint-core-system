@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { Layers, User, Clock, ArrowRight } from "lucide-react";
+import { Layers, User, Clock, ArrowRight, CircleHelp } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { Section } from "@/components/admin/Section";
+import { brandDisplayName } from "@/lib/match-workspace/brand-resolver";
+import { unlabeledSlateBrands, DEFAULT_STALE_AFTER_DAYS } from "@/lib/match-workspace/outcomes";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,10 @@ export default async function MatchWorkspaceIndex() {
     take: 100,
   });
 
+  // Derived, never stored. [C-1] excludes a task list, so there is nothing here to assign,
+  // snooze or dismiss: a row disappears the moment a real outcome is recorded.
+  const unlabeled = await unlabeledSlateBrands(prisma);
+
   return (
     <div className="p-8 max-w-5xl mx-auto space-y-6">
       <div>
@@ -32,6 +38,35 @@ export default async function MatchWorkspaceIndex() {
           decision, never an edit to the run.
         </p>
       </div>
+
+      {unlabeled.length > 0 ? (
+        <Section
+          icon={<CircleHelp className="w-4 h-4 text-amber-500" />}
+          title="Confirmed, still unlabeled"
+          right={<span className="text-sm text-slate-500">{unlabeled.length}</span>}
+        >
+          <p className="text-xs text-slate-500 mb-3">
+            Brands confirmed onto a slate more than {DEFAULT_STALE_AFTER_DAYS} days ago with no outcome
+            recorded yet. This is a view, not a worklist: there is nothing to assign or dismiss, and a
+            row leaves as soon as an outcome exists.
+          </p>
+          <ul className="divide-y divide-slate-100">
+            {unlabeled.map((u) => (
+              <li key={`${u.runId}-${u.waypointBrandId}`} className="py-2 text-sm">
+                <Link href={`/admin/match-workspace/${u.runId}`} className="flex items-center gap-3 group">
+                  <span className="flex-1 truncate text-slate-800">
+                    {u.candidateDisplayName}
+                    <span className="text-slate-400"> at </span>
+                    {brandDisplayName(u.waypointBrandId)}
+                  </span>
+                  <span className="text-xs text-slate-500 shrink-0">{u.daysSinceConfirmed} days</span>
+                  <ArrowRight className="w-4 h-4 text-slate-300 group-hover:text-slate-500 shrink-0" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
 
       <Section
         icon={<Layers className="w-4 h-4 text-blue-500" />}
