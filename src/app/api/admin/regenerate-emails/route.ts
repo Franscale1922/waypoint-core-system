@@ -9,16 +9,18 @@
  *   { leadId: string }          : regenerate a single lead
  *   { all: true }               : regenerate ALL SEQUENCED leads
  *
- * Auth: NextAuth session required (admin only, same protection as admin pages).
+ * Auth: ENFORCED by `withAdmin` below: an authenticated, allowlisted admin session.
+ *       (This docblock previously claimed protection that nothing enforced; the route was public.)
  */
 
 import { NextResponse } from "next/server";
 import { inngest } from "@/inngest/client";
 import { PrismaClient } from "@prisma/client";
+import { withAdmin } from "@/lib/with-admin";
 
 const prisma = new PrismaClient();
 
-export async function POST(req: Request) {
+export const POST = withAdmin(async (req) => {
     try {
         const body = await req.json() as { leadId?: string; all?: boolean };
 
@@ -102,4 +104,4 @@ export async function POST(req: Request) {
         console.error("[regenerate-emails]", err);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
-}
+});
