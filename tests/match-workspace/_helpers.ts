@@ -64,6 +64,10 @@ export async function makeRun(overrides: Record<string, unknown> = {}) {
       idempotencyKey: uniq("idem"),
       status: "completed",
       actor: "advisor@example.test",
+      // Brand-map provenance. Required with no DB default on purpose: a default would let a real
+      // import path silently omit the record of how its names became wpb_ ids.
+      brandRegistrySha256: "0".repeat(64),
+      brandIdentityMapHash: "0".repeat(64),
       ...overrides,
     },
   });

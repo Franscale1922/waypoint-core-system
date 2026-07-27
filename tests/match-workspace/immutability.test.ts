@@ -44,6 +44,8 @@ describe("immutability & idempotency (C-10, C-11)", () => {
           idempotencyKey: key, // same key
           status: "completed",
           actor: "advisor@example.test",
+          brandRegistrySha256: "0".repeat(64),
+          brandIdentityMapHash: "0".repeat(64),
         },
       }),
     );

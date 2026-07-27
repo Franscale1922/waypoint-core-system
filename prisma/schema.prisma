@@ -303,6 +303,18 @@ model MatchRun {
   scoringConfigId         String
   scoringConfig           ScoringConfig         @relation(fields: [scoringConfigId], references: [id]) // required FK — the DB-enforceable half of [C-14]: a run referencing a nonexistent config is rejected. The "version must be APPROVED" check is fail-closed at import (Phase 2).
   brandDbVersionRef       String                // opaque BrandDB snapshot/version tag — no FK
+
+  // HOW a brand NAME became a wpb_ id on this run. The matcher emits names; the import resolves
+  // them fail-closed against a generated, committed artifact (src/lib/match-workspace/
+  // brand-identity-map.json). Recording both hashes is what makes a historical resolution
+  // explainable rather than merely plausible: registrySha256 identifies the upstream identity
+  // registry, contentHash identifies the exact artifact this deploy shipped.
+  //
+  // Stored as two FULL 64-hex columns rather than one concatenated version string. These rows are
+  // append-only, so a truncated or grammar-bearing value ("v3+abc123") could never be corrected or
+  // parsed reliably later, and a truncated hash can be recognized but not verified.
+  brandRegistrySha256     String                // sha256 of the BIP registry the map was built from
+  brandIdentityMapHash    String                // contentHash of the committed brand-identity map
   idempotencyKey          String                @unique // content hash of the frozen package; re-import of the same package creates NO duplicate — [C-11]
   status                  String                // Phase 1 writes the literal "completed" only; the full run-status vocabulary is a Phase-2 decision once the import adapter exists (deliberate deferral, not a gap)
   actor                   String                // session.user.email — "the advisor initiated this", not "verified the data" (CONTRACT §2)

@@ -47,6 +47,8 @@ describe("candidate privacy & config governance (C-7, C-14 partial)", () => {
           idempotencyKey: "fk-test-key",
           status: "completed",
           actor: "advisor@example.test",
+          brandRegistrySha256: "0".repeat(64),
+          brandIdentityMapHash: "0".repeat(64),
         },
       }),
     );

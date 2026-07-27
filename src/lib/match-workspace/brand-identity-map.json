@@ -1,0 +1,2589 @@
+{
+  "registryVersion": 3,
+  "schemaVersion": "1.0",
+  "registrySha256": "2ce2522a56d855cbca68fc9cbd529e18d30e4327a40babca010c8209958bd25b",
+  "sourceHashes": {
+    "aliases_sha256": "22f37689c41ba5ffda61b3be92a4465627c3e272ca66e11c8914976334870513",
+    "branddb_csv_sha256": "ec166a8af5d8d735408e2c6b30cf1fc674ded5eacf7ba790bae5ccb13ba47790",
+    "franchise_index_sha256": "76e242169b539765f545d6ff1a2784d379b02eee14fd9a4379e8b2df5df35e81"
+  },
+  "brands": {
+    "wpb_00386311e1b551e6a9baa54a383985aa": {
+      "displayName": "Tierra Encantada",
+      "slug": "Tierra-Encantada",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_007846d4907f5e78969f67813df2f15e": {
+      "displayName": "Cascadia Pizza",
+      "slug": "Cascadia-Pizza",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_00a81b4cc4b057b3a58c4d0f7d66d8ed": {
+      "displayName": "RealClean Aircraft Detailing",
+      "slug": "RealClean-Aircraft-Detailing",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_030bf049a6e751618d429fe4f9931f84": {
+      "displayName": "Lightspeed Restoration",
+      "slug": "Lightspeed-Restoration",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_034725abb4605b9ca46b588a99d1780c": {
+      "displayName": "Blingle!",
+      "slug": "Blingle",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_056b15a3e51e5cd1a2b21e3098895d64": {
+      "displayName": "Frenchies Modern Nail Care",
+      "slug": "Frenchies-Modern-Nail-Care",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_069fb00a567756e2970079640019b374": {
+      "displayName": "Mold Medics",
+      "slug": "Mold-Medics",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_06ab48c602b0548aba3839bf5bc900b7": {
+      "displayName": "Voda Cleaning Restoration",
+      "slug": "Voda-Cleaning-Restoration",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_06f45b01775156bb933e14f6bb59abd9": {
+      "displayName": "Soccer Stars",
+      "slug": "Soccer-Stars",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0704e95631e0537ba6f0736e136127d6": {
+      "displayName": "Furry Land Mobile Grooming",
+      "slug": "Furry-Land-Mobile-Grooming",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0938089b7b635d6bb8a7441060911fee": {
+      "displayName": "Blue Kangaroo Packoutz",
+      "slug": "Blue-Kangaroo-Packoutz",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_09f930ca276f5679b62bd0b412a711ec": {
+      "displayName": "SkyRun Vacation Rentals",
+      "slug": "SkyRun-Vacation-Rentals",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0aad6326bd0f5794853eddcd795a6548": {
+      "displayName": "The Grout Medic",
+      "slug": "The-Grout-Medic",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0bee817517805642877d65d2e7d25c91": {
+      "displayName": "Always Best Care Senior Services",
+      "slug": "Always-Best-Care-Senior-Services",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0cb42c5bb5f5512b80db237f544c082e": {
+      "displayName": "Bark & Mane",
+      "slug": "Bark-Mane",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0d25e5627f1a500d88236dc47e28ce50": {
+      "displayName": "goGLOW",
+      "slug": "goGLOW",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0dddf7b0e3085ad68cabfc9228866658": {
+      "displayName": "Heroes Lawn Care",
+      "slug": "Heroes-Lawn-Care",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0df76c71f05d553db3a71cdf015da9a8": {
+      "displayName": "Lawn Pride",
+      "slug": "Lawn-Pride",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0e1fd82532565410950a2c817fa159c4": {
+      "displayName": "ShelfGenie",
+      "slug": "ShelfGenie",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_0fb11ce525cf5deca835ef9f7fd86a66": {
+      "displayName": "HOTWORX",
+      "slug": "HOTWORX",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_102da0f672db5f8b8281ff487273c9f2": {
+      "displayName": "Woodhouse Spa",
+      "slug": "Woodhouse-Spa",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_11efdf93fa145a6fab1e2afe8c2c8a83": {
+      "displayName": "Rubbish Works",
+      "slug": "Rubbish-Works",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1270a9006d1a5b47be48b87efcd38586": {
+      "displayName": "Paint EZ",
+      "slug": "Paint-EZ",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_127384e3b358519284dff619e7836b40": {
+      "displayName": "Mighty Dog Roofing",
+      "slug": "Mighty-Dog-Roofing",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_131a789519f35d00b8ef5af074690e78": {
+      "displayName": "Scoop Brothers",
+      "slug": "Scoop-Brothers",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1474d969cc125b37bc02cff600ef35af": {
+      "displayName": "Mosquito Sheriff",
+      "slug": "Mosquito-Sheriff",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_159fa794f7fb57a28aae3faf19154086": {
+      "displayName": "Mosquito Shield",
+      "slug": "Mosquito-Shield",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_164592a40e6b5d15bc962a4e8304298e": {
+      "displayName": "Mosquito Joe",
+      "slug": "Mosquito-Joe",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_18011461df1b5235b4cee3304aef0e32": {
+      "displayName": "Amazing Athletes",
+      "slug": "Amazing-Athletes",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_19624d769b885b6cbbba20f99d75a282": {
+      "displayName": "ContrasTheory",
+      "slug": "ContrasTheory",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1a59c92aa60f5f88b0a7cc21728bb751": {
+      "displayName": "Express Employment Professionals",
+      "slug": "Express-Employment-Professionals",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1d4409d842c955a5a4020da3a952babd": {
+      "displayName": "Paul Davis",
+      "slug": "Paul-Davis",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1d495243c8875ac69f79990ba550b97c": {
+      "displayName": "Creative Colors International",
+      "slug": "Creative-Colors-International",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1d76ad8fd09d5b70975a5acab369ad6e": {
+      "displayName": "Gatsby Glass",
+      "slug": "Gatsby-Glass",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1d8d3dbab9695366b3bfa659ff4921c6": {
+      "displayName": "All Dry",
+      "slug": "All-Dry",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1e8a3ef8558b5aec8b458f036b61f29c": {
+      "displayName": "Speedy Freight",
+      "slug": "Speedy-Freight",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1ef0262ad18c53a29fa330cc9ced8d86": {
+      "displayName": "Sola Salons",
+      "slug": "Sola-Salons",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_1f3e7559d97f5dd683dd34bf0dbb0e2d": {
+      "displayName": "Glass Doctor",
+      "slug": "Glass-Doctor",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2020627cc3ad5847b778ac7d6cb4fb2a": {
+      "displayName": "Heights Wellness Retreat",
+      "slug": "Heights-Wellness-Retreat",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_218df9a60c195e0d8f45d88b0fe0e27d": {
+      "displayName": "Service Experts",
+      "slug": "Service-Experts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2244894b94515a4699be31de265ab134": {
+      "displayName": "Kilwins",
+      "slug": "Kilwins",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_22cfe19fe3cd5b7e98de73e23766863e": {
+      "displayName": "Hunters-Humbug",
+      "slug": "Hunters-Humbug",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_22e9ff9d40c759b18628c78d6f0b6163": {
+      "displayName": "Focal Point Coaching",
+      "slug": "Focal-Point-Coaching",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_233e54f799d05801b332680f38564075": {
+      "displayName": "Sparkle Squad",
+      "slug": "Sparkle-Squad",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2556bf33324858f1bcd3201fda54ed5f": {
+      "displayName": "Mr. Electric",
+      "slug": "Mr-Electric",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_25e517f53bdb5f57a8d332e211317a90": {
+      "displayName": "The Maids",
+      "slug": "The-Maids",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_26e774de103b532ebb1a2004a3c64522": {
+      "displayName": "Building Kidz School",
+      "slug": "Building-Kidz-School",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_28ef21c75a5954fa93500a7e689e489e": {
+      "displayName": "2nd Family",
+      "slug": "2nd-Family",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_29931a72c10554b9a1f31ff0da0da385": {
+      "displayName": "Southern Steer Butcher",
+      "slug": "Southern-Steer-Butcher",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_299daef8a0605c55a876055f5259a00c": {
+      "displayName": "Face Foundrie",
+      "slug": "Face-Foundrie",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2ca40523d7d2506e8e34c44c23eda126": {
+      "displayName": "Maid Right",
+      "slug": "Maid-Right",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2d1a3f3c702b5d02884240565aeae773": {
+      "displayName": "JUNKCO+",
+      "slug": "JUNKCO",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2db2b3e2009f5ce9a68fe422dd550bda": {
+      "displayName": "GYMGUYZ",
+      "slug": "GYMGUYZ",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2dfcd0a825185741a13f55f88dcd101d": {
+      "displayName": "Aussie Pet Mobile",
+      "slug": "Aussie-Pet-Mobile",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2e3b35bb120853979e9b9c4178d1bcb3": {
+      "displayName": "Fish Window Cleaning",
+      "slug": "Fish-Window-Cleaning",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_2e51468616ef56bb97e1ca0671a49129": {
+      "displayName": "All American Pet Resorts",
+      "slug": "All-American-Pet-Resorts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3024778217b352a8aebb9ab7a968e1d4": {
+      "displayName": "House Doctors",
+      "slug": "House-Doctors",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_30b9a4a61f8e53b180bcbfd112965782": {
+      "displayName": "Metal Supermarkets",
+      "slug": "Metal-Supermarkets",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3464ca28557b512492d47e3b33c80391": {
+      "displayName": "HealthSource Chiropractic",
+      "slug": "HealthSource-Chiropractic",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_353bdd68cd8f53c292362fa6b825245b": {
+      "displayName": "Exercise Coach",
+      "slug": "Exercise-Coach",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_372307217dd05749933660793eb8b760": {
+      "displayName": "WetFuel",
+      "slug": "WetFuel",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_37bf4223264a538da5b524ba3fe25374": {
+      "displayName": "Bath Tune-Up",
+      "slug": "Bath-Tune-Up",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_384f82312b595744ad20155a25f2f70a": {
+      "displayName": "SWEAT440",
+      "slug": "SWEAT440",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_38592e3b84da5a6fa64940bc93c81bdf": {
+      "displayName": "Clothes Bin",
+      "slug": "Clothes-Bin",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_396d0dd3488f58b59b0c6181f4f56736": {
+      "displayName": "DuraFleet",
+      "slug": "DuraFleet",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3974cf2829285cf5ae2bc905ebf3201e": {
+      "displayName": "P3 Cost Analysts",
+      "slug": "P3-Cost-Analysts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3998a789c91f5548a68d5077dc11060e": {
+      "displayName": "PlumbingPro",
+      "slug": "PlumbingPro",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_39dcee051519509eae3043256f9183a3": {
+      "displayName": "SalonPLEX",
+      "slug": "SalonPLEX",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3a96e6ac84d45c40aaa97c7ebb68100c": {
+      "displayName": "Musicologie",
+      "slug": "Musicologie",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3aa79457815e563abce1d4948958480f": {
+      "displayName": "Junk King",
+      "slug": "Junk-King",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3acbeaf4965c521fbe25b21bbeff9667": {
+      "displayName": "Puddle Pools",
+      "slug": "Puddle-Pools",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3c75016db7555a2f84b3c6fb3de096e1": {
+      "displayName": "Pro-Lift Garage Doors",
+      "slug": "Pro-Lift-Garage-Doors",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3dccb01d30315e0aaa98690263c852f2": {
+      "displayName": "Ultimate Longevity Center",
+      "slug": "Ultimate-Longevity-Center",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3f04f7f6c1495caca681f5ced9bb2970": {
+      "displayName": "dermani MEDSPA",
+      "slug": "dermani-MEDSPA",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3f4ad22a73595eb18b687763c36598d1": {
+      "displayName": "Skin Experts by Brentwood Spa",
+      "slug": "Skin-Experts-by-Brentwood-Spa",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_3fc80d117f1352598afd317357fffb8c": {
+      "displayName": "Groovy Hues",
+      "slug": "Groovy-Hues",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_40988af5c3975c7db03d22cc2cb06bed": {
+      "displayName": "Appell Coatings Striping",
+      "slug": "Appell-Coatings-Striping",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_43836c8b3b4651989754ea7506a9875d": {
+      "displayName": "Pure Green",
+      "slug": "Pure-Green",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_438b4bc8c8575a4bb7dce38f426da244": {
+      "displayName": "One You Love Homecare",
+      "slug": "One-You-Love-Homecare",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4554d51872f157f1bb59d6f262dbf190": {
+      "displayName": "FirstLight Home Care",
+      "slug": "FirstLight-Home-Care",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_457e10c305185150979fbb827f93627f": {
+      "displayName": "Prism Specialty Restoration",
+      "slug": "Prism-Specialty-Restoration",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4688623816e459b1989f044152fa6494": {
+      "displayName": "Pause Studio",
+      "slug": "Pause-Studio",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4939356f62045f73ab9309883e5718ad": {
+      "displayName": "Plunge House",
+      "slug": "Plunge-House",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4aa7696350bb5542b22b08c713caabc0": {
+      "displayName": "Vibe House",
+      "slug": "Vibe-House",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4c9b646edbfe5b4895342abb5a681fef": {
+      "displayName": "Varsity Zone HVAC",
+      "slug": "Varsity-Zone-HVAC",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4d4143a5672056cea81bef8ca03abc5c": {
+      "displayName": "VIO Med Spa",
+      "slug": "VIO-Med-Spa",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4d796e52876a5ffb9d561ee3788c5741": {
+      "displayName": "MAXI Mobile",
+      "slug": "MAXI-Mobile",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4d9e1960e2df516bbe0f16ebcc2d3ca2": {
+      "displayName": "Slumberland Furniture",
+      "slug": "Slumberland-Furniture",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed": {
+      "displayName": "THE SEALS Refrigeration Gasket Specialists",
+      "slug": "THE-SEALS-Refrigeration-Gasket-Specialists",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_4ff8a1ea0e9250db8b12cd62aee1a634": {
+      "displayName": "Kitchen Wise Closet Wise",
+      "slug": "Kitchen-Wise-Closet-Wise",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_511156f2264c54e4862b5041e9f2544d": {
+      "displayName": "CarePatrol",
+      "slug": "CarePatrol",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_52b701e485ed5205b79535d7977058fe": {
+      "displayName": "Sourdough and Co.",
+      "slug": "Sourdough-and-Co",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_530430679df850e58c5deed9ca643bb1": {
+      "displayName": "Tee Box",
+      "slug": "Tee-Box",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_536420286c7d59f4818f54a1fb0798f4": {
+      "displayName": "Assisted Living Locators",
+      "slug": "Assisted-Living-Locators",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5377a3fec6a450339e2ab4d8108a1c36": {
+      "displayName": "Gotcha Covered",
+      "slug": "Gotcha-Covered",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_53b36c84996b5b35b9e3886dab7013e4": {
+      "displayName": "All Dogs Unleashed",
+      "slug": "All-Dogs-Unleashed",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_53d1346a4bdd55c48bfe6a082bd946de": {
+      "displayName": "Bar-B-Clean",
+      "slug": "Bar-B-Clean",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_55509534d50959d1a8d5b1a2790028b5": {
+      "displayName": "Ground Guys",
+      "slug": "Ground-Guys",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5824893e57fc5ac39004c2f3af44ada2": {
+      "displayName": "K9 Resorts",
+      "slug": "K9-Resorts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_594d4ee06b4f5e8884a643861419132c": {
+      "displayName": "PIRTEK USA / Canada",
+      "slug": "PIRTEK-USA-Canada",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5a3c8b883af05ae48aa32334add3af67": {
+      "displayName": "Water Babies",
+      "slug": "Water-Babies",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5b40df1686dc54659869af9a5c8f9111": {
+      "displayName": "Mr. Handyman",
+      "slug": "Mr-Handyman",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5b83f8889916541dbfc4d5593cc5e553": {
+      "displayName": "Window Genie",
+      "slug": "Window-Genie",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5c206d82fdef5e74a0e0a9050d4f726a": {
+      "displayName": "KidStrong",
+      "slug": "KidStrong",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5c443be257d451f186e3456d7bf4ba6f": {
+      "displayName": "The Brothers That Just Do Gutters",
+      "slug": "The-Brothers-That-Just-Do-Gutters",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5ca06e834a6958efb0e823ba989b7c84": {
+      "displayName": "Insulation Commandos",
+      "slug": "Insulation-Commandos",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5e29805ea67d52e490095381f3cedf12": {
+      "displayName": "Boost Home Healthcare",
+      "slug": "Boost-Home-Healthcare",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5efac4a9fe385852aeae2bce859c73bb": {
+      "displayName": "Hammer & Nails",
+      "slug": "Hammer-Nails",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_5f77b8b8e69f53a5ac853a1492856002": {
+      "displayName": "Dryer Vent Wizard",
+      "slug": "Dryer-Vent-Wizard",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_60937da0638c515e866ac4abedd9c16d": {
+      "displayName": "Gorilla Property Services",
+      "slug": "Gorilla-Property-Services",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_61f520b54465530ab708173ddff579be": {
+      "displayName": "Schooley Mitchell",
+      "slug": "Schooley-Mitchell",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_64040abd48f856758385d6ee77820b56": {
+      "displayName": "EverLine Coatings",
+      "slug": "EverLine-Coatings",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_66810e1f317b5c1bad173e57727c9ef8": {
+      "displayName": "Alloy Personal Training",
+      "slug": "Alloy-Personal-Training",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_66f2fd3de1ec524eaf2e23a77413eacc": {
+      "displayName": "Liqua-Roof",
+      "slug": "Liqua-Roof",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_689f8a5ea7e35f98ace8e40482223e4d": {
+      "displayName": "iFlex",
+      "slug": "iFlex",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_69282fdd26df5f5795d45daae2cf2671": {
+      "displayName": "Story Time Chess",
+      "slug": "Story-Time-Chess",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_69dce862c1c45a5fba8fed659c9235a1": {
+      "displayName": "Zinga's",
+      "slug": "Zingas",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6a33e74cbc0c5fd09146d5ecfb16388b": {
+      "displayName": "360 Painting",
+      "slug": "360-Painting",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6b14a418bb6e5140b826cb50a2ddea3f": {
+      "displayName": "Shine Window Care and Holiday Lighting",
+      "slug": "Shine-Window-Care-and-Holiday-Lighting",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6c10c9b30913547b944e405428969d2b": {
+      "displayName": "4Ever Young",
+      "slug": "4Ever-Young",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6c35bd98729d50d1a06dfb87bedb89b6": {
+      "displayName": "1-800-Packouts",
+      "slug": "1-800-Packouts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6c5e252ebed6587f9159143fe3cee0ef": {
+      "displayName": "Pilates Addiction",
+      "slug": "Pilates-Addiction",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6f25e680795c5006956f1166aede0abb": {
+      "displayName": "Project LeanNation",
+      "slug": "Project-LeanNation",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_6fb7e4ecc5555222a1b571ba527a6465": {
+      "displayName": "Painter Bros",
+      "slug": "Painter-Bros",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_71e51ca6ea4f59ab92b03fad6905ad9d": {
+      "displayName": "The Glass Guru",
+      "slug": "The-Glass-Guru",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7214edd514065557a92d1adfea30740c": {
+      "displayName": "ComForCare Home Care",
+      "slug": "ComForCare-Home-Care",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_754e93caa4fc5cc59d60a13f7b45f33f": {
+      "displayName": "Floor Coverings International",
+      "slug": "Floor-Coverings-International",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_77fc4dab7cfb5f6ca19f13ec586d0588": {
+      "displayName": "Senior Helpers",
+      "slug": "Senior-Helpers",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7892f47847165e09a7b614cd865ed9a2": {
+      "displayName": "OVO Salon",
+      "slug": "OVO-Salon",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7a66a441410358adad113ebf5f07ae87": {
+      "displayName": "Padel SWT",
+      "slug": "Padel-SWT",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7cb49916049651b7a6a844c2acc41789": {
+      "displayName": "Surface Experts",
+      "slug": "Surface-Experts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7d528756c80950ca8d90bd4a3d2ed467": {
+      "displayName": "Conserva Irrigation",
+      "slug": "Conserva-Irrigation",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7d5e1240a3de57a98e27f2a5c609034b": {
+      "displayName": "Lawn Doctor",
+      "slug": "Lawn-Doctor",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7efa1bb3f0685ae3a57549d5113cadf3": {
+      "displayName": "Gone for Good",
+      "slug": "Gone-for-Good",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7f98c913ff9658c89dd43677f5d3328f": {
+      "displayName": "Renew Medic",
+      "slug": "Renew-Medic",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_7fab0a6277e0512cbdc09f3b7e452daf": {
+      "displayName": "Hello Sugar",
+      "slug": "Hello-Sugar",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_80c1cf53d4375cf29126d47cd61aecda": {
+      "displayName": "Training Franchisor",
+      "slug": "Training-Franchisor",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_81213b5328875c638658abfbd0de54aa": {
+      "displayName": "Bio-One",
+      "slug": "Bio-One",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_81d07bc729ea5889bf0ce9dc733c30df": {
+      "displayName": "CareBuilders at Home",
+      "slug": "CareBuilders-at-Home",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_828f66ef06b956e094c0f71fb6d1e581": {
+      "displayName": "Fetch! Pet Care",
+      "slug": "Fetch-Pet-Care",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_857ed6aa1261571bbd6531d62379cd8c": {
+      "displayName": "Zoom Drain",
+      "slug": "Zoom-Drain",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_85ac53ce2bdd5c2b8c3bd21348887d88": {
+      "displayName": "Fibrenew",
+      "slug": "Fibrenew",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_85d52468972650e1a2c306cc558bdc35": {
+      "displayName": "Jungle Driving School",
+      "slug": "Jungle-Driving-School",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_86d1237ad37e53b4b7d6a9b3e567b797": {
+      "displayName": "Dakota London Hair Extensions",
+      "slug": "Dakota-London-Hair-Extensions",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_89cae97459c95f528fbcc4bac445d1f0": {
+      "displayName": "The Grounds Guys",
+      "slug": "The-Grounds-Guys",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8a15640640ac51148d753edfa09b2998": {
+      "displayName": "Teriyaki Madness",
+      "slug": "Teriyaki-Madness",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8ad7904ab11854d49a80eb23e9dccaca": {
+      "displayName": "Stretch Zone",
+      "slug": "Stretch-Zone",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8b273853e3be50ac9177de27506e78fa": {
+      "displayName": "Temporary Wall Systems",
+      "slug": "Temporary-Wall-Systems",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8d5b7aef3580590c8b711f8e62f62531": {
+      "displayName": "Kitchen Tune-Up",
+      "slug": "Kitchen-Tune-Up",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8db30c5c8db557fe9316c30d0b1a38c1": {
+      "displayName": "Satellite Teams",
+      "slug": "Satellite-Teams",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_8f0d4e92339557ccb30b300ffcc4bdf8": {
+      "displayName": "Window Gang",
+      "slug": "Window-Gang",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_90237aec12055ea5884cf704530fbbee": {
+      "displayName": "Monster Mini Golf",
+      "slug": "Monster-Mini-Golf",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_90773a7a72635be3b419a82600688045": {
+      "displayName": "TeamLogic IT",
+      "slug": "TeamLogic-IT",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_90da7a05d40a5ff2b61b6e5e32e722d2": {
+      "displayName": "U.S. Lawns",
+      "slug": "US-Lawns",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_91764cec837d5337bb6f5ae2513e7401": {
+      "displayName": "RestoPros",
+      "slug": "RestoPros",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_918f452d6845504fb6ffeb573cbd062e": {
+      "displayName": "Soccer 5",
+      "slug": "Soccer-5",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_92539ceeb9be502caee181b079aa3d68": {
+      "displayName": "Kung Fu Kids",
+      "slug": "Kung-Fu-Kids",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_93c40aeaedbe5974837f00ba13ccb3ad": {
+      "displayName": "IMAGE Studios",
+      "slug": "IMAGE-Studios",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9511bc26d3425746bfb13f4c3f80053c": {
+      "displayName": "Cabinet IQ",
+      "slug": "Cabinet-IQ",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_958a999a6b715131b2f2a018325a9187": {
+      "displayName": "Temperature Pro",
+      "slug": "Temperature-Pro",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_95c228e184ba5b5b8580c8b940a3117b": {
+      "displayName": "True North Restoration",
+      "slug": "True-North-Restoration",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_963e5fdaed6d5a4a9c6a2517ca95942e": {
+      "displayName": "76 Fence",
+      "slug": "76-Fence",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_96b40bd50ca4512c8d945a58ba291621": {
+      "displayName": "Ellie Mental Health",
+      "slug": "Ellie-Mental-Health",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9710d58d53d457d69fa74faa9651703e": {
+      "displayName": "bex+Co.",
+      "slug": "bexCo",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_97c32f745fb75737ab868d5125d793d7": {
+      "displayName": "CMIT Solutions",
+      "slug": "CMIT-Solutions",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_99569689b2945f8ab67c5e7d851bfefd": {
+      "displayName": "That 1 Painter",
+      "slug": "That-1-Painter",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9a2effcac61953cf8d99f0598ad23cea": {
+      "displayName": "FranFund",
+      "slug": "FranFund",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9b21898f5e695953b38c95ce6620f5c0": {
+      "displayName": "The Tox",
+      "slug": "The-Tox",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9db9d7b1c739531f95b16d686638b299": {
+      "displayName": "LIME Painting",
+      "slug": "LIME-Painting",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9e83a96f22345758ad0661d39ff206ac": {
+      "displayName": "Seniors Helping Seniors",
+      "slug": "Seniors-Helping-Seniors",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_9ecc8c1a172757fab556fe154a5a3623": {
+      "displayName": "Molly Maid",
+      "slug": "Molly-Maid",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a072514d64d4501b894415ef4b96bb4c": {
+      "displayName": "HouseMaster",
+      "slug": "HouseMaster",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a0c09493d5575c4792d97010ab1de3f2": {
+      "displayName": "Stand Strong Fencing",
+      "slug": "Stand-Strong-Fencing",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a2af9149b8f75d8bac22b56a4617d7bc": {
+      "displayName": "Real Property Management",
+      "slug": "Real-Property-Management",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a39b2ae6f42b5503a04d5129f3da538f": {
+      "displayName": "DonutNV",
+      "slug": "DonutNV",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a464171170955334b2019c54093defbf": {
+      "displayName": "Mr. Appliance",
+      "slug": "Mr-Appliance",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a636a4430a075436a0d1fee10148a0db": {
+      "displayName": "WaveMAX Laundry",
+      "slug": "WaveMAX-Laundry",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a6a3fa4bc4635122a50ed2e827aeb518": {
+      "displayName": "iFOAM",
+      "slug": "iFOAM",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a6fe13c504025286a3180678442820be": {
+      "displayName": "Ace Handyman Services",
+      "slug": "Ace-Handyman-Services",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a896261fafaa51a8bf57a90e9438be83": {
+      "displayName": "Pool Scouts",
+      "slug": "Pool-Scouts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a8ce32a32f8158328bbdc79824f97d91": {
+      "displayName": "Blue Moon Estate Sales",
+      "slug": "Blue-Moon-Estate-Sales",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a96d79fa3d16555fb78da89632086119": {
+      "displayName": "Squeeze",
+      "slug": "Squeeze",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_a9d081ed193f5b8bbb0418cc9dd6ee24": {
+      "displayName": "1-800-STRIPER",
+      "slug": "1-800-STRIPER",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_aac13ead6a5b5b6ea035b190e87413f5": {
+      "displayName": "Tutor Doctor Canada Only",
+      "slug": "Tutor-Doctor-Canada-Only",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_aaef8648ba5e5f7abdf109fe3050bfa9": {
+      "displayName": "Bishops Cuts Color",
+      "slug": "Bishops-Cuts-Color",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ac7f7b74aa94575083a7a2593f2c08a8": {
+      "displayName": "Aire Serv",
+      "slug": "Aire-Serv",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_acc93d98fddf5fee8664b7ee371f713f": {
+      "displayName": "ERA Group",
+      "slug": "ERA-Group",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ace2e64bc362507ca0b2302bcf7d8fce": {
+      "displayName": "MY SALON Suite",
+      "slug": "MY-SALON-Suite",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ace38d6b015d562f9e6ab2c2a12a20be": {
+      "displayName": "Grasons Estate Sales and Business Liquidations",
+      "slug": "Grasons-Estate-Sales-and-Business-Liquidations",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_aec48bf4083453af9a9c67aaaa739c58": {
+      "displayName": "Pinks Window Services",
+      "slug": "Pinks-Window-Services",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_aecf59d3ee69544d991ab7c8447f21d9": {
+      "displayName": "Bumble Bee Blinds",
+      "slug": "Bumble-Bee-Blinds",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_af357b9bea935061b46894aec1997f5a": {
+      "displayName": "The Designery",
+      "slug": "The-Designery",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_af451fa64f885094bf12c1f625306e77": {
+      "displayName": "Menchies",
+      "slug": "Menchies",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_afe769ebc63a544a92179946f6b10ea3": {
+      "displayName": "TGA",
+      "slug": "TGA",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b13ea16860825fda8d26ad81cf17949d": {
+      "displayName": "Marigold Academy",
+      "slug": "Marigold-Academy",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b1ea107527055b7eb429eb506b56aa6b": {
+      "displayName": "JETSET Pilates",
+      "slug": "JETSET-Pilates",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b30b74411a3850c682d57a77a85178d7": {
+      "displayName": "FlyLock Security Solutions",
+      "slug": "FlyLock-Security-Solutions",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b3cb1fbc7bf450d892617605b540d903": {
+      "displayName": "Benetrends",
+      "slug": "Benetrends",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b44fe0e22bf85b6f827e0f581048d12a": {
+      "displayName": "Top Rail Fence",
+      "slug": "Top-Rail-Fence",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b4b0bab0e574533ab9f8b5d1be8c8765": {
+      "displayName": "Steel Coated Floors",
+      "slug": "Steel-Coated-Floors",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b512785096d75fc987041493751bc958": {
+      "displayName": "Surv",
+      "slug": "Surv",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b7962424d5855e98bace93733596731e": {
+      "displayName": "Right at Home",
+      "slug": "Right-at-Home",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_b960b77ddcec52cca154ff2977965d20": {
+      "displayName": "Mr. Rooter",
+      "slug": "Mr-Rooter",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_bb4e387e9f715872b6adc89e95f0e37e": {
+      "displayName": "Budget Blinds",
+      "slug": "Budget-Blinds",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_bb53dfb2120251e6af379ca2549da4c3": {
+      "displayName": "Sky Zone",
+      "slug": "Sky-Zone",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_bb970b3a167d543691d1e77d1fbd3f05": {
+      "displayName": "D1 Sports Training",
+      "slug": "D1-Sports-Training",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c09010563f3c566db03837b59aa5c49e": {
+      "displayName": "Duro Fleet",
+      "slug": "Duro-Fleet",
+      "lifecycleState": "unresolved",
+      "successorIds": []
+    },
+    "wpb_c0db27bf871959039c0be551c74fe697": {
+      "displayName": "Spray-Net",
+      "slug": "Spray-Net",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c0ff0cf5dd045389ac2176dd70141aca": {
+      "displayName": "Fastest Labs",
+      "slug": "Fastest-Labs",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c1e6f131e316524a96c3bd43f74fdb46": {
+      "displayName": "Delta Crown",
+      "slug": "Delta-Crown",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c22e9d07ad175af0923cd49d746b1162": {
+      "displayName": "PatchMaster",
+      "slug": "PatchMaster",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c25945ae2d62552796fac0976691b848": {
+      "displayName": "Pet Evolution",
+      "slug": "Pet-Evolution",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c71ccd4405a55ea29a9d2663a038b08c": {
+      "displayName": "Five Star Bath Solutions",
+      "slug": "Five-Star-Bath-Solutions",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c75109cb14dd5241a18b40bc0b93e721": {
+      "displayName": "Modern PURAIR",
+      "slug": "Modern-PURAIR",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c7e5dfbe5adb55a79ec02f394520df00": {
+      "displayName": "Window Hero",
+      "slug": "Window-Hero",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c809a8e6997d54cf8109e7b9e649d169": {
+      "displayName": "Human Advisor AI",
+      "slug": "Human-Advisor-AI",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c811387d1ad151bea23e4cc1a56906ca": {
+      "displayName": "Junk Shot",
+      "slug": "Junk-Shot",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c855f4b808e35b74a4339a71ae8933b8": {
+      "displayName": "beem Light Sauna",
+      "slug": "beem-Light-Sauna",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c8a998e5ddbc53d598e6eef1dc782b79": {
+      "displayName": "COOL-BINZ",
+      "slug": "COOL-BINZ",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c94f0c69388b5f9a8d9e08dd7eea96e8": {
+      "displayName": "Hallmark Homecare",
+      "slug": "Hallmark-Homecare",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_c9a4c80faa6054468de6dd6cf050adda": {
+      "displayName": "ISI Elite Training",
+      "slug": "ISI-Elite-Training",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_cc23672c1ca45b0a98fcf0c0846e3333": {
+      "displayName": "Taste Buds Kitchen",
+      "slug": "Taste-Buds-Kitchen",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_cd85638b876c599ba2695c457166bdc7": {
+      "displayName": "Five Star Painting",
+      "slug": "Five-Star-Painting",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_cda8d912066d566e8177c145fe1b9a25": {
+      "displayName": "Rolling Suds",
+      "slug": "Rolling-Suds",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_cfa8fd904a085d8db46993ef1310ac1f": {
+      "displayName": "Techtron",
+      "slug": "Techtron",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d1df626a70505f46b4efa5e51f0ed11c": {
+      "displayName": "Roof Scientist",
+      "slug": "Roof-Scientist",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d1fbf913764f5d499403ba1cf67edb98": {
+      "displayName": "Two Maids",
+      "slug": "Two-Maids",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d2090ebb31605acfbb19a4248fd72fbd": {
+      "displayName": "Kitchen Guard",
+      "slug": "Kitchen-Guard",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d29e95335ccc5f4798806c44de600076": {
+      "displayName": "Poolwerx",
+      "slug": "Poolwerx",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d378dc93b0cc56f186b780da5db42dfb": {
+      "displayName": "CertaPro Painters",
+      "slug": "CertaPro-Painters",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d413119f84045a14af6a6cf094189037": {
+      "displayName": "Fundraising University",
+      "slug": "Fundraising-University",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d47f7bfcdb5054e9a6309cc3e7d8e48d": {
+      "displayName": "MosquitoNix",
+      "slug": "MosquitoNix",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d53b93332e9f5058a92fc1ba526799d2": {
+      "displayName": "GarageExperts",
+      "slug": "GarageExperts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_d8acae5e50f0538392a3c572f305e44f": {
+      "displayName": "HOMEstretch",
+      "slug": "HOMEstretch",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_da5cd9fac6e5574fbb11bd1b45cc0c5d": {
+      "displayName": "Degree Wellness",
+      "slug": "Degree-Wellness",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_dd396611a5de5afbb58cc09cf4db672d": {
+      "displayName": "Chatime",
+      "slug": "Chatime",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_de983ada419f5ce184a2d2798b15490d": {
+      "displayName": "CyberGlobal",
+      "slug": "CyberGlobal",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_dff969447a0f55a08b3292b59d9c7e0b": {
+      "displayName": "Solenvia Caregivers",
+      "slug": "Solenvia-Caregivers",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e0d4d005957951ada7e62f0fa2277897": {
+      "displayName": "SPENGA",
+      "slug": "SPENGA",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e15a93148766527aa97463c8c903c422": {
+      "displayName": "WOW Windowboxes",
+      "slug": "WOW-Windowboxes",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e1824d62bab25d9dafc7240923183b5a": {
+      "displayName": "Koala Insulation Canada Only",
+      "slug": "Koala-Insulation-Canada-Only",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e23ded71dc795cd7a57975b7fc18cdb8": {
+      "displayName": "The Fashion Class",
+      "slug": "The-Fashion-Class",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e275306cace35519808db7bb4f87b4b6": {
+      "displayName": "Waterloo Turf",
+      "slug": "Waterloo-Turf",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e5a2d7989e8c599f85eb2aabc661c2db": {
+      "displayName": "DDH Home Organizing & Move Management",
+      "slug": "DDH-Home-Organizing-Move-Management",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e604ab7548535f9a8add2563ff4b4065": {
+      "displayName": "Ideal Siding",
+      "slug": "Ideal-Siding",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e759cde97bc45963ba49caded5612a6f": {
+      "displayName": "Senior Care Authority",
+      "slug": "Senior-Care-Authority",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_e90ec26d55f25973b942bae3077a3594": {
+      "displayName": "PetWellClinic",
+      "slug": "PetWellClinic",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ea9502eebc4f59c68903a200d2d82909": {
+      "displayName": "Art of Drawers",
+      "slug": "Art-of-Drawers",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_eb243b50c24254d88da32b8698294bad": {
+      "displayName": "Medi-Weightloss",
+      "slug": "Medi-Weightloss",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ed21d8134b4b5e76ae2721ce71b8fcb3": {
+      "displayName": "British Swim School",
+      "slug": "British-Swim-School",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ed499489919a5dc08a5f517248937bec": {
+      "displayName": "Vanity Fur",
+      "slug": "Vanity-Fur",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_eda61e47faf45e5884cf6bba799f8197": {
+      "displayName": "Floyds 99 Barbershop",
+      "slug": "Floyds-99-Barbershop",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_edfe8da338525adc94336ae9920c5718": {
+      "displayName": "Body20",
+      "slug": "Body20",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ee0712fcdadf580294f14f1262528b32": {
+      "displayName": "Rainbow Restoration",
+      "slug": "Rainbow-Restoration",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_eeced6a1caff513885a8ae09d1a8fc8f": {
+      "displayName": "Ivybrook Academy",
+      "slug": "Ivybrook-Academy",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_efa7aa20e730524cb2540e4d2b06eb1e": {
+      "displayName": "The Dog Stop",
+      "slug": "The-Dog-Stop",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f0345032f3575d8491791a8cf528d333": {
+      "displayName": "Storm Guard Roofing and Construction",
+      "slug": "Storm-Guard-Roofing-and-Construction",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f0f68756b3185eb588df316143981ff6": {
+      "displayName": "GolfTRK",
+      "slug": "GolfTRK",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f3caccf2f6b75614a0b9eb9a3f1367f4": {
+      "displayName": "Bach to Rock",
+      "slug": "Bach-to-Rock",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f3d65e37919e58ad82e0962c35443dc5": {
+      "displayName": "Wonderly Lights",
+      "slug": "Wonderly-Lights",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f4949910eda85d19985f87f982091be5": {
+      "displayName": "LaundroLab",
+      "slug": "LaundroLab",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f8b8324b77aa563b9f2fd50c670e7718": {
+      "displayName": "StretchMed",
+      "slug": "StretchMed",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_f9974f7dbf37512d94743701dd3e8ce8": {
+      "displayName": "Next Day Access",
+      "slug": "Next-Day-Access",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_fbd8b62b50b159158b3bc05b7da3248c": {
+      "displayName": "Restoration 1",
+      "slug": "Restoration-1",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_fe403eb36b1e5d4692450acd1fdce3d3": {
+      "displayName": "Property Sellwise",
+      "slug": "Property-Sellwise",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_ff71ce26f821576eb0cd1e290826a20c": {
+      "displayName": "Joshua Tree Experts",
+      "slug": "Joshua-Tree-Experts",
+      "lifecycleState": "active",
+      "successorIds": []
+    },
+    "wpb_fff104085ee75ba7ad893aefbd8fea11": {
+      "displayName": "CoolVu Glass and Surface Solutions",
+      "slug": "CoolVu-Glass-and-Surface-Solutions",
+      "lifecycleState": "active",
+      "successorIds": []
+    }
+  },
+  "nameKeys": {
+    "1-800 packouts": [
+      "wpb_6c35bd98729d50d1a06dfb87bedb89b6"
+    ],
+    "1-800-packouts": [
+      "wpb_6c35bd98729d50d1a06dfb87bedb89b6"
+    ],
+    "1-800-striper": [
+      "wpb_a9d081ed193f5b8bbb0418cc9dd6ee24"
+    ],
+    "1800 packouts": [
+      "wpb_6c35bd98729d50d1a06dfb87bedb89b6"
+    ],
+    "2nd family": [
+      "wpb_28ef21c75a5954fa93500a7e689e489e"
+    ],
+    "360 painting": [
+      "wpb_6a33e74cbc0c5fd09146d5ecfb16388b"
+    ],
+    "360°": [
+      "wpb_6a33e74cbc0c5fd09146d5ecfb16388b"
+    ],
+    "360° painting": [
+      "wpb_6a33e74cbc0c5fd09146d5ecfb16388b"
+    ],
+    "4ever young": [
+      "wpb_6c10c9b30913547b944e405428969d2b"
+    ],
+    "76 fence": [
+      "wpb_963e5fdaed6d5a4a9c6a2517ca95942e"
+    ],
+    "800 packouts": [
+      "wpb_6c35bd98729d50d1a06dfb87bedb89b6"
+    ],
+    "accelerated waste solutions": [
+      "wpb_c811387d1ad151bea23e4cc1a56906ca"
+    ],
+    "ace handyman services": [
+      "wpb_a6fe13c504025286a3180678442820be"
+    ],
+    "aire serv": [
+      "wpb_ac7f7b74aa94575083a7a2593f2c08a8"
+    ],
+    "aireserv": [
+      "wpb_ac7f7b74aa94575083a7a2593f2c08a8"
+    ],
+    "all american pet resorts": [
+      "wpb_2e51468616ef56bb97e1ca0671a49129"
+    ],
+    "all dogs unleashed": [
+      "wpb_53b36c84996b5b35b9e3886dab7013e4"
+    ],
+    "all dry": [
+      "wpb_1d8d3dbab9695366b3bfa659ff4921c6"
+    ],
+    "alloy personal training": [
+      "wpb_66810e1f317b5c1bad173e57727c9ef8"
+    ],
+    "always best care senior services": [
+      "wpb_0bee817517805642877d65d2e7d25c91"
+    ],
+    "amazing athletes": [
+      "wpb_18011461df1b5235b4cee3304aef0e32"
+    ],
+    "appell": [
+      "wpb_40988af5c3975c7db03d22cc2cb06bed"
+    ],
+    "appell coatings & striping": [
+      "wpb_40988af5c3975c7db03d22cc2cb06bed"
+    ],
+    "appell coatings striping": [
+      "wpb_40988af5c3975c7db03d22cc2cb06bed"
+    ],
+    "art of drawers": [
+      "wpb_ea9502eebc4f59c68903a200d2d82909"
+    ],
+    "assisted living locators": [
+      "wpb_536420286c7d59f4818f54a1fb0798f4"
+    ],
+    "aussie pet mobile": [
+      "wpb_2dfcd0a825185741a13f55f88dcd101d"
+    ],
+    "bach to rock": [
+      "wpb_f3caccf2f6b75614a0b9eb9a3f1367f4"
+    ],
+    "bar-b-clean": [
+      "wpb_53d1346a4bdd55c48bfe6a082bd946de"
+    ],
+    "bark & mane": [
+      "wpb_0cb42c5bb5f5512b80db237f544c082e"
+    ],
+    "bath tune-up": [
+      "wpb_37bf4223264a538da5b524ba3fe25374"
+    ],
+    "beem light sauna": [
+      "wpb_c855f4b808e35b74a4339a71ae8933b8"
+    ],
+    "benetrends": [
+      "wpb_b3cb1fbc7bf450d892617605b540d903"
+    ],
+    "bex+co.": [
+      "wpb_9710d58d53d457d69fa74faa9651703e"
+    ],
+    "bio-one": [
+      "wpb_81213b5328875c638658abfbd0de54aa"
+    ],
+    "bishop's": [
+      "wpb_aaef8648ba5e5f7abdf109fe3050bfa9"
+    ],
+    "bishops": [
+      "wpb_aaef8648ba5e5f7abdf109fe3050bfa9"
+    ],
+    "bishops cuts color": [
+      "wpb_aaef8648ba5e5f7abdf109fe3050bfa9"
+    ],
+    "bishops cuts/color": [
+      "wpb_aaef8648ba5e5f7abdf109fe3050bfa9"
+    ],
+    "blingle!": [
+      "wpb_034725abb4605b9ca46b588a99d1780c"
+    ],
+    "blue kangaroo packoutz": [
+      "wpb_0938089b7b635d6bb8a7441060911fee"
+    ],
+    "blue moon estate sales": [
+      "wpb_a8ce32a32f8158328bbdc79824f97d91"
+    ],
+    "body20": [
+      "wpb_edfe8da338525adc94336ae9920c5718"
+    ],
+    "boost home healthcare": [
+      "wpb_5e29805ea67d52e490095381f3cedf12"
+    ],
+    "british swim school": [
+      "wpb_ed21d8134b4b5e76ae2721ce71b8fcb3"
+    ],
+    "budget blinds": [
+      "wpb_bb4e387e9f715872b6adc89e95f0e37e"
+    ],
+    "building kids": [
+      "wpb_26e774de103b532ebb1a2004a3c64522"
+    ],
+    "building kids preschool": [
+      "wpb_26e774de103b532ebb1a2004a3c64522"
+    ],
+    "building kidz": [
+      "wpb_26e774de103b532ebb1a2004a3c64522"
+    ],
+    "building kidz school": [
+      "wpb_26e774de103b532ebb1a2004a3c64522"
+    ],
+    "bumble bee blinds": [
+      "wpb_aecf59d3ee69544d991ab7c8447f21d9"
+    ],
+    "cabinet iq": [
+      "wpb_9511bc26d3425746bfb13f4c3f80053c"
+    ],
+    "carebuilders at home": [
+      "wpb_81d07bc729ea5889bf0ce9dc733c30df"
+    ],
+    "carepatrol": [
+      "wpb_511156f2264c54e4862b5041e9f2544d"
+    ],
+    "cascadia pizza": [
+      "wpb_007846d4907f5e78969f67813df2f15e"
+    ],
+    "certapro painters": [
+      "wpb_d378dc93b0cc56f186b780da5db42dfb"
+    ],
+    "chatime": [
+      "wpb_dd396611a5de5afbb58cc09cf4db672d"
+    ],
+    "clothes bin": [
+      "wpb_38592e3b84da5a6fa64940bc93c81bdf"
+    ],
+    "cmit solutions": [
+      "wpb_97c32f745fb75737ab868d5125d793d7"
+    ],
+    "comforcare home care": [
+      "wpb_7214edd514065557a92d1adfea30740c"
+    ],
+    "conserva irrigation": [
+      "wpb_7d528756c80950ca8d90bd4a3d2ed467"
+    ],
+    "contrastheory": [
+      "wpb_19624d769b885b6cbbba20f99d75a282"
+    ],
+    "cool-binz": [
+      "wpb_c8a998e5ddbc53d598e6eef1dc782b79"
+    ],
+    "coolvu glass and surface solutions": [
+      "wpb_fff104085ee75ba7ad893aefbd8fea11"
+    ],
+    "creative colors international": [
+      "wpb_1d495243c8875ac69f79990ba550b97c"
+    ],
+    "cyberglobal": [
+      "wpb_de983ada419f5ce184a2d2798b15490d"
+    ],
+    "d1 sports training": [
+      "wpb_bb970b3a167d543691d1e77d1fbd3f05"
+    ],
+    "dakota london hair extensions": [
+      "wpb_86d1237ad37e53b4b7d6a9b3e567b797"
+    ],
+    "ddh home organizing & move management": [
+      "wpb_e5a2d7989e8c599f85eb2aabc661c2db"
+    ],
+    "degree wellness": [
+      "wpb_da5cd9fac6e5574fbb11bd1b45cc0c5d"
+    ],
+    "delta crown": [
+      "wpb_c1e6f131e316524a96c3bd43f74fdb46"
+    ],
+    "dermani medspa": [
+      "wpb_3f04f7f6c1495caca681f5ced9bb2970"
+    ],
+    "donutnv": [
+      "wpb_a39b2ae6f42b5503a04d5129f3da538f"
+    ],
+    "dryer vent wizard": [
+      "wpb_5f77b8b8e69f53a5ac853a1492856002"
+    ],
+    "durafleet": [
+      "wpb_396d0dd3488f58b59b0c6181f4f56736"
+    ],
+    "duro fleet": [
+      "wpb_c09010563f3c566db03837b59aa5c49e"
+    ],
+    "ellie mental health": [
+      "wpb_96b40bd50ca4512c8d945a58ba291621"
+    ],
+    "era group": [
+      "wpb_acc93d98fddf5fee8664b7ee371f713f"
+    ],
+    "everline coatings": [
+      "wpb_64040abd48f856758385d6ee77820b56"
+    ],
+    "exercise coach": [
+      "wpb_353bdd68cd8f53c292362fa6b825245b"
+    ],
+    "express employment professionals": [
+      "wpb_1a59c92aa60f5f88b0a7cc21728bb751"
+    ],
+    "face foundrie": [
+      "wpb_299daef8a0605c55a876055f5259a00c"
+    ],
+    "fastest labs": [
+      "wpb_c0ff0cf5dd045389ac2176dd70141aca"
+    ],
+    "fetch! pet care": [
+      "wpb_828f66ef06b956e094c0f71fb6d1e581"
+    ],
+    "fibrenew": [
+      "wpb_85ac53ce2bdd5c2b8c3bd21348887d88"
+    ],
+    "first light": [
+      "wpb_4554d51872f157f1bb59d6f262dbf190"
+    ],
+    "first light home care": [
+      "wpb_4554d51872f157f1bb59d6f262dbf190"
+    ],
+    "firstlight": [
+      "wpb_4554d51872f157f1bb59d6f262dbf190"
+    ],
+    "firstlight home care": [
+      "wpb_4554d51872f157f1bb59d6f262dbf190"
+    ],
+    "fish window cleaning": [
+      "wpb_2e3b35bb120853979e9b9c4178d1bcb3"
+    ],
+    "five star bath solutions": [
+      "wpb_c71ccd4405a55ea29a9d2663a038b08c"
+    ],
+    "five star painting": [
+      "wpb_cd85638b876c599ba2695c457166bdc7"
+    ],
+    "floor coverings international": [
+      "wpb_754e93caa4fc5cc59d60a13f7b45f33f"
+    ],
+    "floyd's 99 barbershop": [
+      "wpb_eda61e47faf45e5884cf6bba799f8197"
+    ],
+    "floyds 99 barbershop": [
+      "wpb_eda61e47faf45e5884cf6bba799f8197"
+    ],
+    "flylock security solutions": [
+      "wpb_b30b74411a3850c682d57a77a85178d7"
+    ],
+    "focal point coaching": [
+      "wpb_22e9ff9d40c759b18628c78d6f0b6163"
+    ],
+    "focalpoint coaching": [
+      "wpb_22e9ff9d40c759b18628c78d6f0b6163"
+    ],
+    "franfund": [
+      "wpb_9a2effcac61953cf8d99f0598ad23cea"
+    ],
+    "frenchie's": [
+      "wpb_056b15a3e51e5cd1a2b21e3098895d64"
+    ],
+    "frenchies": [
+      "wpb_056b15a3e51e5cd1a2b21e3098895d64"
+    ],
+    "frenchies modern nail care": [
+      "wpb_056b15a3e51e5cd1a2b21e3098895d64"
+    ],
+    "fundraising university": [
+      "wpb_d413119f84045a14af6a6cf094189037"
+    ],
+    "furry land mobile grooming": [
+      "wpb_0704e95631e0537ba6f0736e136127d6"
+    ],
+    "garageexperts": [
+      "wpb_d53b93332e9f5058a92fc1ba526799d2"
+    ],
+    "gatsby glass": [
+      "wpb_1d76ad8fd09d5b70975a5acab369ad6e"
+    ],
+    "glass doctor": [
+      "wpb_1f3e7559d97f5dd683dd34bf0dbb0e2d"
+    ],
+    "goglow": [
+      "wpb_0d25e5627f1a500d88236dc47e28ce50"
+    ],
+    "golftrk": [
+      "wpb_f0f68756b3185eb588df316143981ff6"
+    ],
+    "gone for good": [
+      "wpb_7efa1bb3f0685ae3a57549d5113cadf3"
+    ],
+    "gorilla property services": [
+      "wpb_60937da0638c515e866ac4abedd9c16d"
+    ],
+    "gotcha covered": [
+      "wpb_5377a3fec6a450339e2ab4d8108a1c36"
+    ],
+    "grasons estate sales": [
+      "wpb_ace38d6b015d562f9e6ab2c2a12a20be"
+    ],
+    "grasons estate sales and business liquidations": [
+      "wpb_ace38d6b015d562f9e6ab2c2a12a20be"
+    ],
+    "groovy hues": [
+      "wpb_3fc80d117f1352598afd317357fffb8c"
+    ],
+    "ground guys": [
+      "wpb_55509534d50959d1a8d5b1a2790028b5"
+    ],
+    "gymguyz": [
+      "wpb_2db2b3e2009f5ce9a68fe422dd550bda"
+    ],
+    "hallmark homecare": [
+      "wpb_c94f0c69388b5f9a8d9e08dd7eea96e8"
+    ],
+    "hammer & nails": [
+      "wpb_5efac4a9fe385852aeae2bce859c73bb"
+    ],
+    "healthsource chiropractic": [
+      "wpb_3464ca28557b512492d47e3b33c80391"
+    ],
+    "heights wellness retreat": [
+      "wpb_2020627cc3ad5847b778ac7d6cb4fb2a"
+    ],
+    "hello sugar": [
+      "wpb_7fab0a6277e0512cbdc09f3b7e452daf"
+    ],
+    "heroes lawn care": [
+      "wpb_0dddf7b0e3085ad68cabfc9228866658"
+    ],
+    "home aides": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "home aids": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "homeaides": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "homeaids": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "homestretch": [
+      "wpb_d8acae5e50f0538392a3c572f305e44f"
+    ],
+    "hotworx": [
+      "wpb_0fb11ce525cf5deca835ef9f7fd86a66"
+    ],
+    "house doctors": [
+      "wpb_3024778217b352a8aebb9ab7a968e1d4"
+    ],
+    "housemaster": [
+      "wpb_a072514d64d4501b894415ef4b96bb4c"
+    ],
+    "human advisor ai": [
+      "wpb_c809a8e6997d54cf8109e7b9e649d169"
+    ],
+    "hunters-humbug": [
+      "wpb_22cfe19fe3cd5b7e98de73e23766863e"
+    ],
+    "ideal siding": [
+      "wpb_e604ab7548535f9a8add2563ff4b4065"
+    ],
+    "iflex": [
+      "wpb_689f8a5ea7e35f98ace8e40482223e4d"
+    ],
+    "ifoam": [
+      "wpb_a6a3fa4bc4635122a50ed2e827aeb518"
+    ],
+    "image studios": [
+      "wpb_93c40aeaedbe5974837f00ba13ccb3ad"
+    ],
+    "insulation commandos": [
+      "wpb_5ca06e834a6958efb0e823ba989b7c84"
+    ],
+    "isi elite training": [
+      "wpb_c9a4c80faa6054468de6dd6cf050adda"
+    ],
+    "ivybrook academy": [
+      "wpb_eeced6a1caff513885a8ae09d1a8fc8f"
+    ],
+    "jetset pilates": [
+      "wpb_b1ea107527055b7eb429eb506b56aa6b"
+    ],
+    "joshua tree experts": [
+      "wpb_ff71ce26f821576eb0cd1e290826a20c"
+    ],
+    "jungle driving school": [
+      "wpb_85d52468972650e1a2c306cc558bdc35"
+    ],
+    "junk king": [
+      "wpb_3aa79457815e563abce1d4948958480f"
+    ],
+    "junk shot": [
+      "wpb_c811387d1ad151bea23e4cc1a56906ca"
+    ],
+    "junkco+": [
+      "wpb_2d1a3f3c702b5d02884240565aeae773"
+    ],
+    "junkshot": [
+      "wpb_c811387d1ad151bea23e4cc1a56906ca"
+    ],
+    "k9 resorts": [
+      "wpb_5824893e57fc5ac39004c2f3af44ada2"
+    ],
+    "kidstrong": [
+      "wpb_5c206d82fdef5e74a0e0a9050d4f726a"
+    ],
+    "kilwins": [
+      "wpb_2244894b94515a4699be31de265ab134"
+    ],
+    "kitchen guard": [
+      "wpb_d2090ebb31605acfbb19a4248fd72fbd"
+    ],
+    "kitchen tune-up": [
+      "wpb_8d5b7aef3580590c8b711f8e62f62531"
+    ],
+    "kitchen wise closet wise": [
+      "wpb_4ff8a1ea0e9250db8b12cd62aee1a634"
+    ],
+    "kitchen wise/closet wise": [
+      "wpb_4ff8a1ea0e9250db8b12cd62aee1a634"
+    ],
+    "koala insulation": [
+      "wpb_e1824d62bab25d9dafc7240923183b5a"
+    ],
+    "koala insulation canada only": [
+      "wpb_e1824d62bab25d9dafc7240923183b5a"
+    ],
+    "kung fu kids": [
+      "wpb_92539ceeb9be502caee181b079aa3d68"
+    ],
+    "laundrolab": [
+      "wpb_f4949910eda85d19985f87f982091be5"
+    ],
+    "lawn doctor": [
+      "wpb_7d5e1240a3de57a98e27f2a5c609034b"
+    ],
+    "lawn pride": [
+      "wpb_0df76c71f05d553db3a71cdf015da9a8"
+    ],
+    "lightspeed restoration": [
+      "wpb_030bf049a6e751618d429fe4f9931f84"
+    ],
+    "lime painting": [
+      "wpb_9db9d7b1c739531f95b16d686638b299"
+    ],
+    "liqua-roof": [
+      "wpb_66f2fd3de1ec524eaf2e23a77413eacc"
+    ],
+    "maid right": [
+      "wpb_2ca40523d7d2506e8e34c44c23eda126"
+    ],
+    "marigold academy": [
+      "wpb_b13ea16860825fda8d26ad81cf17949d"
+    ],
+    "maxi mobile": [
+      "wpb_4d796e52876a5ffb9d561ee3788c5741"
+    ],
+    "medi-weightloss": [
+      "wpb_eb243b50c24254d88da32b8698294bad"
+    ],
+    "menchie": [
+      "wpb_af451fa64f885094bf12c1f625306e77"
+    ],
+    "menchie's": [
+      "wpb_af451fa64f885094bf12c1f625306e77"
+    ],
+    "menchies": [
+      "wpb_af451fa64f885094bf12c1f625306e77"
+    ],
+    "metal supermarkets": [
+      "wpb_30b9a4a61f8e53b180bcbfd112965782"
+    ],
+    "mighty dog roofing": [
+      "wpb_127384e3b358519284dff619e7836b40"
+    ],
+    "modern purair": [
+      "wpb_c75109cb14dd5241a18b40bc0b93e721"
+    ],
+    "mold medics": [
+      "wpb_069fb00a567756e2970079640019b374"
+    ],
+    "molly maid": [
+      "wpb_9ecc8c1a172757fab556fe154a5a3623"
+    ],
+    "monster mini golf": [
+      "wpb_90237aec12055ea5884cf704530fbbee"
+    ],
+    "mosquito joe": [
+      "wpb_164592a40e6b5d15bc962a4e8304298e"
+    ],
+    "mosquito nix": [
+      "wpb_d47f7bfcdb5054e9a6309cc3e7d8e48d"
+    ],
+    "mosquito sheriff": [
+      "wpb_1474d969cc125b37bc02cff600ef35af"
+    ],
+    "mosquito shield": [
+      "wpb_159fa794f7fb57a28aae3faf19154086"
+    ],
+    "mosquito-nix": [
+      "wpb_d47f7bfcdb5054e9a6309cc3e7d8e48d"
+    ],
+    "mosquitonix": [
+      "wpb_d47f7bfcdb5054e9a6309cc3e7d8e48d"
+    ],
+    "mr. appliance": [
+      "wpb_a464171170955334b2019c54093defbf"
+    ],
+    "mr. electric": [
+      "wpb_2556bf33324858f1bcd3201fda54ed5f"
+    ],
+    "mr. handyman": [
+      "wpb_5b40df1686dc54659869af9a5c8f9111"
+    ],
+    "mr. rooter": [
+      "wpb_b960b77ddcec52cca154ff2977965d20"
+    ],
+    "musicologie": [
+      "wpb_3a96e6ac84d45c40aaa97c7ebb68100c"
+    ],
+    "my salon suite": [
+      "wpb_ace2e64bc362507ca0b2302bcf7d8fce"
+    ],
+    "next day access": [
+      "wpb_f9974f7dbf37512d94743701dd3e8ce8"
+    ],
+    "one you love homecare": [
+      "wpb_438b4bc8c8575a4bb7dce38f426da244"
+    ],
+    "ovo salon": [
+      "wpb_7892f47847165e09a7b614cd865ed9a2"
+    ],
+    "p3 cost analysts": [
+      "wpb_3974cf2829285cf5ae2bc905ebf3201e"
+    ],
+    "padel swt": [
+      "wpb_7a66a441410358adad113ebf5f07ae87"
+    ],
+    "paint e z": [
+      "wpb_1270a9006d1a5b47be48b87efcd38586"
+    ],
+    "paint ez": [
+      "wpb_1270a9006d1a5b47be48b87efcd38586"
+    ],
+    "paint-e-z": [
+      "wpb_1270a9006d1a5b47be48b87efcd38586"
+    ],
+    "painter bros": [
+      "wpb_6fb7e4ecc5555222a1b571ba527a6465"
+    ],
+    "patch master": [
+      "wpb_c22e9d07ad175af0923cd49d746b1162"
+    ],
+    "patch-master": [
+      "wpb_c22e9d07ad175af0923cd49d746b1162"
+    ],
+    "patchmaster": [
+      "wpb_c22e9d07ad175af0923cd49d746b1162"
+    ],
+    "paul davis": [
+      "wpb_1d4409d842c955a5a4020da3a952babd"
+    ],
+    "pause studio": [
+      "wpb_4688623816e459b1989f044152fa6494"
+    ],
+    "pet evolution": [
+      "wpb_c25945ae2d62552796fac0976691b848"
+    ],
+    "petwellclinic": [
+      "wpb_e90ec26d55f25973b942bae3077a3594"
+    ],
+    "pilates addiction": [
+      "wpb_6c5e252ebed6587f9159143fe3cee0ef"
+    ],
+    "pink's window services": [
+      "wpb_aec48bf4083453af9a9c67aaaa739c58"
+    ],
+    "pinks window services": [
+      "wpb_aec48bf4083453af9a9c67aaaa739c58"
+    ],
+    "pirtek usa / canada": [
+      "wpb_594d4ee06b4f5e8884a643861419132c"
+    ],
+    "plumbingpro": [
+      "wpb_3998a789c91f5548a68d5077dc11060e"
+    ],
+    "plunge house": [
+      "wpb_4939356f62045f73ab9309883e5718ad"
+    ],
+    "pool scouts": [
+      "wpb_a896261fafaa51a8bf57a90e9438be83"
+    ],
+    "poolwerx": [
+      "wpb_d29e95335ccc5f4798806c44de600076"
+    ],
+    "prism specialty restoration": [
+      "wpb_457e10c305185150979fbb827f93627f"
+    ],
+    "pro-lift garage doors": [
+      "wpb_3c75016db7555a2f84b3c6fb3de096e1"
+    ],
+    "project leannation": [
+      "wpb_6f25e680795c5006956f1166aede0abb"
+    ],
+    "property sellwise": [
+      "wpb_fe403eb36b1e5d4692450acd1fdce3d3"
+    ],
+    "puddle pools": [
+      "wpb_3acbeaf4965c521fbe25b21bbeff9667"
+    ],
+    "pure green": [
+      "wpb_43836c8b3b4651989754ea7506a9875d"
+    ],
+    "rainbow restoration": [
+      "wpb_ee0712fcdadf580294f14f1262528b32"
+    ],
+    "real property management": [
+      "wpb_a2af9149b8f75d8bac22b56a4617d7bc"
+    ],
+    "realclean aircraft detailing": [
+      "wpb_00a81b4cc4b057b3a58c4d0f7d66d8ed"
+    ],
+    "renew medic": [
+      "wpb_7f98c913ff9658c89dd43677f5d3328f"
+    ],
+    "restopros": [
+      "wpb_91764cec837d5337bb6f5ae2513e7401"
+    ],
+    "restoration 1": [
+      "wpb_fbd8b62b50b159158b3bc05b7da3248c"
+    ],
+    "right at home": [
+      "wpb_b7962424d5855e98bace93733596731e"
+    ],
+    "rolling suds": [
+      "wpb_cda8d912066d566e8177c145fe1b9a25"
+    ],
+    "roof scientist": [
+      "wpb_d1df626a70505f46b4efa5e51f0ed11c"
+    ],
+    "rubbish works": [
+      "wpb_11efdf93fa145a6fab1e2afe8c2c8a83"
+    ],
+    "salonplex": [
+      "wpb_39dcee051519509eae3043256f9183a3"
+    ],
+    "satellite teams": [
+      "wpb_8db30c5c8db557fe9316c30d0b1a38c1"
+    ],
+    "schooley mitchell": [
+      "wpb_61f520b54465530ab708173ddff579be"
+    ],
+    "scoop brothers": [
+      "wpb_131a789519f35d00b8ef5af074690e78"
+    ],
+    "seals refrigeration gasket specialists": [
+      "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed"
+    ],
+    "senior care authority": [
+      "wpb_e759cde97bc45963ba49caded5612a6f"
+    ],
+    "senior helpers": [
+      "wpb_77fc4dab7cfb5f6ca19f13ec586d0588"
+    ],
+    "seniors helping seniors": [
+      "wpb_9e83a96f22345758ad0661d39ff206ac"
+    ],
+    "serf": [
+      "wpb_b512785096d75fc987041493751bc958"
+    ],
+    "service experts": [
+      "wpb_218df9a60c195e0d8f45d88b0fe0e27d"
+    ],
+    "shelfgenie": [
+      "wpb_0e1fd82532565410950a2c817fa159c4"
+    ],
+    "shine window care and holiday lighting": [
+      "wpb_6b14a418bb6e5140b826cb50a2ddea3f"
+    ],
+    "skin experts by brentwood spa": [
+      "wpb_3f4ad22a73595eb18b687763c36598d1"
+    ],
+    "sky zone": [
+      "wpb_bb53dfb2120251e6af379ca2549da4c3"
+    ],
+    "skyrun vacation rentals": [
+      "wpb_09f930ca276f5679b62bd0b412a711ec"
+    ],
+    "slumberland furniture": [
+      "wpb_4d9e1960e2df516bbe0f16ebcc2d3ca2"
+    ],
+    "soccer 5": [
+      "wpb_918f452d6845504fb6ffeb573cbd062e"
+    ],
+    "soccer stars": [
+      "wpb_06f45b01775156bb933e14f6bb59abd9"
+    ],
+    "sola salons": [
+      "wpb_1ef0262ad18c53a29fa330cc9ced8d86"
+    ],
+    "solemvia": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "solenvia": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "solenvia caregivers": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "sourdough & co.": [
+      "wpb_52b701e485ed5205b79535d7977058fe"
+    ],
+    "sourdough and co.": [
+      "wpb_52b701e485ed5205b79535d7977058fe"
+    ],
+    "southern steer butcher": [
+      "wpb_29931a72c10554b9a1f31ff0da0da385"
+    ],
+    "sparkle squad": [
+      "wpb_233e54f799d05801b332680f38564075"
+    ],
+    "speedy freight": [
+      "wpb_1e8a3ef8558b5aec8b458f036b61f29c"
+    ],
+    "spenga": [
+      "wpb_e0d4d005957951ada7e62f0fa2277897"
+    ],
+    "spray-net": [
+      "wpb_c0db27bf871959039c0be551c74fe697"
+    ],
+    "squeeze": [
+      "wpb_a96d79fa3d16555fb78da89632086119"
+    ],
+    "stand strong fencing": [
+      "wpb_a0c09493d5575c4792d97010ab1de3f2"
+    ],
+    "steel coated floors": [
+      "wpb_b4b0bab0e574533ab9f8b5d1be8c8765"
+    ],
+    "storm guard roofing and construction": [
+      "wpb_f0345032f3575d8491791a8cf528d333"
+    ],
+    "story time chess": [
+      "wpb_69282fdd26df5f5795d45daae2cf2671"
+    ],
+    "stretch zone": [
+      "wpb_8ad7904ab11854d49a80eb23e9dccaca"
+    ],
+    "stretchmed": [
+      "wpb_f8b8324b77aa563b9f2fd50c670e7718"
+    ],
+    "surface experts": [
+      "wpb_7cb49916049651b7a6a844c2acc41789"
+    ],
+    "surv": [
+      "wpb_b512785096d75fc987041493751bc958"
+    ],
+    "sweat440": [
+      "wpb_384f82312b595744ad20155a25f2f70a"
+    ],
+    "taste buds kitchen": [
+      "wpb_cc23672c1ca45b0a98fcf0c0846e3333"
+    ],
+    "teamlogic it": [
+      "wpb_90773a7a72635be3b419a82600688045"
+    ],
+    "techtron": [
+      "wpb_cfa8fd904a085d8db46993ef1310ac1f"
+    ],
+    "techtron environmental solutions": [
+      "wpb_cfa8fd904a085d8db46993ef1310ac1f"
+    ],
+    "tee box": [
+      "wpb_530430679df850e58c5deed9ca643bb1"
+    ],
+    "temperature pro": [
+      "wpb_958a999a6b715131b2f2a018325a9187"
+    ],
+    "temperaturepro": [
+      "wpb_958a999a6b715131b2f2a018325a9187"
+    ],
+    "temporary wall systems": [
+      "wpb_8b273853e3be50ac9177de27506e78fa"
+    ],
+    "teriyaki madness": [
+      "wpb_8a15640640ac51148d753edfa09b2998"
+    ],
+    "tga": [
+      "wpb_afe769ebc63a544a92179946f6b10ea3"
+    ],
+    "tga premier sports": [
+      "wpb_afe769ebc63a544a92179946f6b10ea3"
+    ],
+    "that 1 painter": [
+      "wpb_99569689b2945f8ab67c5e7d851bfefd"
+    ],
+    "the brothers that just do gutters": [
+      "wpb_5c443be257d451f186e3456d7bf4ba6f"
+    ],
+    "the designery": [
+      "wpb_af357b9bea935061b46894aec1997f5a"
+    ],
+    "the dog stop": [
+      "wpb_efa7aa20e730524cb2540e4d2b06eb1e"
+    ],
+    "the fashion class": [
+      "wpb_e23ded71dc795cd7a57975b7fc18cdb8"
+    ],
+    "the glass guru": [
+      "wpb_71e51ca6ea4f59ab92b03fad6905ad9d"
+    ],
+    "the grounds guys": [
+      "wpb_89cae97459c95f528fbcc4bac445d1f0"
+    ],
+    "the grout medic": [
+      "wpb_0aad6326bd0f5794853eddcd795a6548"
+    ],
+    "the homeaids": [
+      "wpb_dff969447a0f55a08b3292b59d9c7e0b"
+    ],
+    "the maids": [
+      "wpb_25e517f53bdb5f57a8d332e211317a90"
+    ],
+    "the seals": [
+      "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed"
+    ],
+    "the seals - refrigeration gasket specialists": [
+      "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed"
+    ],
+    "the seals refrigeration": [
+      "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed"
+    ],
+    "the seals refrigeration gasket specialists": [
+      "wpb_4e14b93fe9975f349c2c5be3e7e7c9ed"
+    ],
+    "the tox": [
+      "wpb_9b21898f5e695953b38c95ce6620f5c0"
+    ],
+    "three sixty painting": [
+      "wpb_6a33e74cbc0c5fd09146d5ecfb16388b"
+    ],
+    "tierra encantada": [
+      "wpb_00386311e1b551e6a9baa54a383985aa"
+    ],
+    "top rail fence": [
+      "wpb_b44fe0e22bf85b6f827e0f581048d12a"
+    ],
+    "training franchisor": [
+      "wpb_80c1cf53d4375cf29126d47cd61aecda"
+    ],
+    "true north restoration": [
+      "wpb_95c228e184ba5b5b8580c8b940a3117b"
+    ],
+    "tutor doctor canada only": [
+      "wpb_aac13ead6a5b5b6ea035b190e87413f5"
+    ],
+    "two maids": [
+      "wpb_d1fbf913764f5d499403ba1cf67edb98"
+    ],
+    "u.s. lawns": [
+      "wpb_90da7a05d40a5ff2b61b6e5e32e722d2"
+    ],
+    "ulc": [
+      "wpb_3dccb01d30315e0aaa98690263c852f2"
+    ],
+    "ultimate longevity": [
+      "wpb_3dccb01d30315e0aaa98690263c852f2"
+    ],
+    "ultimate longevity center": [
+      "wpb_3dccb01d30315e0aaa98690263c852f2"
+    ],
+    "vanity fur": [
+      "wpb_ed499489919a5dc08a5f517248937bec"
+    ],
+    "varsity zone hvac": [
+      "wpb_4c9b646edbfe5b4895342abb5a681fef"
+    ],
+    "vibe house": [
+      "wpb_4aa7696350bb5542b22b08c713caabc0"
+    ],
+    "vio med spa": [
+      "wpb_4d4143a5672056cea81bef8ca03abc5c"
+    ],
+    "voda cleaning & restoration": [
+      "wpb_06ab48c602b0548aba3839bf5bc900b7"
+    ],
+    "voda cleaning restoration": [
+      "wpb_06ab48c602b0548aba3839bf5bc900b7"
+    ],
+    "water babies": [
+      "wpb_5a3c8b883af05ae48aa32334add3af67"
+    ],
+    "waterloo turf": [
+      "wpb_e275306cace35519808db7bb4f87b4b6"
+    ],
+    "wavemax laundry": [
+      "wpb_a636a4430a075436a0d1fee10148a0db"
+    ],
+    "wet fuel": [
+      "wpb_372307217dd05749933660793eb8b760"
+    ],
+    "wet-fuel": [
+      "wpb_372307217dd05749933660793eb8b760"
+    ],
+    "wetfuel": [
+      "wpb_372307217dd05749933660793eb8b760"
+    ],
+    "window gang": [
+      "wpb_8f0d4e92339557ccb30b300ffcc4bdf8"
+    ],
+    "window genie": [
+      "wpb_5b83f8889916541dbfc4d5593cc5e553"
+    ],
+    "window hero": [
+      "wpb_c7e5dfbe5adb55a79ec02f394520df00"
+    ],
+    "wonderly lights": [
+      "wpb_f3d65e37919e58ad82e0962c35443dc5"
+    ],
+    "woodhouse spa": [
+      "wpb_102da0f672db5f8b8281ff487273c9f2"
+    ],
+    "wow windowboxes": [
+      "wpb_e15a93148766527aa97463c8c903c422"
+    ],
+    "zinga's": [
+      "wpb_69dce862c1c45a5fba8fed659c9235a1"
+    ],
+    "zoom drain": [
+      "wpb_857ed6aa1261571bbd6531d62379cd8c"
+    ]
+  },
+  "contentHash": "a237f0176a66ab2197346ea36e26b335d776b5237b4352f8dfd3f9597037d994"
+}

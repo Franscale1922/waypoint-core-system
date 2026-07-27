@@ -8,6 +8,10 @@ const srcAlias = { "@": fileURLToPath(new URL("./src", import.meta.url)) };
 //   auth             pure unit tests (allowlist, withAdmin, route coverage). NO database, no
 //                    global setup. Must stay runnable anywhere, including a machine or CI box
 //                    with no Postgres.
+//   unit             pure unit tests for the match-workspace libraries that touch no database
+//                    (brand resolver, brand-map drift). Same no-Postgres requirement as `auth`,
+//                    and for a sharper reason: the drift check is this repo's stand-in for a CI
+//                    test job, so putting it behind a database would be exactly backwards.
 //   match-workspace  integration tests against a REAL local Postgres (enums and @@unique need a
 //                    real DB, not a mock). File parallelism is OFF because every file shares the
 //                    one local `waypoint_test` database and truncates in beforeEach, so
@@ -28,6 +32,14 @@ export default defineConfig({
           name: "auth",
           environment: "node",
           include: ["tests/auth/**/*.test.ts"],
+        },
+      },
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: "unit",
+          environment: "node",
+          include: ["tests/unit/**/*.test.ts"],
         },
       },
       {

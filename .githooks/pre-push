@@ -15,3 +15,20 @@ if ! node scripts/aeo-audit.mjs; then
   echo "    (the title template already appends it): remove the brand suffix"
   exit 1
 fi
+
+# Brand-identity map drift. The map is generated from a registry in the brand-intelligence-pipeline
+# repo, so the realistic failure is that the registry moves and the committed artifact does not,
+# after which imports refuse brands that genuinely exist. Skipped, loudly, when that repo is not
+# checked out on this machine, since it is a sibling repo and not every clone will have it.
+if [ -z "$SKIP_BIP_DRIFT" ]; then
+  if node scripts/build-brand-map.mjs --check >/dev/null 2>&1; then
+    :
+  else
+    node scripts/build-brand-map.mjs --check
+    echo ""
+    echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
+    echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
+    echo "  Registry not on this machine?    SKIP_BIP_DRIFT=1 git push"
+    exit 1
+  fi
+fi
