@@ -180,22 +180,27 @@ refresh from the `/model` picker + the Models API
 |---|---|---|---|---|
 | Haiku 4.5 | ~⅕× | $1 / $5 | Trivial, high-volume, latency-bound, non-reasoning. | Not for real reasoning or coding. |
 | Sonnet 5 | **~⅖× now** (⅗× after 2026-08-31) | $3 / $15 — **intro $2/$10 thru 2026-08-31** | **The cost lever.** Near-Opus coding/agentic; well-scoped implementation, mechanical work, first-pass review. | Step below Opus on hardest reasoning / largest refactors. Literal — state scope. |
-| Opus 4.8 | 1× | $5 / $25 | **THE DEFAULT** (the floor for Opus-grade build work). Proven, stable; SOTA long-horizon agentic + knowledge work. | Now Anthropic-"legacy" (they push Opus 5) — revisit if it nears retirement. |
-| Opus 5 | 1× (same) | $5 / $25 | Same-cost step-up: deep reasoning, hard multi-file coding, large refactors, bug-finding (precision + recall). | Verbose; over-verifies; expands scope; over-delegates to subagents. low/medium effort unusually strong. |
+| Opus 5 | 1× | $5 / $25 | **THE DEFAULT** (the floor for Opus-grade build work). Deep reasoning, hard multi-file coding, large refactors, bug-finding (precision + recall). | Verbose; over-verifies; expands scope; over-delegates to subagents — see the mitigations note. `low`/`medium` unusually strong. |
+| Opus 4.8 | 1× (same) | $5 / $25 | **Fallback** when Opus 5 misbehaves on a task — steadier, less verbose, less prone to scope drift. Pin it: `/model claude-opus-4-8`. | Anthropic-"legacy" — will retire eventually, so treat it as an escape hatch, not a home. |
 | Fable 5 | 2× | $10 / $50 | Highest ceiling — most demanding long-horizon autonomous work only. | **Budget strainer / flagged exception.** Minutes-long turns; always-on thinking; 30-day retention; classifiers can refuse. |
 
 ### Choosing at every pass — start at the floor, justify every move
 
-1. **Default: Opus 4.8 @ high** — pin it: **`/model claude-opus-4-8`** ·
-   `/effort high`.
-2. **Down for cost** when the task is below Opus-grade: well-scoped / mechanical →
-   **Sonnet 5** (`/model sonnet`, ~⅖× during intro pricing); trivial / high-volume → **Haiku**
+1. **Default: Opus 5 @ high** — `/model opus` · `/effort high`. (Requires Claude
+   Code ≥ v2.1.219; on an older build `opus` silently means Opus 4.8 — see the
+   version-gate note.)
+2. **Down for cost** — the main lever, and the disciplined default when the task
+   doesn't need Opus-grade reasoning: well-scoped / mechanical → **Sonnet 5**
+   (`/model sonnet`, ~⅖× during intro pricing); trivial / high-volume → **Haiku**
    (`/model haiku`, ~⅕×).
-3. **Up for capability** when the task is genuinely hard: hardest reasoning / big
-   refactor / bug-hunt / review → **Opus 5** (`/model opus`, _same cost as 4.8_);
-   only the most demanding long-horizon work → **Fable 5** (`/model fable`, 2× —
-   name the reason).
-4. **Then set effort to task difficulty** — the within-model cost dial (below).
+3. **Up is an EFFORT move, not a model move.** The floor is already the strong
+   Opus, so harder work means `/effort xhigh` (or `max`), *not* a model switch.
+   The only model above the floor is **Fable 5** (`/model fable`, 2×) — reserved
+   for the most demanding long-horizon autonomous work, and only when the plan
+   names the reason.
+4. **Sideways: Opus 4.8 is the escape hatch.** If Opus 5 is thrashing on a task —
+   padding output, expanding scope, spawning subagents you didn't want — drop to
+   `/model claude-opus-4-8` (same price, steadier) rather than fighting it.
 
 ### Default model × effort matrix
 
@@ -206,10 +211,11 @@ Draw the per-phase recommendation from this table; deviate only with a stated re
 | Trivial / high-volume / latency-bound | haiku 4.5 (`/model haiku`) | n/a — Haiku has no effort control |
 | Genuinely mechanical (rename, boilerplate, repetitive edits) | sonnet 5 (`/model sonnet`) | low–medium |
 | Well-scoped implementation (approach clear, not novel) | sonnet 5 (`/model sonnet`) | medium–high |
-| Standard build / implementation (default) | **opus 4.8 (`/model claude-opus-4-8`)** | high |
-| Planning / architecture (plan mode itself) | opus 4.8 — opus 5 (`/model opus`) for hard/novel design | high–xhigh |
-| Hardest reasoning / root-cause / gnarly debugging / large refactor | opus 5 (`/model opus`) | high–xhigh |
+| Standard build / implementation (default) | **opus 5 (`/model opus`)** | high |
+| Planning / architecture (plan mode itself) | opus 5 (`/model opus`) | high–xhigh |
+| Hardest reasoning / root-cause / gnarly debugging / large refactor | opus 5 (`/model opus`) | **xhigh** |
 | Adversarial review / bug-finding | opus 5 (`/model opus`); fable for high-stakes | high–xhigh |
+| Opus 5 thrashing (padding, scope drift, unwanted subagents) | opus 4.8 (`/model claude-opus-4-8`) | high |
 
 Notes:
 - **⚠ Alias drift + version gate — pin by full ID, and check what you're on.**
@@ -223,12 +229,18 @@ Notes:
   say so in the plan rather than claiming a step-up that didn't happen. Pin the
   floor and any load-bearing version by **full ID** (`/model claude-opus-4-8`);
   there is no `opus-4-8` short alias.
-- **Opus 4.8 @ high is the floor — for predictability, not cost.** Opus 5 is the
-  same price ($5/$25), so cost never argues for 4.8 over Opus 5. 4.8 stays the
-  default because it's the proven, stable baseline; Opus 5's behavioral shifts
-  (verbosity, scope-expansion, eager subagent delegation) make it a deliberate
-  up-select, not a blind floor-swap. (4.8 is now Anthropic-"legacy"; revisit if it
-  heads toward retirement.)
+- **Opus 5 @ high is the floor.** Same price as Opus 4.8 ($5/$25), so there was
+  never a cost argument for staying on 4.8 — and 4.8 is now Anthropic-"legacy"
+  and will eventually retire, so pinning to it was borrowing time. Opus 5 is also
+  the vendor-recommended default for exactly our workload (agentic coding).
+- **The floor is strong, so mind what it costs per task.** Opus 5 is verbose,
+  self-verifies, expands scope, and reaches for subagents — at the *same*
+  per-token price that means more tokens per task than 4.8. Three mitigations,
+  applied by default: **(1)** never instruct it to double-check or self-verify —
+  it already does, and the instruction compounds it; **(2)** state scope
+  explicitly and tell it not to widen the task; **(3)** cap subagent spawning on
+  cost-sensitive runs. With those in place the floor is the right default; without
+  them it quietly costs more than 4.8 did.
 - **Cost is two-axis: tier × effort.** Effort is the within-model cost dial —
   higher effort means materially more thinking/tool tokens (it's a behavioral
   signal, not a published multiplier). Set it to task difficulty, not habit:
@@ -246,10 +258,6 @@ Notes:
   mechanical / well-scoped work, down-tier to Sonnet 5 (~⅖× during intro pricing)
   or Haiku (~⅕×) — that's the disciplined default, not a compromise. Never
   under-power genuinely hard or correctness-critical work to save tokens.
-- **Opus 5 is a same-cost capability step-up, not a budget exception.** Reach for
-  it freely on a deterministic reason. Watch its tendencies: don't instruct it to
-  self-verify (it already does), and curb subagent spawning on cost-sensitive
-  runs.
 - **Correctness-critical phases are the standing exception to "start at high."**
   Any phase whose core is concurrency, security, data integrity, auth/money, or a
   subtle algorithm defaults to **opus 5 at `xhigh`** (fable only if justified) —
@@ -264,9 +272,10 @@ Notes:
   specific reason it needs fable ("needs fable because X"); default to opus
   otherwise.
 - **The review steps up, not down.** Run the adversarial review on **opus 5**
-  (`/model opus`) at high–xhigh — best-in-class bug-finding at the same cost as
-  4.8 — or fable for high-stakes. Catching subtle gaps is the most
-  capability-sensitive task in the workflow.
+  (`/model opus`) at **`xhigh`** — the floor model, but never at less than the
+  effort the work itself got — or fable for high-stakes. Catching subtle gaps is
+  the most capability-sensitive task in the workflow, and Opus 5's bug-finding
+  (high precision *and* recall) is what makes it worth the effort spend.
 - Do **not** use the `opusplan` model setting alongside these annotations — it
   auto-forces sonnet on execution (and now Opus 5 on planning) and would override
   any phase the plan marks as needing a specific model.
@@ -282,7 +291,7 @@ before declaring the work done.
 
 ```
 ### Phase N — Adversarial review (mandatory)
-▶ SWITCH:  /model opus   ·   /effort high     (latest Opus — currently Opus 5, same cost as 4.8; fable · xhigh for high-stakes work)
+▶ SWITCH:  /model opus   ·   /effort xhigh    (opus = Opus 5 on Claude Code ≥2.1.219; fable for high-stakes work)
 ```
 
 Run the review with a **fresh reviewer subagent** — not self-review. The agent
