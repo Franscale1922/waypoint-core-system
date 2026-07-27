@@ -317,29 +317,51 @@ model MatchRun {
 // Every scoring intermediate is stored so a historical final score reconstructs from
 // its own frozen inputs + ScoringConfig — [C-13].
 model MatchScore {
-  id                      String   @id @default(uuid())
-  runId                   String
-  run                     MatchRun @relation(fields: [runId], references: [id])
-  waypointBrandId         String   // opaque wpb_<hex> from the registry — NO FK, no Brand table in this DB (authority = BIP/BrandDB) — CONTRACT §9
-  rank                    Int
-  maturity                String   // EST | GROW | EMRG — Zod-validated (evolving skill vocab), not a DB enum
-  fitScore                Float    // Stage-3C fit (0-1)
-  i19Score                Int?     // Item-19 score (1-5); NULL for EMERGING brands with no I19 disclosure
-  i20Score                Int?     // Item-20 score (1-5); NULL for EMERGING brands with no I20 data
-  // Stage-4A Item-19 DISCLOSURE-TIER confidence (COMPREHENSIVE→HIGH / MODERATE→MEDIUM /
-  // MINIMAL→LOW). This selects the Stage-4C combined-score FORMULA row and is stored
-  // SEPARATELY from the overall `confidence` below — the two genuinely diverge (e.g. a
-  // GROWING brand with COMPREHENSIVE I19 has i19DisclosureConfidence=HIGH but overall
-  // confidence=MEDIUM). Required for faithful reconstruction — [C-13].
-  i19DisclosureConfidence String?
-  preMsaScore             Float    // combined score before the MSA modifier — [C-13]
-  msaModifier             Float    // confirmed MSA modifier (-0.10..+0.10) — [C-13]
-  finalScore              Float    // preMsaScore + msaModifier — [C-13]
-  confidence              String   // OVERALL Stage-4C confidence (HIGH/MED/LOW), driven by maturity + data gaps + red-flag override; stored separately and NEVER multiplied into any score — [C-13]
-  flags                   String[] // e.g. data_gap | red_flag | msa_flag — Zod-validated, String[] (house precedent)
-  exclusions              String[] // hard-filter exclusions (roadmap Core-records field: "caps, exclusions")
-  detail                  Json     // frozen full per-brand object: alignments / friction / i19-block / i20-block / msa-findings / correction-summary / evidenceRefs. Repo's FIRST Json column — roadmap-sanctioned ("dimension JSON/rows").
-  createdAt               DateTime @default(now())
+  id              String   @id @default(uuid())
+  runId           String
+  run             MatchRun @relation(fields: [runId], references: [id])
+  waypointBrandId String   // opaque wpb_<hex> from the registry — NO FK, no Brand table in this DB (authority = BIP/BrandDB) — CONTRACT §9
+  rank            Int
+  maturity        String   // EST | GROW | EMRG — Zod-validated (evolving skill vocab), not a DB enum
+
+  // How far this brand got in the matcher. The skill carries only the TOP 10 by fit_score
+  // forward from Stage 3C into FDD/MSA scoring, so a ranked brand below that cut has a fit
+  // score and nothing else. Both are legitimate, persistable records (the roadmap wants the
+  // full ranked list), and this discriminator is what tells them apart structurally rather
+  // than by guessing from nulls.
+  //   "stage_3c" — ranked only: fitScore present; I19/I20/preMsa/msaMod/final all NULL.
+  //   "stage_4c" — fully scored: the FDD/MSA fields are present.
+  scoringStage    String
+
+  fitRaw          Float?   // pre-cap fit from the Foundation-B engine, before the Pride and Identity gate
+  fitScore        Float    // the fit actually used (Pride gate: min(fitRaw, 0.74) or 0.82) — Stage-3C
+  i19Score        Int?     // Item-19 score (1-5); NULL below the FDD cut or with no I19 disclosure
+  i20Score        Int?     // Item-20 score (1-5); NULL below the FDD cut or with no I20 data
+
+  // Stage-4A Item-19 DISCLOSURE LEVEL: COMPREHENSIVE | MODERATE | MINIMAL. This is what
+  // selects the Stage-4C combined-score weight row (the skill emits a literal "Disclosure
+  // levels used (they select the weight row)" line). Stored SEPARATELY from `confidence`
+  // below, because the two genuinely diverge: a GROWING-maturity brand with COMPREHENSIVE
+  // I19 has disclosure level COMPREHENSIVE but overall confidence MEDIUM. Reconstruction
+  // needs this one, not the overall label — [C-13].
+  i19DisclosureLevel String?
+
+  preMsaScore     Float?   // combined score before the MSA modifier; NULL for stage_3c — [C-13]
+  msaModifier     Float?   // confirmed MSA modifier (-0.10..+0.10); NULL for stage_3c — [C-13]
+  finalScore      Float?   // see scoreCapApplied for the exact identity; NULL for stage_3c — [C-13]
+
+  // A ceiling the skill imposed on finalScore independently of the arithmetic, so that
+  // `final = preMsa + msaMod` remains checkable rather than silently false. Today the
+  // red-flag override sets this to 0.70 (an I19 or I20 of 1-2 on real negative data caps the
+  // final score regardless of fit). NULL means no cap was applied. Reconstruction is:
+  //   final = scoreCapApplied == null ? preMsa + msaMod : min(preMsa + msaMod, scoreCapApplied)
+  scoreCapApplied Float?
+
+  confidence      String   // OVERALL Stage-4C confidence (HIGH/MED/LOW), driven by maturity + data gaps + red-flag override; stored separately and NEVER multiplied into any score — [C-13]
+  flags           String[] // e.g. data_gap | red_flag | msa_flag — Zod-validated, String[] (house precedent)
+  exclusions      String[] // hard-filter exclusions (roadmap Core-records field: "caps, exclusions")
+  detail          Json     // frozen full per-brand object: alignments / friction / i19-block / i20-block / msa-findings / correction-summary / evidenceRefs. Repo's FIRST Json column — roadmap-sanctioned ("dimension JSON/rows").
+  createdAt       DateTime @default(now())
   // immutable — no updatedAt — [C-9]
 
   corrections MatchCorrection[]

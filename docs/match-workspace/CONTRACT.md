@@ -107,14 +107,29 @@ historical record is never updated in place.
   intermediate (`preMsaScore`, `msaModifier`, `finalScore`) is stored, and confidence is stored **separately**
   and never multiplied into the score.
 
-  > **Phase-1 implementation note (2026-07-26).** The Stage-4C combined-score formula selects its weight set
-  > from the **Item-19 disclosure-tier** confidence (COMPREHENSIVE→HIGH / MODERATE→MEDIUM / MINIMAL→LOW),
-  > which is distinct from the overall run `confidence` and is therefore stored in its own field
-  > (`MatchScore.i19DisclosureConfidence`). Reconstruction of `preMsaScore` from `fit`/`i19Score`/`i20Score`
-  > applies to EST/GROW brands. For **EMERGING** brands the skill's formula is `fit×0.85 + (available FDD
-  > data)×0.15`, whose "available FDD data" term has no separately-typed scalar input; for those, the frozen
-  > `preMsaScore` intermediate is the authoritative stored value (not re-derived from scalars). The
-  > `finalScore = preMsaScore + msaModifier` identity is reconstructed for **all** maturities.
+  > **Implementation note (revised 2026-07-27, Phase 2B).** Supersedes the 2026-07-26 note. Rebased on the
+  > authoritative July matcher spec, which restructured the skill and moved the weight-row selector.
+  >
+  > 1. **The weight row is selected by the Item-19 DISCLOSURE LEVEL** (`COMPREHENSIVE` / `MODERATE` /
+  >    `MINIMAL`), which the skill emits explicitly ("Disclosure levels used (they select the weight row)").
+  >    That is distinct from the overall run `confidence` and is stored in its own field,
+  >    `MatchScore.i19DisclosureLevel`. The two genuinely diverge (a GROWING brand with COMPREHENSIVE I19
+  >    has level COMPREHENSIVE but overall confidence MEDIUM), so reconstruction must use the level.
+  > 2. **`finalScore = preMsaScore + msaModifier` is NOT universal.** The skill's red-flag override caps
+  >    `final_score` at 0.70 when an I19 or I20 score of 1-2 rests on real negative data, regardless of the
+  >    arithmetic. That ceiling is therefore stored explicitly in `MatchScore.scoreCapApplied`, and the
+  >    identity is:
+  >    `final = scoreCapApplied == null ? preMsa + msaMod : min(preMsa + msaMod, scoreCapApplied)`.
+  >    A package whose `final` disagrees with this and declares no cap is rejected at import.
+  > 3. **A second cap exists upstream:** the Pride and Identity gate sets `fit_score = min(fit_raw, 0.74)`
+  >    (or 0.82 when unknown). Both values are kept: `fitRaw` (pre-cap) and `fitScore` (the value actually
+  >    used in the formula).
+  > 4. **Not every scored brand reaches Stage 4C.** The skill carries only the top 10 by fit_score into
+  >    FDD/MSA scoring, so brands below that cut have a fit score and no I19/I20/pre-MSA/final at all.
+  >    `MatchScore.scoringStage` (`stage_3c` | `stage_4c`) records which, so the absence is a stated fact
+  >    rather than an inference from nulls. Reconstruction of `preMsaScore` from `fit`/`i19`/`i20` applies to
+  >    `stage_4c` rows; for EMERGING brands whose formula uses an "available FDD data" term with no typed
+  >    scalar input, the frozen `preMsaScore` is the authoritative stored value, not re-derived.
 
 ## 6. ScoringConfig governance
 

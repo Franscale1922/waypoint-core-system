@@ -77,19 +77,38 @@ export async function makeScore(runId: string, overrides: Record<string, unknown
       waypointBrandId: overrides.waypointBrandId ?? uniq("wpb"),
       rank: 1,
       maturity: "EST",
+      scoringStage: "stage_4c",
+      fitRaw: 0.8,
       fitScore: 0.8,
       i19Score: 4,
       i20Score: 5,
-      i19DisclosureConfidence: "HIGH",
+      i19DisclosureLevel: "COMPREHENSIVE",
       preMsaScore: 0.85,
       msaModifier: -0.05,
       finalScore: 0.8,
+      scoreCapApplied: null,
       confidence: "HIGH",
       flags: [],
       exclusions: [],
       detail: {},
       ...overrides,
     } as never,
+  });
+}
+
+/** A ranked-only brand: below the top-10 FDD cut, so it has fit and nothing downstream. */
+export async function makeStage3cScore(runId: string, overrides: Record<string, unknown> = {}) {
+  return makeScore(runId, {
+    scoringStage: "stage_3c",
+    rank: 12,
+    i19Score: null,
+    i20Score: null,
+    i19DisclosureLevel: null,
+    preMsaScore: null,
+    msaModifier: null,
+    finalScore: null,
+    confidence: "MED",
+    ...overrides,
   });
 }
 
