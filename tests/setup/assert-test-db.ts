@@ -99,4 +99,5 @@ export const MATCH_WORKSPACE_TABLES = [
   "MatchOutcomeEvent",
   "ScoringConfig",
   "MatchRunInput",
+  "MatchProjection",
 ];

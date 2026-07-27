@@ -157,6 +157,39 @@ stored here is **that text only**.
   from the confirmed slate's Stage-5 text; the candidate-facing view reads ONLY that field and never joins
   to `MatchScore`. (Generation + the leak test land in Phase 2; the boundary is fixed here.)
 
+> **Amendment (2026-07-27, Phase 2G). The source of this text changed; the boundary did not.**
+> This section was written when the matcher's Stage 5 produced candidate-facing talking points. The
+> authoritative July matcher **removed Stage 5 entirely** and hands that job downstream to the separate
+> `brand-introduction-scripts` skill, which consumes the confirmed Top 3. So the projection is a
+> **second, later capture keyed to a confirmed slate**, not a field the matcher emits. That strengthens
+> **[C-16]**: a confirmed slate is now the projection's only possible input.
+>
+> 1. **`MatchProjection`** (the tenth record) carries `bodyText`, `sourceSkill`, `actor`, an append-only
+>    `supersedesId` chain, `redactedAt`, and a **required `matchDecisionId` FK**. The FK is what makes
+>    slate membership structural: without it, superseding a decision to `rejected` would leave the
+>    projection visible, and the candidate-facing view cannot notice on its own.
+> 2. **The candidate-facing read joins `MatchDecision`.** [C-16] forbids joining **`MatchScore`**, not
+>    `MatchDecision`, so the view confirms the attached decision is still its lineage's current head AND
+>    still `final_slate`. That is sound only because the append service refuses to leave two current
+>    heads in a chain. A test asserts the function's source contains no reference to `matchScore`.
+> 3. **There is deliberately no `@@unique([runId, waypointBrandId])`.** It would contradict the
+>    supersession chain: a corrected script is a NEW row, which such a constraint would reject, leaving
+>    an in-place `UPDATE` as the only way to fix a typo. "One CURRENT projection per run and brand" is a
+>    service-level rule, like every other lineage rule here.
+> 4. **[C-15] is enforced at the WRITE, not by a fixture test.** Asserting that a sample projection lacks
+>    a few strings proves nothing about LLM-authored text and misses the leak that matters (a number in
+>    prose). `projection-guard.ts` refuses text matching any leak class: 0-to-1 score decimals, the 1-to-5
+>    item scale, FDD item references, ALL-CAPS confidence and disclosure labels, internal flag vocabulary,
+>    MSA terms, snake_case database fields, rank and score statements, and **verbatim overlap with the
+>    run's own frozen evidence** (an 8-word window), which is the "raw quote/evidence body" class named in
+>    [C-15] and the one no regex catches. Refusals return the exact span and offset.
+> 5. **[C-7] now reaches this text.** Intro-script prose is written about a named person, so
+>    `redactCandidate` nulls every projection body as well as the `Candidate` PII, while the immutable
+>    runs, scores and decisions survive.
+>
+> The trade is deliberate: several rules will occasionally catch legitimate prose. A false positive costs
+> one rewrite and names the span; a false negative puts an internal score in front of a prospect.
+
 ## 8. Calibration gates (spec only — Phase 4 is parked)
 
 No calibration/analysis ships until real outcome data accumulates. When it does:
@@ -186,7 +219,8 @@ fail-closed at import (Phase 2).
 > Prisma many-to-many, because an implicit relation creates a hidden table that neither the deploy
 > guard's `PROTECTED_TABLES` nor the test suite's `MATCH_WORKSPACE_TABLES` would know about. A test now
 > parses `schema.prisma` and asserts set equality with both constants, so the three lists can no longer
-> drift apart silently. This extends the record model; it relaxes nothing.
+> drift apart silently. This extends the record model; it relaxes nothing. **Phase 2G adds a tenth,
+> `MatchProjection` (see the §7 amendment), so the domain is now ten records.**
 >
 > Two related Phase-2D decisions recorded here because they pin previously open questions:
 > - **`MatchRun.status` is the single literal `"completed"`.** Phase 1 deferred the vocabulary to "once

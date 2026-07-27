@@ -356,6 +356,7 @@ model MatchRun {
 
   scores        MatchScore[]
   outcomeEvents MatchOutcomeEvent[]
+  projections   MatchProjection[]
 }
 
 // One immutable per-brand score row — [C-9]. Exactly one per (run, brand) — [C-10].
@@ -465,6 +466,52 @@ model MatchDecision {
   supersedesId String?            @unique
   supersedes   MatchDecision?     @relation("DecisionSupersession", fields: [supersedesId], references: [id])
   supersededBy MatchDecision?     @relation("DecisionSupersession")
+
+  projections MatchProjection[]
+}
+
+// The ONLY candidate-facing text in this domain — [C-15] [C-16].
+//
+// RE-SCOPED (2026-07-27, Phase 2G). The contract was written when the matcher's Stage 5 produced
+// candidate-facing talking points. The authoritative July matcher REMOVED Stage 5 entirely and
+// hands that job downstream to the separate `brand-introduction-scripts` skill, which consumes the
+// confirmed Top 3. So this is a SECOND, LATER capture keyed to a confirmed slate, not a field the
+// matcher emits. That strengthens [C-16] rather than weakening it: a confirmed slate is now the
+// projection's only possible input.
+//
+// WHY matchDecisionId IS REQUIRED
+// Slate membership has to be STRUCTURAL. Without the link, superseding a decision to `rejected`
+// would leave the projection visible, and the candidate-facing view cannot notice because [C-16]
+// forbids it joining MatchScore. The view joins THIS decision instead (permitted: [C-16] names
+// MatchScore, not MatchDecision) and requires it to still be its lineage's current head AND
+// `final_slate`. That is sound only because the append service refuses to leave two current heads.
+//
+// WHY THERE IS NO @@unique([runId, waypointBrandId])
+// It would contradict the supersession chain: a corrected script for the same run and brand is a
+// NEW row, which such a constraint would reject, leaving an in-place UPDATE as the only way to fix
+// a typo. "One CURRENT projection per (runId, waypointBrandId)" is enforced in the service layer
+// instead, exactly like every other lineage rule in this domain.
+model MatchProjection {
+  id              String        @id @default(uuid())
+  runId           String
+  run             MatchRun      @relation(fields: [runId], references: [id])
+  waypointBrandId String // opaque wpb_ — no FK, same as MatchScore
+  matchDecisionId String
+  matchDecision   MatchDecision @relation(fields: [matchDecisionId], references: [id])
+
+  // NULLABLE only so [C-7] redaction can null it in place. Intro-script prose is written ABOUT a
+  // named person and carries their PII, so right-to-be-forgotten has to reach it. The service
+  // refuses to CREATE a row with a null body.
+  bodyText    String?
+  sourceSkill String // e.g. "brand-introduction-scripts" — provenance of the text
+  actor       String
+  redactedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  // append-only — no updatedAt — [C-12]
+
+  supersedesId String?          @unique
+  supersedes   MatchProjection? @relation("ProjectionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchProjection? @relation("ProjectionSupersession")
 }
 
 // Append-only real-world outcome event — [C-12]. Distinguishes at least the five

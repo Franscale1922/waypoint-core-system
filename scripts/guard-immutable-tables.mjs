@@ -58,6 +58,7 @@ const PROTECTED_TABLES = [
   "MatchOutcomeEvent",
   "ScoringConfig",
   "MatchRunInput",
+  "MatchProjection",
 ];
 // The frozen enum types in the same domain (DROP TYPE on these is destructive too).
 const PROTECTED_TYPES = ["MatchDecisionState", "MatchOutcomeType"];
