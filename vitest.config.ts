@@ -16,6 +16,11 @@ const srcAlias = { "@": fileURLToPath(new URL("./src", import.meta.url)) };
 // Run one: `npm run test:auth` / `npm run test:match-workspace`. Run both: `npx vitest run`.
 export default defineConfig({
   test: {
+    // MUST be set at the ROOT, not inside a project: Vitest treats file parallelism as a
+    // runner-level concern, so a project-level value is ignored. Setting it only on the
+    // match-workspace project silently let its files race each other against the one shared
+    // test database (tests passed individually and failed as a suite).
+    fileParallelism: false,
     projects: [
       {
         resolve: { alias: srcAlias },
@@ -33,7 +38,6 @@ export default defineConfig({
           include: ["tests/match-workspace/**/*.test.ts"],
           globalSetup: ["./tests/setup/global-setup.ts"],
           setupFiles: ["./tests/setup/per-test-setup.ts"],
-          fileParallelism: false,
           hookTimeout: 60_000, // `prisma db push` in global setup can take a few seconds
           testTimeout: 30_000,
         },
