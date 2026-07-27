@@ -11,9 +11,24 @@ import { extractScoringConfigBlock, parseScoringConfig } from "../../scripts/bui
 
 const SPEC = join(process.cwd(), "docs", "match-workspace", "MATCHER-EMIT-STAGE.md");
 
+/**
+ * The seed script is plain JS, so TypeScript infers `{}` for its parsed output and every property
+ * access is an error. Declaring the shape here keeps `tsc --noEmit` clean without weakening the
+ * assertions: this IS the shape the Stage-4C formula consumes.
+ */
+type WeightRow = { fit: number; i19: number; i20: number };
+type ParsedScoringConfig = {
+  version: string;
+  weights: Record<"COMPREHENSIVE" | "MODERATE" | "MINIMAL", WeightRow>;
+  thresholds: Record<string, string>;
+  caps: { redFlag: number; prideGate_no: number; prideGate_unknown: number };
+};
+const parseSpec = (spec: string) =>
+  readScoringConfig(spec) as unknown as { config: ParsedScoringConfig; contentHash: string };
+
 describe("ScoringConfig seed [C-14]", () => {
   it("parses the frozen block into the weight rows the scoring formula uses", () => {
-    const { config } = readScoringConfig(SPEC);
+    const { config } = parseSpec(SPEC);
     expect(config.version).toMatch(/^matcher-/);
     // These three rows ARE the Stage-4C combined-score formula; drift here changes every score.
     expect(config.weights.COMPREHENSIVE).toEqual({ fit: 0.5, i19: 0.25, i20: 0.25 });
@@ -36,7 +51,7 @@ describe("ScoringConfig seed [C-14]", () => {
   });
 
   it("seeds an approved row, and re-seeding the same version is a no-op", async () => {
-    const { config, contentHash } = readScoringConfig(SPEC);
+    const { config, contentHash } = parseSpec(SPEC);
     const created = await prisma.scoringConfig.create({
       data: {
         version: config.version,

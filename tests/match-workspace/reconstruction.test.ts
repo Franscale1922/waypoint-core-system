@@ -191,7 +191,7 @@ describe("historical reconstruction (C-13)", () => {
       // 4) Reconstruct preMsaScore from the frozen inputs, using the DISCLOSURE LEVEL.
       if (got.i19Score !== null && got.i20Score !== null && got.i19DisclosureLevel !== null) {
         const level = got.i19DisclosureLevel as DisclosureLevel;
-        expect(recomputePreMsa(got.fitScore, got.i19Score, got.i20Score, level)).toBeCloseTo(
+        expect(recomputePreMsa(got.fitScore!, got.i19Score, got.i20Score, level)).toBeCloseTo(
           got.preMsaScore!,
           6,
         );
@@ -227,8 +227,8 @@ describe("historical reconstruction (C-13)", () => {
     expect(got.i19DisclosureLevel).toBe("COMPREHENSIVE");
 
     // Correct field reconstructs; the overall-confidence weight row does not.
-    const correct = recomputePreMsa(got.fitScore, got.i19Score!, got.i20Score!, "COMPREHENSIVE");
-    const wrong = recomputePreMsa(got.fitScore, got.i19Score!, got.i20Score!, "MODERATE");
+    const correct = recomputePreMsa(got.fitScore!, got.i19Score!, got.i20Score!, "COMPREHENSIVE");
+    const wrong = recomputePreMsa(got.fitScore!, got.i19Score!, got.i20Score!, "MODERATE");
     expect(correct).toBeCloseTo(got.preMsaScore!, 6);
     expect(wrong).not.toBeCloseTo(got.preMsaScore!, 6);
   });

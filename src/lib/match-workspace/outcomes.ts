@@ -21,6 +21,13 @@ import { currentHead } from "./append";
  */
 export const DEFAULT_STALE_AFTER_DAYS = 30;
 
+/**
+ * How far back the queue looks. A confirmed brand older than this stops being surfaced: at that age
+ * it is history rather than something to chase, and the bound keeps the query from growing without
+ * limit as runs accumulate.
+ */
+export const LOOKBACK_DAYS = 365;
+
 export type UnlabeledSlateBrand = {
   runId: string;
   candidateId: string;
@@ -44,7 +51,12 @@ export async function unlabeledSlateBrands(
   const staleAfterDays = opts.staleAfterDays ?? DEFAULT_STALE_AFTER_DAYS;
   const now = opts.now ?? new Date();
 
+  // Bounded. An unfiltered findMany over every decision ever recorded, with a three-level include,
+  // ran on every render of the run index. Confirmed decisions older than the lookback cannot be
+  // acted on usefully anyway, so the window is the natural bound rather than an arbitrary one.
+  const lookbackStart = new Date(now.getTime() - LOOKBACK_DAYS * 86_400_000);
   const decisions = await db.matchDecision.findMany({
+    where: { effectiveAt: { gte: lookbackStart } },
     include: { score: { select: { runId: true, waypointBrandId: true, run: { select: { candidateId: true } } } } },
   });
 

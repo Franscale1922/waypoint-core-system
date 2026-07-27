@@ -271,6 +271,64 @@ describe("commitImport: the ordered write set", () => {
     expect(await prisma.matchRun.count({ where: { candidate: { externalRef: ref } } })).toBe(1);
   });
 
+  it("gives up after ONE retry on a persistent externalRef collision", async () => {
+    // The externalRef retry originally had no depth counter, only a comment claiming "a single
+    // retry". Under a persistent collision it recursed about 18,000 times in 30 seconds, re-running
+    // the entire analysis each pass (JSON parse, Zod, SHA-256 over every file, brand resolution,
+    // four database round trips). On a serverless function that is an unbounded database-hammering
+    // loop until the platform kills it.
+    await approvedConfig();
+    const ref = nextRef();
+
+    let upsertCalls = 0;
+    // The upsert happens on the TRANSACTION client, so the collision has to be injected there.
+    // Proxying only the base client silently intercepts nothing, and the test passes for the wrong
+    // reason. (It did, on the first attempt.)
+    const collideOnUpsert = (client: object) =>
+      new Proxy(client, {
+        get(target, prop, receiver) {
+          const value = Reflect.get(target, prop, receiver);
+          if (prop !== "candidate") return typeof value === "function" ? value.bind(target) : value;
+          return new Proxy(value as object, {
+            get(inner, key, r2) {
+              const fn = Reflect.get(inner, key, r2);
+              if (key !== "upsert") {
+                return typeof fn === "function" ? (fn as (...a: unknown[]) => unknown).bind(inner) : fn;
+              }
+              return async () => {
+                upsertCalls++;
+                throw Object.assign(new Error("Unique constraint failed"), {
+                  code: "P2002",
+                  meta: { target: ["externalRef"] },
+                });
+              };
+            },
+          });
+        },
+      });
+
+    const alwaysColliding = new Proxy(prisma, {
+      get(target, prop, receiver) {
+        const value = Reflect.get(target, prop, receiver);
+        if (prop !== "$transaction") return typeof value === "function" ? value.bind(target) : value;
+        return (cb: (tx: unknown) => unknown, opts?: unknown) =>
+          (value as (c: unknown, o?: unknown) => unknown).call(
+            target,
+            (tx: object) => cb(collideOnUpsert(tx)),
+            opts,
+          );
+      },
+    }) as typeof prisma;
+
+    await expect(
+      commitImport(alwaysColliding, pkg({ externalRef: ref }), twoFiles(), "advisor@test"),
+    ).rejects.toMatchObject({ code: "P2002" });
+
+    // Exactly two attempts: the original and one retry. Not thousands.
+    expect(upsertCalls).toBe(2);
+    expect(await prisma.matchRun.count({ where: { candidate: { externalRef: ref } } })).toBe(0);
+  });
+
   it("REFUSES a re-import whose only difference is the confirmed slate", async () => {
     await approvedConfig();
     const ref = nextRef();

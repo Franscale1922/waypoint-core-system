@@ -296,6 +296,8 @@ export async function commitImport(
   files: ImportInputFile[],
   actor: string,
   explicitBindings: Record<string, string> = {},
+  /** Retry depth. Bounded: see the externalRef branch at the bottom of this function. */
+  attempt = 0,
 ): Promise<CommitResult> {
   // Re-derive everything from the uploaded bytes. Preview's answer is a client claim.
   const { report, pkg, resolved, inputHashes } = await analyze(db, rawJson, files, explicitBindings);
@@ -316,9 +318,33 @@ export async function commitImport(
   try {
     return await db.$transaction(
       async (tx) => {
+        // Re-asserted INSIDE the transaction, not just in analyze(). Both are fail-closed rules,
+        // and a config revoked or a candidate redacted between the pre-flight read and the commit
+        // would otherwise still import.
         const config = await tx.scoringConfig.findUniqueOrThrow({
           where: { version: pkg.scoringConfigVersion },
         });
+        if (config.approvalState !== "approved") {
+          throw new ImportRefused([
+            {
+              code: "SCORING_CONFIG_NOT_APPROVED",
+              message: `Scoring configuration "${config.version}" is "${config.approvalState}", not "approved". [C-14]`,
+            },
+          ]);
+        }
+
+        const existing = await tx.candidate.findUnique({
+          where: { externalRef: pkg.candidate.externalRef },
+          select: { redactedAt: true },
+        });
+        if (existing?.redactedAt) {
+          throw new ImportRefused([
+            {
+              code: "CANDIDATE_REDACTED",
+              message: `Candidate "${pkg.candidate.externalRef}" was redacted; attaching a new run is refused. [C-7]`,
+            },
+          ]);
+        }
 
         const candidate = await tx.candidate.upsert({
           where: { externalRef: pkg.candidate.externalRef },
@@ -442,10 +468,17 @@ export async function commitImport(
         };
       }
     }
-    if (code === "P2002" && targets.some((t) => t.includes("externalRef"))) {
+    if (code === "P2002" && targets.some((t) => t.includes("externalRef")) && attempt < 1) {
       // Two concurrent imports created the same candidate. The row now exists, so a single retry
       // takes the upsert's update branch.
-      return commitImport(db, rawJson, files, actor, explicitBindings);
+      //
+      // BOUNDED on purpose. The first version had no depth counter and the comment claimed "a
+      // single retry" without enforcing it. Under a persistent collision it recursed roughly
+      // 18,000 times in 30 seconds, re-running the whole analysis each time (JSON parse, Zod,
+      // SHA-256 over every uploaded file, full brand resolution, four database round trips). On a
+      // serverless function that is an unbounded database-hammering loop until the platform kills
+      // it. One retry, then the error surfaces.
+      return commitImport(db, rawJson, files, actor, explicitBindings, attempt + 1);
     }
     throw err;
   }

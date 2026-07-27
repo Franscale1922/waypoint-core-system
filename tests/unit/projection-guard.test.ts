@@ -78,7 +78,10 @@ describe("checkProjectionText: one mutation per forbidden class, each caught by 
     },
     {
       leakClass: "INTERNAL_FLAG",
-      text: CLEAN + "\n\nThere is one red flag I am still working through.",
+      // The snake_case form, and the prose form only in a scoring context. Bare "red flag" is
+      // deliberately NOT a leak: "no red flags in their litigation history" is exactly what a good
+      // advisor writes, and rejecting it got the validator worked around.
+      text: CLEAN + "\n\nA red_flag capped this one for me.",
       note: "internal flag vocabulary",
     },
     {
@@ -108,8 +111,8 @@ describe("checkProjectionText: one mutation per forbidden class, each caught by 
 
   it("reports the exact span and offset so the operator can rewrite it", () => {
     const text = CLEAN + "\n\nConfidence: HIGH.";
-    const finding = checkProjectionText(text).findings.find((f) => f.leakClass === "CONFIDENCE_TOKEN")!;
-    expect(finding.span).toBe("HIGH");
+    const finding = checkProjectionText(text).findings.find((f) => f.span === "HIGH")!;
+    expect(finding.leakClass).toBe("CONFIDENCE_TOKEN");
     expect(text.slice(finding.index, finding.index + finding.span.length)).toBe("HIGH");
   });
 
@@ -162,8 +165,98 @@ describe("[C-16] structural: the candidate-facing read never touches MatchScore"
     expect(end).toBeGreaterThan(start);
     const fn = src.slice(start, end);
 
+    // POSITIVE assertion, not a blocklist. The first version banned the literal "matchScore" and a
+    // fixed field list, which a reviewer walked straight past: the Prisma RELATION on MatchDecision
+    // is named `score`, so `matchDecision: { select: { score: { select: { rank: true } } } }` put an
+    // internal rank into the candidate-facing read with every test still green.
+    //
+    // So: enumerate the model accesses this function is allowed to make, and forbid selecting any
+    // relation named `score` at all.
+    const modelAccesses = [...fn.matchAll(/\bdb\.(\w+)\./g)].map((m) => m[1]);
+    expect(new Set(modelAccesses)).toEqual(new Set(["matchProjection", "matchDecision"]));
+    expect(fn, "must not select the `score` relation, which reaches MatchScore").not.toMatch(/\bscore\s*:/);
     expect(fn).not.toMatch(/matchScore/i);
-    expect(fn).not.toMatch(/\b(fitScore|finalScore|preMsaScore|confidence|flags|i19|i20)\b/i);
     expect(fn).toMatch(/matchProjection/);
+  });
+});
+
+
+/**
+ * THE CALIBRATION SUITE, added 2026-07-27 after an adversarial review.
+ *
+ * The original suite was fixture-tuned: its one "realistic copy" sample happened to use only
+ * single-decimal figures, so a rule that rejected "$1.25 million" and "6.75%" looked fine. And 17
+ * of 20 smuggling attempts walked through it. Two tables now pin both directions, because a
+ * validator that rejects real copy gets worked around and one that misses real leaks is theatre.
+ */
+describe("calibration: ordinary franchise copy must survive", () => {
+  const ORDINARY = [
+    ["a money figure with cents", "The investment runs to about $1.25 million all in."],
+    ["a two-decimal royalty", "Royalty is 6.75% with a 2% brand fund."],
+    ["contract vocabulary", "Read the exclusions in the territory rider carefully."],
+    ["due-diligence language", "I found no red flags in their litigation history."],
+    ["an unrelated acronym", "The MED spa adjacency is what makes this work."],
+    ["counts and averages", "The average ticket is around $480 and they have 300 locations."],
+    ["tenure", "They have been franchising for 14 years across 38 states."],
+    ["the word fit, which is core advisory language", "I think this is a good fit for what you described."],
+    ["lowercase high", "There is high demand in your market right now."],
+    ["a multiple and a percentage", "Expect 2.5x on a resale after five years, and 6.5% royalty."],
+    ["an out-of-ten statistic", "Owners tell me 9 out of 10 stay past year three."],
+  ] as const;
+
+  for (const [label, text] of ORDINARY) {
+    it(`accepts ${label}`, () => {
+      const r = checkProjectionText(text);
+      expect(r.findings.map((f) => `${f.leakClass}:${f.span}`), text).toEqual([]);
+    });
+  }
+});
+
+describe("calibration: none of these may be smuggled through", () => {
+  const SMUGGLING = [
+    ["a hyphenated FDD item", "Item-19 is unusually detailed."],
+    ["an en-dash FDD item", "Item\u201319 was thin."],
+    ["a spelled-out FDD item", "Item nineteen is detailed."],
+    ["a camelCase column name", "Their finalScore came out ahead."],
+    ["a snake_case column name", "Their industry_segment matches."],
+    ["a single-decimal score", "Internally this came out at 0.9."],
+    ["a long decimal score", "It scored 0.86342 on my sheet."],
+    ["a decimal with no leading zero", "It came out at .86 overall."],
+    ["the item scale written as N of 5", "Their disclosure was a 4 of 5."],
+    ["the item scale spelled out", "Their disclosure scored four out of five."],
+    ["the five-point scale named", "A 4 on my five-point scale."],
+    ["an ordinal rank", "This brand ranked first on my sheet."],
+    ["a rank in prose", "Number 1 of the twelve I scored."],
+    ["a superlative score", "This was my top score."],
+    ["a title-case confidence label", "My confidence here is High."],
+    ["a lowercase disclosure level", "The disclosure level is comprehensive."],
+    ["an ALL-CAPS label", "Confidence: HIGH."],
+    ["MSA spelled out", "Market Service Area viability was strong."],
+    ["a percentage attached to fit", "It came out at 86 percent on fit."],
+    ["everything at once", "It scored 0.86, ranked #1, Item 19 was a 4 out of 5."],
+  ] as const;
+
+  for (const [label, text] of SMUGGLING) {
+    it(`catches ${label}`, () => {
+      expect(checkProjectionText(text).ok, `smuggled through: ${text}`).toBe(false);
+    });
+  }
+});
+
+describe("evidence overlap reports a usable location", () => {
+  const evidence = [
+    "The owner told me she was terrified of taking on debt again after the last business failed.",
+  ];
+
+  it("reports the offset of the WINDOW, not of its first word elsewhere in the text", () => {
+    // The original computed the offset with indexOf on the window's first word, which pointed at
+    // the wrong place whenever that word appeared earlier. CONTRACT section 7 promises the exact
+    // span and offset, for the one class it calls uncatchable by regex.
+    const text =
+      "I know you were terrified. And you were terrified of taking on debt again after the last business failed, so I kept that in mind.";
+    const [finding] = findEvidenceOverlap(text, evidence);
+    expect(finding).toBeDefined();
+    expect(text.slice(finding.index, finding.index + finding.span.length)).toBe(finding.span);
+    expect(finding.index).toBeGreaterThan(text.indexOf("terrified"));
   });
 });

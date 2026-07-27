@@ -51,6 +51,23 @@ function listFromGuard(name: string): string[] {
 describe("schema / guard / test-setup lockstep", () => {
   const domain = domainModelsFromSchema();
 
+  it("no domain-looking model is declared ABOVE the banner, where the locator cannot see it", () => {
+    // The hole a reviewer found: this file locates domain models positionally, so a model inserted
+    // one line above the banner is invisible to BOTH lockstep constants and to the [C-1]
+    // forbidden-field scan. It would be unprotected by the deploy guard, never truncated between
+    // tests, and exempt from the no-task-list rule, while every test stayed green.
+    const banner = BANNER.exec(SCHEMA)!;
+    const above = SCHEMA.slice(0, banner.index);
+    const strays = [...above.matchAll(/^model\s+(\w+)\s*\{/gm)]
+      .map((m) => m[1])
+      .filter((n) => /^(Match|Candidate|ScoringConfig)/.test(n));
+    expect(
+      strays,
+      `These models look like match-workspace domain models but sit ABOVE the banner, so the ` +
+        `guard, the test truncation and the [C-1] scan would all miss them: ${strays.join(", ")}`,
+    ).toEqual([]);
+  });
+
   it("finds a plausible set of domain models", () => {
     // Guards against the locator silently matching nothing and every comparison passing vacuously.
     expect(domain.length).toBeGreaterThanOrEqual(9);

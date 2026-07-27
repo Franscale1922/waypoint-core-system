@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Layers, User, Clock, ArrowRight, CircleHelp } from "lucide-react";
 import prisma from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/require-admin-page";
 import { Section } from "@/components/admin/Section";
 import { brandDisplayName } from "@/lib/match-workspace/brand-resolver";
 import { unlabeledSlateBrands, DEFAULT_STALE_AFTER_DAYS } from "@/lib/match-workspace/outcomes";
@@ -15,6 +16,10 @@ export const dynamic = "force-dynamic";
  * of a past run.
  */
 export default async function MatchWorkspaceIndex() {
+  // Primary gate. Middleware also covers /admin/*, but it is defense in depth by its own
+  // docblock, and the layout deliberately does not enforce. This page renders frozen scores,
+  // the raw detail JSON and candidate PII, so it carries its own gate.
+  await requireAdminPage();
   const runs = await prisma.matchRun.findMany({
     orderBy: { createdAt: "desc" },
     include: {

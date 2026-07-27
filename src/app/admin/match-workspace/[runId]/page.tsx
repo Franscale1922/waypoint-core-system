@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, BarChart2, FileText, Layers, User, AlertTriangle } from "lucide-react";
+import { ArrowLeft, BarChart2, FileText, Layers, User, AlertTriangle, Eye } from "lucide-react";
 import prisma from "@/lib/prisma";
+import { requireAdminPage } from "@/lib/require-admin-page";
 import { Section } from "@/components/admin/Section";
 import { ScoreBar } from "@/components/admin/ScoreBar";
 import { DecisionControls } from "@/components/admin/DecisionControls";
 import { OutcomeControls } from "@/components/admin/OutcomeControls";
+import { ProjectionCapture } from "@/components/admin/ProjectionCapture";
 import { brandDisplayName } from "@/lib/match-workspace/brand-resolver";
 import { currentHead } from "@/lib/match-workspace/append";
 import { outcomesForRun } from "@/lib/match-workspace/outcomes";
@@ -39,6 +41,10 @@ const num = (v: number | null, dp = 2) => (v === null ? "-" : v.toFixed(dp));
  */
 export default async function MatchWorksheet({ params }: { params: Promise<{ runId: string }> }) {
   const { runId } = await params;
+  // Primary gate. Middleware also covers /admin/*, but it is defense in depth by its own
+  // docblock, and the layout deliberately does not enforce. This page renders frozen scores,
+  // the raw detail JSON and candidate PII, so it carries its own gate.
+  await requireAdminPage();
 
   const run = await prisma.matchRun.findUnique({
     where: { id: runId },
@@ -65,6 +71,14 @@ export default async function MatchWorksheet({ params }: { params: Promise<{ run
     outcomesByBrand.get(o.waypointBrandId)!.push(o);
   }
 
+  // Current candidate-facing text per brand, so the worksheet can offer an edit rather than a
+  // duplicate. Heads are derived the same way as everywhere else.
+  const projections = await prisma.matchProjection.findMany({ where: { runId: run.id } });
+  const supersededProjections = new Set(projections.map((p) => p.supersedesId).filter(Boolean) as string[]);
+  const currentProjectionByBrand = new Map(
+    projections.filter((p) => !supersededProjections.has(p.id)).map((p) => [p.waypointBrandId, p]),
+  );
+
   const scored = run.scores.filter((s) => s.scoringStage === "stage_4c");
   const rankedOnly = run.scores.filter((s) => s.scoringStage !== "stage_4c");
 
@@ -75,6 +89,12 @@ export default async function MatchWorksheet({ params }: { params: Promise<{ run
         className="inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
       >
         <ArrowLeft className="w-4 h-4" /> All runs
+      </Link>
+      <Link
+        href={`/admin/match-workspace/${run.id}/candidate-view`}
+        className="ml-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-700"
+      >
+        <Eye className="w-4 h-4" /> Candidate view
       </Link>
 
       <div>
@@ -200,6 +220,13 @@ export default async function MatchWorksheet({ params }: { params: Promise<{ run
                         candidateId={run.candidateId}
                         waypointBrandId={score.waypointBrandId}
                         originatingRunId={run.id}
+                      />
+                      <ProjectionCapture
+                        runId={run.id}
+                        waypointBrandId={score.waypointBrandId}
+                        matchDecisionId={head.id}
+                        existingText={currentProjectionByBrand.get(score.waypointBrandId)?.bodyText ?? null}
+                        existingProjectionId={currentProjectionByBrand.get(score.waypointBrandId)?.id ?? null}
                       />
                     </div>
                   ) : null}

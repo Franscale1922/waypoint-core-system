@@ -224,6 +224,34 @@ describe("candidateFacingProjections: what a candidate may see", () => {
     expect(await candidateFacingProjections(prisma, run.id)).toEqual([]);
   });
 
+  it("hides text whose CURRENT decision is not final_slate", async () => {
+    // The final_slate half of the read filter had no coverage: deleting it left every test green.
+    // Superseding a confirmed decision does not isolate it either, because that also makes the
+    // projection's own FK point at a superseded row, so the head check catches it first.
+    //
+    // This isolates it. The projection hangs off a decision that IS the current head of its chain
+    // but is `rejected`. Only raw Prisma can produce that, since appendProjection refuses it, and
+    // supersession.test.ts already proves raw Prisma bypasses the service. That is exactly when
+    // this check is load-bearing rather than redundant.
+    const { run } = await makeRun();
+    const score = await makeScore(run.id, { waypointBrandId: "wpb_raw_rejected_head" });
+    const rejectedHead = await prisma.matchDecision.create({
+      data: { scoreId: score.id, state: "rejected", actor: "raw@test" },
+    });
+    await prisma.matchProjection.create({
+      data: {
+        runId: run.id,
+        waypointBrandId: score.waypointBrandId,
+        matchDecisionId: rejectedHead.id,
+        bodyText: SAFE_TEXT,
+        sourceSkill: "raw",
+        actor: "raw@test",
+      },
+    });
+
+    expect(await candidateFacingProjections(prisma, run.id)).toEqual([]);
+  });
+
   it("shows only the current text after a correction", async () => {
     const { run, score, decision } = await slatedBrand();
     const first = await appendProjection(tx, {

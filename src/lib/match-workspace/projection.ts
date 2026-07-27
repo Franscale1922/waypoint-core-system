@@ -152,19 +152,25 @@ export async function candidateFacingProjections(
   db: PrismaClient,
   runId: string,
 ): Promise<CandidateFacingBrand[]> {
+  // Heads are derived over the UNFILTERED set, then filtered. Deriving over a pre-filtered set
+  // would let a redacted successor resurrect its predecessor as a head and show text that had been
+  // superseded. Not reachable today, since redaction nulls a whole run, but the ordering is free.
   const rows = await db.matchProjection.findMany({
-    where: { runId, redactedAt: null, NOT: { bodyText: null } },
+    where: { runId },
     select: {
       id: true,
       waypointBrandId: true,
       bodyText: true,
+      redactedAt: true,
       supersedesId: true,
       matchDecision: { select: { id: true, state: true, scoreId: true } },
     },
   });
 
   const superseded = new Set(rows.map((r) => r.supersedesId).filter(Boolean) as string[]);
-  const currentProjections = rows.filter((r) => !superseded.has(r.id));
+  const currentProjections = rows.filter(
+    (r) => !superseded.has(r.id) && r.redactedAt === null && r.bodyText !== null,
+  );
 
   // Confirm each attached decision is still the head of its own chain. Read from MatchDecision
   // only: ids and state, never a score field.
