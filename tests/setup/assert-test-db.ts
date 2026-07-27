@@ -88,7 +88,7 @@ export function resolveAndAssertTestUrl(): string {
   return testUrl;
 }
 
-/** The 8 protected tables, quoted, in an order safe for a single TRUNCATE ... CASCADE. */
+/** The protected tables, quoted, in an order safe for a single TRUNCATE ... CASCADE. */
 export const MATCH_WORKSPACE_TABLES = [
   "Candidate",
   "CandidateInputVersion",
@@ -98,4 +98,5 @@ export const MATCH_WORKSPACE_TABLES = [
   "MatchDecision",
   "MatchOutcomeEvent",
   "ScoringConfig",
+  "MatchRunInput",
 ];

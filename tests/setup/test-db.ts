@@ -13,7 +13,7 @@ export const prisma = new PrismaClient({
   datasources: { db: { url: testUrl } },
 });
 
-/** Truncate all 8 match-workspace tables in one statement (CASCADE clears relations). */
+/** Truncate all match-workspace tables in one statement (CASCADE clears relations). */
 export async function truncateAll(): Promise<void> {
   const quoted = MATCH_WORKSPACE_TABLES.map((t) => `"${t}"`).join(", ");
   await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${quoted} RESTART IDENTITY CASCADE;`);

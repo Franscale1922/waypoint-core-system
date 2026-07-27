@@ -177,6 +177,29 @@ scalar score fields, `flags String[]`, `detail Json` for the frozen per-brand ob
 string from the registry (authority lives in the brand-intelligence pipeline / BrandDB), resolved
 fail-closed at import (Phase 2).
 
+> **Amendment (2026-07-27, Phase 2D). A run has MANY input versions, not one.** Phase 1 gave `MatchRun`
+> a single required `candidateInputVersionId`. A package's `inputVersions` is an array of one or more
+> (intelligence summary, questionnaire, candidate model), and the idempotency key already covers all of
+> them, so a singular foreign key could not represent the real input set and nominating a "primary" would
+> have invented a rule the matcher never states. Replaced by a **ninth record, `MatchRunInput`**
+> (`runId`, `inputVersionId`, unique together). It is an EXPLICIT join model rather than an implicit
+> Prisma many-to-many, because an implicit relation creates a hidden table that neither the deploy
+> guard's `PROTECTED_TABLES` nor the test suite's `MATCH_WORKSPACE_TABLES` would know about. A test now
+> parses `schema.prisma` and asserts set equality with both constants, so the three lists can no longer
+> drift apart silently. This extends the record model; it relaxes nothing.
+>
+> Two related Phase-2D decisions recorded here because they pin previously open questions:
+> - **`MatchRun.status` is the single literal `"completed"`.** Phase 1 deferred the vocabulary to "once
+>   the import adapter exists". It exists now, and the answer is that there is no vocabulary: any richer
+>   set would need status TRANSITIONS, and a transition is an `UPDATE` to `MatchRun`, which **[C-9]**
+>   forbids. Write-once.
+> - **`MatchRun.runFingerprint`** stores the run identity EXCLUDING the confirmed slate. `idempotencyKey`
+>   deliberately includes the slate (**[C-11]**, so a corrected Top 3 is not deduped away as "the same
+>   run"), but that alone would let a slate-only re-import mint a second run holding a duplicate copy of
+>   the same scores, while the worksheet records the identical change as a superseding `MatchDecision` on
+>   the first. One event, two representations, no defined answer for which run is current. The import
+>   detects that case from the fingerprint and refuses it, pointing at the worksheet.
+
 ## 10. Deploy-safety note (informs Phase 1)
 
 Production reconciles the schema via `prisma db push --accept-data-loss` on every deploy. An immutable-record

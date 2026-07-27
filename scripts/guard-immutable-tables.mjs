@@ -15,7 +15,7 @@
  * ------------
  * Before `db push` runs, it recomputes the SAME from(DB)→to(schema) diff via
  * `prisma migrate diff --script` and refuses the build if the SQL contains a destructive
- * operation touching any of the 8 match-workspace tables (or the 2 frozen enums). It is
+ * operation touching any of the protected match-workspace tables (or the 2 frozen enums). It is
  * DOMAIN-SCOPED on purpose: it protects only the decision-record tables, not the rest of
  * the schema.
  *
@@ -57,6 +57,7 @@ const PROTECTED_TABLES = [
   "MatchDecision",
   "MatchOutcomeEvent",
   "ScoringConfig",
+  "MatchRunInput",
 ];
 // The frozen enum types in the same domain (DROP TYPE on these is destructive too).
 const PROTECTED_TYPES = ["MatchDecisionState", "MatchOutcomeType"];

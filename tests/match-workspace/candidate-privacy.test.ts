@@ -41,7 +41,6 @@ describe("candidate privacy & config governance (C-7, C-14 partial)", () => {
       prisma.matchRun.create({
         data: {
           candidateId: candidate.id,
-          candidateInputVersionId: iv.id,
           scoringConfigId: randomUUID(), // no such config
           brandDbVersionRef: "branddb-v3",
           idempotencyKey: "fk-test-key",
@@ -49,6 +48,7 @@ describe("candidate privacy & config governance (C-7, C-14 partial)", () => {
           actor: "advisor@example.test",
           brandRegistrySha256: "0".repeat(64),
           brandIdentityMapHash: "0".repeat(64),
+          runFingerprint: "fp-test",
         },
       }),
     );

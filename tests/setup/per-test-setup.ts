@@ -1,6 +1,6 @@
 /**
  * Per-test-file setup (Vitest `setupFiles`). Registers a beforeEach that truncates all
- * 8 match-workspace tables so every test starts from an empty, isolated state, and
+ * match-workspace tables so every test starts from an empty, isolated state, and
  * disconnects the shared client after the file completes.
  *
  * Safe because file-level parallelism is disabled in vitest.config.ts — no two test

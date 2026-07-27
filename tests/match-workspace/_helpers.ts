@@ -58,7 +58,6 @@ export async function makeRun(overrides: Record<string, unknown> = {}) {
   const run = await prisma.matchRun.create({
     data: {
       candidateId: candidate.id,
-      candidateInputVersionId: inputVersion.id,
       scoringConfigId: config.id,
       brandDbVersionRef: "branddb-v3",
       idempotencyKey: uniq("idem"),
@@ -68,9 +67,13 @@ export async function makeRun(overrides: Record<string, unknown> = {}) {
       // import path silently omit the record of how its names became wpb_ ids.
       brandRegistrySha256: "0".repeat(64),
       brandIdentityMapHash: "0".repeat(64),
+      runFingerprint: uniq("fp"),
       ...overrides,
     },
   });
+  // A run references its inputs through the explicit join, so fixtures must link at least one or
+  // they would not resemble anything the import can produce.
+  await prisma.matchRunInput.create({ data: { runId: run.id, inputVersionId: inputVersion.id } });
   return { candidate, inputVersion, config, run };
 }
 

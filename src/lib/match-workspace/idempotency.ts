@@ -117,13 +117,13 @@ function brandsFingerprint(pkg: MatchPackage): unknown[] {
  *                      in the same order as `pkg.inputVersions`. Passed in rather than read
  *                      from the package because a matcher-declared hash is unverified. See [C-6].
  */
-export function buildIdempotencyKey(pkg: MatchPackage, inputHashes: string[]): string {
+function runIdentity(pkg: MatchPackage, inputHashes: string[]) {
   if (inputHashes.length !== pkg.inputVersions.length) {
     throw new Error(
       `inputHashes length ${inputHashes.length} does not match inputVersions length ${pkg.inputVersions.length}`,
     );
   }
-  const identity = {
+  return {
     packageVersion: pkg.packageVersion,
     candidateExternalRef: pkg.candidate.externalRef,
     scoringConfigVersion: pkg.scoringConfigVersion,
@@ -135,11 +135,32 @@ export function buildIdempotencyKey(pkg: MatchPackage, inputHashes: string[]): s
       .map((iv, i) => [iv.sourceType, inputHashes[i]] as const)
       .map(([sourceType, hash]) => `${sourceType}:${hash}`)
       .sort(),
+    brands: brandsFingerprint(pkg),
+  };
+}
+
+export function buildIdempotencyKey(pkg: MatchPackage, inputHashes: string[]): string {
+  const identity = {
+    ...runIdentity(pkg, inputHashes),
     // The advisor's confirmed slate is a DECISION, not prose, and it belongs to the run's
     // identity. Excluding it meant that swapping a brand in the Top 3 and re-importing
     // deduped as "the same run", silently discarding the correction.
     confirmedSlate: [...pkg.confirmedSlate].map(str).sort(),
-    brands: brandsFingerprint(pkg),
   };
+  // canonicalJson sorts keys at every level, so spreading here produces byte-identical output to
+  // the previous single-literal form. The split changes what can be COMPUTED, not what is hashed.
   return sha256Hex(canonicalJson(identity));
+}
+
+/**
+ * The same identity WITHOUT the confirmed slate.
+ *
+ * Stored on `MatchRun.runFingerprint` so the import can answer a question the idempotency key
+ * cannot: "is this the same analysis with a different Top 3?" That case must be refused rather
+ * than imported, because it would mint a second run holding a duplicate copy of the same scores
+ * while the worksheet records the identical change as a superseding decision on the first run.
+ * One event, two representations, and no defined answer for which run is current.
+ */
+export function buildRunFingerprint(pkg: MatchPackage, inputHashes: string[]): string {
+  return sha256Hex(canonicalJson(runIdentity(pkg, inputHashes)));
 }

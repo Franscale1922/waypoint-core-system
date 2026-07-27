@@ -38,7 +38,6 @@ describe("immutability & idempotency (C-10, C-11)", () => {
       prisma.matchRun.create({
         data: {
           candidateId: candidate2.id,
-          candidateInputVersionId: iv2.id,
           scoringConfigId: first.config.id,
           brandDbVersionRef: "branddb-v3",
           idempotencyKey: key, // same key
@@ -46,6 +45,7 @@ describe("immutability & idempotency (C-10, C-11)", () => {
           actor: "advisor@example.test",
           brandRegistrySha256: "0".repeat(64),
           brandIdentityMapHash: "0".repeat(64),
+          runFingerprint: "fp-test",
         },
       }),
     );
