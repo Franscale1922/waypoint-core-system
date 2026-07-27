@@ -334,7 +334,12 @@ model MatchScore {
   scoringStage    String
 
   fitRaw          Float?   // pre-cap fit from the Foundation-B engine, before the Pride and Identity gate
-  fitScore        Float    // the fit actually used (Pride gate: min(fitRaw, 0.74) or 0.82) — Stage-3C
+  // The fit actually used (Pride gate: min(fitRaw, 0.74) or 0.82). NULLABLE because the
+  // Foundation-B support floor genuinely produces no score: when every soft variable is
+  // inactive or neutralized (Σ w_v = 0) the skill emits fit_score as UNDEFINED and flags it
+  // for the advisor, explicitly refusing to emit 0 or 1. Storing null preserves that state
+  // honestly instead of coercing it to a number the matcher declined to produce.
+  fitScore        Float?
   i19Score        Int?     // Item-19 score (1-5); NULL below the FDD cut or with no I19 disclosure
   i20Score        Int?     // Item-20 score (1-5); NULL below the FDD cut or with no I20 data
 
