@@ -5,8 +5,7 @@
   "outputDirectory": ".next",
   "git": {
     "deploymentEnabled": {
-      "main": true,
-      "feat/match-workspace-foundation": true
+      "main": true
     }
   }
 }

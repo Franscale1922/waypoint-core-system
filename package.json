@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm install remark-gfm && prisma generate && node scripts/guard-immutable-tables.mjs && prisma db push --accept-data-loss && next build",
+    "build": "npm install remark-gfm && prisma generate && node scripts/guard-immutable-tables.mjs && prisma db push && next build",
     "build:check": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
