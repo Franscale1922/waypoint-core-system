@@ -3,13 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 enum LeadStatus {
-  PENDING_CLAY  // Waiting for Clay enrichment before scoring. Set on CSV import.
+  PENDING_CLAY // Waiting for Clay enrichment before scoring. Set on CSV import.
   RAW
   ENRICHED
   WARMING
@@ -21,70 +21,69 @@ enum LeadStatus {
 }
 
 model Lead {
-  id                String     @id @default(uuid())
-  name              String
-  title             String?
-  company           String?
-  linkedinUrl       String?    @unique
-  country           String?
+  id                      String     @id @default(uuid())
+  name                    String
+  title                   String?
+  company                 String?
+  linkedinUrl             String?    @unique
+  country                 String?
   // ── Personalization signals (research-backed model, March 2026) ──────────
-  companyNewsEvent        String?  // Priority A: WARN Act, SEC 8-K, reorg, layoffs (macro, public)
-  recentPostSummary       String?  // Priority B: post topic paraphrase (never verbatim)
-  careerTrigger           String?  // Signal type: layoff / job change / burnout / opentowork
-  franchiseAngle          String?  // Internal context — not referenced in email
-  yearsInCurrentRole      Int?     // Scoring signal only — NEVER passed to email generator (blacklisted per Nemo 2025)
+  companyNewsEvent        String? // Priority A: WARN Act, SEC 8-K, reorg, layoffs (macro, public)
+  recentPostSummary       String? // Priority B: post topic paraphrase (never verbatim)
+  careerTrigger           String? // Signal type: layoff / job change / burnout / opentowork
+  franchiseAngle          String? // Internal context — not referenced in email
+  yearsInCurrentRole      Int? // Scoring signal only — NEVER passed to email generator (blacklisted per Nemo 2025)
   // Legacy fields — no longer populated, kept for existing rows
-  pulledQuoteFromPost     String?  // BLACKLISTED — creepiness score 7/10. Do not populate.
-  specificProjectOrMetric String?  // BLACKLISTED — removed from form and prompt
-  placeOrPersonalDetail   String?  // BLACKLISTED — removed from form and prompt
-  email             String?
-  emailStatus       String?    // Evaboot verification tier: "safe" | "riskier" | null. Gate: only "safe" allowed during warmup.
-  score             Int        @default(0)
-  status            LeadStatus @default(RAW)
-  draftEmail        String?
+  pulledQuoteFromPost     String? // BLACKLISTED — creepiness score 7/10. Do not populate.
+  specificProjectOrMetric String? // BLACKLISTED — removed from form and prompt
+  placeOrPersonalDetail   String? // BLACKLISTED — removed from form and prompt
+  email                   String?
+  emailStatus             String? // Evaboot verification tier: "safe" | "riskier" | null. Gate: only "safe" allowed during warmup.
+  score                   Int        @default(0)
+  status                  LeadStatus @default(RAW)
+  draftEmail              String?
 
   // ── Outcome Attribution Fields (Intelligence Layer — added March 2026) ────
   // These fields close the loop between what we sent and what converted.
   // signalType: which personalization signal drove the email (A/B/C)
-  signalType        String?    // "Priority A" | "Priority B" | "Priority C"
+  signalType        String? // "Priority A" | "Priority B" | "Priority C"
   // ctaUsed: which of the 3 approved closing questions was used
-  ctaUsed           String?    // "Worth a conversation?" | "Would it be worth 15 minutes to find out?" | "Curious if that's even a thought?"
+  ctaUsed           String? // "Worth a conversation?" | "Would it be worth 15 minutes to find out?" | "Curious if that's even a thought?"
   // Lifecycle timestamps — updatedAt is auto-overwritten so these are dedicated columns
-  sentAt            DateTime?  // When status transitioned to SENT (set by senderProcess)
-  repliedAt         DateTime?  // When first reply was received (set by replyGuardianProcess)
-  bookedAt          DateTime?  // When lead booked a TidyCal consultation (set by tidycalBookingSync)
-  socialUpdatedAt   DateTime?  // When Kelsey processed the latest social nurture step
-  socialNurtureStep Int        @default(0) // LinkedIn sequence position: 0=none, 1=View, 2=Engage1, 3=Engage2, 4=Follow, 5=Connect
+  sentAt            DateTime? // When status transitioned to SENT (set by senderProcess)
+  repliedAt         DateTime? // When first reply was received (set by replyGuardianProcess)
+  bookedAt          DateTime? // When lead booked a TidyCal consultation (set by tidycalBookingSync)
+  socialUpdatedAt   DateTime? // When Kelsey processed the latest social nurture step
+  socialNurtureStep Int       @default(0) // LinkedIn sequence position: 0=none, 1=View, 2=Engage1, 3=Engage2, 4=Follow, 5=Connect
   // instantlyLeadId: Instantly's internal ID for this lead — needed to join Instantly webhook events
   instantlyLeadId   String?
   // suppressionReason: why the lead was suppressed — enables suppression analysis
-  suppressionReason String?    // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed" | "riskier_email" | "fabricated_email"
+  suppressionReason String? // "low_score" | "non_serviceable_market" | "unsubscribe" | "not_a_fit" | "bounce" | "title_suppressed" | "riskier_email" | "fabricated_email"
   // ── Legacy / deprecated fields — do not populate, kept to avoid data-loss migration blocks ──
   // dmStep was replaced by socialNurtureStep — column still exists in DB with historical data
-  dmStep            Int?       // DEPRECATED — use socialNurtureStep. Kept to prevent prisma db push data-loss error.
-  dmStatus          String?    // LinkedIn DM queue status — not actively used
-  dmSentAt          DateTime?  // LinkedIn DM sent timestamp — not actively used
+  dmStep            Int? // DEPRECATED — use socialNurtureStep. Kept to prevent prisma db push data-loss error.
+  dmStatus          String? // LinkedIn DM queue status — not actively used
+  dmSentAt          DateTime? // LinkedIn DM sent timestamp — not actively used
 
   // ── Sales Navigator Attribute Fields (Intelligence Layer — added March 2026) ─
   // These attributes come from Clay/Evaboot enrichment at import time.
   // The goal: correlate Sales Navigator filter attributes with actual conversion outcomes
   // to generate data-driven filter recommendations for future Sales Nav search sessions.
-  companySizeRange  String?    // "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1001-5000" | "5001-10000" | "10000+"
-  industryVertical  String?    // e.g. "Manufacturing" | "Financial Services" | "Healthcare" | "Technology" | "Retail" | "Defense"
-  functionArea      String?    // Normalized: "Operations" | "Finance" | "Sales" | "General Management" | "Technology" | "Marketing" | "HR"
-  seniorityLevel    String?    // Normalized: "C-Suite" | "VP" | "Director" | "Senior Manager" | "Manager"
-  isOpenToWork      Boolean?   // OpenToWork badge detected at export time
+  companySizeRange    String? // "1-10" | "11-50" | "51-200" | "201-500" | "501-1000" | "1001-5000" | "5001-10000" | "10000+"
+  industryVertical    String? // e.g. "Manufacturing" | "Financial Services" | "Healthcare" | "Technology" | "Retail" | "Defense"
+  functionArea        String? // Normalized: "Operations" | "Finance" | "Sales" | "General Management" | "Technology" | "Marketing" | "HR"
+  seniorityLevel      String? // Normalized: "C-Suite" | "VP" | "Director" | "Senior Manager" | "Manager"
+  isOpenToWork        Boolean? // OpenToWork badge detected at export time
   wasRecentlyPromoted Boolean? // Job change < 6 months at time of import (opposite of ICP — penalized in scoring)
-  yearsAtCompany    Int?       // Total tenure at current company (different from yearsInCurrentRole which is tenure in title)
-  geoMarket         String?    // US region: "Pacific NW" | "Mountain" | "Midwest" | "Southeast" | "Northeast" | "Southwest" | "Mid-Atlantic"
+  yearsAtCompany      Int? // Total tenure at current company (different from yearsInCurrentRole which is tenure in title)
+  geoMarket           String? // US region: "Pacific NW" | "Mountain" | "Midwest" | "Southeast" | "Northeast" | "Southwest" | "Mid-Atlantic"
 
   // Relations
-  replies           Reply[]
-  
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
-}
+  replies Reply[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
 model SuppressionList {
   id        String   @id @default(uuid())
@@ -99,7 +98,7 @@ model Reply {
   leadId         String
   lead           Lead     @relation(fields: [leadId], references: [id])
   content        String
-  classification String?  // e.g. "Interested", "Not a fit", "Unsubscribe"
+  classification String? // e.g. "Interested", "Not a fit", "Unsubscribe"
   createdAt      DateTime @default(now())
 }
 
@@ -115,19 +114,19 @@ model SystemSettings {
 // Tracks each scorecard completion for nurture sequencing + unsubscribe support.
 // Isolated from ChecklistDownload — different lead source, different nurture flow.
 model ScorecardSubmission {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String
-  score               Int
-  primaryDriver       String?   // e.g. \"Financial independence\", \"Tired of corporate\"
-  biggestFear         String?   // e.g. \"Losing my savings\", \"Won't work in Montana\"
+  id                 String    @id @default(uuid())
+  email              String
+  name               String
+  score              Int
+  primaryDriver      String? // e.g. \"Financial independence\", \"Tired of corporate\"
+  biggestFear        String? // e.g. \"Losing my savings\", \"Won't work in Montana\"
   // ── Nurture sequence tracking ──────────────────────────────────────────────
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // 0=none, 1=Email 1 sent, 2=Day 3, 3=Day 7
-  nurtureCompletedAt  DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // 0=none, 1=Email 1 sent, 2=Day 3, 3=Day 7
+  nurtureCompletedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 // ── Archetype Quiz Submissions ─────────────────────────────────────────────
@@ -135,37 +134,37 @@ model ScorecardSubmission {
 // Drives the archetype-specific 7-day nurture sequence (Day 0/3/5/7).
 // Dedup pattern mirrors ScorecardSubmission: skip new sequence if one is active.
 model ArchetypeSubmission {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String
-  archetype           String    // archetype ID: educator | empath | connector | operator | driver | community_builder | analyst | creative
-  archetypeName       String    // human-readable: "The Educator" etc.
-  strongFits          String[]  // Industries that align with this archetype
-  weakFits            String[]  // Industries that often don't align
+  id                 String    @id @default(uuid())
+  email              String
+  name               String
+  archetype          String // archetype ID: educator | empath | connector | operator | driver | community_builder | analyst | creative
+  archetypeName      String // human-readable: "The Educator" etc.
+  strongFits         String[] // Industries that align with this archetype
+  weakFits           String[] // Industries that often don't align
   // ── Nurture sequence tracking ──────────────────────────────────────────────
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // 0=none, 1=Email 1 sent, 2=Day 3, 3=Day 5, 4=Day 7
-  nurtureCompletedAt  DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // 0=none, 1=Email 1 sent, 2=Day 3, 3=Day 5, 4=Day 7
+  nurtureCompletedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 // ── Checklist Downloads ─────────────────────────────────────────────────────
 // Separate model from Lead — checklist captures are inbound content leads,
 // not cold outreach prospects. Kept isolated to avoid polluting LeadStatus enum.
 model ChecklistDownload {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String?
-  articleSlug         String?   // which article the widget was shown on
-  checklistType       String    // e.g. "universal" | "food-and-beverage" | "home-services"
-  createdAt           DateTime  @default(now())
+  id                 String    @id @default(uuid())
+  email              String
+  name               String?
+  articleSlug        String? // which article the widget was shown on
+  checklistType      String // e.g. "universal" | "food-and-beverage" | "home-services"
+  createdAt          DateTime  @default(now())
   // ── Nurture sequence tracking ──────────────────────────────────────────────
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // last email sent: 0=none, 1=delivery, 2–5=sequence
-  nurtureCompletedAt  DateTime?
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // last email sent: 0=none, 1=delivery, 2–5=sequence
+  nurtureCompletedAt DateTime?
 }
 
 // ── Corporate Escape Kit Downloads ─────────────────────────────────────────
@@ -173,46 +172,382 @@ model ChecklistDownload {
 // Isolated from ChecklistDownload — different ICP stage, different nurture flow.
 // 3-email nurture sequence (Day 3, Day 7, Day 14).
 model EscapeKitDownload {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String?
-  articleSlug         String?   // referral source — which page the form was on
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7, 4=Day14
-  nurtureCompletedAt  DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  email              String
+  name               String?
+  articleSlug        String? // referral source — which page the form was on
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // 0=none, 1=delivery, 2=Day3, 3=Day7, 4=Day14
+  nurtureCompletedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 // ─── Pitch Decoder Download ─────────────────────────────────────────────────
 // Mirrors EscapeKitDownload. PDF lead magnet: Franchise-Pitch-Decoder.pdf.
 // 2-email nurture sequence (Day 3, Day 7).
 model PitchDecoderDownload {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String?
-  articleSlug         String?   // referral source — which page the form was on
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7
-  nurtureCompletedAt  DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  email              String
+  name               String?
+  articleSlug        String? // referral source — which page the form was on
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // 0=none, 1=delivery, 2=Day3, 3=Day7
+  nurtureCompletedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
 }
 
 // ─── AI Paperwork Reader Download ───────────────────────────────────────────
 // Mirrors EscapeKitDownload. PDF lead magnet: AI-Paperwork-Reader.pdf.
 // 2-email nurture sequence (Day 3, Day 7).
 model AiFddReaderDownload {
-  id                  String    @id @default(uuid())
-  email               String
-  name                String?
-  articleSlug         String?   // referral source — which page the form was on
-  unsubscribed        Boolean   @default(false)
-  unsubscribedAt      DateTime?
-  nurtureStep         Int       @default(0)  // 0=none, 1=delivery, 2=Day3, 3=Day7
-  nurtureCompletedAt  DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String    @id @default(uuid())
+  email              String
+  name               String?
+  articleSlug        String? // referral source — which page the form was on
+  unsubscribed       Boolean   @default(false)
+  unsubscribedAt     DateTime?
+  nurtureStep        Int       @default(0) // 0=none, 1=delivery, 2=Day3, 3=Day7
+  nurtureCompletedAt DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MATCH WORKSPACE & OUTCOME LOOP (Stage-7 match-workspace-outcomes roadmap, Phase 1)
+// ═══════════════════════════════════════════════════════════════════════════════
+// A durable, immutable record of each completed candidate-matcher run — inputs,
+// per-brand scores, corrections, slate decisions, and later real-world outcomes.
+// This is NOT a placement CRM (see docs/match-workspace/CONTRACT.md [C-1]).
+//
+// Authoritative spec: docs/match-workspace/CONTRACT.md — 18 numbered [C-n] rules.
+// Each departure from repo house style below is deliberate and annotated:
+//   • Two Postgres enums (frozen decision/outcome vocabularies) — [C-4].
+//   • @@unique constraints (repo had none) — [C-10], [C-11].
+//   • One `Json detail` column on MatchScore (repo's first) — roadmap-sanctioned.
+//   • `supersedesId` backward-pointing supersession so every append is a pure
+//     INSERT (never a mutation of a prior row) — [C-12]. See note on MatchDecision.
+//   • Brands referenced by opaque `wpb_` string — NO FK, no Brand table here; the
+//     authority is the brand-intelligence pipeline / BrandDB — CONTRACT §9.
+//   • Enum values are lowercase snake_case taken VERBATIM from CONTRACT §3, not
+//     reformatted to LeadStatus's SCREAMING_CASE: the contract text is authoritative.
+
+// Frozen decision vocabulary (CONTRACT §3, [C-4]). Adding a value later is a
+// deliberate, reviewed change (accepts the known enum-under-`db push` caution).
+enum MatchDecisionState {
+  shortlist
+  final_slate
+  rejected
+}
+
+// Frozen outcome vocabulary (CONTRACT §3, [C-4]).
+enum MatchOutcomeType {
+  introduced
+  advanced
+  placed
+  lost
+  withdrawn
+}
+
+// The stable person a match run is about. Ordinary MUTABLE row (not append-only):
+// deletion/right-to-be-forgotten = redact PII in place, preserving the immutable
+// runs/scores/outcomes that key on the opaque id — [C-7]. Minimal PII only — [C-6].
+model Candidate {
+  id          String    @id @default(uuid())
+  externalRef String?   @unique // advisor-provided link key (CRM id / initials+date); unique when present so re-runs link to the same candidate — [C-5]
+  displayName String // minimal PII; nulled/redacted on deletion — [C-6][C-7]
+  email       String? // minimal PII; nulled/redacted on deletion — [C-6][C-7]
+  redactedAt  DateTime? // set when a right-to-be-forgotten redaction is applied — [C-7]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  inputVersions CandidateInputVersion[]
+  runs          MatchRun[]
+  outcomeEvents MatchOutcomeEvent[]
+}
+
+// Versioned snapshot REFERENCE of a candidate's matcher inputs. The intelligence
+// summary / questionnaire bodies are referenced by hash/id, NEVER copied here — [C-6].
+// Append-only: a correction is a NEW superseding version, never an in-place edit — [C-8].
+model CandidateInputVersion {
+  id           String                 @id @default(uuid())
+  candidateId  String
+  candidate    Candidate              @relation(fields: [candidateId], references: [id])
+  sourceType   String // e.g. "intelligence_summary" | "questionnaire" — Zod-validated at import (Phase 2), not a DB enum (evolving vocabulary)
+  sourceHash   String // hash of the referenced input body — the body is NOT stored here — [C-6]
+  sourceRef    String? // optional external pointer/id to the source
+  capturedAt   DateTime
+  approvedAt   DateTime?
+  createdAt    DateTime               @default(now())
+  // append-only — no updatedAt — [C-8]
+  supersedesId String?                @unique // backward-pointing: THIS row supersedes the prior one (pure INSERT, no mutation) — [C-8][C-12]
+  supersedes   CandidateInputVersion? @relation("CivSupersession", fields: [supersedesId], references: [id])
+  supersededBy CandidateInputVersion? @relation("CivSupersession")
+
+  runLinks MatchRunInput[]
+}
+
+// Which frozen input versions a run was scored from. An EXPLICIT join model, not an implicit
+// Prisma many-to-many: an implicit relation would create a hidden `_CandidateInputVersionToMatchRun`
+// table that neither PROTECTED_TABLES (the deploy guard) nor MATCH_WORKSPACE_TABLES (the test
+// truncation and the [C-2] no-FK check) would know about, which is exactly the class of invisible
+// table this domain cannot afford.
+//
+// No `role` column: CandidateInputVersion.sourceType already says whether a row is the
+// intelligence summary, the questionnaire, or the candidate model.
+model MatchRunInput {
+  id             String                @id @default(uuid())
+  runId          String
+  run            MatchRun              @relation(fields: [runId], references: [id])
+  inputVersionId String
+  inputVersion   CandidateInputVersion @relation(fields: [inputVersionId], references: [id])
+  createdAt      DateTime              @default(now())
+  // immutable — no updatedAt — [C-9]
+
+  @@unique([runId, inputVersionId])
+}
+
+// An immutable snapshot of one completed match run — [C-9]. Re-running a candidate
+// creates a NEW MatchRun linked to the same Candidate; it never overwrites a prior
+// run — [C-5].
+model MatchRun {
+  id                String          @id @default(uuid())
+  candidateId       String
+  candidate         Candidate       @relation(fields: [candidateId], references: [id])
+  // The run's frozen inputs. PLURAL, via an explicit join (MatchRunInput below). Phase 1 carried a
+  // single required candidateInputVersionId, but a package's `inputVersions` is an array of one or
+  // more (intelligence summary, questionnaire, candidate model) and the idempotency key already
+  // covers all of them. A singular FK could not represent the real input set, and nominating a
+  // "primary" would have invented a rule the matcher never states.
+  inputs            MatchRunInput[]
+  scoringConfigId   String
+  scoringConfig     ScoringConfig   @relation(fields: [scoringConfigId], references: [id]) // required FK — the DB-enforceable half of [C-14]: a run referencing a nonexistent config is rejected. The "version must be APPROVED" check is fail-closed at import (Phase 2).
+  brandDbVersionRef String // opaque BrandDB snapshot/version tag — no FK
+
+  // HOW a brand NAME became a wpb_ id on this run. The matcher emits names; the import resolves
+  // them fail-closed against a generated, committed artifact (src/lib/match-workspace/
+  // brand-identity-map.json). Recording both hashes is what makes a historical resolution
+  // explainable rather than merely plausible: registrySha256 identifies the upstream identity
+  // registry, contentHash identifies the exact artifact this deploy shipped.
+  //
+  // Stored as two FULL 64-hex columns rather than one concatenated version string. These rows are
+  // append-only, so a truncated or grammar-bearing value ("v3+abc123") could never be corrected or
+  // parsed reliably later, and a truncated hash can be recognized but not verified.
+  brandRegistrySha256  String // sha256 of the BIP registry the map was built from
+  brandIdentityMapHash String // contentHash of the committed brand-identity map
+  idempotencyKey       String @unique // content hash of the frozen package; re-import of the same package creates NO duplicate — [C-11]
+
+  // The run's identity EXCLUDING the advisor's confirmed slate. `idempotencyKey` deliberately
+  // includes the slate, so swapping a brand in the Top 3 and re-importing is a genuinely different
+  // key. That is correct for [C-11], but it would silently mint a SECOND run holding a duplicate
+  // copy of the same scores, while the worksheet records the same change as a superseding
+  // MatchDecision on the FIRST run. Two mechanisms, one event, and no defined answer for which run
+  // is current. Storing the slate-free fingerprint lets the import detect that case cheaply and
+  // refuse it, pointing the advisor at the worksheet where a slate change belongs.
+  runFingerprint String
+
+  status    String // Phase 1 wrote the literal "completed" only; Phase 2 pins it there deliberately. A richer vocabulary would need status TRANSITIONS, and a transition is an UPDATE to MatchRun, which [C-9] forbids. Write-once.
+  actor     String // session.user.email — "the advisor initiated this", not "verified the data" (CONTRACT §2)
+  createdAt DateTime @default(now()) // doubles as run time
+  // immutable — no updatedAt — [C-9]
+
+  scores        MatchScore[]
+  outcomeEvents MatchOutcomeEvent[]
+  projections   MatchProjection[]
+}
+
+// One immutable per-brand score row — [C-9]. Exactly one per (run, brand) — [C-10].
+// Every scoring intermediate is stored so a historical final score reconstructs from
+// its own frozen inputs + ScoringConfig — [C-13].
+model MatchScore {
+  id              String   @id @default(uuid())
+  runId           String
+  run             MatchRun @relation(fields: [runId], references: [id])
+  waypointBrandId String // opaque wpb_<hex> from the registry — NO FK, no Brand table in this DB (authority = BIP/BrandDB) — CONTRACT §9
+  rank            Int
+  maturity        String // EST | GROW | EMRG — Zod-validated (evolving skill vocab), not a DB enum
+
+  // How far this brand got in the matcher. The skill carries only the TOP 10 by fit_score
+  // forward from Stage 3C into FDD/MSA scoring, so a ranked brand below that cut has a fit
+  // score and nothing else. Both are legitimate, persistable records (the roadmap wants the
+  // full ranked list), and this discriminator is what tells them apart structurally rather
+  // than by guessing from nulls.
+  //   "stage_3c" — ranked only: fitScore present; I19/I20/preMsa/msaMod/final all NULL.
+  //   "stage_4c" — fully scored: the FDD/MSA fields are present.
+  scoringStage String
+
+  fitRaw   Float? // pre-cap fit from the Foundation-B engine, before the Pride and Identity gate
+  // The fit actually used (Pride gate: min(fitRaw, 0.74) or 0.82). NULLABLE because the
+  // Foundation-B support floor genuinely produces no score: when every soft variable is
+  // inactive or neutralized (Σ w_v = 0) the skill emits fit_score as UNDEFINED and flags it
+  // for the advisor, explicitly refusing to emit 0 or 1. Storing null preserves that state
+  // honestly instead of coercing it to a number the matcher declined to produce.
+  fitScore Float?
+  i19Score Int? // Item-19 score (1-5); NULL below the FDD cut or with no I19 disclosure
+  i20Score Int? // Item-20 score (1-5); NULL below the FDD cut or with no I20 data
+
+  // Stage-4A Item-19 DISCLOSURE LEVEL: COMPREHENSIVE | MODERATE | MINIMAL. This is what
+  // selects the Stage-4C combined-score weight row (the skill emits a literal "Disclosure
+  // levels used (they select the weight row)" line). Stored SEPARATELY from `confidence`
+  // below, because the two genuinely diverge: a GROWING-maturity brand with COMPREHENSIVE
+  // I19 has disclosure level COMPREHENSIVE but overall confidence MEDIUM. Reconstruction
+  // needs this one, not the overall label — [C-13].
+  i19DisclosureLevel String?
+
+  preMsaScore Float? // combined score before the MSA modifier; NULL for stage_3c — [C-13]
+  msaModifier Float? // confirmed MSA modifier (-0.10..+0.10); NULL for stage_3c — [C-13]
+  finalScore  Float? // see scoreCapApplied for the exact identity; NULL for stage_3c — [C-13]
+
+  // A ceiling the skill imposed on finalScore independently of the arithmetic, so that
+  // `final = preMsa + msaMod` remains checkable rather than silently false. Today the
+  // red-flag override sets this to 0.70 (an I19 or I20 of 1-2 on real negative data caps the
+  // final score regardless of fit). NULL means no cap was applied. Reconstruction is:
+  //   final = scoreCapApplied == null ? preMsa + msaMod : min(preMsa + msaMod, scoreCapApplied)
+  scoreCapApplied Float?
+
+  confidence String // OVERALL Stage-4C confidence (HIGH/MED/LOW), driven by maturity + data gaps + red-flag override; stored separately and NEVER multiplied into any score — [C-13]
+  flags      String[] // e.g. data_gap | red_flag | msa_flag — Zod-validated, String[] (house precedent)
+  exclusions String[] // hard-filter exclusions (roadmap Core-records field: "caps, exclusions")
+  detail     Json // frozen full per-brand object: alignments / friction / i19-block / i20-block / msa-findings / correction-summary / evidenceRefs. Repo's FIRST Json column — roadmap-sanctioned ("dimension JSON/rows").
+  createdAt  DateTime @default(now())
+  // immutable — no updatedAt — [C-9]
+
+  corrections MatchCorrection[]
+  decisions   MatchDecision[]
+
+  @@unique([runId, waypointBrandId]) // exactly one score per run/brand — [C-10]
+}
+
+// Append-only advisor correction to a score field — [C-12]. reason/source/actor/
+// timestamp are REQUIRED (roadmap: "Make correction reason, source, actor, and
+// timestamp required fields"). A "change" is a new superseding row, never a mutation.
+model MatchCorrection {
+  id           String           @id @default(uuid())
+  scoreId      String
+  score        MatchScore       @relation(fields: [scoreId], references: [id])
+  field        String
+  beforeValue  Json
+  afterValue   Json
+  reason       String
+  source       String
+  actor        String
+  effectiveAt  DateTime         @default(now()) // effective-dated; caller may override
+  createdAt    DateTime         @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId String?          @unique // backward-pointing supersession (pure INSERT) — [C-12]
+  supersedes   MatchCorrection? @relation("CorrectionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchCorrection? @relation("CorrectionSupersession")
+}
+
+// Append-only advisor decision on a score — [C-12]. state is a frozen enum — [C-4].
+// NOTE on supersession direction: `supersedesId` points BACKWARD (new row → the prior
+// row it replaces), NOT a forward `supersededById`. This keeps every write a pure
+// INSERT, honoring "never a mutation of the prior row" literally. @@unique on
+// supersedesId still guarantees at most one successor per row. "Current for a lineage"
+// is a query (rows whose id is not referenced by any supersedesId), not a stored flag.
+// KNOWN Phase-2 gap (applies to ALL FOUR append-only chains — MatchDecision,
+// MatchCorrection, MatchOutcomeEvent, and CandidateInputVersion): nothing here forces a
+// supersession to stay within one parent lineage (same scoreId / same candidateId). That
+// same-lineage invariant belongs to the Phase-2 write-path service (triggers are ruled out
+// by the roadmap; no service layer exists yet in Phase 1).
+model MatchDecision {
+  id           String             @id @default(uuid())
+  scoreId      String
+  score        MatchScore         @relation(fields: [scoreId], references: [id])
+  state        MatchDecisionState
+  reason       String?
+  actor        String
+  effectiveAt  DateTime           @default(now())
+  createdAt    DateTime           @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId String?            @unique
+  supersedes   MatchDecision?     @relation("DecisionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchDecision?     @relation("DecisionSupersession")
+
+  projections MatchProjection[]
+}
+
+// The ONLY candidate-facing text in this domain — [C-15] [C-16].
+//
+// RE-SCOPED (2026-07-27, Phase 2G). The contract was written when the matcher's Stage 5 produced
+// candidate-facing talking points. The authoritative July matcher REMOVED Stage 5 entirely and
+// hands that job downstream to the separate `brand-introduction-scripts` skill, which consumes the
+// confirmed Top 3. So this is a SECOND, LATER capture keyed to a confirmed slate, not a field the
+// matcher emits. That strengthens [C-16] rather than weakening it: a confirmed slate is now the
+// projection's only possible input.
+//
+// WHY matchDecisionId IS REQUIRED
+// Slate membership has to be STRUCTURAL. Without the link, superseding a decision to `rejected`
+// would leave the projection visible, and the candidate-facing view cannot notice because [C-16]
+// forbids it joining MatchScore. The view joins THIS decision instead (permitted: [C-16] names
+// MatchScore, not MatchDecision) and requires it to still be its lineage's current head AND
+// `final_slate`. That is sound only because the append service refuses to leave two current heads.
+//
+// WHY THERE IS NO @@unique([runId, waypointBrandId])
+// It would contradict the supersession chain: a corrected script for the same run and brand is a
+// NEW row, which such a constraint would reject, leaving an in-place UPDATE as the only way to fix
+// a typo. "One CURRENT projection per (runId, waypointBrandId)" is enforced in the service layer
+// instead, exactly like every other lineage rule in this domain.
+model MatchProjection {
+  id              String        @id @default(uuid())
+  runId           String
+  run             MatchRun      @relation(fields: [runId], references: [id])
+  waypointBrandId String // opaque wpb_ — no FK, same as MatchScore
+  matchDecisionId String
+  matchDecision   MatchDecision @relation(fields: [matchDecisionId], references: [id])
+
+  // NULLABLE only so [C-7] redaction can null it in place. Intro-script prose is written ABOUT a
+  // named person and carries their PII, so right-to-be-forgotten has to reach it. The service
+  // refuses to CREATE a row with a null body.
+  bodyText    String?
+  sourceSkill String // e.g. "brand-introduction-scripts" — provenance of the text
+  actor       String
+  redactedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  // append-only — no updatedAt — [C-12]
+
+  supersedesId String?          @unique
+  supersedes   MatchProjection? @relation("ProjectionSupersession", fields: [supersedesId], references: [id])
+  supersededBy MatchProjection? @relation("ProjectionSupersession")
+}
+
+// Append-only real-world outcome event — [C-12]. Distinguishes at least the five
+// outcome types — [C-4]. Keys on the opaque waypointBrandId; NEVER writes to or reads
+// decision state from the cold-lead `Lead` model — [C-2].
+model MatchOutcomeEvent {
+  id               String             @id @default(uuid())
+  candidateId      String
+  candidate        Candidate          @relation(fields: [candidateId], references: [id])
+  waypointBrandId  String // opaque wpb_ — no FK; separate from Lead outcomes — [C-2]
+  originatingRunId String
+  originatingRun   MatchRun           @relation(fields: [originatingRunId], references: [id]) // the run/slate that informed this outcome
+  type             MatchOutcomeType
+  reason           String?
+  actor            String
+  effectiveAt      DateTime           @default(now()) // real-world effective date; caller may override
+  createdAt        DateTime           @default(now())
+  // append-only — no updatedAt — [C-12]
+  supersedesId     String?            @unique
+  supersedes       MatchOutcomeEvent? @relation("OutcomeSupersession", fields: [supersedesId], references: [id])
+  supersededBy     MatchOutcomeEvent? @relation("OutcomeSupersession")
+}
+
+// A versioned, approval-gated record of a scoring configuration — CONTRACT §6. The
+// weights/caps/bands live in the matcher skill; this records the version a run scored
+// under. A config change is a deliberate NEW row (approval-gated), never an edit.
+model ScoringConfig {
+  id            String   @id @default(uuid())
+  version       String   @unique // the version string the matcher declares in its package — [C-14]
+  weights       Json
+  thresholds    Json
+  caps          Json
+  effectiveFrom DateTime
+  approvalState String // "draft" | "approved" | "rejected" — String, not enum: CONTRACT §3 does NOT list this among the frozen vocabularies (unlike decision/outcome states), and its states may evolve. The fail-closed "must be approved" gate lives at import (Phase 2).
+  contentHash   String   @unique
+  createdAt     DateTime @default(now())
+
+  runs MatchRun[]
 }

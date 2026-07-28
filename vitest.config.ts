@@ -1,17 +1,59 @@
 import { defineConfig } from "vitest/config";
 import { fileURLToPath } from "node:url";
 
-// Auth-gate tests are pure: no database, no global setup, no Next server.
-// (The match-workspace branch has its own config with a Postgres globalSetup; keeping this one
-// DB-free means `npm run test:auth` runs anywhere, including CI with no database.)
+const srcAlias = { "@": fileURLToPath(new URL("./src", import.meta.url)) };
+
+// Two suites with genuinely different needs, so they are separate projects:
+//
+//   auth             pure unit tests (allowlist, withAdmin, route coverage). NO database, no
+//                    global setup. Must stay runnable anywhere, including a machine or CI box
+//                    with no Postgres.
+//   unit             pure unit tests for the match-workspace libraries that touch no database
+//                    (brand resolver, brand-map drift). Same no-Postgres requirement as `auth`,
+//                    and for a sharper reason: the drift check is this repo's stand-in for a CI
+//                    test job, so putting it behind a database would be exactly backwards.
+//   match-workspace  integration tests against a REAL local Postgres (enums and @@unique need a
+//                    real DB, not a mock). File parallelism is OFF because every file shares the
+//                    one local `waypoint_test` database and truncates in beforeEach, so
+//                    concurrent files would race those truncations.
+//
+// Run one: `npm run test:auth` / `npm run test:match-workspace`. Run both: `npx vitest run`.
 export default defineConfig({
   test: {
-    environment: "node",
-    include: ["tests/**/*.test.ts"],
-  },
-  resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+    // MUST be set at the ROOT, not inside a project: Vitest treats file parallelism as a
+    // runner-level concern, so a project-level value is ignored. Setting it only on the
+    // match-workspace project silently let its files race each other against the one shared
+    // test database (tests passed individually and failed as a suite).
+    fileParallelism: false,
+    projects: [
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: "auth",
+          environment: "node",
+          include: ["tests/auth/**/*.test.ts"],
+        },
+      },
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: "unit",
+          environment: "node",
+          include: ["tests/unit/**/*.test.ts"],
+        },
+      },
+      {
+        resolve: { alias: srcAlias },
+        test: {
+          name: "match-workspace",
+          environment: "node",
+          include: ["tests/match-workspace/**/*.test.ts"],
+          globalSetup: ["./tests/setup/global-setup.ts"],
+          setupFiles: ["./tests/setup/per-test-setup.ts"],
+          hookTimeout: 60_000, // `prisma db push` in global setup can take a few seconds
+          testTimeout: 30_000,
+        },
+      },
+    ],
   },
 });
