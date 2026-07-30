@@ -243,7 +243,7 @@ explicitly why it's declined. "Noted" does not close a finding.
 <!-- END franscale-plan-budgeting -->
 
 <!-- BEGIN franscale-research-directive (canonical: dotfiles/claude/CLAUDE.md — do not edit copies; re-run stamp-git-safety.sh) -->
-## Research before spend (hard rule — applies when this repo produces content)
+## Research before generation (hard rule — applies when this repo produces content)
 
 **Applies only where this repo is the place a channel's per-item content decisions are recorded**
 (the repo that owns the video/post record and its research). Inert everywhere else: apps, sites, ops
@@ -251,30 +251,33 @@ and CRM repos, and any sub-component of a pipeline whose research lives in its p
 needs ONE gate, not one per skill, submodule, or worktree. If you are unsure whether this block binds
 here, it does not; say so and move on rather than standing up a second gate.
 
-The failure this stops: credits get spent generating a video or post whose research was never
-finished, and the gate that would have caught it runs at publish time, after the money is gone.
+The failure this stops: a video or post gets generated on research that was never finished, so
+unsourced claims and repeat topics reach an audience. **This is about accuracy and originality, not
+about money.** Generation credits refresh monthly and are not the binding constraint; do not
+rationalize a heavier process than the work needs, and never present cost as the reason for this rule.
 
-- **Research finishes BEFORE paid generation, not before publish.** The research phase is completed
-  and recorded on the item's own record first. A pre-publish check is the last word before shipping;
-  it is not the thing that protects the spend.
-- **A content repo enforces this in code, not just in a doc.** There is a machine gate the operator
-  actually runs at the pre-spend checkpoint: novelty decided, every factual claim carrying a
-  resolvable source, originality attested, and the value/payload planned. A directive nobody runs is
-  not enforcement.
+- **Research finishes BEFORE generation, not before publish.** The research phase is completed and
+  recorded on the item's own record first. A pre-publish check is the last word before shipping, but
+  by then the piece is already built around whatever the research did or did not establish.
+- **Prefer a machine check over a promise, where the repo already has somewhere to put one.** If the
+  repo has a gate harness, add the research checks to it: novelty decided, every factual claim
+  carrying a resolvable source, originality attested, the value/payload planned. If it does not, a
+  recorded checklist is acceptable. Do not stand up gate infrastructure a channel's volume does not
+  justify.
 - **A new channel inherits this rule, not another repo's snapshot.** Copying or forking an existing
   channel repo carries that repo's state and nothing newer — it does NOT bring the research gate with
   it. Stand one up in the new repo, expressed in that repo's own conventions and medium. "The repo we
   forked already had gates" is exactly the assumption this rule exists to kill.
 - **The gate proves research is complete, never that it is right.** Presence, shape, and resolvable
   sources are machine-checkable; novelty, truth, and whether the value is real stay with the human.
-- Working implementations to copy the shape of, not the substance. **On `main` today:**
+- Working implementations to copy the shape of, not the substance. All verified on `main`:
   `channel-2-intelligence/docs/RESEARCH-DIRECTIVE.md` (+ `scripts/validate-research-directive.mjs`),
-  and Sleepy Nimbus (`YouTube-Video`) `pipeline/remotion/scripts/preflight-episode.ts` (pre-spend) +
-  `channel-safety-check.ts` (fail-closed COPPA). **Pending review, not yet on `main`** (verify before
-  citing): `faceless-infotainment` `docs/RESEARCH-DIRECTIVE.md` + `pipeline/check-research-ready.mjs`
-  (PR #10), and `video-skills` `recipes/competitor-research-ideation.md` (PR #5).
+  `faceless-infotainment/docs/RESEARCH-DIRECTIVE.md` (+ `pipeline/check-research-ready.mjs`),
+  `video-skills/recipes/competitor-research-ideation.md` (the competitor pacing/runtime method), and
+  Sleepy Nimbus (`YouTube-Video`) `pipeline/remotion/scripts/preflight-episode.ts` +
+  `channel-safety-check.ts` (fail-closed COPPA).
 
-**Act, don't acknowledge:** I do not start a paid batch until the research gate passes. If the repo has
-no such gate, I say so plainly and propose one, sized and agreed before I build it. Surfacing the gap is
-mandatory; building it is a scoped piece of work like any other, not a licence to start unrequested.
+**Act, don't acknowledge:** I confirm the research is complete and recorded before I generate. If it is
+not, I say so plainly rather than generating anyway. If the repo has no check for it, surfacing that is
+mandatory; building one is a scoped piece of work to agree first, not a licence to start unrequested.
 <!-- END franscale-research-directive -->
