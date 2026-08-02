@@ -136,9 +136,14 @@ First run the structural checks from the repo root. The new slug should be clean
 
 ```bash
 npm run aeo-audit                         # new slug must NOT appear under "missing FAQ", "zero question H2s", or "relatedSlugs != 3"
-npm run test                              # related-slug link check
+npm run test                              # links, schema, unit and auth suites
 grep -c "—" content/articles/<slug>.md    # must be 0 (em-dash ban, Section 11)
 ```
+
+If `npm run test` ends with `BRAND_MAP_DRIFT_SKIPPED`, that is expected on a machine without the
+`brand-intelligence-pipeline` repo checked out (the Mac Mini, a fresh clone). The run is still green
+and nothing about your article went unchecked: only the brand-identity map's comparison against that
+other repo was skipped, and the map was still checked for self-consistency.
 
 Then run the dev server and visit the new article page to confirm the "Keep Reading" section renders with 3 cards.
 

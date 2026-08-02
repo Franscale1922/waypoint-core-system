@@ -113,7 +113,7 @@ Goal: make every FUTURE article AEO-optimal by default so this pass never has to
 ## 7. Workflow & verification
 
 - **Preview locally:** `npm run dev` → http://localhost:3000. (Dev CSP already allows `unsafe-eval` in dev only; production CSP unchanged.) Do NOT run `npm run build` locally — it runs `prisma db push --accept-data-loss` against the database.
-- **After edits, verify:** `npm run aeo-audit` (structure), `grep -c "—" <file>` = 0 (em dashes), `npm run test` (link check), and spot-check the rendered article at `localhost:3000/resources/<slug>` (FAQ schema, Keep Reading section, no broken MDX).
+- **After edits, verify:** `npm run aeo-audit` (structure), `grep -c "—" <file>` = 0 (em dashes), `npm run test` (links, schema, unit and auth suites), and spot-check the rendered article at `localhost:3000/resources/<slug>` (FAQ schema, Keep Reading section, no broken MDX).
 - **Schema:** after deploy, validate with Google's Rich Results Test on a sample article URL.
 - **Commit only when Kelsey asks.** Commit messages end with:
   `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`

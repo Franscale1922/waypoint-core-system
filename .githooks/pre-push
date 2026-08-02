@@ -20,17 +20,36 @@ fi
 # repo, so the realistic failure is that the registry moves and the committed artifact does not,
 # after which imports refuse brands that genuinely exist. Skipped, loudly, when that repo is not
 # checked out on this machine, since it is a sibling repo and not every clone will have it.
-if [ -z "$SKIP_BIP_DRIFT" ]; then
-  if node scripts/build-brand-map.mjs --check >/dev/null 2>&1; then
-    :
-  else
-    node scripts/build-brand-map.mjs --check
+#
+# That skip lives in the script (`registryAvailability`), not here, so this hook and the drift test
+# cannot drift apart. --check exits 0 with a BRAND_MAP_DRIFT_SKIPPED warning in exactly the
+# absent-repo case, and 1 for a stale map, a moved registry, or a bad BIP_REGISTRY_PATH.
+# (Corrected 2026-08-02: this comment claimed the skip already existed. It did not. --check exited
+# 1 whenever the registry was unreadable, so every push from a machine without the sibling repo was
+# blocked.)
+#
+# SKIP_BIP_DRIFT is tested for exactly "1", the documented form, because the drift test tests for
+# exactly "1" too. This used to be `-z`, so SKIP_BIP_DRIFT=0 disabled the push guard while the test
+# still ran it: one variable, two meanings, and the value that reads like "off" turned it off.
+#
+# Output is captured rather than discarded. The routine "in sync" line is noise on every green push,
+# but on a failure it carries the registry version and hashes, which is the fastest way to tell
+# whether the registry moved forward or the map went backward. Quiet when green, everything when not.
+if [ "$SKIP_BIP_DRIFT" != "1" ]; then
+  drift_output=$(node scripts/build-brand-map.mjs --check 2>&1)
+  drift_status=$?
+  if [ "$drift_status" -ne 0 ]; then
+    echo "$drift_output"
     echo ""
     echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
     echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
-    echo "  Registry not on this machine?    SKIP_BIP_DRIFT=1 git push"
+    echo "  Genuinely need to skip?          SKIP_BIP_DRIFT=1 git push"
     exit 1
   fi
+  # Green, but green-because-skipped has to be visible or the skip is a lie.
+  case "$drift_output" in
+    *BRAND_MAP_DRIFT_SKIPPED*) echo "$drift_output" ;;
+  esac
 fi
 
 # Fast unit suites (no database, no network). These were previously run by nothing:

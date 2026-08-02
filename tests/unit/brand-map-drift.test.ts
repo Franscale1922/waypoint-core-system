@@ -5,8 +5,9 @@ import {
   buildMap,
   serializeMap,
   readRegistry,
+  registryAvailability,
+  shouldSkipDrift,
   OUTPUT_PATH,
-  DEFAULT_REGISTRY_PATH,
 } from "../../scripts/build-brand-map.mjs";
 import map from "@/lib/match-workspace/brand-identity-map.json";
 
@@ -17,13 +18,36 @@ import map from "@/lib/match-workspace/brand-identity-map.json";
  *
  * This repo has no CI job that runs tests (workflows exist, but they run the link and content
  * audits, and a free-plan private repo cannot make any check blocking anyway). So this file plus
- * the pre-push hook ARE the enforcement. It therefore fails hard when the registry is missing
- * rather than skipping: a guard whose default state is "skipped" is not a guard. Opt out
- * explicitly with SKIP_BIP_DRIFT=1, or point at a copy with BIP_REGISTRY_PATH.
+ * the pre-push hook ARE the enforcement. A guard whose default state is "skipped" is not a guard,
+ * so this skips in exactly ONE case: the pipeline repo is not checked out on this machine at all,
+ * where there is nothing to compare against and no way to get one. Everything else fails hard,
+ * including the case that looks identical from a bare existsSync on the registry file: the repo is
+ * present and the registry is not where it should be. That is the drift, not an absence.
+ *
+ * Setting BIP_REGISTRY_PATH is opting in, so it never skips either. See `registryAvailability` in
+ * scripts/build-brand-map.mjs, which the pre-push hook shares, and tests/unit/registry-availability
+ * .test.ts, which asserts the rule directly because it is the one thing here that can go quiet.
+ *
+ * SKIP_BIP_DRIFT=1 remains the deliberate manual opt-out.
  */
 
-const registryPath = process.env.BIP_REGISTRY_PATH || DEFAULT_REGISTRY_PATH;
-const skip = process.env.SKIP_BIP_DRIFT === "1";
+const availability = registryAvailability();
+const registryPath = availability.path;
+const { skip, why } = shouldSkipDrift({ availability });
+
+// describe.skipIf is silent, and a silently-skipped guard is barely better than a wrong one: the
+// run goes green with no hint that nothing was verified. Say so on the way past.
+//
+// BOTH skips announce themselves, including the deliberate one. The manual opt-out is if anything
+// the more dangerous of the two, because SKIP_BIP_DRIFT can sit exported in a shell profile for
+// weeks, quietly disarming every run, while the absent-repo skip at least tracks a real machine.
+if (skip) {
+  console.warn(
+    `\nBRAND_MAP_DRIFT_SKIPPED: ${why}.\n` +
+      `  The committed brand map was NOT compared against a registry on this run.\n` +
+      `  Point BIP_REGISTRY_PATH at a copy of registry.v3.json to check it here.\n`,
+  );
+}
 
 describe("brand-identity-map.json: shape and self-consistency (always runs)", () => {
   it("exists and is committed", () => {
@@ -86,10 +110,12 @@ describe("brand-identity-map.json: shape and self-consistency (always runs)", ()
 
 describe.skipIf(skip)("brand-identity-map.json: drift against the live registry", () => {
   it("the registry is reachable", () => {
+    // Reaching this with an unreadable registry means the repo IS here and the file moved, or an
+    // explicit BIP_REGISTRY_PATH is wrong. Both are real failures, which is why neither skipped.
     expect(
       existsSync(registryPath),
-      `Identity registry not found at ${registryPath}. It lives in the brand-intelligence-pipeline ` +
-        `repo. Point BIP_REGISTRY_PATH at it, or set SKIP_BIP_DRIFT=1 to opt out deliberately.`,
+      `Identity registry not found: ${availability.reason}. Point BIP_REGISTRY_PATH at a copy, or ` +
+        `set SKIP_BIP_DRIFT=1 to opt out deliberately.`,
     ).toBe(true);
   });
 
