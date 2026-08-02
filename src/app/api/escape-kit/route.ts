@@ -1,4 +1,5 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
+import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import prisma from "@/lib/prisma";
@@ -44,42 +45,37 @@ export async function POST(req: Request) {
       console.error("[escape-kit] DB write failed:", dbErr);
     }
 
-    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
-    notifyCrm({
-      name: name || "Website Visitor",
-      email,
-      source: "Corporate Escape Kit",
-      notes: articleSlug ? `Article: ${articleSlug}` : undefined,
-    });
+    // ── Background work ────────────────────────────────────────────────────
+    // All of it runs after the response is flushed, so none of it delays the
+    // guide delivery below. See @/lib/after-response for why bare unawaited
+    // promises are not safe here.
+    afterResponse("[escape-kit] CRM sync", () =>
+      notifyCrm({
+        name: name || "Website Visitor",
+        email,
+        source: "Corporate Escape Kit",
+        notes: articleSlug ? `Article: ${articleSlug}` : undefined,
+      })
+    );
 
-    // Beehiiv subscriber sync (fire-and-forget), skipped for Kelsey's own address
+    // Skipped for Kelsey's own address (test submissions)
     if (email.toLowerCase() !== TO.toLowerCase()) {
-      subscribeToBeehiiv(email, name || undefined).catch(() => {});
+      afterResponse("[escape-kit] Beehiiv sync", () =>
+        subscribeToBeehiiv(email, name || undefined)
+      );
     }
 
-    // Fire the nurture sequence after the response is flushed, so the Inngest
-    // round-trip never delays the guide delivery below. Scheduling is itself
-    // guarded: after() throws synchronously when the platform supplies no
-    // waitUntil, and a nurture failure must never break guide delivery.
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      try {
-        after(async () => {
-          try {
-            await inngest.send({
-              name: "nurture/escape-kit.download",
-              data: {
-                downloadId,
-                email,
-                name: name || null,
-              },
-            });
-          } catch (nurtureErr) {
-            console.error("[escape-kit] Nurture trigger failed:", nurtureErr);
-          }
-        });
-      } catch (scheduleErr) {
-        console.error("[escape-kit] Nurture scheduling failed:", scheduleErr);
-      }
+      afterResponse("[escape-kit] Nurture trigger", () =>
+        inngest.send({
+          name: "nurture/escape-kit.download",
+          data: {
+            downloadId,
+            email,
+            name: name || null,
+          },
+        })
+      );
     }
 
     // Notify Kelsey

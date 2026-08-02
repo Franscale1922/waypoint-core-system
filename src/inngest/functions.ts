@@ -986,9 +986,12 @@ Output ONLY the category name.`;
             } else if (classification === "Not now") {
                 // Subscriber rescue: prospect isn't ready, but isn't opposed.
                 // Subscribe to newsletter so they stay warm without further cold outreach.
-                // Fire-and-forget: never blocks classification or suppression logic.
+                // Awaited on purpose. It never rejects, so it cannot fail this step,
+                // and leaving it unawaited risked the invocation being frozen once
+                // the step returned, silently dropping the subscribe. afterResponse()
+                // is not usable here: this is not a request scope.
                 if (replyData.lead?.email) {
-                    subscribeToBeehiiv(replyData.lead.email, replyData.lead.name ?? undefined).catch(() => {});
+                    await subscribeToBeehiiv(replyData.lead.email, replyData.lead.name ?? undefined);
                 }
             }
 

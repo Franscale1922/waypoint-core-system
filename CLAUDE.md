@@ -358,3 +358,46 @@ rationalize a heavier process than the work needs, and never present cost as the
 not, I say so plainly rather than generating anyway. If the repo has no check for it, surfacing that is
 mandatory; building one is a scoped piece of work to agree first, not a licence to start unrequested.
 <!-- END franscale-research-directive -->
+
+<!-- Repo-specific. Outside every stamped marker on purpose: stamp-git-safety.sh
+     splices only between BEGIN/END markers, so this survives a re-stamp. -->
+
+## Codex delegation — I call it, Kelsey never does
+
+Kelsey does not run commands. If Codex should be involved, **I invoke it**; he asks for a
+review or a second opinion in plain English and I run the tool. Never hand him a command to
+type, and never tell him to trigger a Codex run himself.
+
+**The only sanctioned way to call Codex from this repo is `scripts/codex-review.mjs`.**
+
+```bash
+node scripts/codex-review.mjs --target <path> --round <N>
+node scripts/codex-review.mjs --diff --round <N>
+```
+
+Do **not** hand-write a `codex exec` command. The wrapper encodes ~12 containment flags that
+were each verified individually (`.claude/tool-evaluations.md` §11 E–O). Retyping them by hand
+is how the containment silently breaks — one missing flag reopens web egress or the hosted
+GitHub/Google-Drive **write** connectors. If the wrapper needs a capability it lacks, extend the
+wrapper; do not bypass it.
+
+**When to reach for it:**
+- The mandatory adversarial-review phase — as an *additional* reviewer alongside the Claude
+  one, not a replacement. They have non-overlapping blind spots; that is measured, not assumed
+  (§11-J, §11-L). Codex answers *"is this correct?"*; it cannot see CLAUDE.md, memory, or this
+  conversation, so anything **governance-bearing** still requires the Claude reviewer.
+- Discovery/legwork on public source when it is worth spending Codex's pool instead of Claude's.
+
+**Rounds rotate the persona**: 1 = senior engineer, 2 = security/data-integrity, 3 = ops/SRE,
+4+ deepens. Run round 1 first; escalate only if it finds something worth pressing on.
+
+**Read the findings file it writes, not the transcript** — that is the whole point of the
+contract, and reading the transcript spends the Claude tokens the delegation was meant to save.
+
+**Hard scope limit:** public, non-sensitive material only. No candidate PII, no franchisor/FDD
+confidential documents, no `.env` files. Reads are disk-wide regardless of flags (§11-H), so
+this is a discipline, not a technical guarantee.
+
+**Verify what it returns.** Codex findings are claims, not facts — the grounding rule applies
+unchanged. Its first live run produced an accurate High and, in a separate pilot, Sonnet
+produced a confident false claim. Check against source before acting.
