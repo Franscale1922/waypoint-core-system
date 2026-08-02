@@ -136,7 +136,7 @@ First run the structural checks from the repo root. The new slug should be clean
 
 ```bash
 npm run aeo-audit                         # new slug must NOT appear under "missing FAQ", "zero question H2s", or "relatedSlugs != 3"
-npm run test                              # related-slug link check
+npm run test                              # links, schema, unit and auth suites
 grep -c "—" content/articles/<slug>.md    # must be 0 (em-dash ban, Section 11)
 ```
 

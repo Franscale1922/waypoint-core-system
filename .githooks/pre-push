@@ -20,15 +20,22 @@ fi
 # repo, so the realistic failure is that the registry moves and the committed artifact does not,
 # after which imports refuse brands that genuinely exist. Skipped, loudly, when that repo is not
 # checked out on this machine, since it is a sibling repo and not every clone will have it.
+#
+# That skip lives in the script (`registryAvailability`), not here, so this hook and the drift test
+# cannot drift apart. --check exits 0 with a BRAND_MAP_DRIFT_SKIPPED warning in exactly the
+# absent-repo case, and 1 for a stale map, a moved registry, or a bad BIP_REGISTRY_PATH.
+# (Corrected 2026-08-02: this comment claimed the skip already existed. It did not. --check exited
+# 1 whenever the registry was unreadable, so every push from a machine without the sibling repo was
+# blocked.)
+#
+# Only stdout is silenced. The routine "in sync" report goes to stdout and is noise on every push;
+# the skip warning and every failure go to stderr, so a guard that went quiet still says so.
 if [ -z "$SKIP_BIP_DRIFT" ]; then
-  if node scripts/build-brand-map.mjs --check >/dev/null 2>&1; then
-    :
-  else
-    node scripts/build-brand-map.mjs --check
+  if ! node scripts/build-brand-map.mjs --check >/dev/null; then
     echo ""
     echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
     echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
-    echo "  Registry not on this machine?    SKIP_BIP_DRIFT=1 git push"
+    echo "  Genuinely need to skip?          SKIP_BIP_DRIFT=1 git push"
     exit 1
   fi
 fi

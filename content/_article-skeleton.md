@@ -82,4 +82,4 @@ If you want help thinking through this for your situation, that is a conversatio
 - **Non-commodity (Section 13)**: the core must pass the commodity test. If a competitor could write it by reading three other franchise sites, replace it with Kelsey's first-hand judgment, an aggregate Waypoint pattern, or a named framework.
 - **Answer-first + question H2s (Section 4 + 7)**: atomic summary up top, the answer in the first 1-2 sentences under each question heading.
 
-Before publishing, run `npm run aeo-audit` and `npm run test`, and confirm `grep -c "—"` is 0.
+Before publishing, run `npm run aeo-audit` and `npm run test` (links, schema, unit and auth suites), and confirm `grep -c "—"` is 0.

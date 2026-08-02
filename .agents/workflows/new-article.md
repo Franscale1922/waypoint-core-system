@@ -250,7 +250,7 @@ First run the structural checks from the repo root:
 
 ```bash
 npm run aeo-audit                         # new slug must be clean: FAQ present, has question H2s, relatedSlugs = 3, em dashes = 0
-npm run test                              # related-slug link check
+npm run test                              # links, schema, unit and auth suites
 grep -c "—" content/articles/{slug}.md    # must be 0
 ```
 

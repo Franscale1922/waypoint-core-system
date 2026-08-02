@@ -30,6 +30,20 @@
  *   node scripts/build-brand-map.mjs --check     rebuild in memory and fail on any drift
  *   BIP_REGISTRY_PATH=/path/to/registry.v3.json  override the source
  *
+ * WHEN THE REGISTRY IS NOT ON THIS MACHINE
+ * ----------------------------------------
+ * The pipeline is a SIBLING repo, so not every clone has it. `--check` distinguishes two cases that
+ * look identical from a bare `existsSync` on the registry file:
+ *
+ *   the repo root is absent   nothing to compare against and nothing suspicious about that, so it
+ *                             warns and exits 0. This is the only path that skips.
+ *   the repo root is present   but the registry file is gone: the registry MOVED, which is exactly
+ *                             the drift this guard exists to catch. Exits 1.
+ *
+ * Setting BIP_REGISTRY_PATH is opting in, so it never skips: a bad explicit path is a hard failure.
+ * See `registryAvailability`. The plain (write) invocation never skips either, since you cannot
+ * generate an artifact without a source.
+ *
  * Read-only with respect to the pipeline repo: it never writes there.
  */
 import { createHash } from "node:crypto";
@@ -41,14 +55,44 @@ import { normalizeNameKey, hasCasefoldDivergence, namesOf } from "../src/lib/mat
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-export const DEFAULT_REGISTRY_PATH = join(
-  homedir(),
-  "Projects",
-  "brand-intelligence-pipeline",
-  "config",
-  "identity",
-  "registry.v3.json",
-);
+/** Root of the sibling pipeline repo. Its presence is what separates "not on this machine" from
+ *  "the registry moved", so it is exported and shared rather than re-derived by each caller. */
+export const DEFAULT_REGISTRY_REPO_ROOT = join(homedir(), "Projects", "brand-intelligence-pipeline");
+
+export const DEFAULT_REGISTRY_PATH = join(DEFAULT_REGISTRY_REPO_ROOT, "config", "identity", "registry.v3.json");
+
+/**
+ * Decide whether the drift comparison can run, and whether being unable to run it is benign.
+ *
+ * Pure and fully injectable so the rule itself can be unit-tested without a filesystem or an env:
+ * this function is the one place that can silently disarm the guard, so it needs to be assertable
+ * directly rather than only through its callers.
+ *
+ * @returns {{status: "available"|"absent-repo"|"missing", path: string, explicit: boolean, reason: string}}
+ *   available    the registry is readable; compare and fail hard on any mismatch.
+ *   absent-repo  the sibling repo is not checked out here; skip, loudly. THE ONLY SKIP.
+ *   missing      a registry was expected at a specific place and is not there; fail hard.
+ */
+export function registryAvailability({ env = process.env, repoRoot = DEFAULT_REGISTRY_REPO_ROOT, exists = existsSync } = {}) {
+  const override = env.BIP_REGISTRY_PATH;
+  const explicit = typeof override === "string" && override.length > 0;
+  const path = explicit ? override : join(repoRoot, "config", "identity", "registry.v3.json");
+
+  if (exists(path)) return { status: "available", path, explicit, reason: "registry is readable" };
+
+  // An explicit path is a deliberate claim that a registry lives there. Honoring it as "absent" would
+  // let a typo in BIP_REGISTRY_PATH turn the guard off silently, which is the failure mode this whole
+  // rule is shaped to prevent.
+  if (explicit) {
+    return { status: "missing", path, explicit, reason: `BIP_REGISTRY_PATH points at ${path}, which does not exist` };
+  }
+
+  if (!exists(repoRoot)) {
+    return { status: "absent-repo", path, explicit, reason: `the brand-intelligence-pipeline repo is not checked out at ${repoRoot}` };
+  }
+
+  return { status: "missing", path, explicit, reason: `the pipeline repo is present at ${repoRoot} but its registry is not at ${path}` };
+}
 
 export const OUTPUT_PATH = join(ROOT, "src", "lib", "match-workspace", "brand-identity-map.json");
 
@@ -165,7 +209,19 @@ export function readRegistry(path) {
 
 function main() {
   const check = process.argv.includes("--check");
-  const registryPath = process.env.BIP_REGISTRY_PATH || DEFAULT_REGISTRY_PATH;
+  const availability = registryAvailability();
+  const registryPath = availability.path;
+
+  // Only --check may skip. Writing the artifact without a source is impossible, so that path still
+  // falls through to the hard failure in readRegistry below.
+  if (check && availability.status === "absent-repo") {
+    console.error(
+      `BRAND_MAP_DRIFT_SKIPPED: ${availability.reason}.\n` +
+        `  The committed map was NOT verified against a registry on this run.\n` +
+        `  Point BIP_REGISTRY_PATH at a copy of registry.v3.json to check it here.`,
+    );
+    process.exit(0);
+  }
 
   let serialized;
   try {
