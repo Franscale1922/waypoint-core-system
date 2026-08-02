@@ -95,7 +95,8 @@ mode, any structured plan you present for approval, **or any multi-step task you
 begin executing — including a session that started on its own without plan mode,
 such as a spawned background task**), **annotate every phase with its
 recommended model and effort level** before doing the work, so I know when to
-switch as I move through it. Model and effort are session-level in Claude Code —
+switch as I move through it. A session with no plan still lays the phases out
+first — there is nothing to annotate until it does. Model and effort are session-level in Claude Code —
 they can't be switched automatically per task — so the plan is where the
 budgeting decision gets made and I flip them by hand at each boundary.
 
@@ -146,6 +147,9 @@ Rules for the gate:
   reach them.
 - **No-change boundaries do not stop.** If the next phase's model AND effort match
   the current session, note "no change" and continue without halting.
+- **Down-switches gate identically to up-switches.** Direction never decides
+  whether you stop — only *no change at all* skips the stop. Returning to a
+  mechanical phase after a hard one *feels* safe to coast through; it is not.
 - **The gate binds even without a plan.** A spawned/background session that never
   entered plan mode still stops at each boundary and waits — it does not get to
   run through on one setting because "there was no approval step."
@@ -166,8 +170,9 @@ near-empty. Close every session with a fenced block I can paste into a new chat 
 the one-line task, the literal `/model` and `/effort` commands on separate lines,
 a pointer to the handoff doc, and any constraint that would do real damage if
 missed; it **points, never restates**. Where a switch must happen in place, group
-work so each boundary is a real change of task and don't bounce between tiers
-inside one phase.
+work so each boundary is a real change of task, don't bounce between tiers inside
+one phase, and on a long cached session weigh the re-read against the gain before
+stepping up for a short detour.
 
 ### Model roster — capability, cost, and fit
 
@@ -184,20 +189,22 @@ dated snapshot — refresh from the `/model` picker + the Models API
 | Opus 4.8 | 1× (same) — Anthropic-"legacy", will retire | $5 / $25 |
 | Fable 5 | 2× | $10 / $50 |
 
-Two quirks the prices don't show. **Sonnet is literal** — state the scope you want.
-**Fable** costs beyond its price: minutes-long turns, always-on thinking, 30-day
-retention, classifiers that can refuse.
+Quirks the prices don't show. **Haiku** is not for real reasoning or coding.
+**Sonnet is literal** — state the scope you want. **Opus 4.8** is an escape hatch,
+not a home. **Fable** costs beyond its price: minutes-long turns, always-on
+thinking, 30-day retention, classifiers that can refuse.
 
 ### Choosing at every pass — start at the floor, justify every move
 
 **Opus 5 @ high is the floor** — `/model opus` · `/effort high` (needs Claude Code
-≥ v2.1.219; see the version-gate note). Down is the main cost lever and the
+≥ v2.1.219; see the alias-drift note). Down is the main cost lever and the
 disciplined default when the task doesn't need Opus-grade reasoning — take the
-tier from the matrix below. **Up is an EFFORT move, not a model move:** the floor
-is already the strong Opus, so harder work means `/effort xhigh` (or `max`), and
-the only model above the floor is Fable. **Sideways:** if Opus 5 thrashes —
-padding, scope drift, subagents you didn't want — drop to Opus 4.8 (same price,
-steadier) rather than fighting it.
+tier from the matrix below, and never under-power genuinely hard or
+correctness-critical work to save tokens. **Up is an EFFORT move, not a model
+move:** the floor is already the strong Opus, so harder work means `/effort xhigh`
+(or `max`), and the only model above the floor is Fable (`/model fable`).
+**Sideways:** if Opus 5 thrashes — padding, scope drift, subagents you didn't
+want — drop to Opus 4.8 (same price, steadier) rather than fighting it.
 
 ### Default model × effort matrix
 
@@ -211,6 +218,7 @@ Draw the per-phase recommendation from this table; deviate only with a stated re
 | Standard build / implementation (default) | **opus 5 (`/model opus`)** | high |
 | Planning / architecture (plan mode itself) | opus 5 (`/model opus`) | high–xhigh |
 | Hardest reasoning / root-cause / gnarly debugging / large refactor | opus 5 (`/model opus`) | **xhigh** |
+| First-pass review | sonnet 5 (`/model sonnet`) | medium |
 | Adversarial review / bug-finding | opus 5 (`/model opus`); fable for high-stakes | high–xhigh |
 | Opus 5 thrashing (padding, scope drift, unwanted subagents) | opus 4.8 (`/model claude-opus-4-8`) | high |
 
@@ -230,7 +238,8 @@ Notes:
   to double-check or self-verify (it already does, and the instruction compounds
   it); state scope explicitly and don't widen the task; cap subagent spawning on
   cost-sensitive runs.
-- **Effort is the within-model cost dial.** Set it to task difficulty, not habit:
+- **Effort is the within-model cost dial** — a behavioral signal, not a published
+  multiplier. Set it to task difficulty, not habit:
   `xhigh` is **not** the reflexive default, and on Opus 5 `low`/`medium` are
   unusually strong. Dropping effort a notch on well-understood work is often a
   bigger, safer saving than switching models.
