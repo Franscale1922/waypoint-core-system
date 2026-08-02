@@ -17,6 +17,7 @@
     "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs",
     "test": "node scripts/verify-links.mjs && node scripts/verify-schema.mjs && npm run test:unit && npm run test:auth",
     "test:unit": "vitest run --project unit",
+    "test:links": "vitest run --project unit tests/unit/verify-links.test.ts && node scripts/verify-links.mjs",
     "test:auth": "vitest run --project auth",
     "test:match-workspace": "vitest run --project match-workspace"
   },
