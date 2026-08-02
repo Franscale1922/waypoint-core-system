@@ -1,4 +1,5 @@
-import { NextResponse, after } from "next/server";
+import { NextResponse } from "next/server";
+import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import prisma from "@/lib/prisma";
@@ -47,42 +48,37 @@ export async function POST(req: Request) {
       console.error("[pitch-decoder] DB write failed:", dbErr);
     }
 
-    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
-    notifyCrm({
-      name: name || "Website Visitor",
-      email,
-      source: "Franchise Pitch Decoder",
-      notes: articleSlug ? `Article: ${articleSlug}` : undefined,
-    });
+    // ── Background work ────────────────────────────────────────────────────
+    // All of it runs after the response is flushed, so none of it delays the
+    // delivery email below. See @/lib/after-response for why bare unawaited
+    // promises are not safe here.
+    afterResponse("[pitch-decoder] CRM sync", () =>
+      notifyCrm({
+        name: name || "Website Visitor",
+        email,
+        source: "Franchise Pitch Decoder",
+        notes: articleSlug ? `Article: ${articleSlug}` : undefined,
+      })
+    );
 
-    // Beehiiv subscriber sync (fire-and-forget), skipped for Kelsey's own address
+    // Skipped for Kelsey's own address (test submissions)
     if (email.toLowerCase() !== TO.toLowerCase()) {
-      subscribeToBeehiiv(email, name || undefined).catch(() => {});
+      afterResponse("[pitch-decoder] Beehiiv sync", () =>
+        subscribeToBeehiiv(email, name || undefined)
+      );
     }
 
-    // Fire the nurture sequence after the response is flushed, so the Inngest
-    // round-trip never delays the delivery email below. Scheduling is itself
-    // guarded: after() throws synchronously when the platform supplies no
-    // waitUntil, and a nurture failure must never break delivery.
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      try {
-        after(async () => {
-          try {
-            await inngest.send({
-              name: "nurture/pitch-decoder.download",
-              data: {
-                downloadId,
-                email,
-                name: name || null,
-              },
-            });
-          } catch (nurtureErr) {
-            console.error("[pitch-decoder] Nurture trigger failed:", nurtureErr);
-          }
-        });
-      } catch (scheduleErr) {
-        console.error("[pitch-decoder] Nurture scheduling failed:", scheduleErr);
-      }
+      afterResponse("[pitch-decoder] Nurture trigger", () =>
+        inngest.send({
+          name: "nurture/pitch-decoder.download",
+          data: {
+            downloadId,
+            email,
+            name: name || null,
+          },
+        })
+      );
     }
 
     // Notify Kelsey

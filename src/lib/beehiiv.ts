@@ -2,8 +2,13 @@
  * beehiiv.ts: Shared subscriber sync utility
  *
  * Adds a subscriber to the Waypoint beehiiv publication.
- * Fire-and-forget safe: all errors are caught and logged, never re-thrown.
+ * Never rejects: all errors are caught and logged, never re-thrown.
  * Silently skips if BEEHIIV_API_KEY is not set (local dev without the key).
+ *
+ * In a request handler, schedule it with afterResponse() from
+ * @/lib/after-response rather than calling it bare. Never rejecting is not the
+ * same as always completing: an unawaited call can be frozen when the response
+ * returns. Inside an Inngest step, await it directly.
  */
 
 const BEEHIIV_API_BASE = "https://api.beehiiv.com/v2";

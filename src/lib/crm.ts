@@ -5,7 +5,13 @@
  * whenever a prospect engages with the website.
  *
  * Design rules:
- *   - Fire-and-forget: never await at the call site, never blocks the response.
+ *   - Schedule it with afterResponse() from @/lib/after-response, which runs it
+ *     once the response is flushed without blocking delivery. It used to be a
+ *     bare unawaited fetch ("never await at the call site"), but that is unsafe
+ *     on Vercel: the invocation can be frozen when the response returns, so an
+ *     unknown share of leads never reached the CRM at all. It therefore returns
+ *     a promise now. It has to: afterResponse has nothing to hold the
+ *     invocation open for otherwise.
  *   - Never throws: errors are caught and logged internally.
  *   - Skips Kelsey's own address (test submissions).
  *   - No-ops silently when CRM_WEBHOOK_URL is not configured (local dev).
@@ -32,12 +38,16 @@ export interface CrmLeadPayload {
 }
 
 /**
- * Push a lead to the CRM. Call without await. It resolves in the background.
+ * Push a lead to the CRM. Resolves when the webhook call settles, and never
+ * rejects. Schedule it rather than awaiting it inline, so it does not delay the
+ * response:
  *
  * @example
- *   notifyCrm({ name, email, source: "Contact Form", notes: message });
+ *   afterResponse("[contact] CRM sync", () =>
+ *     notifyCrm({ name, email, source: "Contact Form", notes: message })
+ *   );
  */
-export function notifyCrm(payload: CrmLeadPayload): void {
+export async function notifyCrm(payload: CrmLeadPayload): Promise<void> {
   const webhookUrl = process.env.CRM_WEBHOOK_URL;
 
   // Silently no-op in local dev when the env var isn't set.
@@ -46,20 +56,18 @@ export function notifyCrm(payload: CrmLeadPayload): void {
   // Never send Kelsey's own test submissions to the CRM.
   if (payload.email?.toLowerCase() === KELSEY_EMAIL.toLowerCase()) return;
 
-  // Fire-and-forget: intentionally not awaited.
-  fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  })
-    .then((res) => {
-      if (!res.ok) {
-        res.text().then((text) =>
-          console.error(`[crm] Webhook responded ${res.status}: ${text}`)
-        );
-      }
-    })
-    .catch((err) => {
-      console.error("[crm] Webhook fetch failed:", err);
+  try {
+    const res = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error(`[crm] Webhook responded ${res.status}: ${text}`);
+    }
+  } catch (err) {
+    console.error("[crm] Webhook fetch failed:", err);
+  }
 }
