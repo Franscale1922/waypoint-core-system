@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
@@ -44,13 +45,17 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 2. CRM sync (fire-and-forget) ─────────────────────────────────────────
-    notifyCrm({
-      name,
-      email,
-      source: "Franchise Archetype Quiz",
-      notes: `Archetype: ${archetypeName} | Strong fits: ${strongFits.slice(0, 3).join(", ")}`,
-    });
+    // ── 2. CRM sync ───────────────────────────────────────────────────────────
+    // Runs after the response is flushed, so it never delays the confirmation
+    // email. See @/lib/after-response for why a bare unawaited promise is unsafe.
+    afterResponse("[archetype-complete] CRM sync", () =>
+      notifyCrm({
+        name,
+        email,
+        source: "Franchise Archetype Quiz",
+        notes: `Archetype: ${archetypeName} | Strong fits: ${strongFits.slice(0, 3).join(", ")}`,
+      })
+    );
 
     // ── 2b. Deduplicate: only start a new nurture sequence if none is active ──
     // Mirrors scorecard pattern. Prevents double-emails if someone retakes the
@@ -80,15 +85,22 @@ export async function POST(req: Request) {
         },
       });
 
-      await inngest.send({
-        name: "nurture/archetype.complete",
-        data: {
-          submissionId: submission.id,
-          email,
-          name,
-          archetype,
-        },
-      });
+      // Scheduled, not awaited: the confirmation email below is the thing the
+      // user is waiting on, and it must not be blocked by the Inngest
+      // round-trip. This used to be an unguarded `await`, so an Inngest hiccup
+      // returned a 500 and sent no confirmation at all — while still leaving the
+      // submission row above, which the dedup query treats as an active sequence.
+      afterResponse("[archetype-complete] Nurture trigger", () =>
+        inngest.send({
+          name: "nurture/archetype.complete",
+          data: {
+            submissionId: submission.id,
+            email,
+            name,
+            archetype,
+          },
+        })
+      );
 
       sequenceStarted = true;
     } else {

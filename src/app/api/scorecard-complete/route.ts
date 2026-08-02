@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
@@ -52,22 +53,27 @@ export async function POST(req: Request) {
           },
         });
 
-    // ── 1b. CRM sync (fire-and-forget) ───────────────────────────────────────
-    notifyCrm({
-      name,
-      email,
-      source: "Franchise Scorecard",
-      notes: [
-        `Score: ${score}/100`,
-        primaryDriver ? `Driver: ${primaryDriver}` : null,
-        biggestFear   ? `Fear: ${biggestFear}`     : null,
-      ].filter(Boolean).join(" | "),
-    });
+    // ── 1b. CRM sync ─────────────────────────────────────────────────────────
+    // Runs after the response is flushed, so it never delays the results email.
+    // See @/lib/after-response for why a bare unawaited promise is not safe here.
+    afterResponse("[scorecard-complete] CRM sync", () =>
+      notifyCrm({
+        name,
+        email,
+        source: "Franchise Scorecard",
+        notes: [
+          `Score: ${score}/100`,
+          primaryDriver ? `Driver: ${primaryDriver}` : null,
+          biggestFear   ? `Fear: ${biggestFear}`     : null,
+        ].filter(Boolean).join(" | "),
+      })
+    );
 
-    // ── 1c. Beehiiv subscriber sync (fire-and-forget) ─────────────────────────
+    // ── 1c. Beehiiv subscriber sync ───────────────────────────────────────────
     // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
-    // Never throws; errors are caught inside subscribeToBeehiiv.
-    subscribeToBeehiiv(email, name).catch(() => {});
+    afterResponse("[scorecard-complete] Beehiiv sync", () =>
+      subscribeToBeehiiv(email, name)
+    );
 
     // ── 2. Deduplicate: only start a new nurture sequence if none is active ───
     // "Active" = not completed and not unsubscribed. If a sequence is already
@@ -97,15 +103,22 @@ export async function POST(req: Request) {
         },
       });
 
-      await inngest.send({
-        name: "nurture/scorecard.complete",
-        data: {
-          submissionId: submission.id,
-          email,
-          name,
-          score,
-        },
-      });
+      // Scheduled, not awaited: the results email below is the thing the user is
+      // waiting on, and it must not be blocked by the Inngest round-trip. This
+      // used to be an unguarded `await`, so an Inngest hiccup returned a 500 and
+      // sent no results email at all — while still leaving the submission row
+      // above, which the dedup query then treats as an active sequence.
+      afterResponse("[scorecard-complete] Nurture trigger", () =>
+        inngest.send({
+          name: "nurture/scorecard.complete",
+          data: {
+            submissionId: submission.id,
+            email,
+            name,
+            score,
+          },
+        })
+      );
 
       sequenceStarted = true;
     } else {
@@ -133,43 +146,47 @@ export async function POST(req: Request) {
       const slackWebhook = process.env.SLACK_WEBHOOK_URL;
 
       if (slackWebhook) {
-        // Non-blocking: don't let Slack failure break the API
-        fetch(slackWebhook, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            blocks: [
-              {
-                type: "section",
-                text: {
-                  type: "mrkdwn",
-                  text: `*${tier} scorecard submission*: ${firstName} scored *${score}/100*`,
-                },
-              },
-              {
-                type: "section",
-                fields: [
-                  { type: "mrkdwn", text: `*Name:*\n${name}` },
-                  { type: "mrkdwn", text: `*Email:*\n${email}` },
-                  { type: "mrkdwn", text: `*Score:*\n${score}/100` },
-                  { type: "mrkdwn", text: `*Driver:*\n${primaryDriver ?? "-"}` },
-                  { type: "mrkdwn", text: `*Biggest fear:*\n${biggestFear ?? "-"}` },
-                  { type: "mrkdwn", text: `*Sequence started:*\n${sequenceStarted ? "Yes" : "Already active"}` },
-                ],
-              },
-              {
-                type: "actions",
-                elements: [
-                  {
-                    type: "button",
-                    text: { type: "plain_text", text: "View in Admin" },
-                    url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com"}/admin/scorecard`,
+        // Scheduled like the rest of this handler's background work. A dropped
+        // alert means Kelsey misses a hot lead, so it must not be a bare
+        // unawaited fetch the invocation can be frozen before finishing.
+        afterResponse("[scorecard-complete] Slack alert", () =>
+          fetch(slackWebhook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              blocks: [
+                {
+                  type: "section",
+                  text: {
+                    type: "mrkdwn",
+                    text: `*${tier} scorecard submission*: ${firstName} scored *${score}/100*`,
                   },
-                ],
-              },
-            ],
-          }),
-        }).catch((e) => console.error("[scorecard-complete] Slack alert failed:", e));
+                },
+                {
+                  type: "section",
+                  fields: [
+                    { type: "mrkdwn", text: `*Name:*\n${name}` },
+                    { type: "mrkdwn", text: `*Email:*\n${email}` },
+                    { type: "mrkdwn", text: `*Score:*\n${score}/100` },
+                    { type: "mrkdwn", text: `*Driver:*\n${primaryDriver ?? "-"}` },
+                    { type: "mrkdwn", text: `*Biggest fear:*\n${biggestFear ?? "-"}` },
+                    { type: "mrkdwn", text: `*Sequence started:*\n${sequenceStarted ? "Yes" : "Already active"}` },
+                  ],
+                },
+                {
+                  type: "actions",
+                  elements: [
+                    {
+                      type: "button",
+                      text: { type: "plain_text", text: "View in Admin" },
+                      url: `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com"}/admin/scorecard`,
+                    },
+                  ],
+                },
+              ],
+            }),
+          })
+        );
       }
     }
 

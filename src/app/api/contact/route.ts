@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 
@@ -16,14 +17,18 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name, email, and message are required." }, { status: 400 });
     }
 
-    // ── CRM sync (fire-and-forget) ─────────────────────────────────────────
-    notifyCrm({
-      name,
-      email,
-      phone: phone || undefined,
-      source: "Contact Form",
-      notes: message.slice(0, 500),
-    });
+    // ── CRM sync ───────────────────────────────────────────────────────────
+    // Runs after the response is flushed, so it never delays the emails below.
+    // See @/lib/after-response for why a bare unawaited promise is unsafe here.
+    afterResponse("[contact] CRM sync", () =>
+      notifyCrm({
+        name,
+        email,
+        phone: phone || undefined,
+        source: "Contact Form",
+        notes: message.slice(0, 500),
+      })
+    );
 
     const notifyResult = await resend.emails.send({
       from: FROM,
