@@ -765,6 +765,74 @@ app/TUI — the same shape as worktrees (§ "Worktrees," confirmed desktop-app-o
 exec`; nothing to add to the hardened invocation. If Codex is ever driven interactively rather than via `exec`,
 re-test before assuming this holds — this result is scoped to headless `exec` only.
 
+---
+
+## §11-O — `build_prompts.zip` ("claudex") reviewed 2026-08-02: ADOPT THE DESIGN, REJECT THE TRANSPORT
+
+Supplied by Kelsey from a trusted developer. 9 markdown files, ~42 KB, no executables/scripts — it is a
+**build guide** (7 sequential prompts + `SPEC.md`), not an installable plugin. Nothing in it attempted to
+instruct the reading agent; treated as data throughout.
+
+**What it describes:** a Claude Code plugin ("claudex") driving an autonomous convergence loop — Claude drafts
+`PLAN.md` → Codex adversarially reviews → Claude revises → repeat until Codex reports no material findings or
+max rounds (default 3). Plus a single-shot review mode over a diff. Driven by a `Stop` hook.
+
+### 🔴 BLOCKING DEFECT — it would silently undo every control verified in E–N
+
+Its **only** Codex invocation, in both `SPEC.md:74` and `03_stop_hook_lifecycle.md:25`, is:
+```
+codex exec --dangerously-bypass-approvals-and-sandbox < prompt.txt
+```
+That is the CLI equivalent of the **"Full access"** toggle Kelsey deliberately switched **off** today — OpenAI's
+own UI text for it: *"can edit any file on your computer and run commands with network, without your approval.
+This significantly increases the risk of data loss, leaks, or unexpected behavior."*
+
+A `grep` for every hardening control across all 9 files returns **nothing**: no `--sandbox`, no
+`web_search="disabled"`, no `--disable apps`, no `mcp_servers` strip. The pack has zero awareness of the
+containment surface. Its two "read-only" mentions describe *intent* of the review mode, not the invocation.
+**Adopting the transport as written reopens F (hosted GitHub/Drive write connectors), G-bis (web egress), and
+removes the sandbox entirely — in one line.**
+
+Secondary architectural mismatch: it registers a **`Stop` hook**, i.e. code firing on every session stop in its
+install scope. That is the same architecture rejected on 2026-08-01 for `codex-plugin-cc` (hook footprint across
+every session in every repo). Credit where due — this pack's hook is *obsessively* fail-open (ERR trap first,
+`{"decision":"approve"}` on any unhandled error) and far better engineered than the plugin we rejected — but the
+category objection stands, and Kelsey's stated want is **user-invoked** review, not an autonomous loop.
+
+### ✅ What is genuinely valuable and should be lifted into our own wrapper
+
+1. **Findings-file extraction — the single most useful idea here, and it fixes a real gap in §11-J.** Their field
+   note: *"Claude was burning context reading 30k+ token Codex transcripts every round."* Fix: the Codex prompt
+   carries an explicit output contract requiring it to ALSO write a small structured file
+   (`## High / ## Medium / ## Low`, severity + one-line description + recommendation); Claude reads **that**, not
+   the transcript. J measured that delegation's saving is eroded by Claude reading Codex's output — this is the
+   mitigation, and we did not have it.
+2. **Machine-checkable termination signal.** Codex must write exactly `No substantive findings.` when there is
+   nothing material. Turns "are we done?" into a string check instead of a judgment call.
+3. **Persona rotation per round** — R1 skeptical senior engineer (design flaws, broken assumptions);
+   R2 security & data-integrity (auth, validation, races, partial-failure recovery, secrets, data loss);
+   R3+ ops/SRE (rollback, observability, version skew), with R4+ instructed to *deepen* prior angles rather than
+   go generic. This is the perspective-diverse-verify pattern, and it maps directly onto the adversarial-review
+   use case Kelsey named. Directly reusable, no transport dependency.
+4. **Severity trajectory line** (`Previous round: high=2 medium=4 low=1`) — cheap signal that shows whether the
+   loop is converging or spinning.
+5. **Bounded rounds with an explicit max-reached exit** offering three named options (revise manually, re-run
+   with more rounds, accept as known-incomplete). Prevents an unbounded loop.
+6. **Independent corroboration of J's cost numbers.** It documents *"~25-30k tokens per round, ~75-90k for the
+   default 3 rounds."* Our measured single Codex task was 81,691 — same order, from an unrelated source.
+
+### Verdict
+
+**ADOPT the workflow design; REJECT the transport and the hook architecture.** The two halves are complementary:
+this session established *how to call Codex safely* (E–N) and had no workflow design; this pack has a good
+workflow design and no safety model. The wrapper should be its findings-contract + persona rotation + bounded
+rounds, running over **our** verified hardened invocation, **user-invoked** rather than Stop-hook-driven.
+
+**⚠ Repo note (learned the hard way, 2026-08-02):** this file is tracked on `main` only — the `.gitignore`
+negation lives in main's copy, so on any feature branch `.claude/` is still fully ignored. Editing this tracker
+from a feature branch and then switching to `main` **silently discards the edit** (checkout overwrites the
+working-tree copy with main's committed version). Always edit this file while on `main`.
+
 **K14. Header staleness:** §11's title line and VERDICT still read as the 2026-08-01 verdict and cite the
 retention/training terms as an open gate — resolved by I. Also, the `networkAccess:false` corroboration cited near
 the top was only ever evidence about the **shell** sandbox and needs that scoping clause, since egress is confirmed.
