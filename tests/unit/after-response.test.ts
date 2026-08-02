@@ -79,17 +79,41 @@ describe("afterResponse", () => {
     // THE guard: this is what protects the response. If afterResponse ever
     // rethrows here, a route's outer catch turns it into a 500.
     expect(() => afterResponse("[test] thing", work)).not.toThrow();
-    expect(work).not.toHaveBeenCalled();
-    expect(errors.some((e) => e.includes("[test] thing could not be scheduled:"))).toBe(true);
+    expect(errors.some((e) => e.includes("[test] thing could not be scheduled"))).toBe(true);
   });
 
-  it("does not run the work when scheduling failed", () => {
+  it("still runs the work unawaited when scheduling failed", () => {
     afterShouldThrow = true;
     const work = vi.fn().mockResolvedValue(undefined);
 
     afterResponse("[test] thing", work);
 
+    // Degrades to the old bare-promise behaviour rather than dropping the work.
+    // Dropping it would be strictly worse than the idiom this helper replaced:
+    // a bare call at least reached the network.
     expect(scheduled).toHaveLength(0);
-    expect(work).not.toHaveBeenCalled();
+    expect(work).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not produce an unhandled rejection when the fallback work rejects", async () => {
+    afterShouldThrow = true;
+    const work = vi.fn().mockRejectedValue(new Error("upstream exploded"));
+
+    expect(() => afterResponse("[test] thing", work)).not.toThrow();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(errors.some((e) => e.includes("[test] thing failed:"))).toBe(true);
+  });
+
+  it("catches a work function that throws synchronously", async () => {
+    const work = vi.fn(() => {
+      throw new Error("sync boom");
+    });
+
+    afterResponse("[test] thing", work as unknown as () => Promise<unknown>);
+    await expect(scheduled[0]!()).resolves.not.toThrow();
+
+    expect(errors.some((e) => e.includes("[test] thing failed:"))).toBe(true);
   });
 });

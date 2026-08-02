@@ -32,3 +32,21 @@ if [ -z "$SKIP_BIP_DRIFT" ]; then
     exit 1
   fi
 fi
+
+# Fast unit suites (no database, no network). These were previously run by nothing:
+# CI executes only verify-links + aeo-audit, and npm test was two .mjs verifiers, so
+# the route/background-work and auth-coverage guards could rot unnoticed. Skipped,
+# loudly, when vitest is not installed, since a fresh clone has no node_modules yet.
+if [ -z "$SKIP_UNIT_TESTS" ]; then
+  if [ -x "node_modules/.bin/vitest" ]; then
+    if ! node_modules/.bin/vitest run --project unit --project auth; then
+      echo ""
+      echo "PUSH BLOCKED: unit tests failed (see above)."
+      echo "  Run them directly:  npm run test:unit && npm run test:auth"
+      echo "  Genuinely need to skip?  SKIP_UNIT_TESTS=1 git push"
+      exit 1
+    fi
+  else
+    echo "NOTE: vitest not installed, skipping unit suites. Run 'npm install' to enable them."
+  fi
+fi

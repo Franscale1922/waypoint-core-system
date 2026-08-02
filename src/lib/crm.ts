@@ -10,7 +10,8 @@
  *     bare unawaited fetch ("never await at the call site"), but that is unsafe
  *     on Vercel: the invocation can be frozen when the response returns, so an
  *     unknown share of leads never reached the CRM at all. It therefore returns
- *     a promise now — it has to, or afterResponse has nothing to keep alive.
+ *     a promise now. It has to: afterResponse has nothing to hold the
+ *     invocation open for otherwise.
  *   - Never throws: errors are caught and logged internally.
  *   - Skips Kelsey's own address (test submissions).
  *   - No-ops silently when CRM_WEBHOOK_URL is not configured (local dev).

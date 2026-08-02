@@ -79,7 +79,11 @@ export async function POST(req: Request) {
     // "Active" = not completed and not unsubscribed. If a sequence is already
     // sleeping for this email, skip creating another one; prevents double emails
     // when someone re-submits the scorecard.
-    const activeSubmission = await (prisma as any).scorecardSubmission.findFirst({
+    // One cast for this model instead of four: the Prisma client types are
+    // regenerated on deploy and do not yet know these fields locally.
+    const submissions = (prisma as any).scorecardSubmission;
+
+    const activeSubmission = await submissions.findFirst({
       where: {
         email,
         nurtureCompletedAt: null,
@@ -92,7 +96,7 @@ export async function POST(req: Request) {
     let sequenceStarted = false;
 
     if (!activeSubmission) {
-      submission = await (prisma as any).scorecardSubmission.create({
+      submission = await submissions.create({
         data: {
           email,
           name,
@@ -106,24 +110,33 @@ export async function POST(req: Request) {
       // Scheduled, not awaited: the results email below is the thing the user is
       // waiting on, and it must not be blocked by the Inngest round-trip. This
       // used to be an unguarded `await`, so an Inngest hiccup returned a 500 and
-      // sent no results email at all — while still leaving the submission row
-      // above, which the dedup query then treats as an active sequence.
-      afterResponse("[scorecard-complete] Nurture trigger", () =>
-        inngest.send({
-          name: "nurture/scorecard.complete",
-          data: {
-            submissionId: submission.id,
-            email,
-            name,
-            score,
-          },
-        })
-      );
+      // sent no results email at all.
+      //
+      // On failure the row created just above is deleted, and that compensation
+      // is load-bearing. The dedup query matches any row with nurtureCompletedAt
+      // null and unsubscribed false, so an orphan left by a failed send makes
+      // every future retake take the "already active" branch: that address could
+      // never start a sequence again. The lead row keeps the score either way.
+      const submissionId = submission.id;
+      afterResponse("[scorecard-complete] Nurture trigger", async () => {
+        try {
+          await inngest.send({
+            name: "nurture/scorecard.complete",
+            data: { submissionId, email, name, score },
+          });
+        } catch (err) {
+          console.error(
+            `[scorecard-complete] Nurture trigger failed; releasing submission ${submissionId} so a retake can start one:`,
+            err
+          );
+          await submissions.delete({ where: { id: submissionId } });
+        }
+      });
 
       sequenceStarted = true;
     } else {
       // Update score on the existing submission (they retook the scorecard)
-      await (prisma as any).scorecardSubmission.update({
+      await submissions.update({
         where: { id: activeSubmission.id },
         data: { score },
       });

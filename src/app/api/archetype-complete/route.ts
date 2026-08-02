@@ -60,7 +60,11 @@ export async function POST(req: Request) {
     // ── 2b. Deduplicate: only start a new nurture sequence if none is active ──
     // Mirrors scorecard pattern. Prevents double-emails if someone retakes the
     // quiz. "Active" = not completed and not unsubscribed.
-    const activeSubmission = await (prisma as any).archetypeSubmission.findFirst({
+    // One cast for this model instead of four: the Prisma client types are
+    // regenerated on deploy and do not yet know these fields locally.
+    const submissions = (prisma as any).archetypeSubmission;
+
+    const activeSubmission = await submissions.findFirst({
       where: {
         email,
         nurtureCompletedAt: null,
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
     let sequenceStarted = false;
 
     if (!activeSubmission) {
-      submission = await (prisma as any).archetypeSubmission.create({
+      submission = await submissions.create({
         data: {
           email,
           name,
@@ -88,24 +92,33 @@ export async function POST(req: Request) {
       // Scheduled, not awaited: the confirmation email below is the thing the
       // user is waiting on, and it must not be blocked by the Inngest
       // round-trip. This used to be an unguarded `await`, so an Inngest hiccup
-      // returned a 500 and sent no confirmation at all — while still leaving the
-      // submission row above, which the dedup query treats as an active sequence.
-      afterResponse("[archetype-complete] Nurture trigger", () =>
-        inngest.send({
-          name: "nurture/archetype.complete",
-          data: {
-            submissionId: submission.id,
-            email,
-            name,
-            archetype,
-          },
-        })
-      );
+      // returned a 500 and sent no confirmation at all.
+      //
+      // On failure the row created just above is deleted, and that compensation
+      // is load-bearing. The dedup query matches any row with nurtureCompletedAt
+      // null and unsubscribed false, so an orphan left by a failed send makes
+      // every future retake take the "already active" branch: that address could
+      // never start a sequence again. The lead row keeps the archetype either way.
+      const submissionId = submission.id;
+      afterResponse("[archetype-complete] Nurture trigger", async () => {
+        try {
+          await inngest.send({
+            name: "nurture/archetype.complete",
+            data: { submissionId, email, name, archetype },
+          });
+        } catch (err) {
+          console.error(
+            `[archetype-complete] Nurture trigger failed; releasing submission ${submissionId} so a retake can start one:`,
+            err
+          );
+          await submissions.delete({ where: { id: submissionId } });
+        }
+      });
 
       sequenceStarted = true;
     } else {
       // Update archetype on existing submission (they retook the quiz)
-      await (prisma as any).archetypeSubmission.update({
+      await submissions.update({
         where: { id: activeSubmission.id },
         data: { archetype, archetypeName, strongFits, weakFits },
       });
