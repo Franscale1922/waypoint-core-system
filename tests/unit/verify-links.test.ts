@@ -172,11 +172,19 @@ describe("verifyArticleLinks: malformed relatedSlugs values", () => {
       join(dir, "broken.md"),
       ["---", 'title: "x"', "relatedSlugs: [unclosed", "---", "", "Body.\n"].join("\n"),
     );
+    // A second, well-formed pair so the anti-vacuity guard cannot fire. With
+    // broken.md alone this directory yields zero slugs, so that guard adds a
+    // second error and the assertions below could no longer tell a real YAML
+    // failure from a merely-empty extraction.
+    writeArticle("alpha.md", { slugs: ["beta"] });
+    writeArticle("beta.md", { slugs: ["alpha"] });
 
-    const { errors } = verifyArticleLinks(dir);
+    const { checkedSlugs, errors } = verifyArticleLinks(dir);
 
-    expect(errors.length).toBeGreaterThanOrEqual(1);
-    expect(errors.join("\n")).toContain("broken.md");
+    expect(checkedSlugs).toBe(2);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("broken.md");
+    expect(errors[0]).toContain("not valid YAML");
   });
 });
 
@@ -243,6 +251,12 @@ describe("the real content/articles directory", () => {
 
     expect(errors).toEqual([]);
     expect(fileCount).toBeGreaterThan(0);
-    expect(checkedSlugs).toBeGreaterThan(0);
+
+    // Deliberately stronger than `> 0`, because the script's own anti-vacuity
+    // guard only fires at EXACTLY zero: a drift that broke extraction for 44 of
+    // 45 articles would still report green. Every article declares at least one
+    // relatedSlug (the real ratio is ~3 each), so per-file coverage is the honest
+    // floor — and it stays true as articles are added, unlike a hard-coded 135.
+    expect(checkedSlugs).toBeGreaterThanOrEqual(fileCount);
   });
 });

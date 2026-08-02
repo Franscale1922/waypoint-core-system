@@ -14,7 +14,7 @@
     "aeo-audit": "node scripts/aeo-audit.mjs",
     "verify-schema": "node scripts/verify-schema.mjs",
     "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs",
-    "test": "vitest run --project unit && node scripts/verify-links.mjs && node scripts/verify-schema.mjs",
+    "test": "vitest run --project unit tests/unit/verify-links.test.ts && node scripts/verify-links.mjs && node scripts/verify-schema.mjs",
     "test:links": "vitest run --project unit tests/unit/verify-links.test.ts && node scripts/verify-links.mjs",
     "test:auth": "vitest run --project auth",
     "test:match-workspace": "vitest run --project match-workspace"

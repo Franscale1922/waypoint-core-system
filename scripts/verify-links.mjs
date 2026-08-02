@@ -155,6 +155,23 @@ function main() {
   );
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+// Run only when invoked directly, not when imported by the tests. `realpathSync` is
+// load-bearing: Node resolves symlinks for the ESM main module but `path.resolve` does
+// not, so comparing the raw argv path would silently fail whenever the script is reached
+// through a symlinked directory — and main() never running means this exits 0 having
+// printed nothing, which is the same silent-green failure the rest of this file exists to
+// prevent. Falls back to the unresolved path if argv[1] no longer exists on disk.
+function invokedDirectly() {
+  if (!process.argv[1]) return false;
+  let invoked = path.resolve(process.argv[1]);
+  try {
+    invoked = fs.realpathSync(invoked);
+  } catch {
+    // argv[1] is not a real path (deleted, or a virtual entry point); use it as-is.
+  }
+  return invoked === fs.realpathSync(__filename);
+}
+
+if (invokedDirectly()) {
   main();
 }
