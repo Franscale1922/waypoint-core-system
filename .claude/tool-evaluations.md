@@ -833,6 +833,43 @@ negation lives in main's copy, so on any feature branch `.claude/` is still full
 from a feature branch and then switching to `main` **silently discards the edit** (checkout overwrites the
 working-tree copy with main's committed version). Always edit this file while on `main`.
 
+---
+
+## §11-P — BUILT AND MERGED: `scripts/codex-review.mjs` (2026-08-02, PR #14)
+
+The wrapper §11-O called for. Merged to `main`. Claude Code invokes it; **Kelsey never runs it** —
+that is now a standing instruction in this repo's `CLAUDE.md` (appended outside every stamped marker,
+which `stamp-git-safety.sh` preserves — it splices only between BEGIN/END).
+
+Encodes the hardened invocation once so it cannot be mistyped, plus §11-O's workflow design
+(per-round personas, findings contract, bounded rounds) over **our** transport, not claudex's.
+
+**Two design changes the first live run forced — both worth remembering:**
+1. **`--sandbox read-only` blocks the findings file.** The claudex-style "Codex writes
+   `findings-round-N.md`" contract is *incompatible with a read-only sandbox* — every write is
+   rejected. Rather than loosen the sandbox (which is what claudex's
+   `--dangerously-bypass-approvals-and-sandbox` effectively does), findings now return on **stdout
+   between markers** and the script writes the file locally. Keeps read-only AND the token economy.
+   Suspect this is part of why that pack needed full access.
+2. **The MCP strip is generated from `codex mcp list` at run time**, per K6. Immediately justified:
+   the hand-written list had been missing `computer-use`.
+
+Also carries a scope guard (refuses `.env`-shaped targets — a *review-scope* guard, not containment,
+since H stands) and an egress canary that warns on `rmcp` transport chatter despite the strip.
+
+**First real review found a genuine High**, independently confirmed: `scripts/verify-links.mjs`
+extracts slugs with `/relatedSlugs:\s*\[(.*?)\]/`, matching only flow-style arrays, while every
+article uses YAML block lists. It extracts **zero** slugs from all 45 articles, so `npm test` has been
+printing "✅ All relatedSlugs verified successfully across 45 articles" while checking nothing. Tracked
+separately for fix. The tool paid for itself before it merged.
+
+**Process note (two branch mistakes in one session, same root cause):** this repo's `.gitignore` state
+differs per branch, and I twice acted without checking which branch I was on — once discarding a
+tracker edit via `git checkout`, once cutting the wrapper branch from `expo/2nd-act-assets` so the PR
+would have swept 22 unrelated commits and ~1.8 MB of expo assets into `main`. Caught on review, closed,
+rebuilt cleanly from `main`, no force-push. **Check the branch before editing files whose tracked
+status varies.**
+
 **K14. Header staleness:** §11's title line and VERDICT still read as the 2026-08-01 verdict and cite the
 retention/training terms as an open gate — resolved by I. Also, the `networkAccess:false` corroboration cited near
 the top was only ever evidence about the **shell** sandbox and needs that scoping clause, since egress is confirmed.
