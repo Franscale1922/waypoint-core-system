@@ -50,7 +50,9 @@ brands/Marketing/
 # `.claude/` stays ignored on every feature branch is what DESTROYED it three times on 2026-08-02:
 # `git checkout main` silently overwrites whatever sits at that path (git treats an ignored file as
 # expendable, so it neither warns nor refuses), and checking back out to a feature branch deletes it
-# outright. Reviewer subagents run in git worktrees, which is why the losses tracked review runs.
+# outright. (Which command ran that checkout was never identified — do NOT repeat the earlier guess
+# that reviewer subagents did it via git worktrees; `git worktree add` was tested and leaves the
+# primary tree's ignored file untouched. The mechanism above is proven; the culprit is not.)
 # The tracker is now version-controlled in ~/dotfiles (projects/tool-evaluations.md) and symlinked
 # here by ~/dotfiles/install.sh — that copy is the single source and is a verified superset of the
 # one this repo used to carry. Re-adding the negation would re-arm the exact failure.
