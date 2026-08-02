@@ -45,7 +45,8 @@ brands/Marketing/
 .env*.local
 
 # Claude Code local session artifacts (worktrees, settings, scratch)
-.claude/
+.claude/*
+!.claude/tool-evaluations.md
 # local logs + scratch reasoning (machine-local, never shared)
 /logs/
 shared_reasoning.md
