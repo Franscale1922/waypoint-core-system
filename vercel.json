@@ -3,6 +3,7 @@
   "buildCommand": "prisma generate && node scripts/guard-immutable-tables.mjs && prisma db push && next build",
   "installCommand": "npm install",
   "outputDirectory": ".next",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- . ':(exclude).claude' ':(exclude).codex-reviews' ':(exclude)CLAUDE.md' ':(exclude)AGENTS.md' ':(exclude).gitignore'",
   "git": {
     "deploymentEnabled": {
       "main": true
