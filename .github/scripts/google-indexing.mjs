@@ -9,10 +9,40 @@ import { execSync } from 'child_process';
 import https from 'https';
 
 // ── 1. Decode service account key ─────────────────────────────────────────
-const keyJson = Buffer.from(process.env.GOOGLE_SA_KEY, 'base64').toString('utf8');
+// Accepts the secret in EITHER form: raw service-account JSON, or that JSON
+// base64-encoded. This used to assume base64 unconditionally, and every run
+// from at least 2026-08-02 failed because the stored secret is raw JSON:
+// base64-decoding raw JSON silently yields binary garbage (the decoder skips
+// non-alphabet bytes like { " :), so the failure surfaced as a bewildering
+// `SyntaxError: Unexpected token 'm' ... is not valid JSON` rather than
+// anything pointing at the encoding. Sniffing the format removes the guess.
+// Never log or echo the key itself — errors below describe shape only.
+const rawKey = (process.env.GOOGLE_SA_KEY || '').trim();
+if (!rawKey) {
+  console.error('GOOGLE_SA_KEY is empty or unset. Set the GOOGLE_INDEXING_SA_KEY repo secret to the service-account JSON (raw or base64).');
+  process.exit(1);
+}
+const keyJson = rawKey.startsWith('{')
+  ? rawKey
+  : Buffer.from(rawKey, 'base64').toString('utf8');
+
+let sa;
+try {
+  sa = JSON.parse(keyJson);
+} catch {
+  console.error(
+    'GOOGLE_SA_KEY did not parse as service-account JSON after ' +
+      (rawKey.startsWith('{') ? 'reading it as raw JSON' : 'base64-decoding it') +
+      '. Expected a Google service-account key file, raw or base64-encoded. Key value not shown.'
+  );
+  process.exit(1);
+}
+if (!sa.client_email || !sa.private_key) {
+  console.error('Service-account JSON parsed but is missing client_email/private_key — wrong file or a truncated secret.');
+  process.exit(1);
+}
 const keyPath = '/tmp/sa-key.json';
 writeFileSync(keyPath, keyJson, { mode: 0o600 });
-const sa = JSON.parse(keyJson);
 
 // ── 2. Get OAuth2 access token via JWT ────────────────────────────────────
 // Manually create a JWT without external dependencies, then exchange for token
