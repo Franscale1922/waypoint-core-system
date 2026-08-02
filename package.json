@@ -13,6 +13,7 @@
     "ai-citation-check": "node scripts/ai-citation-check.mjs",
     "aeo-audit": "node scripts/aeo-audit.mjs",
     "verify-schema": "node scripts/verify-schema.mjs",
+    "codex-review": "node scripts/codex-review.mjs",
     "seo-review": "node scripts/gsc-report.mjs && node scripts/ai-citation-check.mjs",
     "test": "node scripts/verify-links.mjs && node scripts/verify-schema.mjs",
     "test:auth": "vitest run --project auth",
