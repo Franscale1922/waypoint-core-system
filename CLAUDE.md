@@ -401,3 +401,28 @@ this is a discipline, not a technical guarantee.
 **Verify what it returns.** Codex findings are claims, not facts — the grounding rule applies
 unchanged. Its first live run produced an accurate High and, in a separate pilot, Sonnet
 produced a confident false claim. Check against source before acting.
+
+## Deploys — pushing to `main` does NOT always redeploy
+
+`vercel.json` carries an `ignoreCommand` (added 2026-08-02, `3c05c22`). Strict JSON allows no
+comments, so the rule is documented here.
+
+**A push to `main` skips the production build when the commit touches ONLY** `.claude/`,
+`.codex-reviews/`, `CLAUDE.md`, `AGENTS.md`, or `.gitignore` — files no part of the build reads.
+Anything else deploys as before, **including `content/`**, which holds the 45 site-facing articles.
+
+Why it exists: every deploy runs `prisma db push` against the **production** database, so a no-op
+rebuild is not free.
+
+Consequences worth knowing:
+- **Do not wait for, or claim, a deployment after an agent-only push** — none will appear, and that
+  is correct, not a failure. Editing this very file is such a push.
+- `[skip ci]` does **not** skip Vercel. Verified 2026-08-02: it suppressed the
+  `notify-google-on-deploy` GitHub Action while Vercel built anyway — the inverse of the intent.
+  `ignoreCommand` is the mechanism that works; do not reach for `[skip ci]` expecting this effect.
+- Semantics are exit-code based: **exit 0 skips, non-zero builds.** `git diff --quiet` returns 0 only
+  when nothing outside the excluded paths changed, so the command *is* the rule — there is no
+  inversion to get wrong. On a shallow clone with no parent commit git exits 128, so it builds; the
+  failure mode is a needless deploy, never a silently skipped one.
+- If you add an exclusion, first confirm nothing in `src/`, `scripts/`, `prisma/`, `next.config.ts`
+  or `package.json` reads that path, and re-check against real history before pushing.
