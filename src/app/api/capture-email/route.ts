@@ -94,27 +94,31 @@ export async function POST(req: Request) {
     }
 
     // Fire the nurture sequence after the response is flushed, so the Inngest
-    // round-trip never delays the checklist email below.
+    // round-trip never delays the checklist email below. Scheduling is itself
+    // guarded: after() throws synchronously when the platform supplies no
+    // waitUntil, and a nurture failure must never break checklist delivery.
     // Skip for Kelsey's own address (test submissions)
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      const nurtureDownloadId = downloadId;
-      after(async () => {
-        try {
-          await inngest.send({
-            name: "nurture/checklist.download",
-            data: {
-              downloadId: nurtureDownloadId,
-              email,
-              name: name || null,
-              checklistType: slug,
-              articleSlug: articleSlug || null,
-            },
-          });
-        } catch (nurtureErr) {
-          // Non-fatal: checklist delivery already succeeded
-          console.error("[capture-email] Nurture trigger failed:", nurtureErr);
-        }
-      });
+      try {
+        after(async () => {
+          try {
+            await inngest.send({
+              name: "nurture/checklist.download",
+              data: {
+                downloadId,
+                email,
+                name: name || null,
+                checklistType: slug,
+                articleSlug: articleSlug || null,
+              },
+            });
+          } catch (nurtureErr) {
+            console.error("[capture-email] Nurture trigger failed:", nurtureErr);
+          }
+        });
+      } catch (scheduleErr) {
+        console.error("[capture-email] Nurture scheduling failed:", scheduleErr);
+      }
     }
 
     // Notify Kelsey

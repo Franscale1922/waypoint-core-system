@@ -58,24 +58,28 @@ export async function POST(req: Request) {
     }
 
     // Fire the nurture sequence after the response is flushed, so the Inngest
-    // round-trip never delays the guide delivery below.
+    // round-trip never delays the guide delivery below. Scheduling is itself
+    // guarded: after() throws synchronously when the platform supplies no
+    // waitUntil, and a nurture failure must never break guide delivery.
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      const nurtureDownloadId = downloadId;
-      after(async () => {
-        try {
-          await inngest.send({
-            name: "nurture/escape-kit.download",
-            data: {
-              downloadId: nurtureDownloadId,
-              email,
-              name: name || null,
-            },
-          });
-        } catch (nurtureErr) {
-          // Non-fatal: guide delivery already succeeded
-          console.error("[escape-kit] Nurture trigger failed:", nurtureErr);
-        }
-      });
+      try {
+        after(async () => {
+          try {
+            await inngest.send({
+              name: "nurture/escape-kit.download",
+              data: {
+                downloadId,
+                email,
+                name: name || null,
+              },
+            });
+          } catch (nurtureErr) {
+            console.error("[escape-kit] Nurture trigger failed:", nurtureErr);
+          }
+        });
+      } catch (scheduleErr) {
+        console.error("[escape-kit] Nurture scheduling failed:", scheduleErr);
+      }
     }
 
     // Notify Kelsey
