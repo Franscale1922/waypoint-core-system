@@ -46,6 +46,8 @@ brands/Marketing/
 
 # Claude Code local session artifacts (worktrees, settings, scratch)
 .claude/
+# codex-review.mjs output (machine-local review findings)
+/.codex-reviews/
 # local logs + scratch reasoning (machine-local, never shared)
 /logs/
 shared_reasoning.md
