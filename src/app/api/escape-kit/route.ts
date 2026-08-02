@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
 import prisma from "@/lib/prisma";
@@ -57,20 +57,25 @@ export async function POST(req: Request) {
       subscribeToBeehiiv(email, name || undefined).catch(() => {});
     }
 
-    // Fire nurture sequence (fire-and-forget), does not block guide delivery
+    // Fire the nurture sequence after the response is flushed, so the Inngest
+    // round-trip never delays the guide delivery below.
     if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      try {
-        await inngest.send({
-          name: "nurture/escape-kit.download",
-          data: {
-            downloadId,
-            email,
-            name: name || null,
-          },
-        });
-      } catch (nurtureErr) {
-        console.error("[escape-kit] Nurture trigger failed:", nurtureErr);
-      }
+      const nurtureDownloadId = downloadId;
+      after(async () => {
+        try {
+          await inngest.send({
+            name: "nurture/escape-kit.download",
+            data: {
+              downloadId: nurtureDownloadId,
+              email,
+              name: name || null,
+            },
+          });
+        } catch (nurtureErr) {
+          // Non-fatal: guide delivery already succeeded
+          console.error("[escape-kit] Nurture trigger failed:", nurtureErr);
+        }
+      });
     }
 
     // Notify Kelsey
