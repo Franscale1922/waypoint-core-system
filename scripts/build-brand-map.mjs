@@ -48,7 +48,7 @@
  */
 import { createHash } from "node:crypto";
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, isAbsolute } from "node:path";
 import { fileURLToPath } from "node:url";
 import { homedir } from "node:os";
 import { normalizeNameKey, hasCasefoldDivergence, namesOf } from "../src/lib/match-workspace/brand-name-key.mjs";
@@ -78,7 +78,20 @@ export function registryAvailability({ env = process.env, repoRoot = DEFAULT_REG
   const explicit = typeof override === "string" && override.length > 0;
   const path = explicit ? override : join(repoRoot, "config", "identity", "registry.v3.json");
 
-  if (exists(path)) return { status: "available", path, explicit, reason: "registry is readable" };
+  // `reason` is a diagnostic string, so it claims presence only. Readability is proven by actually
+  // reading: a directory or a mode-000 file is "present" here and fails hard in readRegistry.
+  if (exists(path)) return { status: "available", path, explicit, reason: `registry file is present at ${path}` };
+
+  // A non-absolute repo root means the environment is broken, not that the repo is absent. The live
+  // case: HOME="" (set but empty, as in `env -i` wrappers, minimal containers, some launchd/cron
+  // contexts) makes os.homedir() return "", so this path collapses to the RELATIVE
+  // "Projects/brand-intelligence-pipeline", which existsSync resolves against cwd and misses. Left
+  // as absent-repo that silently disarms the guard on a machine that does have the registry, which
+  // is the one failure this whole rule exists to prevent. HOME unset entirely is fine: homedir()
+  // falls back to getpwuid.
+  if (!explicit && !isAbsolute(repoRoot)) {
+    return { status: "missing", path, explicit, reason: `the pipeline repo root is not an absolute path (${JSON.stringify(repoRoot)}); HOME is probably set but empty` };
+  }
 
   // An explicit path is a deliberate claim that a registry lives there. Honoring it as "absent" would
   // let a typo in BIP_REGISTRY_PATH turn the guard off silently, which is the failure mode this whole
@@ -191,6 +204,52 @@ export function buildMap(registry, registrySha256) {
   return { ...body, contentHash: sha256(JSON.stringify(body)) };
 }
 
+/**
+ * Whether the registry comparison should be skipped, and what to say about it. Lives here rather
+ * than inline in the drift test so the decision is assertable: logic that only exists inside a test
+ * file is logic nothing tests, and this particular decision is the one that can switch a guard off.
+ *
+ * @returns {{skip: boolean, why: string|null}}
+ */
+export function shouldSkipDrift({ env = process.env, availability = registryAvailability({ env }) } = {}) {
+  if (env.SKIP_BIP_DRIFT === "1") {
+    return { skip: true, why: "SKIP_BIP_DRIFT=1 is set, so the registry comparison was opted out of deliberately" };
+  }
+  if (availability.status === "absent-repo") return { skip: true, why: availability.reason };
+  return { skip: false, why: null };
+}
+
+/**
+ * Everything about the committed artifact that can be checked WITHOUT a registry: that it is there,
+ * that it parses, and that its self-declared contentHash still covers its own body. Circular on its
+ * own, which is why it is not the drift check, but it does catch a missing, truncated, or
+ * hand-edited file. Used on the skip path so "no registry here" never means "nothing verified".
+ *
+ * @returns {string|null} a description of the problem, or null when the artifact is self-consistent
+ */
+export function artifactSelfCheck(outputPath = OUTPUT_PATH) {
+  if (!existsSync(outputPath)) return `${outputPath} does not exist. Run: node scripts/build-brand-map.mjs`;
+
+  let parsed;
+  try {
+    parsed = JSON.parse(readFileSync(outputPath, "utf8"));
+  } catch (err) {
+    return `${outputPath} is not valid JSON (${err.message}). Regenerate: node scripts/build-brand-map.mjs`;
+  }
+
+  const { contentHash, ...body } = parsed;
+  if (typeof contentHash !== "string" || !/^[0-9a-f]{64}$/.test(contentHash)) {
+    return `${outputPath} has no full-length contentHash, so it was truncated or hand-edited.`;
+  }
+  // Key order is fixed by construction in buildMap and preserved by JSON.parse, so re-stringifying
+  // the body reproduces the exact bytes that were hashed.
+  const actual = sha256(JSON.stringify(body));
+  if (actual !== contentHash) {
+    return `${outputPath} declares contentHash ${contentHash} but its body hashes to ${actual}, so it was edited by hand.`;
+  }
+  return null;
+}
+
 /** The exact bytes written to disk. One definition so `--check` compares like for like. */
 export function serializeMap(map) {
   return JSON.stringify(map, null, 2) + "\n";
@@ -214,10 +273,19 @@ function main() {
 
   // Only --check may skip. Writing the artifact without a source is impossible, so that path still
   // falls through to the hard failure in readRegistry below.
+  //
+  // The skip forgoes the REGISTRY COMPARISON, not all verification. Everything checkable without a
+  // registry is still checked, or a fresh clone with no sibling repo and no node_modules (where the
+  // hook also skips the vitest suites) would validate the artifact nowhere at all.
   if (check && availability.status === "absent-repo") {
+    const problem = artifactSelfCheck();
+    if (problem) {
+      console.error(`BRAND_MAP_DRIFT: ${problem}`);
+      process.exit(1);
+    }
     console.error(
       `BRAND_MAP_DRIFT_SKIPPED: ${availability.reason}.\n` +
-        `  The committed map was NOT verified against a registry on this run.\n` +
+        `  The committed map is self-consistent, but was NOT compared against a registry on this run.\n` +
         `  Point BIP_REGISTRY_PATH at a copy of registry.v3.json to check it here.`,
     );
     process.exit(0);

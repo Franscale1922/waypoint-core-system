@@ -1,6 +1,11 @@
 import { describe, it, expect } from "vitest";
 import { join } from "node:path";
-import { registryAvailability, DEFAULT_REGISTRY_REPO_ROOT, DEFAULT_REGISTRY_PATH } from "../../scripts/build-brand-map.mjs";
+import {
+  registryAvailability,
+  shouldSkipDrift,
+  DEFAULT_REGISTRY_REPO_ROOT,
+  DEFAULT_REGISTRY_PATH,
+} from "../../scripts/build-brand-map.mjs";
 
 /**
  * `registryAvailability` is the one function in this repo that can turn a guard off. The drift check
@@ -66,6 +71,60 @@ describe("registryAvailability: an explicit BIP_REGISTRY_PATH is opting in, so i
     expect(result.status).toBe("available");
     expect(result.explicit).toBe(false);
     expect(result.path).toBe(REGISTRY);
+  });
+});
+
+describe("registryAvailability: a broken environment is not an absent repo", () => {
+  it("reports missing, not absent-repo, when the repo root is not an absolute path", () => {
+    // HOME="" makes os.homedir() return "", so the default root collapses to the relative
+    // "Projects/brand-intelligence-pipeline", existsSync resolves it against cwd and misses, and the
+    // guard would skip on a machine that has the registry. Reachable under `env -i`, minimal
+    // containers, and some launchd/cron contexts.
+    const result = registryAvailability({ env: {}, repoRoot: "Projects/brand-intelligence-pipeline", exists: withPaths() });
+    expect(result.status).toBe("missing");
+    expect(result.reason).toContain("absolute");
+  });
+
+  it("still reports absent-repo for an absolute root that is simply not there", () => {
+    // The fix above must not swallow the legitimate case it sits next to.
+    expect(registryAvailability({ env: {}, repoRoot: ROOT, exists: withPaths() }).status).toBe("absent-repo");
+  });
+});
+
+describe("shouldSkipDrift: the decision the drift test acts on", () => {
+  const available = { status: "available", path: REGISTRY, explicit: false, reason: "" };
+  const absentRepo = { status: "absent-repo", path: REGISTRY, explicit: false, reason: "no repo here" };
+  const missing = { status: "missing", path: REGISTRY, explicit: false, reason: "registry moved" };
+
+  it("does not skip when the registry is available", () => {
+    expect(shouldSkipDrift({ env: {}, availability: available }).skip).toBe(false);
+  });
+
+  it("does not skip when the registry is merely missing", () => {
+    // The mutation this kills: `status !== "available"` instead of `=== "absent-repo"`, which would
+    // turn a moved registry and a bad BIP_REGISTRY_PATH into silent passes. That includes the
+    // user's own repro command, which must keep failing.
+    expect(shouldSkipDrift({ env: {}, availability: missing }).skip).toBe(false);
+  });
+
+  it("skips when the sibling repo is absent, and explains why", () => {
+    const { skip, why } = shouldSkipDrift({ env: {}, availability: absentRepo });
+    expect(skip).toBe(true);
+    expect(why).toBe("no repo here");
+  });
+
+  it("skips on SKIP_BIP_DRIFT=1 with its own distinct explanation", () => {
+    const { skip, why } = shouldSkipDrift({ env: { SKIP_BIP_DRIFT: "1" }, availability: available });
+    expect(skip).toBe(true);
+    expect(why).toContain("SKIP_BIP_DRIFT=1");
+  });
+
+  it("treats only the documented value 1 as the opt-out", () => {
+    // The hook used `-z`, so SKIP_BIP_DRIFT=0 disabled the push guard while the test still ran it.
+    // Both now test for exactly "1"; this pins the half that lives in JS.
+    for (const value of ["0", "", "false", "no", "true"]) {
+      expect(shouldSkipDrift({ env: { SKIP_BIP_DRIFT: value }, availability: available }).skip).toBe(false);
+    }
   });
 });
 

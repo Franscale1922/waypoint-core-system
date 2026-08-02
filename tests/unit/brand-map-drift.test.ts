@@ -6,6 +6,7 @@ import {
   serializeMap,
   readRegistry,
   registryAvailability,
+  shouldSkipDrift,
   OUTPUT_PATH,
 } from "../../scripts/build-brand-map.mjs";
 import map from "@/lib/match-workspace/brand-identity-map.json";
@@ -32,14 +33,18 @@ import map from "@/lib/match-workspace/brand-identity-map.json";
 
 const availability = registryAvailability();
 const registryPath = availability.path;
-const skip = process.env.SKIP_BIP_DRIFT === "1" || availability.status === "absent-repo";
+const { skip, why } = shouldSkipDrift({ availability });
 
 // describe.skipIf is silent, and a silently-skipped guard is barely better than a wrong one: the
 // run goes green with no hint that nothing was verified. Say so on the way past.
-if (availability.status === "absent-repo") {
+//
+// BOTH skips announce themselves, including the deliberate one. The manual opt-out is if anything
+// the more dangerous of the two, because SKIP_BIP_DRIFT can sit exported in a shell profile for
+// weeks, quietly disarming every run, while the absent-repo skip at least tracks a real machine.
+if (skip) {
   console.warn(
-    `\nBRAND_MAP_DRIFT_SKIPPED: ${availability.reason}.\n` +
-      `  The committed brand map was NOT verified against a registry on this run.\n` +
+    `\nBRAND_MAP_DRIFT_SKIPPED: ${why}.\n` +
+      `  The committed brand map was NOT compared against a registry on this run.\n` +
       `  Point BIP_REGISTRY_PATH at a copy of registry.v3.json to check it here.\n`,
   );
 }

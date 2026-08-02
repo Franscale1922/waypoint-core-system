@@ -254,6 +254,11 @@ npm run test                              # links, schema, unit and auth suites
 grep -c "—" content/articles/{slug}.md    # must be 0
 ```
 
+If `npm run test` ends with `BRAND_MAP_DRIFT_SKIPPED`, that is expected on a machine without the
+`brand-intelligence-pipeline` repo checked out (the Mac Mini, a fresh clone). The run is still green
+and nothing about your article went unchecked: only the brand-identity map's comparison against that
+other repo was skipped, and the map was still checked for self-consistency.
+
 Start the dev server if not already running:
 
 ```bash

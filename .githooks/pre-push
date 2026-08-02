@@ -28,16 +28,28 @@ fi
 # 1 whenever the registry was unreadable, so every push from a machine without the sibling repo was
 # blocked.)
 #
-# Only stdout is silenced. The routine "in sync" report goes to stdout and is noise on every push;
-# the skip warning and every failure go to stderr, so a guard that went quiet still says so.
-if [ -z "$SKIP_BIP_DRIFT" ]; then
-  if ! node scripts/build-brand-map.mjs --check >/dev/null; then
+# SKIP_BIP_DRIFT is tested for exactly "1", the documented form, because the drift test tests for
+# exactly "1" too. This used to be `-z`, so SKIP_BIP_DRIFT=0 disabled the push guard while the test
+# still ran it: one variable, two meanings, and the value that reads like "off" turned it off.
+#
+# Output is captured rather than discarded. The routine "in sync" line is noise on every green push,
+# but on a failure it carries the registry version and hashes, which is the fastest way to tell
+# whether the registry moved forward or the map went backward. Quiet when green, everything when not.
+if [ "$SKIP_BIP_DRIFT" != "1" ]; then
+  drift_output=$(node scripts/build-brand-map.mjs --check 2>&1)
+  drift_status=$?
+  if [ "$drift_status" -ne 0 ]; then
+    echo "$drift_output"
     echo ""
     echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
     echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
     echo "  Genuinely need to skip?          SKIP_BIP_DRIFT=1 git push"
     exit 1
   fi
+  # Green, but green-because-skipped has to be visible or the skip is a lie.
+  case "$drift_output" in
+    *BRAND_MAP_DRIFT_SKIPPED*) echo "$drift_output" ;;
+  esac
 fi
 
 # Fast unit suites (no database, no network). These were previously run by nothing:
