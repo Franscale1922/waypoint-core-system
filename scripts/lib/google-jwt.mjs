@@ -20,6 +20,9 @@ import https from "https";
 const TOKEN_HOST = "oauth2.googleapis.com";
 const TOKEN_PATH = "/token";
 const MAX_ERROR_BODY = 500;
+// A connection that is accepted but never answered would otherwise hang the run
+// until GitHub's multi-hour job limit.
+const REQUEST_TIMEOUT_MS = 15_000;
 
 function base64url(buf) {
   return Buffer.from(buf)
@@ -88,6 +91,7 @@ export function getAccessToken(credentials, scope, options = {}) {
           "Content-Type": "application/x-www-form-urlencoded",
           "Content-Length": Buffer.byteLength(body),
         },
+        timeout: REQUEST_TIMEOUT_MS,
       },
       (res) => {
         let data = "";
@@ -120,6 +124,9 @@ export function getAccessToken(credentials, scope, options = {}) {
       },
     );
 
+    req.on("timeout", () => {
+      req.destroy(new Error(`No response from ${TOKEN_HOST} within ${REQUEST_TIMEOUT_MS}ms`));
+    });
     req.on("error", reject);
     req.write(body);
     req.end();

@@ -235,20 +235,12 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
   return lines.join("\n");
 }
 
-// ─── Sitemap submission ───────────────────────────────────────────────────────
-
-async function submitSitemap(searchconsole) {
-  const sitemapUrl = "https://waypointfranchise.com/sitemap.xml";
-  try {
-    await searchconsole.sitemaps.submit({
-      siteUrl: SITE_URL,
-      feedpath: sitemapUrl,
-    });
-    console.log("✅ Sitemap submitted via GSC API");
-  } catch (e) {
-    console.log(`⚠️  Sitemap submission failed: ${e.message}`);
-  }
-}
+// Sitemap submission used to live here. It could never have worked: getAuth()
+// requests the webmasters.readonly scope, so every run printed
+// "Sitemap submission failed: Request had insufficient authentication scopes"
+// and carried on. This script only reads. Submission belongs to
+// .github/scripts/submit-sitemap.mjs, which asks for the write scope and runs on
+// deploy rather than once a month.
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -278,9 +270,6 @@ async function main() {
   const outPath = path.join(outDir, "gsc-report.md");
   fs.writeFileSync(outPath, report, "utf-8");
   console.log(`\n✅ Report saved to: docs/seo-reviews/${monthFolder}/gsc-report.md`);
-
-  // Submit sitemap via GSC API
-  await submitSitemap(searchconsole);
 
   console.log("\nDone. Open the report and run the optimization workflow.");
 }

@@ -30,10 +30,17 @@
 import https from "https";
 import { loadServiceAccount, reportCredentialFailure } from "../../scripts/lib/load-service-account.mjs";
 import { getAccessToken } from "../../scripts/lib/google-jwt.mjs";
+import {
+  resolveSite,
+  sitemapUrlFor,
+  hostOf,
+  canSubmitSitemap,
+} from "../../scripts/lib/gsc-property.mjs";
 
 const SCOPE = "https://www.googleapis.com/auth/webmasters";
 const CANONICAL_HOST = "www.waypointfranchise.com";
 const VAR_NAME = "GSC_SERVICE_ACCOUNT_KEY";
+const REQUEST_TIMEOUT_MS = 15_000;
 
 // ── 1. Credentials ────────────────────────────────────────────────────────
 const credentials = (() => {
@@ -90,25 +97,37 @@ const available = (JSON.parse(sites.body).siteEntry ?? []).map((e) => ({
 if (available.length === 0) {
   fail(
     `The service account can see no Search Console properties.\n` +
-      `Add ${credentials.client_email} as an Owner of the property in Search Console.`,
+      `Add ${credentials.client_email} as a Full user of the property in Search Console.`,
   );
 }
 
 const configured = process.env.GSC_SITE_URL;
-const site = resolveSite(configured, available);
+const site = resolveSite(configured, available, { fallbackHost: CANONICAL_HOST });
 
 if (!site) {
+  // Only properties for the site we are looking for are named. Dumping the whole
+  // inventory would put every other domain this account can reach into a log,
+  // including any that are not public yet.
+  const wanted = (hostOf(configured) ?? CANONICAL_HOST).replace(/^www\./, "");
+  const related = available.filter((s) => s.url.includes(wanted));
+  const others = available.length - related.length;
+
   fail(
     `No Search Console property matches ${configured ? `"${configured}"` : "any expected form of the site URL"}.\n` +
-      `Properties this account can see:\n` +
-      available.map((s) => `  ${s.url}  (${s.permission})`).join("\n"),
+      (related.length
+        ? `Properties for ${wanted} this account can see:\n` +
+          related.map((s) => `  ${s.url}  (${s.permission})`).join("\n")
+        : `This account can see no property for ${wanted}.`) +
+      (others > 0 ? `\n(${others} unrelated propert${others === 1 ? "y" : "ies"} not listed.)` : "") +
+      `\nAdd ${credentials.client_email} to the right property in Search Console,\n` +
+      `or set the GSC_SITE_URL variable to one of the identifiers above.`,
   );
 }
 
 console.log(`✅ Property: ${site.url} (${site.permission})`);
 
 // Sitemaps.submit needs write access; siteFullUser/siteOwner have it.
-if (site.permission === "siteUnverifiedUser" || site.permission === "siteRestrictedUser") {
+if (!canSubmitSitemap(site.permission)) {
   fail(
     `The service account has "${site.permission}" on ${site.url}, which cannot submit sitemaps.\n` +
       `Raise ${credentials.client_email} to Full or Owner in Search Console\n` +
@@ -122,7 +141,7 @@ if (site.permission === "siteUnverifiedUser" || site.permission === "siteRestric
 // returns `400 invalidParameter` on `feedpath`. This was hardcoded to the www
 // host and the resolved property is the non-www prefix, so it is derived from
 // the property instead of assumed.
-const sitemapUrl = sitemapUrlFor(site.url);
+const sitemapUrl = sitemapUrlFor(site.url, { canonicalHost: CANONICAL_HOST });
 const path =
   `/webmasters/v3/sites/${encodeURIComponent(site.url)}` +
   `/sitemaps/${encodeURIComponent(sitemapUrl)}`;
@@ -139,54 +158,10 @@ if (submitted.status === 204) {
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────
+// Property matching and sitemap-path derivation live in
+// scripts/lib/gsc-property.mjs so they can be tested without running this file,
+// which authenticates and calls Google on import.
 
-/**
- * Matches the configured identifier against what the API reports, tolerating the
- * www/non-www and domain-property spellings of the same site.
- */
-function resolveSite(configured, available) {
-  const byUrl = new Map(available.map((s) => [s.url, s]));
-  if (configured && byUrl.has(configured)) return byUrl.get(configured);
-
-  const host = hostOf(configured) ?? "waypointfranchise.com";
-  const bare = host.replace(/^www\./, "");
-
-  for (const candidate of [
-    `sc-domain:${bare}`,
-    `https://${bare}/`,
-    `https://www.${bare}/`,
-    `http://${bare}/`,
-  ]) {
-    if (byUrl.has(candidate)) return byUrl.get(candidate);
-  }
-
-  return null;
-}
-
-/**
- * The sitemap path Google will accept for a given property.
- *
- * A domain property (`sc-domain:`) covers every host, so the canonical www host
- * is used. A URL-prefix property only covers its own origin, so the sitemap has
- * to be resolved against that exact origin even when the site canonicalises
- * elsewhere.
- */
-function sitemapUrlFor(propertyUrl) {
-  if (propertyUrl.startsWith("sc-domain:")) {
-    return `https://${CANONICAL_HOST}/sitemap.xml`;
-  }
-  return new URL("sitemap.xml", propertyUrl).toString();
-}
-
-function hostOf(value) {
-  if (!value) return null;
-  if (value.startsWith("sc-domain:")) return value.slice("sc-domain:".length);
-  try {
-    return new URL(value).hostname;
-  } catch {
-    return null;
-  }
-}
 
 function request(method, path) {
   return new Promise((resolve, reject) => {
@@ -196,6 +171,9 @@ function request(method, path) {
         path,
         method,
         headers: { Authorization: `Bearer ${token}`, "Content-Length": 0 },
+        // Without this, a connection that is accepted but never answered leaves
+        // the promise pending until GitHub's multi-hour job limit kills the run.
+        timeout: REQUEST_TIMEOUT_MS,
       },
       (res) => {
         let body = "";
@@ -203,6 +181,9 @@ function request(method, path) {
         res.on("end", () => resolve({ status: res.statusCode, body }));
       },
     );
+    req.on("timeout", () => {
+      req.destroy(new Error(`No response from www.googleapis.com within ${REQUEST_TIMEOUT_MS}ms`));
+    });
     req.on("error", reject);
     req.end();
   });

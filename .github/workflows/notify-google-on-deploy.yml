@@ -62,18 +62,34 @@ jobs:
           EOF
           )
 
-          echo "Submitting to IndexNow..."
-          STATUS=$(curl -s -o /tmp/indexnow_response.txt -w "%{http_code}" \
-            -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d "$PAYLOAD")
+          # Retried, then fatal. This is the only channel here that reaches a real
+          # search engine, so a run where it never succeeded must not report green:
+          # a silent warning is how a permanently broken submission goes unnoticed,
+          # which is the failure mode this whole workflow just came out of.
+          for ATTEMPT in 1 2 3; do
+            echo "Submitting to IndexNow (attempt $ATTEMPT)..."
+            STATUS=$(curl -s -o /tmp/indexnow_response.txt -w "%{http_code}" \
+              -X POST "https://api.indexnow.org/indexnow" \
+              -H "Content-Type: application/json; charset=utf-8" \
+              -d "$PAYLOAD")
 
-          echo "IndexNow response: $STATUS"
-          cat /tmp/indexnow_response.txt || true
-          # 200 = success, 202 = accepted (queued), both are valid
-          if [ "$STATUS" -ne 200 ] && [ "$STATUS" -ne 202 ]; then
-            echo "::warning title=IndexNow::IndexNow returned $STATUS (non-fatal)"
-          fi
+            echo "IndexNow response: $STATUS"
+            cat /tmp/indexnow_response.txt || true
+
+            # 200 = success, 202 = accepted (queued), both are valid
+            if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 202 ]; then
+              exit 0
+            fi
+
+            # 4xx other than 429 is a bad request or key problem; retrying will not help.
+            if [ "$STATUS" -ge 400 ] && [ "$STATUS" -lt 500 ] && [ "$STATUS" -ne 429 ]; then
+              break
+            fi
+            sleep $((ATTEMPT * 5))
+          done
+
+          echo "::error title=IndexNow::IndexNow returned $STATUS; no search engine was notified"
+          exit 1
 
   # ─────────────────────────────────────────────────
   # Google: Search Console sitemap submission
