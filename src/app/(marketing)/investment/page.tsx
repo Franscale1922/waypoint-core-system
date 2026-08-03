@@ -30,7 +30,7 @@ const investmentGuideSchema = faqPageSchema(
 export const metadata: Metadata = {
   title: "How Much Does a Franchise Cost? | Investment Guide",
   description:
-    "A plain-language guide to franchise investment costs: initial franchise fees ($20K–$60K), total investment ranges by category, royalty structures, working capital, and how franchise financing actually works. No sales pitch.",
+    "How much does a franchise cost? Initial franchise fees run $20,000 to $60,000, plus total investment by category, royalties, and working capital needs.",
   alternates: { canonical: "https://www.waypointfranchise.com/investment" },
   openGraph: {
     title: "Franchise Investment Guide | Waypoint Franchise Advisors",

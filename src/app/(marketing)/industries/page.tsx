@@ -7,7 +7,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Franchise Industries & Categories",
   description:
-    "Explore the major franchise categories: home services, senior care, fitness & wellness, food & beverage, and B2B services. What each is really like, who it fits, and the tradeoffs.",
+    "The major franchise categories: home services, senior care, fitness and wellness, food and beverage, and B2B. What each is like and who it actually fits.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/industries",
     types: { "text/markdown": "https://www.waypointfranchise.com/industries.md" },

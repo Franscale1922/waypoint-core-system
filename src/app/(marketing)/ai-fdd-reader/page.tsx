@@ -6,7 +6,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "The AI Paperwork Reader",
   description:
-    "A free copy-paste prompt pack for putting AI to work reading a 200-page franchise disclosure document in an afternoon. The AI assists. It does not replace your attorney.",
+    "A free copy-paste prompt pack for putting AI to work on a 200-page franchise disclosure document. The AI assists, and it never replaces your attorney.",
   openGraph: {
     title: "The AI Paperwork Reader | Waypoint Franchise Advisors",
     description:

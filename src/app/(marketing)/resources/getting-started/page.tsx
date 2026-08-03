@@ -7,7 +7,7 @@ import JsonLd from "../../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Getting Started with Franchising",
   description:
-    "If you are new to franchising, start here. Practical guides covering readiness, costs, how consultants work, FDD review, and what type of franchise fits your situation.",
+    "New to franchising? Start here. Practical guides on readiness, costs, how consultants work, FDD review, and which type of franchise fits your situation.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/resources/getting-started",
     types: { "text/markdown": "https://www.waypointfranchise.com/resources/getting-started.md" },

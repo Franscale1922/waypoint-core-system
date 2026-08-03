@@ -6,7 +6,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Free Franchise Tools",
   description:
-    "Two free tools to help you figure out where you stand before talking to anyone. The Franchise Readiness Quiz tells you if your capital, mindset, and situation are aligned. The Archetype Quiz tells you which franchise categories fit the way you naturally work.",
+    "Two free tools for working out where you stand before talking to anyone. The readiness quiz scores your situation, and the archetype quiz finds your fit.",
   alternates: { canonical: "https://www.waypointfranchise.com/tools" },
   openGraph: {
     title: "Free Franchise Tools | Waypoint Franchise Advisors",

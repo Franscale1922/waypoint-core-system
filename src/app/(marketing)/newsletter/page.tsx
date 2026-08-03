@@ -7,7 +7,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "The Franchise Dispatch Newsletter | Free Weekly Insights",
   description:
-    "A no-hype newsletter on franchise ownership, financial independence, and the honest math of leaving corporate. From Kelsey Stuart, former Bloomin' Blinds franchisor.",
+    "A no-hype newsletter on franchise ownership and the honest math of leaving corporate life, from Kelsey Stuart, a former franchisor and franchise owner.",
   alternates: { canonical: "https://www.waypointfranchise.com/newsletter" },
   openGraph: {
     title: "The Franchise Dispatch | Waypoint Franchise Advisors",

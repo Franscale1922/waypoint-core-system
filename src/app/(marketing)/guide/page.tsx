@@ -6,7 +6,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Franchise Interview Guide",
   description:
-    "Fifteen questions to ask any franchise brand, in a worksheet you fill out right in your browser. Fill one per brand, save or print it, and see which one actually fits.",
+    "Fifteen questions to ask any franchise brand, in a worksheet you fill in right in your browser. Save or print one per brand and see which really fits.",
   alternates: { canonical: "https://www.waypointfranchise.com/guide" },
   openGraph: {
     title: "Franchise Interview Guide | Waypoint Franchise Advisors",

@@ -7,7 +7,7 @@ import JsonLd from "../../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Franchise Industry Spotlights",
   description:
-    "Category-specific analysis for people evaluating specific types of franchises: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
+    "Category analysis for people weighing specific franchise types: home services, senior care, fitness, B2B, restoration, junk removal, and car wash concepts.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/resources/industry-spotlights",
     types: { "text/markdown": "https://www.waypointfranchise.com/resources/industry-spotlights.md" },

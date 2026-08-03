@@ -26,7 +26,7 @@ const faqs = [
 export const metadata: Metadata = {
   title: "Is a Franchise Worth It? How to Decide Honestly",
   description:
-    "Is buying a franchise worth it? An honest framework for deciding: what makes a franchise worthwhile, what to validate, and how to tell if it fits you. No hype, no earnings claims.",
+    "Is buying a franchise worth it? An honest framework for what to validate and how to tell whether one really fits you. No hype and no earnings claims here.",
   alternates: { canonical: "https://www.waypointfranchise.com/is-a-franchise-worth-it" },
   openGraph: {
     title: "Is a Franchise Worth It? | Waypoint Franchise Advisors",

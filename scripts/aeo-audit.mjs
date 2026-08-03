@@ -100,11 +100,39 @@ console.log(`  OVER ${EXCERPT_MAX} (truncated in search): ${tooLong.length}${lis
 console.log(`  under ${EXCERPT_MIN} (wastes snippet space): ${tooShort.length}${list(tooShort, (r) => `${r.f}(${r.excerptLen})`)}`);
 if (missingExcerpt.length) console.log(`  unparseable excerpt: ${missingExcerpt.length}${list(missingExcerpt)}`);
 
-if (tooLong.length > 0 || missingExcerpt.length > 0) {
-  console.log(`\nFAIL: ${tooLong.length} excerpt(s) over ${EXCERPT_MAX} chars${missingExcerpt.length ? ` and ${missingExcerpt.length} unparseable` : ""}. Google cuts these off mid-sentence.`);
+// Same rule for the hand-written pages. Articles are only half the site, and
+// when this guard was added 24 of 31 page-level descriptions were over too,
+// including /glossary and /investment, the two highest-impression pages there
+// are. Only the top-level `description` in the exported `metadata` object is
+// the meta description; the nested openGraph one is a different field with
+// different limits, so the two-space indent is load-bearing here.
+function metaDescriptionsOf(dir, acc = []) {
+  if (!fs.existsSync(dir)) return acc;
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, e.name);
+    if (e.isDirectory()) metaDescriptionsOf(full, acc);
+    else if (e.name === "page.tsx") {
+      const src = fs.readFileSync(full, "utf8");
+      const start = src.match(/export const metadata[^=]*=\s*\{/);
+      if (!start) continue;
+      const d = src.slice(start.index + start[0].length).match(/^ {2}description:\s*\n?\s*"([\s\S]*?)",\s*$/m);
+      if (d) acc.push({ f: full, len: d[1].length });
+    }
+  }
+  return acc;
+}
+const pageDescs = metaDescriptionsOf("src/app");
+const pageTooLong = pageDescs.filter((p) => p.len > EXCERPT_MAX).sort((a, b) => b.len - a.len);
+
+console.log(`\nPage meta descriptions in src/app (target ${EXCERPT_MIN}-${EXCERPT_MAX}):`);
+console.log(`  within ${EXCERPT_MAX}: ${pageDescs.length - pageTooLong.length}/${pageDescs.length}`);
+console.log(`  OVER ${EXCERPT_MAX} (truncated in search): ${pageTooLong.length}${list(pageTooLong, (r) => `${r.f.replace("src/app/", "")}(${r.len})`)}`);
+
+if (tooLong.length > 0 || missingExcerpt.length > 0 || pageTooLong.length > 0) {
+  console.log(`\nFAIL: ${tooLong.length} excerpt(s) and ${pageTooLong.length} page description(s) over ${EXCERPT_MAX} chars${missingExcerpt.length ? `, ${missingExcerpt.length} unparseable` : ""}. Google cuts these off mid-sentence.`);
   process.exitCode = 1;
 } else {
-  console.log(`PASS: every excerpt fits the search snippet.`);
+  console.log(`PASS: every excerpt and page description fits the search snippet.`);
 }
 
 // ─── Section 11 em-dash guard across all of src/ ────────────────────────────
