@@ -166,10 +166,14 @@ Rules for the gate:
 mid-conversation invalidates the cached prefix; the next turn re-writes it at the
 1-hour cache-write rate — **2× base input**, twice uncached and ~20× a cache hit.
 Measured 2026-08-03 on a real session: three switches at 140–280k context cost
-**~$5.10** of re-caching, the *effort-only* switch the priciest at $2.68. Prefer
-handing off to switching in place: end the
-session at the boundary so the switch fires at session start, when context is
-near-empty. Close every session with a fenced block I can paste into a new chat —
+**~$5.10** of re-caching, the *effort-only* switch the priciest at $2.68.
+
+**At a boundary, pick the cheapest of three.** If the work is delegatable and
+briefable, spawn a **subagent** at the target model/effort — the parent's cache is
+untouched, so this beats both alternatives. Otherwise weigh the switch against a
+cold start, which is **~63k tokens / ~$0.63 on Opus** (measured across 7 sessions):
+above **~60k** of accumulated context, end the session and hand off; below it, just
+switch in place. Close every session with a fenced block I can paste into a new chat —
 the one-line task, the literal `/model` and `/effort` commands on separate lines,
 a pointer to the handoff doc, and any constraint that would do real damage if
 missed; it **points, never restates**. Where a switch must happen in place, group
