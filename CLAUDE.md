@@ -163,23 +163,28 @@ Rules for the gate:
 ### A phase boundary is a session boundary
 
 **Switching isn't free — it dumps the prompt cache.** Changing model *or* effort
-mid-conversation invalidates the cached prefix; the next turn re-writes it at the
-1-hour cache-write rate — **2× base input**, twice uncached and ~20× a cache hit.
-Measured 2026-08-03 on a real session: three switches at 140–280k context cost
-**~$5.10** of re-caching, the *effort-only* switch the priciest at $2.68.
+mid-conversation invalidates the cached prefix; the next turn re-writes ~85% of it
+at the 1-hour cache-write rate — **2× base input**, twice uncached and ~20× a cache
+hit. Measured 2026-08-03, one session, n=1 per switch type (treat magnitudes as
+indicative): three switches at 140–280k context cost **~$5.10**, the *effort-only*
+switch the priciest at $2.68. Dollars here are API-equivalent — a proxy for
+subscription quota, not a bill.
 
-**At a boundary, pick the cheapest of three.** If the work is delegatable and
-briefable, spawn a **subagent** at the target model/effort — the parent's cache is
-untouched, so this beats both alternatives. Otherwise weigh the switch against a
-cold start, which is **~63k tokens / ~$0.63 on Opus** (measured across 7 sessions):
-above **~60k** of accumulated context, end the session and hand off; below it, just
-switch in place. Close every session with a fenced block I can paste into a new chat —
-the one-line task, the literal `/model` and `/effort` commands on separate lines,
-a pointer to the handoff doc, and any constraint that would do real damage if
-missed; it **points, never restates**. Where a switch must happen in place, group
-work so each boundary is a real change of task, don't bounce between tiers inside
-one phase, and on a long cached session weigh the re-read against the gain before
-stepping up for a short detour.
+**At a boundary, pick the cheapest of three.** A **subagent** at the target
+model/effort leaves the parent's cache intact (verified — the parent's next turn
+re-read 234k and wrote 6.7k), but the child pays its own startup, so it wins only
+when the brief is small next to the parent's context. Otherwise weigh the switch
+against a cold start, measured across 21 sessions at ~56k write + ~30k read ≈
+**$0.57**: break-even is **~65k** of accumulated context. Past that, hand off; below
+it, switch in place — **and when unsure, switch**, because a fresh session's cost to
+rebuild context is real but unmeasured and pushes the true threshold higher. Close
+every session with a fenced block I can paste into a new chat — the one-line task,
+the literal `/model` and `/effort` commands on separate lines, a pointer to the
+handoff doc, and any constraint that would do real damage if missed; it **points,
+never restates**. Update that doc before the session ends — branch and HEAD, what is
+incomplete, what failed, what is undecided. A pointer to a stale doc is how the next
+session resumes from the wrong state. Also group work so each boundary is a real
+change of task, and don't bounce between tiers inside one phase.
 
 ### Model roster — capability, cost, and fit
 
