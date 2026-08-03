@@ -108,7 +108,7 @@ measured", not "not ranking".
 
 | Slug | Impressions | CTR | Position | Read |
 |---|---|---|---|---|
-| `franchise-investment-by-category` | 82 | 2.4% | **3.3** | Best page in the corpus. Description rewritten 2026-08-03; it was 291 chars and truncated. |
+| `franchise-investment-by-category` | 82 | 2.4% | **3.3** | ⚠️ Position 3.3 is not the win it looks like. See below. Description rewritten 2026-08-03; it was 291 chars and truncated. |
 | `sba-loan-vs-robs-franchise-funding-comparison` | 62 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
 | `how-to-pick-a-franchise-territory` | 9 | 0% | 77.3 | "franchise territories available" and similar sit at 67-82. Thin at 0 words of depth on territory mechanics. |
 | `property-management-franchises` | 5 | 0% | 99.2 | Effectively unranked. |
@@ -129,14 +129,31 @@ The article corpus is not where the impressions are. Three query clusters domina
 | ROBS / SBA funding (4 queries) | 54 | `/franchise-financing/robs-401k-rollover` | 82.7 |
 | Franchise cost / price (4 queries) | 41 | `/investment` | 66.6 |
 
-⚠️ **The middle column is an inference and must not be quoted as fact.** The August report pulled
-`["page"]` and `["query"]` as separate Search Console requests, so nothing in it joins a query to the
-page that served it. The pairings above are the obvious reading (the AUV page is the site's only AUV
-content, `/investment` its only cost landing page), but they are unproven, and a query can perfectly
-well be served by a page nobody expected.
+✅ **Now measured.** These pairings began as inference, because the report pulled `["page"]` and
+`["query"]` as separate Search Console requests and nothing joined them. `gsc-report.mjs` now also
+pulls the `["query","page"]` pair, and the re-run on 2026-08-03 confirmed all three: see "Which Page
+Serves Which Query" in the August report.
 
-`gsc-report.mjs` now also pulls the `["query","page"]` dimension pair, so from the September report
-onward this is measured and the warning can come off.
+### ⚠️ The "best article" is ranking for the wrong things
+
+`franchise-investment-by-category` shows position 3.3, and this session twice cited that as evidence
+that reference-table content works. The join disproves it. **Every one of its queries visible in the
+top-30 table is a brand lookup it cannot serve**, and each ranks at or near number one:
+
+| Query | Impressions | Position |
+|---|---|---|
+| bonkers corner franchise cost | 8 | 1.0 |
+| bonkers franchise cost | 5 | 1.0 |
+| angel one franchise | 2 | 2.0 |
+
+Those 15 impressions at position 1 to 2 are what drags the page's average to 3.3. The other 67 come
+from queries too small to reach the top-30 cutoff, so they are not visible and may well be
+legitimate. The honest reading is that **the 3.3 is not trustworthy as evidence of anything**, not
+that the page is worthless.
+
+The AUV page is the opposite and is the better model to copy. All eight of its queries are genuine
+AUV intent (`auv franchise`, `what does auv mean`, `define auv`, `auv meaning restaurant`), and it
+sits at 37.0 because it is genuinely competing, not because a junk query flatters it.
 
 `/glossary` alone draws 299 impressions at position 4.8 with a 0.3% click-through rate, more than
 every article combined.
