@@ -12,6 +12,16 @@ jobs:
     name: Pull GSC Data, Check AI Citations, Email Summary
     runs-on: ubuntu-latest
 
+    # The "Commit reports to repo" step below pushes the generated report, and
+    # GITHUB_TOKEN is read-only by default in this repo, so that push returned
+    # `403 Permission to Franscale1922/waypoint-core-system.git denied to
+    # github-actions[bot]`. Nobody had seen it because the job always died at the
+    # credential step first; with that gone, this became the next blocker, and it
+    # fails the job BEFORE the summary email is sent. Fixing the secret alone
+    # would therefore still have produced no email.
+    permissions:
+      contents: write
+
     env:
       GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
       GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
