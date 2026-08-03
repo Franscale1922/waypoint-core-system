@@ -129,7 +129,7 @@ async function queryOpenAI(question) {
 
   if (!res.ok) {
     const err = await res.text();
-    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 100)}` };
+    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 300)}` };
   }
 
   const data = await res.json();
@@ -139,23 +139,59 @@ async function queryOpenAI(question) {
 
 // ─── Perplexity ───────────────────────────────────────────────────────────────
 
+// Perplexity has no models endpoint to query, so this is the hand-maintained
+// equivalent of the Gemini walk below: cheapest first, and a rejected name is
+// stepped over rather than failing the provider. The old
+// `llama-3.1-sonar-small-128k-online` belonged to a naming scheme Perplexity
+// retired; keeping it last costs nothing and covers an account still on it.
+const PERPLEXITY_MODELS = ["sonar", "sonar-pro", "llama-3.1-sonar-small-128k-online"];
+let perplexityIndex = 0;
+let perplexityLogged = false;
+
 async function queryPerplexity(question) {
   const key = process.env.PERPLEXITY_API_KEY;
   if (!key) return { skipped: true, reason: "PERPLEXITY_API_KEY not set — add to .env to enable" };
 
-  const res = await fetch("https://api.perplexity.ai/chat/completions", {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "llama-3.1-sonar-small-128k-online",
-      messages: [{ role: "user", content: question }],
-      max_tokens: 500,
-    }),
-  });
+  let res;
+  let err = "";
+  while (perplexityIndex < PERPLEXITY_MODELS.length) {
+    const model = PERPLEXITY_MODELS[perplexityIndex];
+    res = await fetch("https://api.perplexity.ai/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: question }],
+        max_tokens: 500,
+      }),
+    });
 
-  if (!res.ok) {
-    const err = await res.text();
-    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 100)}` };
+    if (res.ok) {
+      if (!perplexityLogged) {
+        console.log(`   Perplexity model: ${model}`);
+        perplexityLogged = true;
+      }
+      break;
+    }
+
+    err = await res.text();
+    // 400 is how Perplexity reports an unknown model; 404 for completeness.
+    // Anything else (401 auth, 429 quota) is a real failure worth surfacing.
+    if (res.status !== 400 && res.status !== 404) break;
+    console.log(`   Perplexity model ${model} rejected, trying the next one`);
+    perplexityIndex += 1;
+  }
+
+  if (!res || !res.ok) {
+    if (perplexityIndex >= PERPLEXITY_MODELS.length) {
+      return {
+        skipped: true,
+        // The permitted list is in the body and was being cut off at 100 chars,
+        // which is why this took a docs lookup instead of reading the error.
+        reason: `no known model accepted. Last response: ${err.slice(0, 300)}`,
+      };
+    }
+    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 300)}` };
   }
 
   const data = await res.json();
@@ -251,7 +287,7 @@ async function queryGemini(question) {
     if (geminiIndex >= candidates.length) {
       return { skipped: true, reason: "every advertised Gemini model returned 404" };
     }
-    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 100)}` };
+    return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 300)}` };
   }
 
   const data = await res.json();
