@@ -20,6 +20,37 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 
 ---
 
+> ## 📊 NEXT TWO, FROM MEASURED DEMAND (added 2026-08-03)
+>
+> The first valid Search Console report (`docs/seo-reviews/2026-08/`) says the queue below is aimed
+> at the wrong things. Almost every unwritten row is an industry spotlight, but the site's measured
+> demand is in **funding** and **cost**, where pages already exist and rank badly:
+>
+> | Cluster | Impressions | Best page today | Position |
+> |---|---|---|---|
+> | ROBS / SBA funding | 54 | `/franchise-financing/robs-401k-rollover` | 82.7 |
+> | Franchise cost / price | 41 | `/investment` | 66.6 |
+> | Territory | 9 | `how-to-pick-a-franchise-territory` | 77.3 |
+>
+> Industry spotlights measured so far draw 1 to 5 impressions each. They are worth writing for
+> coverage, but they are not what the next two slots should go to.
+>
+> **Recommended next two, both depth rather than new categories:**
+>
+> 1. **ROBS in practice: what the rollover actually involves.** Queries are specific and procedural
+>    ("robs sba loan", "robs rollovers options", "robs 401k sba"). The existing page ranks 82.7,
+>    which means thin coverage against people asking operational questions. No interview needed;
+>    `sba-loan-vs-robs-franchise-funding-comparison` already carries Kelsey's framing to build on.
+> 2. **What a franchise costs, by the numbers.** The cost cluster lands on `/investment`, a landing
+>    page, not an article. `the-true-cost-of-buying-a-franchise` exists but drew no impressions.
+>    A category-by-category piece with real ranges would serve the query directly, and
+>    `franchise-investment-by-category` at position 3.3 shows this shape of content works here.
+>
+> Re-check next month before committing: one month of data on a site this size is a signal, not a
+> conclusion.
+
+---
+
 ## Conceptual & Advisory Articles
 *These require interview time with Kelsey or source documents before drafting. Core voice and insight must come from direct input.*
 
