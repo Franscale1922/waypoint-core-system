@@ -22,9 +22,10 @@
 // supported successor to the ping, it is cheap, and it is not a crawl button.
 // Do not let it grow claims it cannot support.
 //
-// Requires GSC_SERVICE_ACCOUNT_KEY (raw JSON or base64) and the service account
-// needing Owner on the property. A read-only grant returns 403 here even though
-// it is enough for scripts/gsc-report.mjs.
+// Requires GSC_SERVICE_ACCOUNT_KEY (raw JSON or base64), and the service account
+// needs "Full" or "Owner" on the property — Google allows sitemap submission at
+// both levels. "Restricted" is not enough here, though it is enough for
+// scripts/gsc-report.mjs, which only reads.
 
 import https from "https";
 import { loadServiceAccount, reportCredentialFailure } from "../../scripts/lib/load-service-account.mjs";
@@ -110,8 +111,9 @@ console.log(`✅ Property: ${site.url} (${site.permission})`);
 if (site.permission === "siteUnverifiedUser" || site.permission === "siteRestrictedUser") {
   fail(
     `The service account has "${site.permission}" on ${site.url}, which cannot submit sitemaps.\n` +
-      `Raise ${credentials.client_email} to Owner in Search Console. Note that\n` +
-      `scripts/gsc-report.mjs only needs read access, so the monthly report is unaffected.`,
+      `Raise ${credentials.client_email} to Full or Owner in Search Console\n` +
+      `(Settings > Users and permissions). Note that scripts/gsc-report.mjs only reads,\n` +
+      `so the monthly report is unaffected by this.`,
   );
 }
 

@@ -275,8 +275,9 @@ article here ever qualified.
 ### One-Time Setup
 
 1. Create a Google Cloud project and a service account, then download its JSON key
-2. Add the service account as an **Owner** of the property in Google Search Console
-   (Owner is required to submit sitemaps; read-only is enough for the monthly SEO report)
+2. Add the service account as a **Full** user of the property in Google Search Console
+   (Full or Owner can submit sitemaps; Restricted is enough for the monthly SEO report,
+   which only reads)
 3. Store the key without going through the clipboard:
 
 ```bash
