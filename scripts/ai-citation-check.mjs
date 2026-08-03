@@ -170,59 +170,87 @@ async function queryPerplexity(question) {
 // reported as a skipped tool — indistinguishable, in the summary, from a missing
 // key. Asking the API which models exist means the next retirement does not
 // silently blank this section.
-let geminiModelPromise = null;
+let geminiCandidatesPromise = null;
+let geminiIndex = 0;
+let geminiLogged = false;
 
-function resolveGeminiModel(key) {
-  geminiModelPromise ??= (async () => {
+// The models endpoint lists names that are advertised but already retired --
+// gemini-2.0-flash-lite-001 is listed and answers generateContent with
+// "This model is no longer available". So this returns an ORDERED list and the
+// caller walks it on 404 rather than trusting the first entry.
+function geminiCandidates(key) {
+  geminiCandidatesPromise ??= (async () => {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
-    if (!res.ok) {
-      throw new Error(`model list unavailable (HTTP ${res.status})`);
-    }
+    if (!res.ok) throw new Error(`model list unavailable (HTTP ${res.status})`);
+
     const names = ((await res.json()).models ?? [])
       .filter((m) => (m.supportedGenerationMethods ?? []).includes("generateContent"))
       .map((m) => m.name.replace(/^models\//, ""))
-      // Preview and experimental models come and go; a scheduled monthly job
-      // should sit on something stable.
-      .filter((n) => !/preview|exp|thinking/i.test(n));
+      // Preview and experimental models come and go; a monthly job wants stable.
+      .filter((n) => !/preview|exp|thinking|vision|embedding/i.test(n));
 
-    // Cheapest first: this asks a short question a few dozen times a month.
-    const pick =
-      names.find((n) => /flash-lite/i.test(n)) ??
-      names.find((n) => /flash/i.test(n)) ??
-      names[0];
+    const version = (n) => parseFloat((n.match(/(\d+\.\d+)/) ?? [0, "0"])[1]);
+    const tier = (n) => (/flash-lite/i.test(n) ? 0 : /flash/i.test(n) ? 1 : 2);
 
-    if (!pick) throw new Error("no model supporting generateContent is available to this key");
-    console.log(`   Gemini model: ${pick}`);
-    return pick;
+    // Newest first, and within a version the cheaper tier first. Newest matters
+    // more than cheapest here because the old ones are what get retired.
+    const ordered = names.sort((a, b) => version(b) - version(a) || tier(a) - tier(b));
+
+    if (ordered.length === 0) {
+      throw new Error("no model supporting generateContent is available to this key");
+    }
+    return ordered;
   })();
-  return geminiModelPromise;
+  return geminiCandidatesPromise;
 }
 
 async function queryGemini(question) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return { skipped: true, reason: "GEMINI_API_KEY not set — add to .env to enable" };
 
-  let model;
+  let candidates;
   try {
-    model = await resolveGeminiModel(key);
+    candidates = await geminiCandidates(key);
   } catch (e) {
     return { skipped: true, reason: `Gemini unavailable: ${e.message}` };
   }
 
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: question }] }],
-        generationConfig: { maxOutputTokens: 500 },
-      }),
-    }
-  );
+  let res;
+  let err = "";
+  // Walk past any model that is advertised but retired. geminiIndex persists, so
+  // this costs one wasted call per dead model per run, not per question.
+  while (geminiIndex < candidates.length) {
+    const model = candidates[geminiIndex];
+    res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: question }] }],
+          generationConfig: { maxOutputTokens: 500 },
+        }),
+      }
+    );
 
-  if (!res.ok) {
-    const err = await res.text();
+    if (res.ok) {
+      if (!geminiLogged) {
+        console.log(`   Gemini model: ${model}`);
+        geminiLogged = true;
+      }
+      break;
+    }
+
+    err = await res.text();
+    if (res.status !== 404) break; // a real error, not a retired name
+    console.log(`   Gemini model ${model} is retired, trying the next one`);
+    geminiIndex += 1;
+  }
+
+  if (!res || !res.ok) {
+    if (geminiIndex >= candidates.length) {
+      return { skipped: true, reason: "every advertised Gemini model returned 404" };
+    }
     return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 100)}` };
   }
 
@@ -266,14 +294,26 @@ function buildReport(results, now) {
   const skippedTools = new Set();
   // Kept alongside the set so the note can say WHY, not just which.
   const skippedReasons = new Map();
+
+  // These reasons are upstream error bodies, and this report is committed to a
+  // PUBLIC repo. OpenAI echoes the rejected key back in its 401 ("Incorrect API
+  // key provided: sk-proj-...") -- partly masked by them, but a key prefix does
+  // not belong in a public file. Strip anything key-shaped before it is written.
+  const redactSecrets = (text) => {
+    const cleaned = text
+      .replace(/\s+/g, " ")
+      .trim()
+      // Provider key formats, then any long opaque token.
+      .replace(/\b(sk|pplx|AIza|gsk)[-_][A-Za-z0-9_*-]{4,}/gi, "[redacted]")
+      .replace(/\b[A-Za-z0-9_-]{32,}\b/g, "[redacted]")
+      .replace(/\*{4,}/g, "[redacted]");
+    return cleaned.length > 160 ? `${cleaned.slice(0, 160)}...` : cleaned;
+  };
   const noteSkip = (tool, result) => {
     if (!result?.skipped) return;
     skippedTools.add(tool);
     if (!skippedReasons.has(tool)) {
-      // Trimmed: an upstream error body can be long, and the first line carries
-      // the useful part (status code and message).
-      const reason = String(result.reason ?? "no reason given").replace(/\s+/g, " ").trim();
-      skippedReasons.set(tool, reason.length > 160 ? `${reason.slice(0, 160)}...` : reason);
+      skippedReasons.set(tool, redactSecrets(String(result.reason ?? "no reason given")));
     }
   };
   results.forEach((r) => {
