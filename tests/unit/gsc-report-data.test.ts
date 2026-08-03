@@ -6,6 +6,9 @@ import {
   selectOpportunities,
   selectLowCtr,
   selectPoorlyRanked,
+  weightedPosition,
+  cell,
+  dateRange,
 } from "../../scripts/lib/gsc-report-data.mjs";
 
 /**
@@ -243,5 +246,52 @@ describe("selectPoorlyRanked", () => {
 
   it("leaves page-one pages alone", () => {
     expect(selectPoorlyRanked([row("/good", 0, 300, 4.8)])).toEqual([]);
+  });
+});
+
+describe("weightedPosition", () => {
+  it("weights each row's position by its impressions", () => {
+    // The failure this replaces: an unweighted mean of per-page averages let a
+    // one-impression page at position 100 count as much as a 1,000-impression
+    // page at position 1, reporting 50.5 instead of about 1.1.
+    const rows = [row("/big", 0, 1000, 1.0), row("/tiny", 0, 1, 100.0)];
+    expect(weightedPosition(rows)).toBeCloseTo(1.099, 2);
+    const naive = rows.reduce((s, r) => s + r.position, 0) / rows.length;
+    expect(naive).toBeCloseTo(50.5, 1);
+  });
+
+  it("returns null rather than NaN when there are no impressions", () => {
+    expect(weightedPosition([])).toBeNull();
+    expect(weightedPosition([row("/x", 0, 0, 5)])).toBeNull();
+  });
+});
+
+describe("cell", () => {
+  it("escapes a pipe so a query cannot invent a table column", () => {
+    expect(cell("brand | competitor")).toBe("brand \\| competitor");
+  });
+
+  it("flattens embedded newlines that would break the row", () => {
+    expect(cell("two\nlines")).toBe("two lines");
+  });
+});
+
+describe("dateRange", () => {
+  it("spans exactly `days` inclusive dates", () => {
+    // Was off by one: subtracting the full 28 produced 29 inclusive dates under
+    // a heading that said 28.
+    const { startDate, endDate } = dateRange(28, new Date("2026-08-03T12:00:00Z"));
+    expect(endDate).toBe("2026-08-01"); // two-day lag
+    expect(startDate).toBe("2026-07-05");
+    const span =
+      (Date.parse(endDate) - Date.parse(startDate)) / 86_400_000 + 1;
+    expect(span).toBe(28);
+  });
+
+  it("does not shift the window in an evening local timezone", () => {
+    // 20:00 MDT on 3 Aug is 02:00 UTC on 4 Aug. Local arithmetic gave 1 Aug but
+    // serialised as 2 Aug, requesting a day whose data is not final yet.
+    const evening = new Date("2026-08-04T02:00:00Z");
+    expect(dateRange(28, evening).endDate).toBe("2026-08-02");
   });
 });

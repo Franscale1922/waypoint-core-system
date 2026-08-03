@@ -32,6 +32,9 @@ import {
   selectOpportunities,
   selectLowCtr,
   selectPoorlyRanked,
+  weightedPosition,
+  cell,
+  dateRange,
 } from "./lib/gsc-report-data.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -112,18 +115,6 @@ function getAuth() {
 
 // ─── Date helpers ─────────────────────────────────────────────────────────────
 
-function toISO(date) {
-  return date.toISOString().split("T")[0];
-}
-
-function dateRange() {
-  const end = new Date();
-  end.setDate(end.getDate() - 2); // GSC data lags 2 days
-  const start = new Date(end);
-  start.setDate(start.getDate() - DAYS_BACK);
-  return { startDate: toISO(start), endDate: toISO(end) };
-}
-
 // ─── GSC API calls ────────────────────────────────────────────────────────────
 
 // Per-request ceiling allowed by the API, and our own stop so a large property
@@ -142,7 +133,7 @@ const MAX_ROWS = 25000;
  * Paging through the whole set and ordering it ourselves is the fix.
  */
 async function query(searchconsole, dimensions) {
-  const { startDate, endDate } = dateRange();
+  const { startDate, endDate } = dateRange(DAYS_BACK);
   const rows = [];
 
   while (rows.length < MAX_ROWS) {
@@ -162,6 +153,11 @@ async function query(searchconsole, dimensions) {
     if (batch.length < PAGE_SIZE) break; // last page
   }
 
+  // A cap that silences itself is worse than no cap: the report would still be
+  // headed "by Impressions" while missing rows the API never got round to
+  // returning, and the API orders by clicks, so the omitted rows are not the
+  // least interesting ones. Say so instead.
+  rows.truncated = rows.length >= MAX_ROWS;
   return rows;
 }
 
@@ -188,7 +184,9 @@ function buildReport(pageRows, queryRows, queryPageRows, startDate, endDate) {
   const slug = pathFor(SITE_URL);
 
   const tableRow = (r) =>
-    `| ${slug(r.keys[0]).padEnd(55)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`;
+    `| ${cell(slug(r.keys[0])).padEnd(55)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`;
+
+  const truncated = [pageRows, queryRows, queryPageRows].some((r) => r.truncated);
 
   const lines = [
     `# GSC Report — ${now}`,
@@ -198,13 +196,28 @@ function buildReport(pageRows, queryRows, queryPageRows, startDate, endDate) {
     ``,
     `---`,
     ``,
+    ...(truncated
+      ? [
+          `> ⚠️ **This report is incomplete.** At least one dimension hit the ${MAX_ROWS}-row fetch`,
+          `> cap, so rows are missing. Search Console orders by clicks, not impressions, so the`,
+          `> omitted rows are not necessarily the smallest ones and the tables below cannot be`,
+          `> read as a complete ranking. Raise MAX_ROWS or segment the request by date.`,
+          ``,
+          `---`,
+          ``,
+        ]
+      : []),
     `## Summary`,
     ``,
     `| Metric | Value |`,
     `|---|---|`,
     `| Total clicks | ${pageRows.reduce((s, r) => s + r.clicks, 0)} |`,
     `| Total impressions | ${pageRows.reduce((s, r) => s + r.impressions, 0)} |`,
-    `| Average position | ${fmt(pageRows.reduce((s, r) => s + r.position, 0) / (pageRows.length || 1))} |`,
+    // Weighted by impressions. The unweighted mean of per-page averages let a
+    // single one-impression page at position 100 drag the headline as hard as a
+    // 1,000-impression page at position 1, which is not what "average position"
+    // means to anyone reading it.
+    `| Average position | ${fmt(weightedPosition(pageRows))} |`,
     `| Pages with data | ${pageRows.length} |`,
     ``,
     `---`,
@@ -280,7 +293,7 @@ function buildReport(pageRows, queryRows, queryPageRows, startDate, endDate) {
     `|---|---|---|---|---|`,
     ...(queryRows.length > 0
       ? byImpressions(queryRows).slice(0, 30).map(r =>
-          `| ${r.keys[0].padEnd(50)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`
+          `| ${cell(r.keys[0]).padEnd(50)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`
         )
       : [`| _No query data yet_ | — | — | — | — |`]),
     ``,
@@ -299,7 +312,7 @@ function buildReport(pageRows, queryRows, queryPageRows, startDate, endDate) {
     `|---|---|---|---|`,
     ...(queryPageRows.length > 0
       ? byImpressions(queryPageRows).slice(0, 30).map(r =>
-          `| ${String(r.keys[0]).padEnd(40)} | ${slug(String(r.keys[1]))} | ${String(r.impressions).padStart(11)} | ${fmt(r.position)} |`
+          `| ${cell(r.keys[0]).padEnd(40)} | ${cell(slug(String(r.keys[1])))} | ${String(r.impressions).padStart(11)} | ${fmt(r.position)} |`
         )
       : [`| _No query/page data yet_ | — | — | — |`]),
     ``,
@@ -332,7 +345,7 @@ async function main() {
   const auth = getAuth();
   const searchconsole = google.searchconsole({ version: "v1", auth });
 
-  const { startDate, endDate } = dateRange();
+  const { startDate, endDate } = dateRange(DAYS_BACK);
 
   const [pageRows, queryRows, queryPageRows] = await Promise.all([
     query(searchconsole, ["page"]),
@@ -347,6 +360,8 @@ async function main() {
   const report = buildReport(pageRows, queryRows, queryPageRows, startDate, endDate);
 
   // Save to docs/seo-reviews/YYYY-MM/
+  // Same UTC-only rule as dateRange(). Taken from toISOString rather than local
+  // parts so a 31 August evening run cannot file itself under September.
   const monthFolder = new Date().toISOString().slice(0, 7);
   const outDir = path.join(ROOT, "docs", "seo-reviews", monthFolder);
   fs.mkdirSync(outDir, { recursive: true });
