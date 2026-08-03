@@ -98,8 +98,10 @@ suggests the fitness and semi-absentee terms carry less volume than assumed._
 
 ## Measured positions
 
-_Source: `docs/seo-reviews/2026-08/gsc-report.md`, 28 days to 2026-08-01. Site totals: 8 clicks,
-985 impressions, 40 pages with data. This is the first valid report the pipeline has produced; the
+_Source: `docs/seo-reviews/2026-08/gsc-report.md`, 28 days (2026-07-05 to 2026-08-01). Site totals:
+8 clicks, 938 impressions, 39 pages with data, average position 26.5. Figures were restated on
+2026-08-03 after the generator was fixed: the window had been 29 days labelled 28, and the headline
+position was an unweighted mean of per-page averages (it read 22.8). This is the first valid report the pipeline has produced; the
 March and June reports measured a non-www property that sees only redirect traffic, so treat any
 earlier figure as void rather than as a trend line._
 
@@ -108,8 +110,8 @@ measured", not "not ranking".
 
 | Slug | Impressions | CTR | Position | Read |
 |---|---|---|---|---|
-| `franchise-investment-by-category` | 82 | 2.4% | **3.3** | ⚠️ Position 3.3 is not the win it looks like. See below. Description rewritten 2026-08-03; it was 291 chars and truncated. |
-| `sba-loan-vs-robs-franchise-funding-comparison` | 62 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
+| `franchise-investment-by-category` | 78 | 2.6% | **3.3** | ⚠️ Position 3.3 is not the win it looks like. See below. Description rewritten 2026-08-03; it was 291 chars and truncated. |
+| `sba-loan-vs-robs-franchise-funding-comparison` | 61 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
 | `how-to-pick-a-franchise-territory` | 9 | 0% | 77.3 | "franchise territories available" and similar sit at 67-82. Thin at 0 words of depth on territory mechanics. |
 | `property-management-franchises` | 5 | 0% | 99.2 | Effectively unranked. |
 | `home-services-franchises-most-overlooked-category` | 3 | 0% | 5.7 | Good position, almost no impressions. The keyword has less volume than the Medium tier assumed. |
@@ -155,8 +157,8 @@ The AUV page is the opposite and is the better model to copy. All eight of its q
 AUV intent (`auv franchise`, `what does auv mean`, `define auv`, `auv meaning restaurant`), and it
 sits at 37.0 because it is genuinely competing, not because a junk query flatters it.
 
-`/glossary` alone draws 299 impressions at position 4.8 with a 0.3% click-through rate, more than
-every article combined.
+`/glossary` alone draws 279 impressions at position 4.9 with a 0.4% click-through rate, more than
+every article combined (165 across 15 pages).
 
 ### Unintended keywords
 
