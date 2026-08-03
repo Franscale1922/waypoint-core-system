@@ -25,6 +25,14 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
 import { loadServiceAccount, reportCredentialFailure } from "./lib/load-service-account.mjs";
+import {
+  byImpressions,
+  pathFor,
+  splitPages,
+  selectOpportunities,
+  selectLowCtr,
+  selectPoorlyRanked,
+} from "./lib/gsc-report-data.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -118,19 +126,43 @@ function dateRange() {
 
 // ─── GSC API calls ────────────────────────────────────────────────────────────
 
-async function query(searchconsole, dimensions, rowLimit = 50) {
+// Per-request ceiling allowed by the API, and our own stop so a large property
+// cannot turn a monthly report into an unbounded crawl.
+const PAGE_SIZE = 5000;
+const MAX_ROWS = 25000;
+
+/**
+ * Fetch every row for a dimension, not just the first page.
+ *
+ * The API has no orderBy: it returns rows by clicks descending, ties broken by
+ * key. With few clicks nearly everything ties, so a single small request comes
+ * back in alphabetical order and silently stops partway through the alphabet.
+ * The August report cut off at "bonkers corner franchise cost" and hid every
+ * query after "b" — including whatever drives 299 impressions to /glossary.
+ * Paging through the whole set and ordering it ourselves is the fix.
+ */
+async function query(searchconsole, dimensions) {
   const { startDate, endDate } = dateRange();
-  const res = await searchconsole.searchanalytics.query({
-    siteUrl: SITE_URL,
-    requestBody: {
-      startDate,
-      endDate,
-      dimensions,
-      rowLimit,
-      dataState: "final",
-    },
-  });
-  return res.data.rows || [];
+  const rows = [];
+
+  while (rows.length < MAX_ROWS) {
+    const res = await searchconsole.searchanalytics.query({
+      siteUrl: SITE_URL,
+      requestBody: {
+        startDate,
+        endDate,
+        dimensions,
+        rowLimit: PAGE_SIZE,
+        startRow: rows.length,
+        dataState: "final",
+      },
+    });
+    const batch = res.data.rows || [];
+    rows.push(...batch);
+    if (batch.length < PAGE_SIZE) break; // last page
+  }
+
+  return rows;
 }
 
 function fmt(n, decimals = 1) {
@@ -144,21 +176,16 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
     month: "long", day: "numeric", year: "numeric",
   });
 
-  // Separate article pages from core pages
-  const articles = pageRows.filter(r => r.keys[0].includes("/resources/") && !r.keys[0].endsWith("/resources/"));
-  const corePages = pageRows.filter(r => !r.keys[0].includes("/resources/") || r.keys[0].endsWith("/resources/"));
+  const { articles, corePages } = splitPages(pageRows);
 
-  // Identify "low-hanging fruit" — position 8–20 with impressions > 50
-  const opportunities = pageRows
-    .filter(r => r.position >= 8 && r.position <= 20 && r.impressions >= 50)
-    .sort((a, b) => b.impressions - a.impressions);
+  const opportunities = selectOpportunities(pageRows);
+  const lowCtr = selectLowCtr(pageRows);
+  const poorlyRanked = selectPoorlyRanked(pageRows);
 
-  // Identify low-CTR pages — impressions > 100, CTR < 0.02
-  const lowCtr = pageRows
-    .filter(r => r.impressions >= 100 && r.ctr < 0.02)
-    .sort((a, b) => b.impressions - a.impressions);
-
-  const slug = (url) => url.replace("https://waypointfranchise.com", "") || "/";
+  // Derived from the configured property rather than hardcoded. The old literal
+  // was the non-www origin, so once the property moved to www it stopped
+  // matching and every row printed as a full URL.
+  const slug = pathFor(SITE_URL);
 
   const tableRow = (r) =>
     `| ${slug(r.keys[0]).padEnd(55)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`;
@@ -196,16 +223,30 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
     ``,
     `---`,
     ``,
-    `## ⚠️ Low CTR Pages (impressions > 100, CTR < 2%)`,
+    `## ⚠️ Low CTR Pages (position ≤ 20, CTR < 2%)`,
     ``,
     lowCtr.length === 0
       ? `_No low-CTR pages with enough traffic yet._`
       : [
-          `Ranking but not earning clicks. Fix: rewrite title tag or meta description.`,
+          `Ranked where people can see them, but not earning the click. Fix: rewrite the title tag or meta description.`,
           ``,
           `| URL | Clicks | Impressions | CTR | Position |`,
           `|---|---|---|---|---|`,
           ...lowCtr.map(tableRow),
+        ].join("\n"),
+    ``,
+    `---`,
+    ``,
+    `## 📉 Ranking Too Low to Be Clicked (position > 20)`,
+    ``,
+    poorlyRanked.length === 0
+      ? `_No pages earning impressions from beyond position 20._`
+      : [
+          `Earning impressions from well down the results. Rewriting the title will not help — nobody is declining to click a result they never scrolled to. Fix: relevance, internal links, and depth.`,
+          ``,
+          `| URL | Clicks | Impressions | CTR | Position |`,
+          `|---|---|---|---|---|`,
+          ...poorlyRanked.map(tableRow),
         ].join("\n"),
     ``,
     `---`,
@@ -231,7 +272,7 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
     `| Query | Clicks | Impressions | CTR | Position |`,
     `|---|---|---|---|---|`,
     ...(queryRows.length > 0
-      ? queryRows.slice(0, 30).map(r =>
+      ? byImpressions(queryRows).slice(0, 30).map(r =>
           `| ${r.keys[0].padEnd(50)} | ${String(r.clicks).padStart(6)} | ${String(r.impressions).padStart(11)} | ${fmt(r.ctr * 100, 1)}% | ${fmt(r.position)} |`
         )
       : [`| _No query data yet_ | — | — | — | — |`]),
@@ -268,8 +309,8 @@ async function main() {
   const { startDate, endDate } = dateRange();
 
   const [pageRows, queryRows] = await Promise.all([
-    query(searchconsole, ["page"], 100),
-    query(searchconsole, ["query"], 50),
+    query(searchconsole, ["page"]),
+    query(searchconsole, ["query"]),
   ]);
 
   console.log(`   Pages with data: ${pageRows.length}`);

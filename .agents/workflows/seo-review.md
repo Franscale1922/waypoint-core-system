@@ -14,15 +14,17 @@ Run this workflow once per month, after the site has at least 90 days of data in
 
 // turbo
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system" && node scripts/gsc-report.mjs
+node scripts/gsc-report.mjs
 ```
 
 This script:
 - Authenticates with the GSC API using the service account credentials in `.env`
 - Pulls Page-level and Query-level performance data for the last 28 days
-- Identifies position 8–20 "opportunity" pages and low-CTR pages automatically
+- Identifies position 8–20 "opportunity" pages, low-CTR pages, and pages ranking too low to be clicked
 - Saves the report to `docs/seo-reviews/[YYYY-MM]/gsc-report.md`
-- Pings Google with the current sitemap (equivalent of hitting "Request Indexing" for the sitemap)
+
+This script only reads. Sitemap submission lives in `.github/scripts/submit-sitemap.mjs` and runs on
+deploy, because it needs a write scope this script deliberately does not request.
 
 ---
 
@@ -30,7 +32,7 @@ This script:
 
 // turbo
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system" && node scripts/ai-citation-check.mjs
+node scripts/ai-citation-check.mjs
 ```
 
 This script:
@@ -129,8 +131,18 @@ Mark selected articles as In Progress and run the `/new-article` workflow for ea
 
 ## Step 10 — Commit all changes
 
+Stage the files this review actually changed. **Never `git add -A`** — it sweeps in untracked and
+ignored worktree files that have nothing to do with the review, which is exactly how unrelated
+directories end up in a content commit.
+
+Content edits are visitor-facing and `content/` is not excluded from `vercel.json`'s `ignoreCommand`,
+so each push to `main` triggers a production build that runs `prisma db push`. Batch the review onto
+one branch and merge once, rather than committing straight to `main` at every checkpoint.
+
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system" && git add -A && git commit -m "seo: monthly review [$(date +%Y-%m)] — keyword optimizations and AEO improvements" && git push
+git add content/keyword-map.md content/ARTICLE-QUEUE.md content/articles/<changed>.md
+git commit -m "seo: monthly review [$(date +%Y-%m)] — keyword optimizations and AEO improvements"
+git push
 ```
 
 ---

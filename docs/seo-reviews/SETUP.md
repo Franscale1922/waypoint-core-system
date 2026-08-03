@@ -80,7 +80,7 @@ and how to fix it, without printing the credential.
 ### Step 7: Install googleapis
 
 ```bash
-cd "/Users/kelseystuart/Desktop/Anti-Gravity Build/waypoint-core-system"
+cd ~/Projects/waypoint-core-system
 npm install googleapis
 ```
 
@@ -96,8 +96,10 @@ Expected output:
    Pages with data: [N]
    Queries with data: [N]
 ✅ Report saved to: docs/seo-reviews/2026-03/gsc-report.md
-✅ Sitemap pinged to Google
 ```
+
+This script only reads. Sitemap submission moved to `.github/scripts/submit-sitemap.mjs`, which runs
+on deploy and asks for the write scope this one deliberately does not.
 
 ---
 
@@ -156,4 +158,6 @@ node scripts/gsc-report.mjs
 node scripts/ai-citation-check.mjs
 ```
 
-The agent then reads the two generated reports in `docs/seo-reviews/[month]/` and executes Steps 2–8 of the `seo-review` workflow.
+The agent then reads the two generated reports in `docs/seo-reviews/[month]/` and executes Steps 3–10
+of the `seo-review` workflow. (Steps 1 and 2 are the two script runs above, so the manual path picks up
+at Step 3. The workflow has ten steps, not eight.)
