@@ -28,7 +28,9 @@ must **never be asked a git question**. Safety comes from how I behave, not from
 - **Safe by construction:**
   - Branch + PR for app/product **code**; direct-to-`main` is fine for docs, deploy/gitlink bumps, ops repos.
   - I stage the exact files I changed — **never `git add -A` or `git add .`** — so I never sweep in
-    unrelated, secret, or worktree files.
+    unrelated, secret, or worktree files. **Naming a file is not protection when it is already dirty:
+    `git add <file>` stages the WHOLE file.** So I run `git status --short` first; if a file I need is
+    already dirty from another session, I stage the hunk or leave it for its owner, and say which.
   - Never commit secrets/keys/tokens; respect `.gitignore`; never bypass repo hooks (`--no-verify` banned).
   - Submodules: commit+push the submodule first, then bump the parent gitlink and push the parent.
   - Real, specific commit messages (`type(scope): why`) — never a placeholder.
