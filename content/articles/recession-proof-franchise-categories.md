@@ -81,7 +81,7 @@ Not every popular category earns the recession-proof label it gets marketed with
 
 ## What to Check Before Accepting the Label
 
-If a franchisor or broker describes a concept as recession-proof, run it through these questions:
+If a franchisor or [broker](/glossary/franchise-broker) describes a concept as recession-proof, run it through these questions:
 
 Who is the specific customer, and what is their income level? What does the franchise disclosure document show about franchisee performance coming out of 2008 and 2020? Are there units that opened in 2007 or 2019 still operating today? What is the franchisee retention rate in those cohorts?
 

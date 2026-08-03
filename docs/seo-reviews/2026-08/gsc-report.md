@@ -1,6 +1,6 @@
 # GSC Report — August 3, 2026
 
-**Date range:** 2026-07-04 → 2026-08-01 (28 days)  
+**Date range:** 2026-07-05 → 2026-08-01 (28 days)  
 **Site:** https://www.waypointfranchise.com/
 
 ---
@@ -10,9 +10,9 @@
 | Metric | Value |
 |---|---|
 | Total clicks | 8 |
-| Total impressions | 985 |
-| Average position | 22.8 |
-| Pages with data | 40 |
+| Total impressions | 938 |
+| Average position | 26.5 |
+| Pages with data | 39 |
 
 ---
 
@@ -29,7 +29,7 @@ These pages are close to top results but need a push. Check keyword prominence, 
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| /franchise-financing                                    |      0 |          14 | 0.0% | 12.5 |
+| /franchise-financing                                    |      0 |          13 | 0.0% | 12.5 |
 
 ---
 
@@ -39,7 +39,7 @@ Ranked where people can see them, but not earning the click. Fix: rewrite the ti
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| /glossary                                               |      1 |         299 | 0.3% | 4.8 |
+| /glossary                                               |      1 |         279 | 0.4% | 4.9 |
 | /resources                                              |      0 |          26 | 0.0% | 3.6 |
 
 ---
@@ -50,10 +50,10 @@ Earning impressions from well down the results. Rewriting the title will not hel
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| /investment                                             |      0 |         163 | 0.0% | 66.6 |
+| /investment                                             |      0 |         157 | 0.0% | 66.1 |
 | /glossary/average-unit-volume-auv                       |      0 |          89 | 0.0% | 37.0 |
-| /resources/sba-loan-vs-robs-franchise-funding-comparison |      1 |          62 | 1.6% | 34.8 |
-| /franchise-financing/robs-401k-rollover                 |      0 |          29 | 0.0% | 82.7 |
+| /resources/sba-loan-vs-robs-franchise-funding-comparison |      1 |          60 | 1.7% | 33.7 |
+| /franchise-financing/robs-401k-rollover                 |      0 |          24 | 0.0% | 84.8 |
 | /is-a-franchise-worth-it                                |      0 |          23 | 0.0% | 57.8 |
 | /franchise-consultant-vs-broker                         |      1 |          22 | 4.5% | 55.6 |
 | /industries                                             |      0 |          21 | 0.0% | 21.0 |
@@ -64,10 +64,10 @@ Earning impressions from well down the results. Rewriting the title will not hel
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| /resources/franchise-investment-by-category             |      2 |          82 | 2.4% | 3.3 |
-| /resources/sba-loan-vs-robs-franchise-funding-comparison |      1 |          62 | 1.6% | 34.8 |
+| /resources/franchise-investment-by-category             |      2 |          78 | 2.6% | 2.3 |
+| /resources/sba-loan-vs-robs-franchise-funding-comparison |      1 |          60 | 1.7% | 33.7 |
 | /resources/how-to-pick-a-franchise-territory            |      0 |           9 | 0.0% | 77.3 |
-| /resources/property-management-franchises               |      0 |           5 | 0.0% | 99.2 |
+| /resources/property-management-franchises               |      0 |           4 | 0.0% | 99.0 |
 | /resources/home-services-franchises-most-overlooked-category |      0 |           3 | 0.0% | 5.7 |
 | /resources/fitness-franchise-comparison-what-the-numbers-say |      0 |           2 | 0.0% | 5.5 |
 | /resources/are-you-ready-to-own-a-franchise             |      0 |           1 | 0.0% | 3.0 |
@@ -86,27 +86,26 @@ Earning impressions from well down the results. Rewriting the title will not hel
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|
-| /glossary                                               |      1 |         299 | 0.3% | 4.8 |
-| /investment                                             |      0 |         163 | 0.0% | 66.6 |
+| /glossary                                               |      1 |         279 | 0.4% | 4.9 |
+| /investment                                             |      0 |         157 | 0.0% | 66.1 |
 | /glossary/average-unit-volume-auv                       |      0 |          89 | 0.0% | 37.0 |
-| /franchise-financing/robs-401k-rollover                 |      0 |          29 | 0.0% | 82.7 |
-| /                                                       |      3 |          28 | 10.7% | 2.4 |
 | /resources                                              |      0 |          26 | 0.0% | 3.6 |
+| /                                                       |      3 |          25 | 12.0% | 2.4 |
+| /franchise-financing/robs-401k-rollover                 |      0 |          24 | 0.0% | 84.8 |
 | /is-a-franchise-worth-it                                |      0 |          23 | 0.0% | 57.8 |
 | /franchise-consultant-vs-broker                         |      1 |          22 | 4.5% | 55.6 |
 | /industries                                             |      0 |          21 | 0.0% | 21.0 |
 | /process                                                |      0 |          16 | 0.0% | 4.5 |
 | /about                                                  |      0 |          15 | 0.0% | 6.5 |
-| /franchise-financing                                    |      0 |          14 | 0.0% | 12.5 |
 | /faq                                                    |      0 |          13 | 0.0% | 5.5 |
-| /book                                                   |      0 |          11 | 0.0% | 4.5 |
+| /franchise-financing                                    |      0 |          13 | 0.0% | 12.5 |
 | /checklists                                             |      0 |          10 | 0.0% | 60.5 |
 | /contact                                                |      0 |          10 | 0.0% | 2.3 |
+| /book                                                   |      0 |           8 | 0.0% | 3.5 |
 | /franchise-vs-starting-a-business                       |      0 |           8 | 0.0% | 6.6 |
 | /newsletter                                             |      0 |           3 | 0.0% | 6.0 |
 | /scorecard                                              |      0 |           3 | 0.0% | 6.0 |
 | /tools                                                  |      0 |           3 | 0.0% | 7.7 |
-| /franchise-financing/sba-loans                          |      0 |           2 | 0.0% | 79.5 |
 | /refer                                                  |      0 |           2 | 0.0% | 2.5 |
 | /escape-kit                                             |      0 |           1 | 0.0% | 8.0 |
 | /pitch-decoder                                          |      0 |           1 | 0.0% | 7.0 |
@@ -120,26 +119,25 @@ Earning impressions from well down the results. Rewriting the title will not hel
 |---|---|---|---|---|
 | auv franchise                                      |      0 |          30 | 0.0% | 43.7 |
 | payroll franchise investment info                  |      0 |          27 | 0.0% | 92.3 |
-| robs sba loan                                      |      0 |          26 | 0.0% | 68.8 |
+| robs sba loan                                      |      0 |          24 | 0.0% | 68.9 |
 | robs rollovers options                             |      0 |          20 | 0.0% | 84.3 |
-| franchise costs                                    |      0 |          15 | 0.0% | 96.7 |
 | is franchising worth it                            |      0 |          15 | 0.0% | 64.5 |
+| franchise costs                                    |      0 |          14 | 0.0% | 96.5 |
 | franchise cost                                     |      0 |          13 | 0.0% | 93.7 |
 | auv franchise meaning                              |      0 |          11 | 0.0% | 17.1 |
 | consultant broker                                  |      0 |          10 | 0.0% | 98.1 |
-| franchise price                                    |      0 |          10 | 0.0% | 85.3 |
-| freight franchise cost                             |      0 |          10 | 0.0% | 91.7 |
+| franchise price                                    |      0 |           9 | 0.0% | 85.2 |
+| freight franchise cost                             |      0 |           9 | 0.0% | 91.8 |
 | bonkers corner franchise cost                      |      0 |           8 | 0.0% | 1.0 |
 | average unit volume                                |      0 |           6 | 0.0% | 20.5 |
 | franchise                                          |      0 |           6 | 0.0% | 4.7 |
 | franchise auv                                      |      0 |           6 | 0.0% | 42.7 |
 | franchise territories available                    |      0 |           6 | 0.0% | 82.2 |
 | bonkers franchise cost                             |      0 |           5 | 0.0% | 1.0 |
-| payroll franchise business cost                    |      0 |           5 | 0.0% | 100.8 |
 | what does auv mean                                 |      0 |           5 | 0.0% | 14.8 |
 | auv meaning                                        |      0 |           4 | 0.0% | 68.5 |
 | auv meaning restaurant                             |      0 |           4 | 0.0% | 45.3 |
-| franchise property management company              |      0 |           4 | 0.0% | 99.5 |
+| payroll franchise business cost                    |      0 |           4 | 0.0% | 101.0 |
 | robs 401k sba                                      |      0 |           4 | 0.0% | 67.3 |
 | robs rollover options                              |      0 |           4 | 0.0% | 87.3 |
 | advantage waypoint                                 |      0 |           3 | 0.0% | 91.0 |
@@ -147,7 +145,47 @@ Earning impressions from well down the results. Rewriting the title will not hel
 | define auv                                         |      0 |           3 | 0.0% | 80.7 |
 | franchise checklist                                |      0 |           3 | 0.0% | 99.7 |
 | franchise investment cost                          |      0 |           3 | 0.0% | 93.3 |
+| franchise property management company              |      0 |           3 | 0.0% | 99.3 |
 | angel one franchise                                |      0 |           2 | 0.0% | 2.0 |
+
+---
+
+## Which Page Serves Which Query
+
+_Pulled with the ["query","page"] dimension pair, so this is measured rather than inferred._
+
+| Query | Page | Impressions | Position |
+|---|---|---|---|
+| auv franchise                            | /glossary/average-unit-volume-auv |          30 | 43.7 |
+| payroll franchise investment info        | /investment |          27 | 92.3 |
+| robs sba loan                            | /resources/sba-loan-vs-robs-franchise-funding-comparison |          24 | 68.9 |
+| robs rollovers options                   | /franchise-financing/robs-401k-rollover |          20 | 84.3 |
+| is franchising worth it                  | /is-a-franchise-worth-it |          15 | 64.5 |
+| franchise costs                          | /investment |          14 | 96.5 |
+| franchise cost                           | /investment |          13 | 93.7 |
+| auv franchise meaning                    | /glossary/average-unit-volume-auv |          11 | 17.1 |
+| consultant broker                        | /franchise-consultant-vs-broker |          10 | 98.1 |
+| franchise price                          | /investment |           9 | 85.2 |
+| freight franchise cost                   | /investment |           9 | 91.8 |
+| bonkers corner franchise cost            | /resources/franchise-investment-by-category |           8 | 1.0 |
+| average unit volume                      | /glossary/average-unit-volume-auv |           6 | 20.5 |
+| franchise                                | /glossary |           6 | 4.7 |
+| franchise auv                            | /glossary/average-unit-volume-auv |           6 | 42.7 |
+| franchise territories available          | /resources/how-to-pick-a-franchise-territory |           6 | 82.2 |
+| bonkers franchise cost                   | /resources/franchise-investment-by-category |           5 | 1.0 |
+| auv meaning                              | /glossary/average-unit-volume-auv |           4 | 68.5 |
+| auv meaning restaurant                   | /glossary/average-unit-volume-auv |           4 | 45.3 |
+| payroll franchise business cost          | /investment |           4 | 101.0 |
+| robs 401k sba                            | /resources/sba-loan-vs-robs-franchise-funding-comparison |           4 | 67.3 |
+| robs rollover options                    | /franchise-financing/robs-401k-rollover |           4 | 87.3 |
+| what does auv mean                       | /glossary/average-unit-volume-auv |           4 | 18.0 |
+| advantage waypoint                       | /industries |           3 | 91.0 |
+| available franchise territories          | /resources/how-to-pick-a-franchise-territory |           3 | 67.7 |
+| define auv                               | /glossary/average-unit-volume-auv |           3 | 80.7 |
+| franchise checklist                      | /checklists |           3 | 99.7 |
+| franchise investment cost                | /investment |           3 | 93.3 |
+| franchise property management company    | /resources/property-management-franchises |           3 | 99.3 |
+| angel one franchise                      | /resources/franchise-investment-by-category |           2 | 2.0 |
 
 ---
 

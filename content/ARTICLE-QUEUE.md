@@ -41,10 +41,20 @@ Articles are drafted using `.agents/workflows/new-article.md` and must comply wi
 >    ("robs sba loan", "robs rollovers options", "robs 401k sba"). The existing page ranks 82.7,
 >    which means thin coverage against people asking operational questions. No interview needed;
 >    `sba-loan-vs-robs-franchise-funding-comparison` already carries Kelsey's framing to build on.
-> 2. **What a franchise costs, by the numbers.** The cost cluster lands on `/investment`, a landing
->    page, not an article. `the-true-cost-of-buying-a-franchise` exists but drew no impressions.
->    A category-by-category piece with real ranges would serve the query directly, and
->    `franchise-investment-by-category` at position 3.3 shows this shape of content works here.
+> 2. **What a franchise costs, by the numbers.** The cost cluster is now *measured* as landing on
+>    `/investment`, a landing page rather than an article, at position 85 to 97 across four queries.
+>    `the-true-cost-of-buying-a-franchise` exists but drew no impressions.
+>
+>    ⚠️ I originally justified this with "`franchise-investment-by-category` at position 3.3 shows
+>    this shape works". **Withdrawn.** The query-to-page join shows every one of that page's visible
+>    queries is a brand lookup (`bonkers corner franchise cost` and similar) ranking at position 1,
+>    which is what pulls its average to 3.3. The case for this article now rests on the demand being
+>    real (41 impressions) and on nothing but a landing page serving it, which is enough on its own.
+>
+>    Also worth a category piece each, on measured demand with no coverage at all: **payroll** and
+>    **freight**. `payroll franchise investment info` is 27 impressions, the second largest single
+>    query on the site, and `freight franchise cost` is 10. Both currently land on `/investment` at
+>    position 92. Neither has a sourced investment range in the repo yet, so research comes first.
 >
 > Re-check next month before committing: one month of data on a site this size is a signal, not a
 > conclusion.

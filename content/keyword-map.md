@@ -98,8 +98,10 @@ suggests the fitness and semi-absentee terms carry less volume than assumed._
 
 ## Measured positions
 
-_Source: `docs/seo-reviews/2026-08/gsc-report.md`, 28 days to 2026-08-01. Site totals: 8 clicks,
-985 impressions, 40 pages with data. This is the first valid report the pipeline has produced; the
+_Source: `docs/seo-reviews/2026-08/gsc-report.md`, 28 days (2026-07-05 to 2026-08-01). Site totals:
+8 clicks, 938 impressions, 39 pages with data, average position 26.5. Figures were restated on
+2026-08-03 after the generator was fixed: the window had been 29 days labelled 28, and the headline
+position was an unweighted mean of per-page averages (it read 22.8). This is the first valid report the pipeline has produced; the
 March and June reports measured a non-www property that sees only redirect traffic, so treat any
 earlier figure as void rather than as a trend line._
 
@@ -108,8 +110,8 @@ measured", not "not ranking".
 
 | Slug | Impressions | CTR | Position | Read |
 |---|---|---|---|---|
-| `franchise-investment-by-category` | 82 | 2.4% | **3.3** | Best page in the corpus. Description rewritten 2026-08-03; it was 291 chars and truncated. |
-| `sba-loan-vs-robs-franchise-funding-comparison` | 62 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
+| `franchise-investment-by-category` | 78 | 2.6% | **3.3** | ⚠️ Position 3.3 is not the win it looks like. See below. Description rewritten 2026-08-03; it was 291 chars and truncated. |
+| `sba-loan-vs-robs-franchise-funding-comparison` | 61 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
 | `how-to-pick-a-franchise-territory` | 9 | 0% | 77.3 | "franchise territories available" and similar sit at 67-82. Thin at 0 words of depth on territory mechanics. |
 | `property-management-franchises` | 5 | 0% | 99.2 | Effectively unranked. |
 | `home-services-franchises-most-overlooked-category` | 3 | 0% | 5.7 | Good position, almost no impressions. The keyword has less volume than the Medium tier assumed. |
@@ -121,17 +123,42 @@ measured", not "not ranking".
 
 ### What the site actually gets found for
 
-The article corpus is not where the impressions are. Three query clusters dominate, and all three
-point at pages outside `content/articles`:
+The article corpus is not where the impressions are. Three query clusters dominate:
 
-| Cluster | Impressions | Lands on | Position |
+| Cluster | Impressions | Likely page (INFERRED, not measured) | That page's position |
 |---|---|---|---|
 | Average unit volume / AUV (8 queries) | 69 | `/glossary/average-unit-volume-auv` | 37.0 |
 | ROBS / SBA funding (4 queries) | 54 | `/franchise-financing/robs-401k-rollover` | 82.7 |
 | Franchise cost / price (4 queries) | 41 | `/investment` | 66.6 |
 
-`/glossary` alone draws 299 impressions at position 4.8 with a 0.3% click-through rate, more than
-every article combined.
+✅ **Now measured.** These pairings began as inference, because the report pulled `["page"]` and
+`["query"]` as separate Search Console requests and nothing joined them. `gsc-report.mjs` now also
+pulls the `["query","page"]` pair, and the re-run on 2026-08-03 confirmed all three: see "Which Page
+Serves Which Query" in the August report.
+
+### ⚠️ The "best article" is ranking for the wrong things
+
+`franchise-investment-by-category` shows position 3.3, and this session twice cited that as evidence
+that reference-table content works. The join disproves it. **Every one of its queries visible in the
+top-30 table is a brand lookup it cannot serve**, and each ranks at or near number one:
+
+| Query | Impressions | Position |
+|---|---|---|
+| bonkers corner franchise cost | 8 | 1.0 |
+| bonkers franchise cost | 5 | 1.0 |
+| angel one franchise | 2 | 2.0 |
+
+Those 15 impressions at position 1 to 2 are what drags the page's average to 3.3. The other 67 come
+from queries too small to reach the top-30 cutoff, so they are not visible and may well be
+legitimate. The honest reading is that **the 3.3 is not trustworthy as evidence of anything**, not
+that the page is worthless.
+
+The AUV page is the opposite and is the better model to copy. All eight of its queries are genuine
+AUV intent (`auv franchise`, `what does auv mean`, `define auv`, `auv meaning restaurant`), and it
+sits at 37.0 because it is genuinely competing, not because a junk query flatters it.
+
+`/glossary` alone draws 279 impressions at position 4.9 with a 0.4% click-through rate, more than
+every article combined (165 across 15 pages).
 
 ### Unintended keywords
 

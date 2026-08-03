@@ -26,7 +26,7 @@ Most buyers assume that funding a franchise means getting a bank loan. That assu
 
 The SBA isn't where you should start. It's where you end up when no better option is available, and for a lot of buyers, a better option does exist.
 
-Before you compare SBA and ROBS, ask whether you need either. If you have meaningful liquid savings, you may not. If you have home equity, a HELOC may be the faster and simpler answer. If you have retirement savings, ROBS likely beats both SBA and anything else available. The SBA earns its place in the conversation when none of those paths can cover the capital need, not before.
+Before you compare SBA and [ROBS](/glossary/robs-rollover-for-business-startups), ask whether you need either. If you have meaningful liquid savings, you may not. If you have home equity, a HELOC may be the faster and simpler answer. If you have retirement savings, ROBS likely beats both SBA and anything else available. The SBA earns its place in the conversation when none of those paths can cover the capital need, not before.
 
 ---
 
@@ -124,7 +124,7 @@ The SBA doesn't lend directly. It guarantees loans made by participating banks, 
 
 **The timeline reality.** Budget 60 to 90 days for SBA underwriting, and be prepared for it to take longer. Unlike ROBS, which closes in weeks, SBA involves bank review, SBA approval, and appraisal or collateral evaluation steps that run in sequence. This is not a path for situations where you need to move quickly.
 
-**The debt service reality.** A $300,000 SBA loan at prevailing rates as of 2026 carries a monthly payment of roughly $2,800 to $3,200 over a 10-year term. That payment begins whether or not your business has ramped up. Factor reserves to cover 12 months of debt service into your total capital requirement.
+**The debt service reality.** A $300,000 [SBA loan](/glossary/sba-loan-small-business-administration) at prevailing rates as of 2026 carries a monthly payment of roughly $2,800 to $3,200 over a 10-year term. That payment begins whether or not your business has ramped up. Factor reserves to cover 12 months of debt service into your total capital requirement.
 
 **SBA works best when:** you have good credit, at least 15 to 20% of the total investment in liquid capital, enough external income to cover personal expenses during the ramp-up period, and the discipline to manage debt service without it affecting operational decisions. If all of those are true and no other path covers the capital need, SBA is the right answer.
 

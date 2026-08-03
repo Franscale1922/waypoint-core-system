@@ -280,6 +280,20 @@ export const terms: GlossaryGroup[] = [
           "The optional section where franchisors may disclose financial performance data, including revenue, expenses, and sometimes earnings, for existing units. Item 19 disclosure is not required, but its absence is itself informative. When data exists, it requires careful reading: averages across large systems can mask wide variation between top and bottom performers. The most valuable Item 19s show unit-level cost structures, not just top-line revenue.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
+        faqs: [
+          {
+            q: "What is Item 19 in an FDD?",
+            a: "Item 19 is the financial performance representation, the section where a franchisor may publish figures such as revenue, expenses, or unit-level cost structures for existing locations. It is the only place in the FDD where a franchisor is permitted to make financial claims, and anything a salesperson tells you that is not in Item 19 is not a disclosure you can rely on.",
+          },
+          {
+            q: "Why do some franchises not have an Item 19?",
+            a: "Because it is optional. The FTC Franchise Rule requires the disclosure to be accurate if it is made, but does not require it to be made at all. An absent Item 19 is not automatically a red flag, though it does mean the burden of finding real numbers shifts entirely to your validation calls with existing franchisees.",
+          },
+          {
+            q: "How do you read an Item 19 properly?",
+            a: "Start with the footnotes, because they define the population. Check how many units are included, whether underperformers or recently opened locations were excluded, and whether the figures are revenue or something closer to unit-level margin. An average across a large system can hide a wide spread between the strongest and weakest locations, so ask for the distribution and verify it with franchisees.",
+          },
+        ],
       },
       {
         term: "FDD Item 20",
@@ -322,6 +336,20 @@ export const terms: GlossaryGroup[] = [
           "An independent professional who connects franchisors with prospective buyers and earns a commission, typically 40 to 50 percent of the franchise fee, paid by the franchisor when a deal closes. Many brokers present themselves as franchise consultants or advisors, but their compensation comes from the franchisor. This means they can only present brands they have commission relationships with and have a financial incentive to close a sale. Brokers can be genuinely helpful in narrowing options, but supplement their recommendations with your own independent research.",
         related: "/resources/do-you-need-a-franchise-consultant",
         relatedLabel: "Do you need a franchise consultant?",
+        faqs: [
+          {
+            q: "What is the difference between a franchise broker and a franchise consultant?",
+            a: "In practice the titles are used interchangeably, and the label tells you very little. The distinction that matters is how the person is paid. Most brokers and consultants earn a commission from the franchisor when a deal closes, which means they can only introduce brands they hold agreements with. Ask directly who pays them and what happens if you buy a brand they do not represent.",
+          },
+          {
+            q: "Who pays the franchise broker?",
+            a: "The franchisor, typically 40 to 50 percent of the franchise fee, paid when the deal closes. The buyer is not invoiced, which is why the service is often described as free to the candidate. The cost is real; it is simply built into the franchise fee you pay either way.",
+          },
+          {
+            q: "Does using a broker cost the buyer anything?",
+            a: "Not as a direct fee, but it shapes what you see. A broker can only present brands inside their commission network, so the shortlist reflects that network as much as your criteria. Brokers can genuinely narrow a confusing field, and the sensible approach is to use one while doing independent research on brands they never mention.",
+          },
+        ],
       },
       {
         term: "Franchise Business Review (FBR)",
@@ -343,6 +371,20 @@ export const terms: GlossaryGroup[] = [
           "A one-time upfront payment to the franchisor, typically $20,000 to $60,000, made at the time of signing the franchise agreement. It grants the franchisee the right to operate under the brand's system, intellectual property, and territory. The franchise fee does not cover build-out, equipment, working capital, or ongoing royalties. It is defined in FDD Item 5.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+        faqs: [
+          {
+            q: "How much is a franchise fee?",
+            a: "Most fall between $20,000 and $60,000, paid once at signing. The exact figure is disclosed in Item 5 of the FDD. Multi-unit and area development deals often carry a larger combined fee covering several future locations.",
+          },
+          {
+            q: "Is the franchise fee refundable?",
+            a: "Usually not. Item 5 states the refund conditions, and for most brands the fee becomes non-refundable once the franchise agreement is signed. A small number of franchisors refund part of it if the location is never opened, so read Item 5 rather than assuming either way.",
+          },
+          {
+            q: "What does the franchise fee not cover?",
+            a: "Nearly everything it takes to open. Build-out, equipment, initial inventory, working capital, training travel, and pre-opening expenses all sit outside it, as do the ongoing royalty and marketing fund contributions. Item 7 gives the full picture; the franchise fee is one line inside it.",
+          },
+        ],
       },
       {
         term: "Franchise Registry (SBA)",
@@ -449,6 +491,22 @@ export const terms: GlossaryGroup[] = [
           "The total estimated cost to open and begin operating a franchise unit, as disclosed in FDD Item 7. It includes the franchise fee, build-out, equipment, initial inventory, working capital, training costs, and pre-opening expenses. Ranges vary widely by category, from under $100,000 for home-based service concepts to $500,000+ for full brick-and-mortar locations.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+        // The franchise cost cluster is 41 impressions across four queries, landing on
+        // /investment at position 66.6. These mirror the query phrasings directly.
+        faqs: [
+          {
+            q: "How much does it cost to buy a franchise?",
+            a: "It depends almost entirely on the category. Home-based and mobile service concepts commonly start under $100,000, while full brick-and-mortar locations frequently run past $500,000. FDD Item 7 gives the brand's own low and high estimate, and that range is the number to plan against rather than the franchise fee alone.",
+          },
+          {
+            q: "What is included in the initial investment?",
+            a: "Item 7 covers the franchise fee, build-out or leasehold improvements, equipment, signage, initial inventory, training and travel, licences and permits, and an allowance for working capital through the opening period. Read the working capital line closely, because brands differ widely in how many months they assume.",
+          },
+          {
+            q: "Is the initial investment the same as the franchise fee?",
+            a: "No, and confusing the two is the most common budgeting mistake. The franchise fee is a single upfront payment for the right to operate the brand. The initial investment is the whole cost of getting open, and the franchise fee is usually a small fraction of it.",
+          },
+        ],
       },
       {
         term: "Item 19",
@@ -475,6 +533,20 @@ export const terms: GlossaryGroup[] = [
           "Cash or near-cash assets that can be accessed immediately without selling long-term investments or taking on debt, including checking and savings accounts, money market funds, and short-term CDs. When a franchisor states a minimum liquid capital requirement, they are asking how much you can put to work today without liquidating retirement accounts or real estate. Most brands require $50,000–$150,000 in liquid capital depending on the model. This is distinct from net worth, which includes illiquid assets.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+        faqs: [
+          {
+            q: "What counts as liquid capital for a franchise?",
+            a: "Cash and near-cash you can deploy immediately: checking and savings balances, money market funds, and short-term CDs. Brokerage holdings are sometimes counted at a discount. Home equity and retirement accounts usually are not, because reaching them requires a loan or a rollover structure first.",
+          },
+          {
+            q: "How much liquid capital do you need to buy a franchise?",
+            a: "Most brands set a minimum between $50,000 and $150,000 depending on the model, and the figure appears in the franchisor's candidate criteria rather than in a fixed section of the FDD. Treat it as a screening threshold, not a budget. The Item 7 range is what actually has to be funded.",
+          },
+          {
+            q: "Is liquid capital the same as net worth?",
+            a: "No. Liquid capital asks what you can put to work today. Net worth is everything you own minus everything you owe, including illiquid assets like home equity and retirement accounts. Franchisors commonly set both, and meeting one does not mean you meet the other.",
+          },
+        ],
       },
       {
         term: "Liquid Net Worth",
@@ -527,6 +599,20 @@ export const terms: GlossaryGroup[] = [
           "A minimum total asset threshold (assets minus liabilities) that a franchisor requires of prospective franchisees, disclosed in FDD Item 5. A $500,000 net worth requirement does not mean $500,000 in cash. It means the total value of what you own (home equity, retirement accounts, investments, business interests) minus what you owe must reach that threshold. Net worth requirements ensure franchisees have enough financial depth to weather slow periods.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+        faqs: [
+          {
+            q: "What does a net worth requirement mean for a franchise?",
+            a: "It is a minimum for total assets minus total liabilities, not a cash requirement. A $500,000 net worth requirement does not ask for $500,000 in the bank. It asks that the combined value of what you own, less what you owe, reaches that figure.",
+          },
+          {
+            q: "What counts toward net worth?",
+            a: "Home equity, retirement accounts, investment and brokerage balances, cash, and the value of other business interests, less mortgages, loans, and other debts. Franchisors usually ask for a personal financial statement, and the figures should be defensible if a lender later reviews them.",
+          },
+          {
+            q: "Why do franchisors require a minimum net worth?",
+            a: "To confirm there is enough financial depth behind the investment to absorb a slower opening period than planned. Ramp-up rarely follows the projection exactly, and a franchisee who has spent everything getting open has no capacity to keep operating through the gap.",
+          },
+        ],
       },
       {
         term: "Non-Compete Clause",
@@ -659,6 +745,23 @@ export const terms: GlossaryGroup[] = [
           "A legal financing structure that allows business owners to use 401(k) or other qualified retirement funds to invest in a business without triggering early withdrawal penalties or income taxes. ROBS requires setting up a C-corporation and following strict IRS compliance rules. It is a legitimate and common franchise financing tool when structured properly by a qualified provider.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
+        // The ROBS cluster is 54 impressions across four queries in the 28 days to
+        // 2026-08-01, the second largest on the site, against pages at position 34.8
+        // and 82.7. Every query pairs ROBS with SBA or with the rollover mechanics.
+        faqs: [
+          {
+            q: "Can you use ROBS and an SBA loan together?",
+            a: "Yes, and the combination is common. SBA lenders require the borrower to put in an equity injection of roughly 10 to 20 percent of the project cost, and ROBS is one of the accepted ways to fund it. The retirement money becomes the down payment and the SBA loan covers the rest. Both sets of rules apply at once, so use a ROBS provider and a lender who have worked together before.",
+          },
+          {
+            q: "What are the options for rolling a 401(k) into a franchise?",
+            a: "There are three, and they are not equivalent. A ROBS structure moves the funds into a new C-corporation to buy the business, with no tax or early withdrawal penalty when done correctly. A straight distribution gives you the cash but triggers income tax and, under age 59 and a half, a 10 percent penalty. A 401(k) loan is limited to the lesser of $50,000 or half the vested balance and must be repaid. Only ROBS puts the full balance to work without a tax event.",
+          },
+          {
+            q: "Does ROBS trigger taxes or early withdrawal penalties?",
+            a: "Not when it is structured properly. The funds are rolled into a retirement plan sponsored by the new corporation, which then buys stock in that corporation, so no distribution occurs. The compliance requirements are strict and ongoing: the business must remain a C-corporation, the plan must stay qualified, and annual filings are required. Use a specialist provider. This is not a do-it-yourself structure.",
+          },
+        ],
       },
       {
         term: "Royalty",
@@ -666,6 +769,20 @@ export const terms: GlossaryGroup[] = [
           "An ongoing fee paid by the franchisee to the franchisor, typically 4%\u20138% of gross revenue paid weekly or monthly, in exchange for continued use of the brand, systems, and support infrastructure. Royalties are defined in FDD Item 6 and continue for the full term of the franchise agreement. The royalty rate, combined with the marketing fund contribution, represents the franchisee's total ongoing cost of brand affiliation.",
         related: "/investment",
         relatedLabel: "Full franchise cost breakdown",
+        faqs: [
+          {
+            q: "How much is a franchise royalty fee?",
+            a: "Most fall between 4 and 8 percent of gross revenue, paid weekly or monthly, and the exact rate is disclosed in FDD Item 6. A small number of brands charge a flat monthly amount instead, which behaves very differently as volume changes.",
+          },
+          {
+            q: "What does the royalty pay for?",
+            a: "Continued use of the brand and trademarks, the operating system and its updates, franchisor support and field visits, and technology infrastructure. It is separate from the marketing fund contribution, which is usually another 1 to 3 percent and is spent on advertising rather than on support.",
+          },
+          {
+            q: "Are franchise royalties negotiable?",
+            a: "Rarely, and for a structural reason. Franchisors keep fee terms uniform across the system because Item 6 is disclosed to every candidate and inconsistent rates create both legal exposure and friction with existing franchisees. Established brands almost never move. Where flexibility appears, it is usually in a young system or in a multi-unit development deal.",
+          },
+        ],
       },
     ],
   },
@@ -692,6 +809,20 @@ export const terms: GlossaryGroup[] = [
           "A federally backed loan program used to finance franchise purchases when no cleaner funding path covers the full capital need. The SBA 7(a) program is the most widely used in franchising, allowing borrowers to finance up to 90% of the total project cost. It is also the most demanding path available: it requires a credit score above 680, collateral, a personal guarantee, and a full documentation package including 2–3 years of personal tax returns, a business plan, and financial projections. The underwriting process typically takes 60 to 90 days, often longer. For buyers who have liquid savings, home equity, or retirement funds available, those options should be explored first. SBA is valuable as a last resort, for when the capital need genuinely exceeds what those paths can cover.",
         related: "/resources/how-franchise-funding-actually-works",
         relatedLabel: "How franchise funding actually works",
+        faqs: [
+          {
+            q: "What do you need to qualify for an SBA franchise loan?",
+            a: "Lenders generally look for a credit score above 680, collateral, a personal guarantee, and an equity injection of roughly 10 to 20 percent of the project cost. The documentation package usually includes two to three years of personal tax returns, a business plan, and financial projections. The brand also has to be listed on the SBA Franchise Directory for the streamlined path.",
+          },
+          {
+            q: "How long does an SBA loan take to close?",
+            a: "Typically 60 to 90 days, and often longer. Start the conversation with a lender before you sign a franchise agreement rather than after, because the timeline frequently runs past the deadlines a franchisor sets for opening.",
+          },
+          {
+            q: "Should you use an SBA loan or your retirement funds first?",
+            a: "Look at the cheaper paths first. Liquid savings, home equity, and retirement funds through a ROBS structure all avoid the underwriting burden, the personal guarantee, and the interest. SBA is genuinely valuable when the capital need exceeds what those can cover, which is why it is best treated as the last piece of the stack rather than the first.",
+          },
+        ],
       },
       {
         term: "SBLOC (Securities-Backed Line of Credit)",
@@ -753,6 +884,20 @@ export const terms: GlossaryGroup[] = [
           "A defined geographic region, usually by zip codes, population thresholds, or county lines, within which a franchisee holds exclusive rights to operate under the brand. Territory definitions and enforcement vary significantly by brand. Some franchisors offer protected territories (competitors of the same brand cannot open nearby); some do not. Territory rights are defined in FDD Item 12.",
         related: "/resources/how-to-pick-a-franchise-territory",
         relatedLabel: "How to pick a franchise territory",
+        faqs: [
+          {
+            q: "How do you find out which franchise territories are available?",
+            a: "Ask the franchisor directly, then confirm against FDD Item 12, which describes how territories are defined and whether any exclusivity applies. Availability changes constantly as deals close, so a map you were shown weeks ago may already be out of date. Get the current position in writing before you commit.",
+          },
+          {
+            q: "What makes a territory protected?",
+            a: "A protected territory means the franchisor agrees not to open another location of the same brand inside your boundaries. It rarely means no competition at all, because other brands and the franchisor's own online or delivery channels may still reach your customers. Item 12 sets out exactly what the protection does and does not cover.",
+          },
+          {
+            q: "How big is a typical franchise territory?",
+            a: "Territories are usually drawn by zip codes, population count, or county lines, and the right size depends on the model. A mobile service business may need a large area with enough households to sustain routes, while a retail location may need only the trade area around the site. Compare the population figure against the brand's own assumptions rather than judging by the size of the shape on the map.",
+          },
+        ],
       },
       {
         term: "Trade Dress",

@@ -160,3 +160,41 @@ export function selectPoorlyRanked(
     rows.filter((r) => r.impressions >= minImpressions && r.position > minPosition),
   ).slice(0, limit);
 }
+
+/**
+ * Impression-weighted average position.
+ *
+ * The unweighted mean of per-page averages let a single one-impression page at
+ * position 100 pull the headline as hard as a 1,000-impression page at position
+ * 1, reporting 50.5 where the honest figure is about 1.1. Nobody reads "average
+ * position" as "the average of our pages' averages".
+ */
+export function weightedPosition(rows) {
+  const impressions = rows.reduce((s, r) => s + r.impressions, 0);
+  if (!impressions) return null;
+  return rows.reduce((s, r) => s + r.position * r.impressions, 0) / impressions;
+}
+
+/** Escape a markdown table cell so a value containing "|" cannot invent a column. */
+export function cell(value) {
+  return String(value).replace(/\s*[\r\n]+\s*/g, " ").replace(/\|/g, "\\|");
+}
+
+/**
+ * The reporting window, computed entirely in UTC because it is serialised as
+ * UTC. Mixing local arithmetic with toISOString() shifted the window by a day
+ * every evening: at 20:00 MDT on 3 Aug local gives 1 Aug but serialises as
+ * 2 Aug, defeating the two-day lag and requesting a day whose data is not final.
+ *
+ * Both ends are inclusive, which is how the API treats them, so `days` spans
+ * exactly `days` dates and the offset is days - 1. Subtracting the full amount
+ * produced 29 inclusive dates under a heading that said 28.
+ */
+export function dateRange(days, now = new Date()) {
+  const iso = (d) => d.toISOString().split("T")[0];
+  const end = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  end.setUTCDate(end.getUTCDate() - 2); // GSC data lags 2 days
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - (days - 1));
+  return { startDate: iso(start), endDate: iso(end) };
+}

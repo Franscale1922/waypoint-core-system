@@ -22,7 +22,7 @@ faqs:
 ---
 Most first-time franchise buyers come in with a strong instinct about how many units to buy, and most of them are wrong. Either they lock into "just one to start" out of caution, or they think they need 10 to make the numbers work. Both assumptions cost them.
 
-The number you should know before you decide: most buyers who work with advisors end up purchasing 2-5 units or territories, not one and not ten. That range isn't random. It's where the math and the risk align.
+The number you should know before you decide: most buyers who work with advisors end up purchasing 2-5 units or [territories](/glossary/territory), not one and not ten. That range isn't random. It's where the math and the risk align.
 
 <div className="overflow-x-auto my-8">
   <table className="w-full text-sm border-collapse">

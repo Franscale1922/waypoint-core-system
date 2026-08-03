@@ -36,13 +36,13 @@ The right sequence is to inventory your options in order of how clean and simple
 
 3. **HELOC (Home Equity Line of Credit):** if you have meaningful equity in your home, you can borrow against it at lower rates than a business loan, without the bank underwriting process that SBA requires. Your home is the collateral, which is a real risk, but the process is faster and less burdensome than SBA.
 
-4. **ROBS (Rollover for Business Startups):** for buyers with retirement savings, this is often the best structured path. No debt, no monthly payment, no credit score qualification required. Closes in weeks.
+4. **[ROBS](/glossary/robs-rollover-for-business-startups) (Rollover for Business Startups):** for buyers with retirement savings, this is often the best structured path. No debt, no monthly payment, no credit score qualification required. Closes in weeks.
 
 5. **SBA financing:** the path of last resort, backed by the [U.S. Small Business Administration's 7(a) loan program](https://www.sba.gov/funding-programs/loans/7a-loans). Powerful when you genuinely need it, but the most documentation-heavy, slowest, and most banker-involved option available. Best reserved for situations where no other path provides enough capital.
 
 ## How much cash do you actually need to fund a franchise?
 
-It depends on which path you qualify for, not a single number: cash costs nothing beyond the investment itself, while an SBA loan runs 15–20% down as of 2026. The table below compares the five paths from cleanest to most demanding.
+It depends on which path you qualify for, not a single number: cash costs nothing beyond the investment itself, while an [SBA loan](/glossary/sba-loan-small-business-administration) runs 15–20% down as of 2026. The table below compares the five paths from cleanest to most demanding.
 
 <div className="overflow-x-auto my-8">
   <table className="w-full text-sm border-collapse">

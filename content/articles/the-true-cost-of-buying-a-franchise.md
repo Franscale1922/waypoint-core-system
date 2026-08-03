@@ -21,7 +21,7 @@ faqs:
     a: "Working capital is the reserve you maintain to cover operating expenses until the business is cash-flow positive. Most franchise advisors recommend budgeting for at least three to six months of operating costs before revenue stabilizes. Underestimating working capital is one of the most common mistakes first-time franchise buyers make. It leads to cutting marketing spend or skipping hires at exactly the wrong moment."
 escapeKit: true
 ---
-The number most people see first is the franchise fee. It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters.
+The number most people see first is the [franchise fee](/glossary/franchise-fee). It's the number on the website, the number in the brochure, the number they Google. And it's almost never the number that matters.
 
 When someone asks me what a franchise costs, my first question back is: which part?
 
@@ -75,7 +75,7 @@ Most buyers use an SBA 7(a) loan, which is a government-backed business loan tha
 
 The other path is a ROBS (Rollover for Business Startups), which lets you invest funds from a 401(k) or IRA into your business without triggering early withdrawal penalties or a tax event. Many buyers combine a ROBS with an SBA loan to cover the equity requirement without touching liquid savings.
 
-The minimum profile I typically work with as of 2026: $250,000 net worth and $100,000 in liquid capital. At that level, you have real options. You don't have to pass on a good fit because of cost, and you're not stretching to make the numbers work.
+The minimum profile I typically work with as of 2026: $250,000 [net worth](/glossary/net-worth-requirement) and $100,000 in [liquid capital](/glossary/liquid-capital). At that level, you have real options. You don't have to pass on a good fit because of cost, and you're not stretching to make the numbers work.
 
 ---
 

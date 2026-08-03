@@ -30,7 +30,7 @@ If you are exploring the boutique fitness space, you must understand the specifi
 
 ## Why does reformer equipment limit a pilates studio's revenue?
 
-Because the studio is built around reformer machines, your class capacity is capped at the number of reformers that fit your floor space, which sets a hard ceiling on revenue per class and drives up the initial investment. Unlike a bootcamp or yoga studio where the primary requirement is open floor space, a pilates franchise is built around the reformer machine. 
+Because the studio is built around reformer machines, your class capacity is capped at the number of reformers that fit your floor space, which sets a hard ceiling on revenue per class and drives up the [initial investment](/glossary/initial-investment). Unlike a bootcamp or yoga studio where the primary requirement is open floor space, a pilates franchise is built around the reformer machine. 
 
 This introduces a hard cap on your class capacity. If your real estate footprint only allows for 12 reformers, your absolute maximum revenue per class is fixed at 12 participants. You cannot simply squeeze two more people into the room during a busy Saturday morning session.
 

@@ -2,7 +2,7 @@
 
 **Signals checked:** waypointfranchise.com, waypoint franchise, kelsey stuart  
 **Citation hits:** 0 of 48 checks (all tools active)  
-**Share of Voice:** 0% presence (0/1 answers that named any tracked advisor), 0% average share
+**Share of Voice:** 0% presence (0/0 answers that named any tracked advisor), 0% average share
 
 ---
 
@@ -33,7 +33,7 @@
 
 _Tracked-set Share of Voice: Waypoint's presence among the named franchise advisors we watch (see `COMPETITOR_SIGNALS` in the script). This is a directional proxy, not an absolute market share — answers may name advisors outside the tracked set, which are not counted in the denominator._
 
-- **Presence SOV:** 0% — Waypoint was named in 0 of 1 answers that named at least one tracked advisor.
+- **Presence SOV:** 0% — Waypoint was named in 0 of 0 answers that named at least one tracked advisor.
 - **Average share:** 0% — average of (1 / advisors named) across those answers. Higher means Waypoint is named alongside fewer competitors.
 
 | Query | GPT-4o | Perplexity | Gemini |
@@ -49,7 +49,7 @@ _Tracked-set Share of Voice: Waypoint's presence among the named franchise advis
 | Should I use a franchise consultant or buy a franchise directly? | · | · | · |
 | Who can help me choose the right franchise for my goals and budget? | · | · | · |
 | Is it worth talking to a franchise consultant before buying? | · | · | · |
-| How do I find a trustworthy franchise consultant? | · | ❌ 0/2 | · |
+| How do I find a trustworthy franchise consultant? | · | · | · |
 | I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start? | · | · | · |
 | How do I know if a franchise is a good fit for me? | · | · | · |
 | What questions should I ask a franchisee before buying? | · | · | · |
@@ -66,208 +66,208 @@ _First 300 characters of each AI response, for review._
 ### "What does a franchise consultant do?"
 
 **GPT-4o:** ❌ Not cited  
-> A franchise consultant is a professional who provides guidance and expertise to both potential franchisees (those looking to open a franchise) and franchisors (companies that offer franchises). Their main responsibilities can include:  1. **Assessment and Matching**: Franchise consultants assess the...
+> A franchise consultant is a professional who provides expertise and guidance to individuals or companies looking to enter the franchise business, either as a franchisor (the owner of the franchise concept) or as a franchisee (the individual or entity purchasing the rights to operate under an establi...
 
 **Perplexity:** ❌ Not cited  
-> A **franchise consultant** helps people evaluate, compare, and choose franchise opportunities that fit their **budget, goals, experience, and lifestyle**.[1][2][4]  They usually act as a **guide or matchmaker** between prospective franchisees and franchisors, helping clients narrow down options, und...
+> A **franchise consultant** helps people evaluate and choose a franchise by matching their goals, budget, experience, and lifestyle with suitable opportunities.[1][2][4] They typically act as a guide, educator, and intermediary between prospective franchisees and franchisors, and may also help with r...
 
 **Gemini:** ❌ Not cited  
-> A **franchise consultant** (sometimes called a franchise broker or advisor) acts as
+> *Assessment:* Understand the client's goals, budget, skills, lifestyle
 
 ---
 
 ### "How much does it cost to buy a franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> The cost to buy a franchise can vary widely depending on the brand, industry, and location. Here are some factors that influence the cost:  1. **Franchise Fee**: This initial fee can range from a few thousand to several hundred thousand dollars, depending on the franchise. For example, fast-food fra...
+> The cost to buy a franchise can vary widely depending on several factors, including the brand, industry, location, and the specific terms of the franchise agreement. Generally, here are some typical costs involved in purchasing a franchise:  1. **Initial Franchise Fee**: This can range from a few th...
 
 **Perplexity:** ❌ Not cited  
-> The **total cost to buy a franchise** is usually **about $100,000 to $300,000**, but it can be much lower or much higher depending on the brand and industry.[10][12][14]  A useful breakdown is:  - **Franchise fee only:** typically **$20,000 to $50,000**.[5][13][19] - **Most common total startup inve...
+> The **cost to buy a franchise** varies widely, but a common range for the **total initial investment** is about **$100,000 to $300,000**, with many franchises falling between **$50,000 and $200,000**.[9][14][4] The **franchise fee alone** is usually around **$20,000 to $50,000**, but that is only pa...
 
 **Gemini:** ❌ Not cited  
-> what kind of money buys what kind of business.         *   Low-cost ($1
+> The cost to buy a franchise varies wildly depending on the industry, brand recognition, and whether
 
 ---
 
 ### "What is an FDD in franchising?"
 
 **GPT-4o:** ❌ Not cited  
-> An FDD, or Franchise Disclosure Document, is a legal document that franchisors in the United States are required to provide to potential franchisees. It is intended to ensure transparency and provide essential information about the franchise opportunity. The FDD typically includes the following comp...
+> An FDD, or Franchise Disclosure Document, is a legal document required by the Federal Trade Commission (FTC) in the United States for franchisors to provide to prospective franchisees before they make a financial commitment. The FDD contains essential information about the franchise system, helping ...
 
 **Perplexity:** ❌ Not cited  
-> An **FDD** in franchising is the **Franchise Disclosure Document**: a required legal disclosure that franchisors must give prospective franchisees before a franchise sale so they can evaluate the opportunity and risks.[1][3][7]  It is typically organized into **23 Items** and covers key details such...
+> An **FDD** in franchising stands for **Franchise Disclosure Document**. It is a legal disclosure document that franchisors must give prospective franchisees so they can review key information about the franchise before signing or paying any money.[1][2][7]  It typically includes **23 items** coverin...
 
 **Gemini:** ❌ Not cited  
-> In franchising, an **FDD** stands for **Franchise Disclosure
+> In franchising, **FDD** stands for **Franchise Disclosure Document**.   
 
 ---
 
 ### "What is a semi-absentee franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> A semi-absentee franchise is a type of franchise model that allows franchise owners to be less involved in the daily operations of the business compared to traditional franchises. This model is designed for those who may want to invest in a franchise but do not wish to work in it full-time.   Key ch...
+> A semi-absentee franchise is a type of franchise business model that allows franchisees to operate a business with a flexible level of involvement. This model is designed for individuals who want to own a franchise but may not be able to devote full-time attention to it. In this structure, franchise...
 
 **Perplexity:** ❌ Not cited  
-> A **semi-absentee franchise** is a franchise you **own but do not run day to day**; instead, you hire a manager or team to handle daily operations while you focus on oversight, strategy, finances, and growth.[1][2][3]  In practice, owners often spend about **10–20 hours per week** once the business ...
+> A **semi-absentee franchise** is a franchise you **own without running day-to-day operations yourself**. Instead, you hire a manager or staff to handle daily tasks while you stay involved part-time in oversight, finances, hiring, and growth decisions.[1][2][8]  Key points: - It is **not fully passiv...
 
 **Gemini:** ❌ Not cited  
-> A **semi-absentee franchise** is a business ownership model where the owner
+> A **semi-absentee franchise** is a business ownership model where the franchisee (the buyer
 
 ---
 
 ### "Best home services franchises to buy"
 
 **GPT-4o:** ❌ Not cited  
-> When considering the best home services franchises to buy, various factors including investment cost, growth potential, brand reputation, and market demand should be taken into account. Here are several well-regarded home services franchises that have gained popularity and recognition:  1. **Service...
+> When considering a home services franchise to buy, it's important to evaluate factors like market demand, initial investment costs, support provided by the franchisor, and overall reputation. Here are some of the best home services franchises that have been well-regarded:  1. **Home Instead**: Speci...
 
 **Perplexity:** ❌ Not cited  
-> The **best home services franchise** depends on your budget, local market, and whether you want a *low-cost entry*, *high revenue potential*, or *strong brand support*. Based on the rankings and comparison data in the results, the most consistently strong names to evaluate are **Assisting Hands Home...
+> The **best home services franchises to buy** depend on your budget and the type of work you want to run, but current ranking lists consistently put **Assisting Hands Home Care**, **Benjamin Franklin Plumbing**, **Paul Davis Restoration**, and **Budget Blinds** among the strongest options.[5][12] If ...
 
 **Gemini:** ❌ Not cited  
-> The home services sector is one of the most resilient and profitable areas in franchising. It benefits from
+> Neighborly umbrella - strong network)         *   Kitchen Tune-Up (Lower cost
 
 ---
 
 ### "How to finance a franchise"
 
 **GPT-4o:** ❌ Not cited  
-> Financing a franchise can be a multi-faceted process, and there are several options to consider depending on your financial situation, creditworthiness, and the specific franchise requirements. Here’s a step-by-step guide to help you navigate the financing process:  ### 1. **Understand Franchise Cos...
+> Financing a franchise can be a multi-step process that typically involves several options. Here’s a guide to help you understand the various ways to finance a franchise:  ### 1. **Personal Savings**    - **Pros:** No debt, full control of your investment, no interest payments.    - **Cons:** Risking...
 
 **Perplexity:** ❌ Not cited  
-> To finance a franchise, you usually combine **personal funds** with one or more outside funding sources such as an **SBA loan**, a **commercial bank loan**, **franchisor financing**, equipment financing, or other lenders.[1][9][15] The first step is to calculate the **full startup cost**—not just th...
+> Financing a franchise usually means combining **personal capital** with one or more outside funding sources such as **SBA-backed loans, bank loans, franchisor financing, equipment loans, or retirement-account rollovers**.[1][12][15] The first step is to calculate your **total startup cost**—not just...
 
 **Gemini:** ❌ Not cited  
-> Credit score, liquidity, experience, business plan.     *   **Step 4
+> Step 2: Exploring Financing Options (The Core)**          *   *
 
 ---
 
 ### "Is franchise ownership passive income?"
 
 **GPT-4o:** ❌ Not cited  
-> Franchise ownership is generally not considered a form of passive income. While it can provide revenue, owning a franchise often requires active involvement, especially in the early stages. Here are some key points to consider:  1. **Active Management**: Most franchise owners need to be involved in ...
+> Franchise ownership is typically not considered passive income. While owning a franchise can generate revenue, it often requires active involvement and management, especially in the initial stages. Here are some points to consider:  1. **Management Responsibilities**: Franchise owners often need to ...
 
 **Perplexity:** ❌ Not cited  
-> **Usually not by default.** Franchise ownership is generally an *active business*, though it can sometimes become **semi-passive** or *semi-absentee* if you hire a strong manager and the franchise model allows limited day-to-day involvement.[1][3][10]  A few important distinctions:  - **Not truly pa...
+> **Not usually.** Franchise ownership is generally **not passive income** in the way rental income or dividends are; most franchises require active involvement at least during launch and often ongoing oversight, even if you later move into a **semi-absentee** role.[1][10][11]  What *can* happen is th...
 
 **Gemini:** ❌ Not cited  
-> **In short: No, franchise ownership is generally NOT passive income.** 
+> Daily operations, hiring, customer service. (Most common, especially for lower-capital franchisees).
 
 ---
 
 ### "What are red flags when buying a franchise?"
 
 **GPT-4o:** ❌ Not cited  
-> When considering the purchase of a franchise, it's crucial to conduct thorough due diligence to identify potential red flags that may indicate challenges or risks associated with the franchise opportunity. Here are some common red flags to watch for:  1. **High Initial Fees and Royalties**: Excessiv...
+> When considering the purchase of a franchise, it's important to be vigilant about potential red flags that could indicate issues with the franchise opportunity. Here are some key warning signs to look out for:  1. **Lack of Transparency**: If the franchisor is unwilling to provide detailed informati...
 
 **Perplexity:** ❌ Not cited  
-> When buying a franchise, the biggest **red flags** are **pressure to sign quickly**, **vague or incomplete financial disclosure**, **unrealistic earnings claims**, **poor feedback from current or former franchisees**, and **a history of litigation or a weak reputation**.[1][9][10][13][16]  Common wa...
+> When buying a franchise, the biggest **red flags** are **pressure to sign quickly**, **lack of transparency**, **unrealistic earnings claims**, **poor franchisee feedback**, and **legal or financial instability** in the franchisor.[1][2][10][13]  Common warning signs to watch for include:  - **High-...
 
 **Gemini:** ❌ Not cited  
->  Existing Franchisees:**         *   *Unwillingness to give a full list of franchisees
+> ).      *   **Category 2: Financial Warnings (Crucial Area)**         *
 
 ---
 
 ### "Should I use a franchise consultant or buy a franchise directly?"
 
 **GPT-4o:** ❌ Not cited  
-> Deciding whether to use a franchise consultant or buy a franchise directly depends on several factors related to your experience, knowledge of the franchise market, and specific goals. Here are some considerations to help you make that decision:  ### Using a Franchise Consultant:  **Advantages:** 1....
+> Deciding whether to use a franchise consultant or buy a franchise directly depends on several factors related to your individual situation, goals, and level of expertise. Here are some considerations to help you make your decision:  ### Benefits of Using a Franchise Consultant:  1. **Expert Guidance...
 
 **Perplexity:** ❌ Not cited  
-> **Usually, buy a franchise directly if you already know the brand and have done substantial research; use a franchise consultant if you want help narrowing options and avoiding a bad fit.** Franchise consultants generally do not cost the buyer directly because they are typically paid by the franchis...
+> If you already know the brand you want, **buying directly** is usually the better move because a consultant adds little and can slow things down.[1][4] If you’re new to franchising, unsure what fits you, or want help comparing options and reading the FDD, a **franchise consultant** can save time and...
 
 **Gemini:** ❌ Not cited  
-> , legal, and funding aspects entirely on your own.  5.  **Identify
+>  Deep research required; hard to sift through 4,000+ franchises.             *
 
 ---
 
 ### "Who can help me choose the right franchise for my goals and budget?"
 
 **GPT-4o:** ❌ Not cited  
-> Choosing the right franchise is an important decision, and there are several resources and professionals who can assist you in making the best choice based on your goals and budget:  1. **Franchise Consultants**: These are experts who specialize in helping potential franchisees find the right franch...
+> Choosing the right franchise for your goals and budget can be a complex decision, but there are several resources and individuals who can help you navigate this process:  1. **Franchise Consultants**: These professionals specialize in helping potential franchisees find franchises that match their in...
 
 **Perplexity:** ❌ Not cited  
-> The best person to help you choose a franchise for your **goals and budget** is usually a **franchise consultant or advisor** who can match opportunities to your finances, interests, and location.[6][11] You can also use the franchisor’s own matching tools, but you should verify any recommendation w...
+> A **franchise consultant** or a good **franchise broker/advisor** can help you narrow options based on your goals, budget, and preferred lifestyle. Franchise matching services and directory sites also let you search by **investment level**, **industry**, and other fit factors.[5][13][16]  What to lo...
 
 **Gemini:** ❌ Not cited  
->  (crucial detail)**—they are paid a commission by the franchisor if you buy
+> **Mentors & Peer Advisors (The "Reality Check"):**         *   *
 
 ---
 
 ### "Is it worth talking to a franchise consultant before buying?"
 
 **GPT-4o:** ❌ Not cited  
-> Yes, speaking with a franchise consultant before purchasing a franchise can be beneficial for several reasons:  1. **Expert Guidance**: Franchise consultants have experience in the industry and can provide valuable insights about different franchise opportunities, helping you identify options that a...
+> Yes, talking to a franchise consultant before buying a franchise can be very beneficial for several reasons:  1. **Expert Guidance**: Franchise consultants have expertise and experience in the franchise industry. They can provide valuable insights on different franchise opportunities and help you id...
 
 **Perplexity:** ❌ Not cited  
-> Yes—**for many first-time buyers, it’s worth at least talking to a franchise consultant**, because they can help narrow options, compare brands, and spot mismatches before you commit.[2][4][9][12] Several franchise-industry sources also say the consultation is typically **free to the buyer**, since ...
+> Yes—**for many buyers, especially first-timers, it’s worth at least talking to a franchise consultant** because they can help you narrow options, compare brands, and avoid common mistakes during due diligence.[2][7][16]  That said, **you do not need one in every case**. Some sources caution that con...
 
 **Gemini:** ❌ Not cited  
-> , it is generally worth it, especially if you are new to franchising. However, you
+>  Response:**     *   **Direct Answer:** Start with a clear "Yes, but
 
 ---
 
 ### "How do I find a trustworthy franchise consultant?"
 
 **GPT-4o:** ❌ Not cited  
-> Finding a trustworthy franchise consultant involves careful research and evaluation. Here are some steps to help you in the process:  1. **Define Your Needs**: Determine what you need help with, such as selecting a franchise, evaluating franchisors, financial planning, or legal advice.  2. **Researc...
+> Finding a trustworthy franchise consultant is crucial for making informed decisions about franchise opportunities. Here are some steps you can take to ensure you choose a reliable consultant:  1. **Research Credentials**: Look for consultants who have relevant certifications, such as the Certified F...
 
 **Perplexity:** ❌ Not cited  
-> To find a **trustworthy franchise consultant**, look for someone with real franchise industry experience, a full-time practice, a clear vetting process, and a track record you can verify.[3][4] The best consultants spend time understanding your goals and finances before recommending brands, rather t...
+> To find a **trustworthy franchise consultant**, prioritize someone with real franchise industry experience, a full-time consulting focus, a strong reputation, and a track record of helping candidates find a fit—not just selling brands.[1] A reliable consultant should first learn your goals and finan...
 
 **Gemini:** ❌ Not cited  
-> **Step 4: Questions to Ask in the Interview:** Concrete vetting questions.     *
+> Finding a trustworthy franchise consultant (also called a franchise broker or advisor) requires understanding how they operate and
 
 ---
 
 ### "I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start?"
 
 **GPT-4o:** ❌ Not cited  
-> Leaving a corporate job to pursue a franchise opportunity is an exciting venture! To find a semi-absentee franchise under $250,000, follow these steps:  1. **Understand Semi-Absent Ownership**: Semi-absentee franchising allows you to own a business while not being involved in its daily operations. Y...
+> Leaving a corporate job to pursue a semi-absentee franchise can be an exciting opportunity for entrepreneurship. Here are steps to help you get started:  ### 1. **Self-Assessment**    - **Interests and Skills**: Reflect on your interests, skills, and experiences. This will help you find a franchise ...
 
 **Perplexity:** ❌ Not cited  
-> If you want a **semi-absentee franchise under $250,000**, start by narrowing to categories that can realistically support a hired manager and still cash flow—most often **home services, commercial cleaning, property management, and route-based/mobile concepts**.[2][12][16][18] A good first pass is t...
+> The best place to start is to **define your ownership model, budget, and time commitment**, then build a shortlist of franchise categories that are commonly run semi-absentee and fit under your **$250,000** cap.[2][12][18]  A practical starting path looks like this:  - **Set your real budget**: sepa...
 
 **Gemini:** ❌ Not cited  
-> **Drafting Content - Section by Section:**      *   **Phase 1: Realistic Expectations
+>  Intro:** Validate the goal. Leaving corporate for franchise ownership is classic, but setup matters.  
 
 ---
 
 ### "How do I know if a franchise is a good fit for me?"
 
 **GPT-4o:** ❌ Not cited  
-> Determining if a franchise is a good fit for you involves a thorough evaluation of your interests, skills, finances, and the franchise itself. Here are several key factors to consider:  ### 1. **Self-Assessment**    - **Skillset:** Assess your professional background, skills, and experience. Do they...
+> Determining whether a franchise is a good fit for you involves several steps and considerations. Here’s a guideline to help you evaluate your options:  ### 1. **Self-Assessment:**    - **Skills and Experience:** Assess your skills, work history, and professional interests. Some franchises require sp...
 
 **Perplexity:** ❌ Not cited  
-> A franchise is a **good fit** when it matches your **goals, skills, budget, risk tolerance, and lifestyle**, and when the franchise system itself is **proven, transparent, and well-supported**.[3][11][12]  A practical way to judge fit is to check these areas:  - **Personal fit:** Does the business m...
+> A franchise is a good fit if it matches your **interests, skills, budget, and lifestyle**, and if the franchisor and market both look strong.[3][6][15] The fastest way to tell is to compare *you* against the business model, then verify the numbers and talk to current and former franchisees.[2][4][16...
 
 **Gemini:** ❌ Not cited  
-> What is your runway?         *   *Work Style:* Are you an entrepreneur or an
+> fit isn't just about finding a *profitable* franchise; it's about finding one
 
 ---
 
 ### "What questions should I ask a franchisee before buying?"
 
 **GPT-4o:** ❌ Not cited  
-> Before investing in a franchise, it's crucial to gather comprehensive information to make an informed decision. Here are some important questions to ask a franchisee:  1. **Financial Performance:**    - What are your initial investment costs, including franchise fees, equipment, inventory, and real ...
+> Before buying into a franchise, it's important to conduct thorough due diligence. Here are some key questions to ask a franchisee:  ### About the Franchise System 1. **How long have you been a franchisee?** 2. **What attracted you to this franchise?** 3. **What are the initial investment and ongoing...
 
 **Perplexity:** ❌ Not cited  
-> Before buying a franchise, ask a current franchisee questions that test **profitability, support, operations, and risk**. The best answers come from franchisees who are open about both the upside and the frustrations of owning the business.[2][7][9]  A practical question set is:  - **Why did you cho...
+> Before buying a franchise, ask current franchisees about **money, support, operations, and the franchisor relationship**. The most useful questions are the ones that reveal what the business is really like day to day, not just what the sales materials say.[2][7][9]  - **How long did it take you to b...
 
 **Gemini:** ❌ Not cited  
-> Talking to current and former franchisees—a process called **franchisee validation**—is the
+> ?  4.  **Structure and Refine the Response:**     *   
 
 ---
 
 ### "How long does it take to buy a franchise from start to finish?"
 
 **GPT-4o:** ❌ Not cited  
-> The time it takes to buy a franchise can vary significantly depending on several factors, including the type of franchise, the franchisor's processes, and the individual buyer's circumstances. On average, here are the general stages and their estimated timelines:  1. **Research and Decision-Making (...
+> The timeline for buying a franchise can vary significantly based on several factors, including the type of franchise, the specific franchise system's processes, and individual circumstances. However, here’s a general outline of the stages involved and the time they might typically take:  1. **Resear...
 
 **Perplexity:** ❌ Not cited  
-> Buying a franchise usually takes **about 3 to 12 months** from initial research to opening, with the narrower “deal process” often taking **3 to 6 months** and brick-and-mortar locations taking longer because of site selection, buildout, and training.[1][4][8][14]  The timeline depends mostly on the...
+> Buying a franchise typically takes **3 to 9 months** from initial research to signing the franchise agreement, and **6 to 12 months** is a common range if you include site selection, build-out, and opening for a new location.[1][4][5]  The exact timeline depends mainly on: - **Franchise type** — ser...
 
 **Gemini:** ❌ Not cited  
-> ) [Post-Purchase]*         *   Depends heavily on type:
+> often overlaps with Phase 2.*      *   **Phase 4: Signing
 
 ---
 
