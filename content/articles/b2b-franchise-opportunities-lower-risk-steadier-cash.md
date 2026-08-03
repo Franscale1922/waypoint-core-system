@@ -9,7 +9,7 @@ date: "2026-02-03"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "b2b"
-excerpt: "B2B franchise opportunities don't get the attention they deserve in most franchise searches. Buyers who evaluate them on fundamentals, rather than consumer name recognition, often find a risk profile and cash flow structure that outperforms the consumer brands they started with."
+excerpt: "B2B franchise opportunities get overlooked next to consumer names. Judged on fundamentals, they often show steadier demand and a lighter risk profile."
 faqs:
   - q: "What is a B2B franchise?"
     a: "A B2B (business-to-business) franchise sells services to other companies rather than to individual consumers. Common B2B franchise categories include cost-reduction consulting, commercial cleaning, restoration, B2B coaching, parking lot maintenance, and commercial waste management. The business model typically involves fewer clients, larger contracts, and longer-term relationships than consumer-facing franchises."

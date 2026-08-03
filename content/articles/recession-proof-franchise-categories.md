@@ -9,7 +9,7 @@ date: "2025-09-23"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "No franchise is truly recession-proof. The more useful question is which businesses serve customers who keep spending when the economy slows, and how to verify that before you sign."
+excerpt: "No franchise is truly recession-proof. The better question is which customers keep spending when the economy slows, and how to verify that before you sign."
 faqs:
   - q: "What makes a franchise recession-proof?"
     a: "No franchise is truly recession-proof. The more useful question is whether the business serves a customer who keeps spending when the economy slows. The most durable franchises tend to sell to customers with strong financial cushions (higher-income households, businesses with long-term contracts) or provide services people cannot defer (essential home repairs, senior care, non-optional B2B services). Category labels matter less than customer profile and local market composition."

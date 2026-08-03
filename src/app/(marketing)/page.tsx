@@ -9,7 +9,7 @@ import JsonLd from "../components/JsonLd";
 export const metadata: Metadata = {
   title: "Find the Franchise That Fits Your Life",
   description:
-    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners across 35 states find the right franchise. No pitch, no pressure.",
+    "Free franchise consulting from Kelsey Stuart, a former franchisor. I have helped 146+ owners across 35 states find the right fit. No pitch, no pressure.",
   alternates: { canonical: "https://www.waypointfranchise.com" },
   openGraph: {
     title: "Find the Franchise That Fits Your Life | Waypoint Franchise Advisors",

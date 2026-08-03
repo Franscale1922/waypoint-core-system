@@ -4,7 +4,7 @@ slug: "pilates-franchises"
 date: "2026-04-28"
 category: "Industry Spotlights"
 tier: 3
-excerpt: "Pilates franchises offer strong community retention and premium price points, but the business model requires balancing expensive equipment requirements with high instructor payroll."
+excerpt: "Pilates franchises combine premium pricing with strong retention, then balance that against equipment costs and instructor payroll. Here is the real model."
 relatedSlugs:
   - "fitness-franchise-comparison-what-the-numbers-say"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"

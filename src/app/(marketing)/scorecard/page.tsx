@@ -7,7 +7,7 @@ import { FAQItem } from "../faq/FAQItem";
 export const metadata: Metadata = {
   title: "Franchise Readiness Quiz | Are You Ready to Own a Franchise?",
   description:
-    "Take the 2-minute franchise readiness quiz. Get a personalized score based on your capital, timeline, and motivation. Free, honest, no-pitch results from a former franchisor.",
+    "Take the two-minute franchise readiness quiz and get a score based on your capital, timeline and motivation. Free and honest, from a former franchisor.",
   alternates: { canonical: "https://www.waypointfranchise.com/scorecard" },
   openGraph: {
     title: "Franchise Readiness Quiz | Waypoint Franchise Advisors",

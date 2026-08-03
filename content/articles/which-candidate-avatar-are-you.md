@@ -5,7 +5,7 @@ date: "2026-05-31"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Before you look at a single brand, the more useful question is not what you want to sell, it is what kind of owner you are. Most franchise buyers fall into one of eight recognizable types, and knowing yours points you at the businesses that actually fit."
+excerpt: "Before you look at a single brand, ask what kind of owner you are. Most franchise buyers fall into one of eight types, and yours points at the right fit."
 relatedSlugs:
   - "what-the-franchise-process-looks-like-start-to-finish"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"

@@ -5,7 +5,7 @@ date: "2026-05-31"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "b2b"
-excerpt: "An IT services or managed service provider (MSP) franchise sells ongoing technology support to other businesses on monthly contracts. That recurring-contract structure, not deep technical skill, is what makes or breaks it as an investment."
+excerpt: "An IT services or MSP franchise sells ongoing tech support to businesses on monthly contracts. That recurring structure matters more than technical skill."
 relatedSlugs:
   - "b2b-franchise-opportunities-lower-risk-steadier-cash"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"

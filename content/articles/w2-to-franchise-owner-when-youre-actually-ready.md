@@ -9,7 +9,7 @@ date: "2026-01-06"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "A lot of people look at franchise ownership as an exit from corporate life. That framing usually leads to bad decisions. Here is how to assess whether you are running toward something or away from something, and why that distinction matters."
+excerpt: "Many people treat franchise ownership as an exit from corporate life, and that framing leads to bad decisions. Here is how to test your own timing first."
 faqs:
   - q: "What does it mean to be financially ready to leave a W-2 job for a franchise?"
     a: "Financial readiness for the W-2 to franchise transition requires three things: enough liquid capital to fund the franchise investment itself, enough personal runway (most advisors recommend 6 to 12 months of personal expenses) to carry yourself through a 12 to 18 month stabilization period, and a maintained reserve that hasn't been touched. You also need to account for replacing your health insurance. The cost is significant and surprises most first-time buyers."

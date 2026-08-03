@@ -7,7 +7,7 @@ import JsonLd from "../../../components/JsonLd";
 export const metadata: Metadata = {
   title: "Going Deeper: Advanced Franchise Guides",
   description:
-    "You know the basics. Now go deeper. Guides covering funding, territory selection, multi-unit strategy, the franchise agreement, what to look for at Discovery Day, and how to read an FDD.",
+    "Guides on funding, territory selection, multi-unit strategy, the franchise agreement, what to look for at discovery day, and how to read an FDD closely.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/resources/going-deeper",
     types: { "text/markdown": "https://www.waypointfranchise.com/resources/going-deeper.md" },

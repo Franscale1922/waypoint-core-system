@@ -6,7 +6,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "The Franchise Pitch Decoder",
   description:
-    "A free reference for hearing what a franchise pitch is really saying, plus the one question that tends to surface the truth. Works on any business someone is selling you.",
+    "A free reference for hearing what a franchise pitch is really saying, plus the one question that surfaces the truth. Works on anything being sold to you.",
   openGraph: {
     title: "The Franchise Pitch Decoder | Waypoint Franchise Advisors",
     description:

@@ -10,7 +10,7 @@ updatedAt: "2026-06-19"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "The FDD, or Franchise Disclosure Document, is the legally mandated document every franchise candidate receives and almost nobody reads correctly. Here is what to focus on and why most buyers get it wrong."
+excerpt: "The Franchise Disclosure Document is the one file every candidate receives and almost nobody reads correctly. Here are the items that actually matter."
 faqs:
   - q: "What is an FDD (Franchise Disclosure Document)?"
     a: "The Franchise Disclosure Document is a legally mandated document that every franchisor must provide to prospective franchisees at least 14 calendar days before any agreement is signed or money changes hands. It is organized into 23 items covering the franchisor's history, leadership team, litigation history, fee structure, investment requirements, territory definitions, financial performance data (Item 19, if disclosed), and a contact list of all current franchisees (Item 20). It typically runs 200 to 400 pages."

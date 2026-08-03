@@ -13,7 +13,7 @@ const faqSchema = faqPageSchema(faqs, `${SITE_URL}/franchise-financing`);
 export const metadata: Metadata = {
   title: "How to Finance a Franchise: SBA, ROBS, HELOC & More",
   description:
-    "The main ways people fund a franchise (SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing) and how to think about which fits your situation.",
+    "How people fund a franchise: SBA 7(a) loans, ROBS 401(k) rollovers, home equity, securities-backed lines, and franchisor financing, and how to choose.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/franchise-financing",
     types: { "text/markdown": "https://www.waypointfranchise.com/franchise-financing.md" },

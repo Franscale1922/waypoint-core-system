@@ -8,7 +8,7 @@ slug: "your-first-90-days-as-a-franchise-owner"
 date: "2026-01-30"
 category: "Going Deeper"
 tier: 2
-excerpt: "The first 90 days of franchise ownership are not about learning the playbook and running it. They are about learning the system deeply enough to lead people through it, find your constraints early, and build momentum into year two."
+excerpt: "The first 90 days of franchise ownership are not about running the playbook. They are about learning the system well enough to lead people through it."
 faqs:
   - q: "What should a new franchise owner focus on in the first 30 days?"
     a: "Month one should be entirely dedicated to training, not as a prerequisite to 'the real work,' but as the most important period in the business. The best first-month operators absorb not just what the system requires but why each procedure exists, because they will need to explain it to employees and defend it when someone suggests doing things differently. Before opening, you should know your average revenue per transaction, your target weekly revenue, the three metrics your franchisor's top performers track obsessively, and what your first marketing spend is supposed to produce."

@@ -9,7 +9,7 @@ import JsonLd from "../../components/JsonLd";
 export const metadata: Metadata = {
   title: "FAQ",
   description:
-    "Honest answers to common questions about franchise consulting, cost, capital requirements, funding paths, territory, semi-absentee ownership, the FDD, and how the process works.",
+    "Honest answers on franchise consulting, capital requirements, funding paths, territory, semi-absentee ownership, the FDD, and how the process really works.",
   alternates: {
     canonical: "https://www.waypointfranchise.com/faq",
     types: { "text/markdown": "https://www.waypointfranchise.com/faq.md" },

@@ -9,7 +9,7 @@ date: "2026-03-07"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "home-services"
-excerpt: "Restoration franchises generate demand differently from most service businesses. Their revenue is driven by insurance claims and emergency calls, not marketing spend. That distinction produces a structurally different risk profile when consumer confidence softens."
+excerpt: "Restoration franchises are driven by insurance claims and emergency calls rather than marketing spend, which changes the risk profile when spending slows."
 faqs:
   - q: "What is a restoration franchise?"
     a: "A restoration franchise provides services to repair and restore properties after disasters, typically water damage, fire damage, mold remediation, flood cleanup, and reconstruction. Some restoration franchises are full-service, handling the entire job from emergency response through final rebuild. Others specialize in one component, such as cabinet restoration or contents cleaning, within a larger disaster response ecosystem."

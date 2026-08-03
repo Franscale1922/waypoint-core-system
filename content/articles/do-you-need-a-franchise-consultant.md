@@ -9,7 +9,7 @@ date: "2025-09-02"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is. Here is what a good one does, what they cost, and how to tell the bad ones from the good ones quickly."
+excerpt: "Franchise consultant sounds like a sales title, and sometimes it is. Here is what a good one does, who pays them, and how to spot a bad one very quickly."
 faqs:
   - q: "How much does a franchise consultant cost?"
     a: "Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant."
@@ -37,7 +37,7 @@ A franchise consultant does most of the same things.
 
 The process starts with understanding you: your capital position, your skills, the role you want to play in the business, what you want the business to do for your life in five to ten years. That profile shapes everything that comes after.
 
-From there, a consultant brings you a shortlist of concepts that actually fit what you're looking for, rather than you having to filter 4,000 brands on your own. They give you their honest read on each one's strengths and weaknesses. They help you figure out what questions to ask during the evaluation process and what the answers should sound like.
+From there, a consultant brings you a shortlist of concepts that actually fit what you're looking for, rather than you having to filter the 4,000-plus brands in the market as of 2026 on your own. They give you their honest read on each one's strengths and weaknesses. They help you figure out what questions to ask during the evaluation process and what the answers should sound like.
 
 When it gets to funding, a good consultant connects you with lenders who have financed deals in that specific franchise system. The fit matters. An SBA lender who has worked with a brand before knows the system's financials and moves faster.
 

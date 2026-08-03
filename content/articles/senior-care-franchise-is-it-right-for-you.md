@@ -9,7 +9,7 @@ date: "2026-03-11"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "senior-care"
-excerpt: "Senior care is one of the most recession-resistant franchise categories, and one of the most commonly misunderstood. There are three meaningfully different business models in this space, and picking the wrong one for your personality and skills is how good candidates end up miserable."
+excerpt: "Senior care holds up well in downturns and is widely misunderstood. Three different business models sit inside it, and the wrong one is a costly mismatch."
 faqs:
   - q: "What are the different types of senior care franchises?"
     a: "There are three structurally different models. First, traditional non-medical home care agencies hire caregivers directly, manage scheduling and payroll, and are familiar and scalable. Second, full-spectrum or skilled care models include Medicare/Medicaid reimbursement and clinical services such as nursing and physical therapy, with higher billing rates and insurance-backed demand, but heavier licensing and compliance. Third, senior care matchmaking connects families with independent caregivers without employing them, which means no caregiver payroll, no clinical licensing, and far lower overhead, but a harder initial sale."

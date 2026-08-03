@@ -9,7 +9,7 @@ date: "2025-11-05"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Fast growth in a franchise brand is a signal that the model is working well enough that buyers and the franchisor both want more of it. Slow growth is a signal that something isn't working. Here is how to evaluate the difference."
+excerpt: "Fast growth in a franchise brand can signal a model that works, or a system outrunning its own support. Here is how to tell which one you are looking at."
 faqs:
   - q: "Is fast franchise growth a good sign or a red flag?"
     a: "Fast growth is generally a positive signal. It means qualified buyers want in and the franchisor has a working model. The more useful data point is attrition, not growth rate. A system adding 80 units per year while losing 60 has a churn problem underneath the surface growth. Check the franchise disclosure document's franchisee departure data for exits alongside the new unit additions."

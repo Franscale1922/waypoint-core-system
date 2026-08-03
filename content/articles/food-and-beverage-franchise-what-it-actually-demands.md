@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "food-and-beverage"
-excerpt: "Food franchises dominate franchise searches. They're also the most operationally demanding category most buyers will consider. Here's an honest look at what the category requires, and who it's actually built for."
+excerpt: "Food franchises dominate franchise searches and ask the most operationally. Here is an honest look at what the category demands, and who it truly fits."
 relatedSlugs:
   - "you-dont-need-to-love-your-franchise"
   - "recession-proof-franchise-categories"
@@ -72,7 +72,7 @@ The profiles that struggle most are buyers who chose food because they love food
 
 ## What should you ask before buying a food franchise?
 
-Before buying a food franchise, focus your due diligence on average unit volume, the system's recent closure rate, lease terms, realistic labor costs, and the recommended capital reserve for launch. If you're seriously evaluating a food concept, these are the questions worth spending real time on:
+Before buying a food franchise, focus your due diligence on [average unit volume](/glossary/average-unit-volume-auv), the system's recent closure rate, lease terms, realistic labor costs, and the recommended capital reserve for launch. If you're seriously evaluating a food concept, these are the questions worth spending real time on:
 
 - What is the average unit volume for this brand's existing franchisees (ask the franchisor for financial performance data)?
 - What is the franchise system's closure rate for units opened in the last five years?

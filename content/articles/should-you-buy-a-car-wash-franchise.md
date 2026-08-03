@@ -10,7 +10,7 @@ updatedAt: "2026-03-31"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "home-services"
-excerpt: "Car washes have existed for decades. What changed is how the best brands now generate revenue, and whether the math works for you depends on factors most buyers miss."
+excerpt: "Car washes have been around for decades. What changed is how the strongest brands generate revenue, and whether that structure fits how you want to work."
 faqs:
   - q: "How much does it cost to buy a car wash franchise?"
     a: "It depends heavily on the model. Mobile and waterless concepts start around $90,000–$150,000. In-bay automatic models run $250,000–$700,000. Express tunnel franchises, the dominant growth model, typically require $1.5M–$3M+. Full-service tunnels can reach $3M–$9M. Most buyers in this category need $500K+ in accessible capital minimum to enter at a scale where the unit economics work."

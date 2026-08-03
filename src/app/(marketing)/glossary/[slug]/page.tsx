@@ -79,7 +79,13 @@ export default async function GlossaryTermPage({
       url,
       inDefinedTermSet: { "@id": `${SITE_URL}/glossary#glossary` },
     },
-    faqPageSchema([{ q: `What is ${entry.term} in franchising?`, a: entry.definition }], url),
+    faqPageSchema(
+      [
+        { q: `What is ${entry.term} in franchising?`, a: entry.definition },
+        ...(entry.faqs ?? []),
+      ],
+      url,
+    ),
   );
 
   return (
@@ -108,6 +114,15 @@ export default async function GlossaryTermPage({
           What is {entry.term} in franchising?
         </h2>
         <p className="text-base text-[#3a3a2e] leading-relaxed">{entry.definition}</p>
+
+        {/* Extra question-format answers, where people search the term more than
+            one way. Headings stay questions so answer engines can extract them. */}
+        {entry.faqs?.map((faq) => (
+          <div key={faq.q} className="mt-8">
+            <h2 className="font-playfair text-xl text-[#0c1929] mb-3">{faq.q}</h2>
+            <p className="text-base text-[#3a3a2e] leading-relaxed">{faq.a}</p>
+          </div>
+        ))}
 
         {entry.related && entry.relatedLabel && (
           <p className="mt-8">

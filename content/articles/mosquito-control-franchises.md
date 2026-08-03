@@ -4,7 +4,7 @@ slug: "mosquito-control-franchises"
 date: "2026-04-28"
 category: "Industry Spotlights"
 tier: 3
-excerpt: "Mosquito control franchises offer route-based recurring revenue with a low cost of entry, but require operating a fast-paced seasonal sprint."
+excerpt: "Mosquito control franchises offer route-based recurring revenue with a low cost of entry, but the season is short and the work arrives in a fast sprint."
 relatedSlugs:
   - "home-services-franchises-most-overlooked-category"
   - "maid-and-residential-cleaning-franchises"

@@ -10,7 +10,7 @@ const PUBLISHED = "2026-05-29";
 export const metadata: Metadata = {
   title: "The Franchise Matching Report 2026",
   description:
-    "Original first-party data from Waypoint: 250+ franchise brands screened, 146+ owners matched across 35 states, and why roughly 7 in 10 candidates decide not to buy. What the numbers reveal about choosing a franchise well.",
+    "First-party data from Waypoint: 250+ brands screened, 146+ owners matched across 35 states, and why roughly 7 in 10 candidates decide not to buy at all.",
   alternates: { canonical: `${SITE_URL}${PATH}` },
   openGraph: {
     title: "The Franchise Matching Report 2026",

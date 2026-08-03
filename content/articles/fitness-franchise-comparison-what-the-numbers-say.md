@@ -9,7 +9,7 @@ date: "2026-02-10"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "fitness-wellness"
-excerpt: "The number that matters most in fitness franchising is not how busy the studio looks. It is membership churn. A studio signing 200 members but losing half every six months is running a fundamentally different business than one holding 130 members at 90% annual retention. Here is how to read the difference."
+excerpt: "The number that matters in fitness franchising is not traffic, it is membership churn. Here is how to read retention before you compare any two studios."
 faqs:
   - q: "What is the most important metric when evaluating a fitness franchise?"
     a: "Membership retention, or churn, is the most critical operating metric in fitness franchising. A studio that signs high volumes but loses members quickly is running a structurally weaker business than one with a smaller, stickier membership base. When evaluating fitness franchise disclosure documents, look for average member tenure, revenue per member per year, and financial performance data segmented by mature versus newer units."

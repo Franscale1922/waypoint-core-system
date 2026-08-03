@@ -1,6 +1,8 @@
 # Waypoint Article Keyword Map
 
-> **Purpose:** Maps each published article to its primary SEO target keyword, intent, estimated volume tier, and recommended optimizations. Update with real GSC data once the site has 90 days of organic traffic.
+> **Purpose:** Maps each published article to its primary SEO target keyword, intent, estimated volume tier, and recommended optimizations.
+>
+> **Volume tiers below are estimates, not measurements.** Real Search Console data now exists and lives in the "Measured positions" section at the bottom, added 2026-08-03 from the first valid report this site has produced. Where the two disagree, the measurement wins.
 >
 > **Volume tiers:** Low (<200/mo) · Medium (200–2,000/mo) · High (2,000+/mo)  
 > **Intent:** Informational (I) · Commercial (C) · Navigational (N)
@@ -82,15 +84,78 @@
 ## Optimization Priorities
 
 ### Articles to Optimize First (Highest Volume, Not Yet Optimized)
+
+_Written before there was any data. Item 3 is done: every meta description in the repo was rewritten
+to fit the search snippet on 2026-08-03. The rest are still speculative, and the measured table below
+suggests the fitness and semi-absentee terms carry less volume than assumed._
+
 1. **cost of buying a franchise** — already solid; confirm H1 includes "franchise cost"
-2. **fitness franchise** — high volume; ensure "fitness franchise" appears in first 100 words
-3. **semi-absentee franchise** — exact match keyword; check meta description length
+2. **fitness franchise**: measured at position 5.5 on 2 impressions, so volume is lower than the High tier implies
+3. ~~**semi-absentee franchise**: check meta description length~~ done 2026-08-03, all 45 excerpts now 150-160 chars
 4. **franchise red flags** — add these words more explicitly to H1
 
-### Articles Where GSC Will Show Opportunity
-Once Search Console has data, look for articles with:
-- **High impressions, low CTR** → rewrite title tag / meta description
-- **Position 8–20** → strengthen internal links pointing to article + add more body keyword mentions
+---
+
+## Measured positions
+
+_Source: `docs/seo-reviews/2026-08/gsc-report.md`, 28 days to 2026-08-01. Site totals: 8 clicks,
+985 impressions, 40 pages with data. This is the first valid report the pipeline has produced; the
+March and June reports measured a non-www property that sees only redirect traffic, so treat any
+earlier figure as void rather than as a trend line._
+
+Only 15 of the 44 mapped articles have any data yet, so absence from this table means "not yet
+measured", not "not ranking".
+
+| Slug | Impressions | CTR | Position | Read |
+|---|---|---|---|---|
+| `franchise-investment-by-category` | 82 | 2.4% | **3.3** | Best page in the corpus. Description rewritten 2026-08-03; it was 291 chars and truncated. |
+| `sba-loan-vs-robs-franchise-funding-comparison` | 62 | 1.6% | 34.8 | Serves the ROBS cluster (54 impressions). Ranking problem, not a title problem. |
+| `how-to-pick-a-franchise-territory` | 9 | 0% | 77.3 | "franchise territories available" and similar sit at 67-82. Thin at 0 words of depth on territory mechanics. |
+| `property-management-franchises` | 5 | 0% | 99.2 | Effectively unranked. |
+| `home-services-franchises-most-overlooked-category` | 3 | 0% | 5.7 | Good position, almost no impressions. The keyword has less volume than the Medium tier assumed. |
+| `fitness-franchise-comparison-what-the-numbers-say` | 2 | 0% | 5.5 | Same pattern as above. |
+| `b2b-franchise-opportunities-lower-risk-steadier-cash` | 1 | 0% | 9.0 | |
+| `fdd-decoded-what-actually-matters` | 1 | 0% | 8.0 | |
+| `junk-removal-franchise-economics-explained` | 1 | 0% | 80.0 | |
+| `are-you-ready-to-own-a-franchise`, `health-wellness-franchises-fad-vs-durable-business`, `staffing-franchises`, `what-to-expect-at-discovery-day`, `your-first-90-days-as-a-franchise-owner` | 1 each | 0% | 3.0-7.0 | Ranking well, no volume behind the term. |
+
+### What the site actually gets found for
+
+The article corpus is not where the impressions are. Three query clusters dominate, and all three
+point at pages outside `content/articles`:
+
+| Cluster | Impressions | Lands on | Position |
+|---|---|---|---|
+| Average unit volume / AUV (8 queries) | 69 | `/glossary/average-unit-volume-auv` | 37.0 |
+| ROBS / SBA funding (4 queries) | 54 | `/franchise-financing/robs-401k-rollover` | 82.7 |
+| Franchise cost / price (4 queries) | 41 | `/investment` | 66.6 |
+
+`/glossary` alone draws 299 impressions at position 4.8 with a 0.3% click-through rate, more than
+every article combined.
+
+### Unintended keywords
+
+Real but not worth chasing. These are people looking for a specific brand's fee, and Waypoint has
+nothing to sell them:
+
+- `bonkers corner franchise cost` (8), `bonkers franchise cost` (5), `angel one franchise` (2),
+  `aadhaar franchise cost`, `bhikharam chandmal franchise price`, `afc sushi`, `albertos franchise`
+- `auv meaning car` and `bojangles pronunciation` are pure noise from the glossary
+
+Together these are roughly 18 of the 271 impressions in the top-30 query table, so they are a
+curiosity rather than a problem. Do not optimize for them and do not treat them as evidence that
+`/glossary` attracts the wrong audience: the dominant glossary queries are AUV definitional terms,
+which are exactly right.
+
+### Next targets, in order
+
+1. **AUV cluster.** Three queries already sit on page two (`auv franchise meaning` 17.1, `what does
+   auv mean` 14.8, `average unit volume` 20.5). FAQs and inbound links added 2026-08-03; re-measure
+   next month before doing more.
+2. **ROBS cluster.** 54 impressions against pages at 34.8 and 82.7. Needs depth and internal links,
+   not metadata.
+3. **`/investment`.** 163 impressions at position 66.6 for the franchise-cost cluster. Description
+   rewritten 2026-08-03; the ranking work is untouched.
 
 ---
 

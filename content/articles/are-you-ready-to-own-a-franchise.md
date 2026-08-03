@@ -9,7 +9,7 @@ date: "2025-08-12"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Most people who reach out have already been thinking about this for a while. They've looked at a few brands online, maybe talked to someone who owns a franchise. Before answering any of that, I ask three questions. The answers tell me almost everything."
+excerpt: "Three questions tell me whether someone is ready to buy a franchise: why now, what happens if it stalls, and who else has to agree with the decision first."
 faqs:
   - q: "How much money do you need to buy a franchise?"
     a: "The minimum practical threshold as of 2026 is $100,000 in liquid capital. Most strong franchise options require a total investment between $150,000 and $500,000, with financing covering a portion. The number you need in liquid form depends on what you are trying to buy and how you plan to fund it."

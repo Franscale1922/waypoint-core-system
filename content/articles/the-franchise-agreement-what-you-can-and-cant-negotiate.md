@@ -9,7 +9,7 @@ date: "2025-12-18"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Franchise agreements are not like most business contracts. They are largely standardized, and most core terms, including royalties, brand standards, and exit terms, are not up for meaningful negotiation. Here is what that means for you and what areas actually do have room to move."
+excerpt: "Franchise agreements are largely standardized, and royalties, brand standards and exit terms rarely move. Here is where there is real room to negotiate."
 faqs:
   - q: "Can you negotiate a franchise agreement?"
     a: "Limited negotiation is possible, primarily around territory size, development timelines for multi-unit agreements, and in some cases initial franchise fees with emerging brands. Core terms, royalty rate, brand standards, term length, and exit provisions, are typically standardized across the system and not subject to negotiation. Attempting to renegotiate these terms usually signals to the franchisor that you don't understand how the system works, which can damage the relationship before you've started."

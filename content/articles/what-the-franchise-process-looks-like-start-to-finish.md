@@ -5,7 +5,7 @@ date: "2026-05-31"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "From your first call to signing, buying a franchise the right way is a guided, weeks-to-months process run in a deliberate order: build a clear picture of what you want before emotions take over, then narrow brands down to one. Here is every stage, and how long it really takes."
+excerpt: "Buying a franchise runs in a deliberate order over weeks to months: get clear on what you want, then narrow to one brand. Here is every stage and its timing."
 relatedSlugs:
   - "do-you-need-a-franchise-consultant"
   - "what-to-expect-at-discovery-day"

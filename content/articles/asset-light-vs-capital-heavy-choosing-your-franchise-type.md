@@ -9,7 +9,7 @@ date: "2025-08-21"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Before you look at any specific franchise brand, you need to answer a more fundamental question: what type of business do you want to own? How it operates, how it makes money, and how much capital it takes to open will define your experience more than which industry you pick."
+excerpt: "Before you pick an industry, pick a type. Asset-light and capital-heavy franchises differ in startup cost, daily workload, and how quickly you can open."
 faqs:
   - q: "What is the difference between an asset-light and a capital-heavy franchise?"
     a: "An asset-light franchise operates without a permanent physical location, including home services, B2B operators, mobile businesses, and senior care. These typically require $150,000 to $350,000 total investment as of 2026. A capital-heavy or brick-and-mortar franchise requires a physical retail space, such as fitness studios, food service, wellness centers, and child enrichment. These typically run $300,000 to $800,000 or more due to real estate, build-out, and equipment costs."

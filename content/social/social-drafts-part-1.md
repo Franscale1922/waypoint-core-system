@@ -3,6 +3,29 @@
 > **Usage:** Review and edit each draft before posting. Copy Twitter threads into Typefully and LinkedIn posts into Typefully or LinkedIn directly. Add link in first comment on LinkedIn posts for better reach.  
 > **Voice reminder:** Direct, honest, first-person. Short sentences. Never salesy.
 
+## Posting priority (updated 2026-08-03 from real Search Console data)
+
+Drafts exist for 30+ articles, so the question is ordering, not writing. The `seo-review` workflow
+says to favour articles in positions 5 to 15, but the first valid measurement changes that advice:
+the site has several articles sitting at position 3 to 7 on **one or two impressions**, which means
+good rank against a term nobody searches. Social distribution will not create demand there.
+
+Post against demand that already exists instead:
+
+1. **`franchise-investment-by-category`** (position 3.3, 82 impressions, the strongest page in the
+   corpus). Real ranking against a real term. Distribution compounds here.
+2. **`sba-loan-vs-robs-franchise-funding-comparison`** (position 34.8, 62 impressions). The ROBS and
+   SBA query cluster is 54 impressions and the pages serving it rank 34 to 83. This one needs
+   authority signals more than any other article.
+3. **`the-true-cost-of-buying-a-franchise`** and **`how-franchise-funding-actually-works`**. No
+   impressions of their own yet, but the franchise-cost cluster is 41 impressions landing on
+   `/investment` at position 66.6, so the topic has demand the corpus is not capturing.
+
+Hold the position 5 to 7 articles (`home-services-franchises-most-overlooked-category`,
+`fitness-franchise-comparison-what-the-numbers-say`, `staffing-franchises`,
+`your-first-90-days-as-a-franchise-owner`) until a month of data shows whether their terms carry any
+volume at all. Re-check against `docs/seo-reviews/` next month.
+
 ---
 
 ## Getting Started Articles
