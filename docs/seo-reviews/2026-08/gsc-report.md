@@ -16,6 +16,13 @@
 
 ---
 
+> **Reading the position columns:** Search Console reports position as the *average* across a
+> row's impressions. A page ranking 1st for one query and 111th for another averages to 12, so
+> the bands below are a prompt to go look, not a statement of where a page sits. Pages can also
+> appear in more than one table; that means more than one fix applies, not a contradiction.
+
+---
+
 ## 🎯 Optimization Opportunities (Position 8–20)
 
 These pages are close to top results but need a push. Check keyword prominence, internal links, and meta description.
