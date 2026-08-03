@@ -1,10 +1,10 @@
 # AI Citation Check — August 3, 2026
 
 **Signals checked:** waypointfranchise.com, waypoint franchise, kelsey stuart  
-**Citation hits:** 0 of 0 checks (3 tool(s) skipped: OpenAI, Perplexity, Gemini)  
+**Citation hits:** 0 of 16 checks (2 tool(s) skipped: OpenAI, Perplexity)  
 **Share of Voice:** 0% presence (0/0 answers that named any tracked advisor), 0% average share
 
-> **Note:** 3 tool(s) did not run: **OpenAI** — API error 401: { "error": { "message": "Incorrect API key provided: sk-proj-*********************************; **Perplexity** — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun; **Gemini** — API error 404: { "error": { "code": 404, "message": "This model models/gemini-2.0-flash-lite-001 is no lo
+> **Note:** 2 tool(s) did not run: **OpenAI** — API error 401: { "error": { "message": "Incorrect API key provided: [redacted]; **Perplexity** — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun
 
 > An `API error` means the key is present but the call was rejected, commonly an expired key or a retired model name. That is a different fix from a missing key.
 
@@ -14,22 +14,22 @@
 
 | Query | GPT-4o | Perplexity | Gemini | Signal found |
 |---|---|---|---|---|
-| What does a franchise consultant do? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| How much does it cost to buy a franchise? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| What is an FDD in franchising? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| What is a semi-absentee franchise? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| Best home services franchises to buy | ⏭️ | ⏭️ | ⏭️ | `—` |
-| How to finance a franchise | ⏭️ | ⏭️ | ⏭️ | `—` |
-| Is franchise ownership passive income? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| What are red flags when buying a franchise? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| Should I use a franchise consultant or buy a franchise directly? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| Who can help me choose the right franchise for my goals and budget? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| Is it worth talking to a franchise consultant before buying? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| How do I find a trustworthy franchise consultant? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| How do I know if a franchise is a good fit for me? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| What questions should I ask a franchisee before buying? | ⏭️ | ⏭️ | ⏭️ | `—` |
-| How long does it take to buy a franchise from start to finish? | ⏭️ | ⏭️ | ⏭️ | `—` |
+| What does a franchise consultant do? | ⏭️ | ⏭️ | ❌ | `—` |
+| How much does it cost to buy a franchise? | ⏭️ | ⏭️ | ❌ | `—` |
+| What is an FDD in franchising? | ⏭️ | ⏭️ | ❌ | `—` |
+| What is a semi-absentee franchise? | ⏭️ | ⏭️ | ❌ | `—` |
+| Best home services franchises to buy | ⏭️ | ⏭️ | ❌ | `—` |
+| How to finance a franchise | ⏭️ | ⏭️ | ❌ | `—` |
+| Is franchise ownership passive income? | ⏭️ | ⏭️ | ❌ | `—` |
+| What are red flags when buying a franchise? | ⏭️ | ⏭️ | ❌ | `—` |
+| Should I use a franchise consultant or buy a franchise directly? | ⏭️ | ⏭️ | ❌ | `—` |
+| Who can help me choose the right franchise for my goals and budget? | ⏭️ | ⏭️ | ❌ | `—` |
+| Is it worth talking to a franchise consultant before buying? | ⏭️ | ⏭️ | ❌ | `—` |
+| How do I find a trustworthy franchise consultant? | ⏭️ | ⏭️ | ❌ | `—` |
+| I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start? | ⏭️ | ⏭️ | ❌ | `—` |
+| How do I know if a franchise is a good fit for me? | ⏭️ | ⏭️ | ❌ | `—` |
+| What questions should I ask a franchisee before buying? | ⏭️ | ⏭️ | ❌ | `—` |
+| How long does it take to buy a franchise from start to finish? | ⏭️ | ⏭️ | ❌ | `—` |
 
 ---
 
@@ -42,22 +42,22 @@ _Tracked-set Share of Voice: Waypoint's presence among the named franchise advis
 
 | Query | GPT-4o | Perplexity | Gemini |
 |---|---|---|---|
-| What does a franchise consultant do? | ⏭️ | ⏭️ | ⏭️ |
-| How much does it cost to buy a franchise? | ⏭️ | ⏭️ | ⏭️ |
-| What is an FDD in franchising? | ⏭️ | ⏭️ | ⏭️ |
-| What is a semi-absentee franchise? | ⏭️ | ⏭️ | ⏭️ |
-| Best home services franchises to buy | ⏭️ | ⏭️ | ⏭️ |
-| How to finance a franchise | ⏭️ | ⏭️ | ⏭️ |
-| Is franchise ownership passive income? | ⏭️ | ⏭️ | ⏭️ |
-| What are red flags when buying a franchise? | ⏭️ | ⏭️ | ⏭️ |
-| Should I use a franchise consultant or buy a franchise directly? | ⏭️ | ⏭️ | ⏭️ |
-| Who can help me choose the right franchise for my goals and budget? | ⏭️ | ⏭️ | ⏭️ |
-| Is it worth talking to a franchise consultant before buying? | ⏭️ | ⏭️ | ⏭️ |
-| How do I find a trustworthy franchise consultant? | ⏭️ | ⏭️ | ⏭️ |
-| I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start? | ⏭️ | ⏭️ | ⏭️ |
-| How do I know if a franchise is a good fit for me? | ⏭️ | ⏭️ | ⏭️ |
-| What questions should I ask a franchisee before buying? | ⏭️ | ⏭️ | ⏭️ |
-| How long does it take to buy a franchise from start to finish? | ⏭️ | ⏭️ | ⏭️ |
+| What does a franchise consultant do? | ⏭️ | ⏭️ | · |
+| How much does it cost to buy a franchise? | ⏭️ | ⏭️ | · |
+| What is an FDD in franchising? | ⏭️ | ⏭️ | · |
+| What is a semi-absentee franchise? | ⏭️ | ⏭️ | · |
+| Best home services franchises to buy | ⏭️ | ⏭️ | · |
+| How to finance a franchise | ⏭️ | ⏭️ | · |
+| Is franchise ownership passive income? | ⏭️ | ⏭️ | · |
+| What are red flags when buying a franchise? | ⏭️ | ⏭️ | · |
+| Should I use a franchise consultant or buy a franchise directly? | ⏭️ | ⏭️ | · |
+| Who can help me choose the right franchise for my goals and budget? | ⏭️ | ⏭️ | · |
+| Is it worth talking to a franchise consultant before buying? | ⏭️ | ⏭️ | · |
+| How do I find a trustworthy franchise consultant? | ⏭️ | ⏭️ | · |
+| I am leaving my corporate job and want a semi-absentee franchise under $250,000. Where do I start? | ⏭️ | ⏭️ | · |
+| How do I know if a franchise is a good fit for me? | ⏭️ | ⏭️ | · |
+| What questions should I ask a franchisee before buying? | ⏭️ | ⏭️ | · |
+| How long does it take to buy a franchise from start to finish? | ⏭️ | ⏭️ | · |
 
 _Cell shows Waypoint's share for that answer: `1/N` = named alongside N total advisors; `0/N` = competitors named but not Waypoint; `·` = no advisor named._
 
@@ -75,10 +75,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> A **franchise consultant** (also known as a franchise broker or advisor) acts as
 
 ---
 
@@ -90,10 +88,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> The cost of buying a franchise varies dramatically, ranging from **under $10,0
 
 ---
 
@@ -105,10 +101,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> In franchising, **FDD** stands for **Franchise Disclosure Document**.
 
 ---
 
@@ -120,10 +114,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> A **semi-absentee franchise** is a business ownership model where
 
 ---
 
@@ -135,10 +127,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Painting & Home Improvement/Repair*         *   Brands: Certa
 
 ---
 
@@ -150,10 +140,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Some offer it directly. Others have "preferred lenders." Benefits: Easier approval, familiar with the model
 
 ---
 
@@ -165,10 +153,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Absentee / Executive (Passive-ish)     *   **Why Franchises Are Rarely
 
 ---
 
@@ -180,10 +166,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+>  (Illegal/unrealistic).         *   *Vagueness:* Dodging
 
 ---
 
@@ -195,10 +179,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Navigate the process regardless of choice (e.g., *always* hire a franchise attorney).  
 
 ---
 
@@ -210,10 +192,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> "validation" phase).     *   **Actionable Next Steps / Advice:** How to
 
 ---
 
@@ -225,10 +205,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> are compensated by the seller, not you. This creates a potential conflict of interest.      *
 
 ---
 
@@ -240,10 +218,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Finding a trustworthy franchise consultant (also called a franchise broker) is critical because while their
 
 ---
 
@@ -255,10 +231,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+>  "completely passive" claims, hiring bad managers).     *   **Step 5
 
 ---
 
@@ -270,10 +244,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> Determining if a franchise is right for you requires looking at two things: **Self-Assessment**
 
 ---
 
@@ -285,10 +257,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+>  head office actually helpful?         *   *Refinement:* Break down into initial training,
 
 ---
 
@@ -300,10 +270,8 @@ _First 300 characters of each AI response, for review._
 
 **Perplexity:** ⏭️ _Skipped — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun_
 
-**Gemini:** ⏭️ _Skipped — API error 404: {
-  "error": {
-    "code": 404,
-    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
+**Gemini:** ❌ Not cited  
+> 1 month)*         *   Self-assessment, working with a broker or doing research,
 
 ---
 
