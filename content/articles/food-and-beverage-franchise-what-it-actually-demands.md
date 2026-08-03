@@ -72,7 +72,7 @@ The profiles that struggle most are buyers who chose food because they love food
 
 ## What should you ask before buying a food franchise?
 
-Before buying a food franchise, focus your due diligence on average unit volume, the system's recent closure rate, lease terms, realistic labor costs, and the recommended capital reserve for launch. If you're seriously evaluating a food concept, these are the questions worth spending real time on:
+Before buying a food franchise, focus your due diligence on [average unit volume](/glossary/average-unit-volume-auv), the system's recent closure rate, lease terms, realistic labor costs, and the recommended capital reserve for launch. If you're seriously evaluating a food concept, these are the questions worth spending real time on:
 
 - What is the average unit volume for this brand's existing franchisees (ask the franchisor for financial performance data)?
 - What is the franchise system's closure rate for units opened in the last five years?

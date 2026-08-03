@@ -61,7 +61,7 @@ Buying a "semi-absentee" franchise and then undercapitalizing it to save money g
 
 If you're planning to keep your job because you're not sure the business will work, that uncertainty is worth examining. Buying something you're not confident in, backed by the safety net of your salary, is not a hedge. It's a recipe for slow failure spread over three years instead of a fast decision based on real due diligence.
 
-The question that matters: if you ran this business full-time and it performed at the average unit volume shown in the franchise disclosure document's financial performance data, would the numbers support your financial requirements? If the answer is yes, the question becomes whether you can bridge the income gap during the build phase, not whether you should keep your job permanently.
+The question that matters: if you ran this business full-time and it performed at the [average unit volume](/glossary/average-unit-volume-auv) shown in the franchise disclosure document's financial performance data, would the numbers support your financial requirements? If the answer is yes, the question becomes whether you can bridge the income gap during the build phase, not whether you should keep your job permanently.
 
 If the answer is no, the numbers don't work. Keeping your job doesn't fix that. It just delays finding out.
 

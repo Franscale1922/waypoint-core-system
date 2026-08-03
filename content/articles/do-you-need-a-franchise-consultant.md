@@ -37,7 +37,7 @@ A franchise consultant does most of the same things.
 
 The process starts with understanding you: your capital position, your skills, the role you want to play in the business, what you want the business to do for your life in five to ten years. That profile shapes everything that comes after.
 
-From there, a consultant brings you a shortlist of concepts that actually fit what you're looking for, rather than you having to filter 4,000 brands on your own. They give you their honest read on each one's strengths and weaknesses. They help you figure out what questions to ask during the evaluation process and what the answers should sound like.
+From there, a consultant brings you a shortlist of concepts that actually fit what you're looking for, rather than you having to filter the 4,000-plus brands in the market as of 2026 on your own. They give you their honest read on each one's strengths and weaknesses. They help you figure out what questions to ask during the evaluation process and what the answers should sound like.
 
 When it gets to funding, a good consultant connects you with lenders who have financed deals in that specific franchise system. The fit matters. An SBA lender who has worked with a brand before knows the system's financials and moves faster.
 

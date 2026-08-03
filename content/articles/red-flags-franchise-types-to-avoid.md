@@ -20,7 +20,7 @@ faqs:
   - q: "How can I tell if a franchisor is aligned with franchisee success?"
     a: "Look at three things: how long franchisees stay in the system (review franchisee departure and transfer data in the disclosure document), how the franchisor's leadership team talks about franchisees versus the brand or product, and what existing franchisees say when you ask directly whether corporate prioritizes their financial outcome. Then ask specifically: when the franchisor last made a system-wide decision that hurt individual franchisee unit economics, how did they handle it?"
 ---
-There are over 4,000 franchise brands in the United States. A significant number of them are not worth buying. Some are obvious traps. Others look fine until you're six months in and realize the economics will never work.
+There are over 4,000 franchise brands in the United States as of 2026. A significant number of them are not worth buying. Some are obvious traps. Others look fine until you're six months in and realize the economics will never work.
 
 My job is to help you avoid both categories.
 
