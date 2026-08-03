@@ -1,7 +1,7 @@
 # GSC Report — August 3, 2026
 
 **Date range:** 2026-07-04 → 2026-08-01 (28 days)  
-**Site:** https://waypointfranchise.com/
+**Site:** https://waypointfranchise.com
 
 ---
 
