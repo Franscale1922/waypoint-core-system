@@ -37,7 +37,19 @@ try {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const SITE_URL = process.env.GSC_SITE_URL || "sc-domain:waypointfranchise.com";
+// No default. The old fallback was `sc-domain:waypointfranchise.com`, a property
+// this account cannot see, so an unset variable produced an opaque 403 rather than
+// a configuration error. Guessing a property identifier is exactly the thing that
+// turns a misconfiguration into a mystery.
+const SITE_URL = process.env.GSC_SITE_URL;
+if (!SITE_URL) {
+  console.error("❌ GSC_SITE_URL is not set.");
+  console.error("   It must be the exact property identifier from Search Console,");
+  console.error("   e.g. https://www.example.com/ for a URL-prefix property or");
+  console.error("   sc-domain:example.com for a Domain property. The two are different");
+  console.error("   properties with different data, so the spelling matters.");
+  process.exit(1);
+}
 const DAYS_BACK = 28;
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────

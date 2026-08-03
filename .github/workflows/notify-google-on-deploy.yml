@@ -47,20 +47,24 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Submit URLs to IndexNow
+        # Passed as an environment variable rather than interpolated into the script
+        # body, so sitemap content is never parsed as shell.
+        env:
+          URL_LIST: ${{ steps.extract.outputs.url_list }}
         run: |
           INDEXNOW_KEY="93b7973196acee37de3cfa2ff2665274a8815cc5e48d2ac193c2313cac442758"
           HOST="waypointfranchise.com"
           KEY_LOCATION="https://${HOST}/${INDEXNOW_KEY}.txt"
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "host": "$HOST",
-            "key": "$INDEXNOW_KEY",
-            "keyLocation": "$KEY_LOCATION",
-            "urlList": ${{ steps.extract.outputs.url_list }}
-          }
-          EOF
-          )
+          # jq builds the payload, so sitemap content is never interpolated into a
+          # shell heredoc. An unquoted heredoc would evaluate a $(...) or backtick
+          # appearing inside a <loc> value, and jq -R escapes neither.
+          PAYLOAD=$(jq -n \
+            --arg host "$HOST" \
+            --arg key "$INDEXNOW_KEY" \
+            --arg keyLocation "$KEY_LOCATION" \
+            --argjson urlList "$URL_LIST" \
+            '{host: $host, key: $key, keyLocation: $keyLocation, urlList: $urlList}')
 
           # Retried, then fatal. This is the only channel here that reaches a real
           # search engine, so a run where it never succeeded must not report green:
@@ -68,10 +72,13 @@ jobs:
           # which is the failure mode this whole workflow just came out of.
           for ATTEMPT in 1 2 3; do
             echo "Submitting to IndexNow (attempt $ATTEMPT)..."
+            # `|| echo 000` matters: without it a DNS or connection failure makes the
+            # assignment fail, and `bash -e` kills the step on attempt 1, so the retry
+            # loop could never retry the transport failures it exists for.
             STATUS=$(curl -s -o /tmp/indexnow_response.txt -w "%{http_code}" \
               -X POST "https://api.indexnow.org/indexnow" \
               -H "Content-Type: application/json; charset=utf-8" \
-              -d "$PAYLOAD")
+              -d "$PAYLOAD" || echo 000)
 
             echo "IndexNow response: $STATUS"
             cat /tmp/indexnow_response.txt || true

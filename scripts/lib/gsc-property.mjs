@@ -87,7 +87,15 @@ export function sitemapUrlFor(propertyUrl, { canonicalHost }) {
   return new URL("sitemap.xml", propertyUrl).toString();
 }
 
-/** True when the permission level allows submitting a sitemap. */
+/**
+ * True when the permission level allows submitting a sitemap.
+ *
+ * An allowlist, not a denylist. Google's permissions table grants Submit Sitemap
+ * to Owner and Full only, and a denylist would wave through any level Google adds
+ * or renames later, turning a clear refusal into an opaque 403.
+ */
+const CAN_SUBMIT = new Set(["siteOwner", "siteFullUser"]);
+
 export function canSubmitSitemap(permission) {
-  return permission !== "siteUnverifiedUser" && permission !== "siteRestrictedUser";
+  return CAN_SUBMIT.has(permission);
 }

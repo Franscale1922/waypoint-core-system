@@ -59,7 +59,11 @@ const credentials = (() => {
     process.exit(1);
   }
 
-  console.log(`✅ Credential loaded (${result.encoding}) for ${result.credentials.client_email}`);
+  // Encoding only. This repo is PUBLIC and Actions masks only exact matches of a
+  // whole registered secret, so client_email extracted from the key would appear
+  // in the clear. The operator can read the address in Google Cloud Console; the
+  // log does not need it.
+  console.log(`✅ Credential loaded (${result.encoding})`);
   return result.credentials;
 })();
 
@@ -70,9 +74,10 @@ const credentials = (() => {
 const token = await getAccessToken(credentials, SCOPE).catch((err) => {
   fail(
     `${err.message}\n` +
-      `The credential parsed, so this is about the account rather than the stored value.\n` +
-      `Check that ${credentials.client_email} still exists, that its key has not been\n` +
-      `revoked, and that the Search Console API is enabled on its project.`,
+      `The credential parsed, so the stored value is not the problem.\n` +
+      `If this is a timeout, it is transport rather than credentials. Otherwise check\n` +
+      `that the service account still exists, that its key has not been revoked, and\n` +
+      `that the Search Console API is enabled on its project.`,
   );
 });
 console.log("✅ Got access token");
@@ -84,12 +89,24 @@ console.log("✅ Got access token");
 // sc-domain:waypointfranchise.com. Only one is right, and guessing turns a
 // mismatch into an opaque 403. Asking the API turns it into a list of what the
 // account can actually see.
-const sites = await request("GET", "/webmasters/v3/sites");
+const sites = await request("GET", "/webmasters/v3/sites").catch((err) =>
+  fail(`Could not reach the Search Console API: ${err.message}`),
+);
 if (sites.status !== 200) {
   fail(`Could not list Search Console properties (HTTP ${sites.status}): ${sites.body}`);
 }
 
-const available = (JSON.parse(sites.body).siteEntry ?? []).map((e) => ({
+// Guarded: a 200 carrying a non-JSON body (a proxy or interstitial) would throw a
+// SyntaxError whose message embeds a slice of that body, which is the same V8
+// behaviour load-service-account.mjs goes out of its way to suppress.
+let parsedSites;
+try {
+  parsedSites = JSON.parse(sites.body);
+} catch {
+  fail("The Search Console API returned HTTP 200 with a body that is not JSON.");
+}
+
+const available = (parsedSites.siteEntry ?? []).map((e) => ({
   url: e.siteUrl,
   permission: e.permissionLevel,
 }));
@@ -97,7 +114,8 @@ const available = (JSON.parse(sites.body).siteEntry ?? []).map((e) => ({
 if (available.length === 0) {
   fail(
     `The service account can see no Search Console properties.\n` +
-      `Add ${credentials.client_email} as a Full user of the property in Search Console.`,
+      `Add it as a Full user of the property in Search Console. Its address is in\n` +
+      `Google Cloud Console under IAM & Admin > Service Accounts.`,
   );
 }
 
@@ -119,8 +137,9 @@ if (!site) {
           related.map((s) => `  ${s.url}  (${s.permission})`).join("\n")
         : `This account can see no property for ${wanted}.`) +
       (others > 0 ? `\n(${others} unrelated propert${others === 1 ? "y" : "ies"} not listed.)` : "") +
-      `\nAdd ${credentials.client_email} to the right property in Search Console,\n` +
-      `or set the GSC_SITE_URL variable to one of the identifiers above.`,
+      `\nAdd the service account to the right property in Search Console (its address\n` +
+      `is in Google Cloud Console under IAM & Admin > Service Accounts), or set the\n` +
+      `GSC_SITE_URL variable to one of the identifiers above.`,
   );
 }
 
@@ -130,23 +149,43 @@ console.log(`✅ Property: ${site.url} (${site.permission})`);
 if (!canSubmitSitemap(site.permission)) {
   fail(
     `The service account has "${site.permission}" on ${site.url}, which cannot submit sitemaps.\n` +
-      `Raise ${credentials.client_email} to Full or Owner in Search Console\n` +
+      `Raise the service account to Full or Owner in Search Console\n` +
       `(Settings > Users and permissions). Note that scripts/gsc-report.mjs only reads,\n` +
       `so the monthly report is unaffected by this.`,
   );
 }
 
+// A URL-prefix property only covers its own origin. Submitting against one whose
+// origin is not the site's canonical host registers a feed that redirects off the
+// property and lists URLs the property does not cover, so Google accepts it with
+// 204 and then cannot use it. That is a green job doing nothing, which is the
+// exact failure this workflow was rewritten to stop shipping.
+//
+// This is live right now: the account holds https://waypointfranchise.com/ while
+// the site canonicalises to www, which is why the reports read 1 impression.
+const propertyHost = hostOf(site.url);
+if (!site.url.startsWith("sc-domain:") && propertyHost !== CANONICAL_HOST) {
+  fail(
+    `Property ${site.url} does not cover the site's canonical host ${CANONICAL_HOST}.\n` +
+      `Its sitemap would redirect off the property and list URLs the property does not\n` +
+      `contain, so Google would accept the submission and be unable to use it.\n\n` +
+      `Fix: in Search Console, give the service account Full access to the property for\n` +
+      `${CANONICAL_HOST} (or a Domain property for the bare domain, which covers both\n` +
+      `hosts), then set the GSC_SITE_URL variable to that identifier.`,
+  );
+}
+
 // ── 4. Submit ─────────────────────────────────────────────────────────────
 // The sitemap must live INSIDE the property being submitted against, or Google
-// returns `400 invalidParameter` on `feedpath`. This was hardcoded to the www
-// host and the resolved property is the non-www prefix, so it is derived from
-// the property instead of assumed.
+// returns `400 invalidParameter` on `feedpath` (observed on run 30839225508).
 const sitemapUrl = sitemapUrlFor(site.url, { canonicalHost: CANONICAL_HOST });
 const path =
   `/webmasters/v3/sites/${encodeURIComponent(site.url)}` +
   `/sitemaps/${encodeURIComponent(sitemapUrl)}`;
 
-const submitted = await request("PUT", path);
+const submitted = await request("PUT", path).catch((err) =>
+  fail(`Could not reach the Search Console API to submit: ${err.message}`),
+);
 
 if (submitted.status === 204) {
   console.log(`✅ Submitted ${sitemapUrl} to ${site.url}`);

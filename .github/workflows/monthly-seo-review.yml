@@ -129,18 +129,18 @@ jobs:
           EOF
 
           if [ "$GSC_OUTCOME" = "success" ] && [ -f "$GSC_REPORT" ]; then
-            CLICKS=$(grep "Total clicks" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1)
-            IMPRESSIONS=$(grep "Total impressions" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1)
-            AVG_POS=$(grep "Average position" "$GSC_REPORT" | grep -oE '[0-9]+\.[0-9]+' | head -1)
+            CLICKS=$(grep "Total clicks" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1 || true)
+            IMPRESSIONS=$(grep "Total impressions" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1 || true)
+            AVG_POS=$(grep "Average position" "$GSC_REPORT" | grep -oE '[0-9]+\.[0-9]+' | head -1 || true)
             # Surfaced because a property covering the wrong host reports near-zero
             # while looking perfectly healthy.
-            SITE=$(grep -m1 '^\*\*Site:\*\*' "$GSC_REPORT" | sed 's/^\*\*Site:\*\* *//')
+            SITE=$(grep -m1 '^\*\*Site:\*\*' "$GSC_REPORT" | sed 's/^\*\*Site:\*\* *//' || true)
             cat >> /tmp/seo-summary.html <<EOF
           <h3>📊 Search Console</h3>
           <p style="color:#666;font-size:12px;">Property: ${SITE:-unknown}</p>
           <table style="border-collapse: collapse; width: 100%;">
-            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total clicks (28 days)</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${CLICKS}</td></tr>
-            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total impressions</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${IMPRESSIONS}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total clicks (28 days)</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${CLICKS:-n/a}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total impressions</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${IMPRESSIONS:-n/a}</td></tr>
             <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Average position</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${AVG_POS:-n/a}</td></tr>
           </table>
           EOF
@@ -153,23 +153,30 @@ jobs:
           EOF
           fi
 
-          if [ "$CITE_OUTCOME" = "success" ] && [ -f "$CITE_REPORT" ]; then
-            CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1)
-            CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1)
-            CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p')
-            SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1)
-            SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1)
-            SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p')
+          # "0 of 0 checks (3 tool(s) skipped)" is not a result, so treat a report
+          # with no active provider as not collected.
+          CITE_SKIPPED=""
+          if [ -f "$CITE_REPORT" ]; then
+            CITE_SKIPPED=$(grep -m1 "tool(s) skipped" "$CITE_REPORT" || true)
+          fi
+          if [ "$CITE_OUTCOME" = "success" ] && [ -f "$CITE_REPORT" ] && [ -z "$CITE_SKIPPED" ]; then
+            CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1 || true)
+            CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1 || true)
+            CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p' || true)
+            SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1 || true)
+            SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1 || true)
+            SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p' || true)
             cat >> /tmp/seo-summary.html <<EOF
           <h3>🤖 AI Citation Status</h3>
-          <p>${CITE_HITS} of ${CITE_TOTAL} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
+          <p>${CITE_HITS:-n/a} of ${CITE_TOTAL:-n/a} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
           <p><b>Share of Voice:</b> ${SOV_PRESENCE:-n/a} presence &middot; ${SOV_AVG:-n/a} average share among tracked franchise advisors.</p>
           EOF
           else
             cat >> /tmp/seo-summary.html <<EOF
           <h3>🤖 AI Citation Status</h3>
-          <div ${WARN}><b>Not collected this run.</b> The AI citation step did not
-          complete, so no figures are shown.</div>
+          <div ${WARN}><b>Not collected this run.</b> Either the AI citation step did not
+          complete, or every provider was skipped for a missing API key, so no figures are
+          shown rather than reporting zero hits out of zero checks.</div>
           EOF
           fi
 

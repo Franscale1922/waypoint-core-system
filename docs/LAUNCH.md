@@ -72,7 +72,7 @@ Add these **variables** (not secrets):
 
 | Variable Name | Value |
 |---|---|
-| `GSC_SITE_URL` | The Search Console property, e.g. `sc-domain:waypointfranchise.com` |
+| `GSC_SITE_URL` | The exact Search Console property identifier. Must cover **www**; see `docs/seo-reviews/SETUP.md` |
 | `SITE_URL` | `https://www.waypointfranchise.com` |
 
 ---

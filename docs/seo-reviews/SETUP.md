@@ -47,8 +47,22 @@ private key does not survive a `.env` cleanly:
 
 ```
 GSC_SERVICE_ACCOUNT_PATH=/absolute/path/to/your-credentials-file.json
-GSC_SITE_URL=sc-domain:waypointfranchise.com
+GSC_SITE_URL=<the exact property identifier from Search Console>
 ```
+
+`GSC_SITE_URL` has no default and the scripts will not guess one. Copy it exactly as
+Search Console shows it, because the two property types are different properties
+holding different data:
+
+| Property type | Identifier | Covers |
+|---|---|---|
+| Domain | `sc-domain:waypointfranchise.com` | every host and scheme |
+| URL prefix | `https://www.waypointfranchise.com/` | that origin only |
+
+Use one that covers **www**, since the site canonicalises there. A URL-prefix
+property for the bare domain reports almost no traffic while looking healthy. If the
+value does not match, the deploy workflow prints the identifiers the account can
+actually see.
 
 If a value is ever stored wrong, the scripts now say exactly what shape they found
 and how to fix it, without printing the credential.

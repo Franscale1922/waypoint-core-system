@@ -154,4 +154,12 @@ describe("canSubmitSitemap", () => {
     expect(canSubmitSitemap("siteRestrictedUser")).toBe(false);
     expect(canSubmitSitemap("siteUnverifiedUser")).toBe(false);
   });
+
+  it("denies an unrecognised level rather than assuming it is permissive", () => {
+    // It was a denylist, so any level Google adds or renames would have been waved
+    // through into an opaque 403 instead of a clear refusal.
+    expect(canSubmitSitemap("siteSomethingNew")).toBe(false);
+    expect(canSubmitSitemap("")).toBe(false);
+    expect(canSubmitSitemap(undefined)).toBe(false);
+  });
 });
