@@ -46,7 +46,7 @@ The logic behind this is straightforward: the franchisor has spent the first 6â€
 
 **Transfer and renewal fees.** Some franchisors will reduce or waive transfer fees when selling to an operator they've pre-approved. Same with renewal fees for strong-performing franchisees. These are relationship items, not standard terms.
 
-**Initial fee adjustments.** In rare cases, particularly with emerging brands looking to fill specific markets, there's room on the initial franchise fee. This is far more common in newer systems than established ones.
+**Initial fee adjustments.** In rare cases, particularly with emerging brands looking to fill specific markets, there's room on the initial [franchise fee](/glossary/franchise-fee). This is far more common in newer systems than established ones.
 
 The realistic read: if you go into the franchise agreement process expecting to negotiate the royalty rate, the exit terms, or the brand standards, you're going to waste time and frustrate the relationship. If you focus on territory specifics and timeline flexibility for multi-unit agreements, you may find some room.
 

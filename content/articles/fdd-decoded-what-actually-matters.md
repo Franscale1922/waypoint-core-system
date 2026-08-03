@@ -71,7 +71,7 @@ Large brands almost always have some litigation history. That alone is not a red
 
 These three items together give you the actual cost of getting into the business.
 
-Item 5 is the initial franchise fee and the terms around it. Item 6 is the ongoing fee structure: royalties (typically a percentage of gross revenue), contributions to the national marketing fund, and technology fees. Item 7 is the total initial investment range, which includes everything it takes to open and operate through early-stage.
+Item 5 is the initial franchise fee and the terms around it. Item 6 is the ongoing fee structure: royalties (typically a percentage of gross revenue), contributions to the national marketing fund, and technology fees. [Item 7](/glossary/initial-investment) is the total initial investment range, which includes everything it takes to open and operate through early-stage.
 
 Item 7 is the number most buyers focus on. A more useful frame: plan for your first unit to cost more than the top of the projected range. Not because the numbers are wrong, but because things are always harder the first time. Knowing your buffer going in is better than finding out you need one after you've opened.
 
@@ -101,7 +101,7 @@ Get the definition in writing and understand how enforcement works. Protected te
 
 This is what everyone wants to jump to, and it's also the section most people misread.
 
-Item 19 is where franchisors can voluntarily disclose financial performance data. Some provide detailed unit economics with revenue, cost of goods, and earnings breakdowns. Some provide partial data. Some provide nothing at all, which tells you something.
+[Item 19](/glossary/fdd-item-19) is where franchisors can voluntarily disclose financial performance data. Some provide detailed unit economics with revenue, cost of goods, and earnings breakdowns. Some provide partial data. Some provide nothing at all, which tells you something.
 
 A few things to understand about whatever numbers you see:
 

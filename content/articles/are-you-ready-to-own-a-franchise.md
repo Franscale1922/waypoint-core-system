@@ -65,7 +65,7 @@ You need two things nailed down before you start talking to franchisors.
 
 **Your total investment range.** How much are you comfortable putting into this? Not how much you technically have, but how much you're willing to put in. Franchise costs vary enormously. Some concepts come in under $100,000 all-in. Others require $500,000 or more before you open the doors. You need to know your ceiling before you start looking, or you'll spend significant time on something that isn't financially viable for you.
 
-**Your funding plan.** If you have the liquid capital, that's straightforward. But most buyers don't pay cash. The two most common paths are SBA loans (government-backed, typically requiring 15–20% down as of 2026) and ROBS (Rollover for Business Startups, which lets you invest retirement funds without early-withdrawal penalties or taxes). Both are real options. Both have implications you need to understand before you're in the middle of a discovery process.
+**Your funding plan.** If you have the [liquid capital](/glossary/liquid-capital), that's straightforward. But most buyers don't pay cash. The two most common paths are SBA loans (government-backed, typically requiring 15–20% down as of 2026) and ROBS (Rollover for Business Startups, which lets you invest retirement funds without early-withdrawal penalties or taxes). Both are real options. Both have implications you need to understand before you're in the middle of a discovery process.
 
 If you don't know how you're funding this, stop and figure that out first. Going into franchisor conversations without a clear capital plan will slow you down at exactly the wrong moment.
 

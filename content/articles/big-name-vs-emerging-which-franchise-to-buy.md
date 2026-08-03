@@ -88,7 +88,7 @@ Large legacy systems carry two structural risks that most buyers don't think abo
 
 When you buy into a large legacy system, you're not just buying the good locations. You're buying into an average that includes the struggling ones.
 
-**Consolidation.** In established franchise systems, the best territories tend to be held by professional multi-unit operators who have been acquiring and expanding for years. In some categories, a small number of large operators own the majority of franchised units in entire regions.
+**Consolidation.** In established franchise systems, the best [territories](/glossary/territory) tend to be held by professional multi-unit operators who have been acquiring and expanding for years. In some categories, a small number of large operators own the majority of franchised units in entire regions.
 
 If your long-term goal is to build a franchise portfolio, showing up late to a consolidated system means competing against operators who've been at this professionally for 20 years. In smaller, younger systems, that dynamic doesn't exist yet.
 

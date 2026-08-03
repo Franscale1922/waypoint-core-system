@@ -171,7 +171,7 @@ function fmt(n, decimals = 1) {
 
 // ─── Report builder ───────────────────────────────────────────────────────────
 
-function buildReport(pageRows, queryRows, startDate, endDate) {
+function buildReport(pageRows, queryRows, queryPageRows, startDate, endDate) {
   const now = new Date().toLocaleDateString("en-US", {
     month: "long", day: "numeric", year: "numeric",
   });
@@ -286,6 +286,25 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
     ``,
     `---`,
     ``,
+    // Without this section the two tables above are unjoinable: GSC returns
+    // ["page"] and ["query"] as independent aggregations, so pairing a query
+    // with the page that served it was pure inference. The August review
+    // published such a pairing as if it were measured, which is the mistake
+    // this section exists to stop.
+    `## Which Page Serves Which Query`,
+    ``,
+    `_Pulled with the ["query","page"] dimension pair, so this is measured rather than inferred._`,
+    ``,
+    `| Query | Page | Impressions | Position |`,
+    `|---|---|---|---|`,
+    ...(queryPageRows.length > 0
+      ? byImpressions(queryPageRows).slice(0, 30).map(r =>
+          `| ${String(r.keys[0]).padEnd(40)} | ${slug(String(r.keys[1]))} | ${String(r.impressions).padStart(11)} | ${fmt(r.position)} |`
+        )
+      : [`| _No query/page data yet_ | — | — | — |`]),
+    ``,
+    `---`,
+    ``,
     `## Next Actions`,
     ``,
     `- [ ] Review optimization opportunities above and update those article files`,
@@ -315,15 +334,17 @@ async function main() {
 
   const { startDate, endDate } = dateRange();
 
-  const [pageRows, queryRows] = await Promise.all([
+  const [pageRows, queryRows, queryPageRows] = await Promise.all([
     query(searchconsole, ["page"]),
     query(searchconsole, ["query"]),
+    // The join. Without it, pairing a query with its landing page is guesswork.
+    query(searchconsole, ["query", "page"]),
   ]);
 
   console.log(`   Pages with data: ${pageRows.length}`);
   console.log(`   Queries with data: ${queryRows.length}`);
 
-  const report = buildReport(pageRows, queryRows, startDate, endDate);
+  const report = buildReport(pageRows, queryRows, queryPageRows, startDate, endDate);
 
   // Save to docs/seo-reviews/YYYY-MM/
   const monthFolder = new Date().toISOString().slice(0, 7);

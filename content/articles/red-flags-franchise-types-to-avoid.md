@@ -62,7 +62,7 @@ A franchise can look financially viable at the unit level and still be a bad inv
 
 Two tests to run:
 
-**The manager test.** If your goal is to eventually step out of daily operations, you need enough room in the fee and cost structure to pay a qualified manager and still generate a return. Some franchise models are priced and royalty-structured in a way that makes that math impossible. The moment you try to hire yourself out of the job, the business breaks even at best. That is not a business. That is a position.
+**The manager test.** If your goal is to eventually step out of daily operations, you need enough room in the fee and cost structure to pay a qualified manager and still generate a return. Some franchise models are priced and [royalty](/glossary/royalty)-structured in a way that makes that math impossible. The moment you try to hire yourself out of the job, the business breaks even at best. That is not a business. That is a position.
 
 **The exit test.** When you eventually sell, the business will be valued at a multiple of earnings. If the earnings are too thin to produce a meaningful valuation, you won't get your investment back. Run the exit math before you buy, not after. The financial performance data in the franchise disclosure document gives you revenue figures to work with. If the franchisor doesn't disclose any financial performance data, that alone raises the question of why.
 

@@ -23,7 +23,7 @@ escapeKit: true
 ---
 When people calculate the cost of buying a franchise, they focus on the upfront franchise fee. It's a one-time payment, it's disclosed prominently, and it's the number most often cited in franchise comparisons.
 
-The royalty is what you actually live with for the life of the agreement, and it's the number that matters more. A 6% royalty on $800,000 in annual revenue is $48,000 per year, every year, for 10 years. Understanding what you're buying with that payment is one of the most important things you can do before signing a franchise agreement.
+The [royalty](/glossary/royalty) is what you actually live with for the life of the agreement, and it's the number that matters more. A 6% royalty on $800,000 in annual revenue is $48,000 per year, every year, for 10 years. Understanding what you're buying with that payment is one of the most important things you can do before signing a franchise agreement.
 
 ---
 

@@ -121,14 +121,22 @@ measured", not "not ranking".
 
 ### What the site actually gets found for
 
-The article corpus is not where the impressions are. Three query clusters dominate, and all three
-point at pages outside `content/articles`:
+The article corpus is not where the impressions are. Three query clusters dominate:
 
-| Cluster | Impressions | Lands on | Position |
+| Cluster | Impressions | Likely page (INFERRED, not measured) | That page's position |
 |---|---|---|---|
 | Average unit volume / AUV (8 queries) | 69 | `/glossary/average-unit-volume-auv` | 37.0 |
 | ROBS / SBA funding (4 queries) | 54 | `/franchise-financing/robs-401k-rollover` | 82.7 |
 | Franchise cost / price (4 queries) | 41 | `/investment` | 66.6 |
+
+⚠️ **The middle column is an inference and must not be quoted as fact.** The August report pulled
+`["page"]` and `["query"]` as separate Search Console requests, so nothing in it joins a query to the
+page that served it. The pairings above are the obvious reading (the AUV page is the site's only AUV
+content, `/investment` its only cost landing page), but they are unproven, and a query can perfectly
+well be served by a page nobody expected.
+
+`gsc-report.mjs` now also pulls the `["query","page"]` dimension pair, so from the September report
+onward this is measured and the warning can come off.
 
 `/glossary` alone draws 299 impressions at position 4.8 with a 0.3% click-through rate, more than
 every article combined.
