@@ -153,30 +153,44 @@ jobs:
           EOF
           fi
 
-          # "0 of 0 checks (3 tool(s) skipped)" is not a result, so treat a report
-          # with no active provider as not collected.
+          # The test is whether any check actually RAN, not whether every provider
+          # was configured. "0 of 0 checks (3 tool(s) skipped)" is not a result and
+          # must not render as one; "4 of 12 checks (2 tool(s) skipped)" is a real
+          # result from one provider and must not be suppressed. So the gate is
+          # simply: was the denominator greater than zero.
+          CITE_TOTAL=0
           CITE_SKIPPED=""
           if [ -f "$CITE_REPORT" ]; then
-            CITE_SKIPPED=$(grep -m1 "tool(s) skipped" "$CITE_REPORT" || true)
-          fi
-          if [ "$CITE_OUTCOME" = "success" ] && [ -f "$CITE_REPORT" ] && [ -z "$CITE_SKIPPED" ]; then
             CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1 || true)
             CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1 || true)
             CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p' || true)
+            CITE_TOTAL=${CITE_TOTAL:-0}
             SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1 || true)
             SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1 || true)
             SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p' || true)
+            # e.g. "2 tool(s) skipped: OpenAI, Perplexity"
+            CITE_SKIPPED=$(grep -m1 -oE '[0-9]+ tool\(s\) skipped[^)]*' "$CITE_REPORT" || true)
+          fi
+
+          if [ "$CITE_OUTCOME" = "success" ] && [ "$CITE_TOTAL" -gt 0 ]; then
             cat >> /tmp/seo-summary.html <<EOF
           <h3>🤖 AI Citation Status</h3>
-          <p>${CITE_HITS:-n/a} of ${CITE_TOTAL:-n/a} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
+          <p>${CITE_HITS:-n/a} of ${CITE_TOTAL} AI checks returned a Waypoint citation.</p>
           <p><b>Share of Voice:</b> ${SOV_PRESENCE:-n/a} presence &middot; ${SOV_AVG:-n/a} average share among tracked franchise advisors.</p>
           EOF
+            # Partial coverage is still a result, but say so rather than letting it
+            # read as the full picture.
+            if [ -n "$CITE_SKIPPED" ]; then
+              cat >> /tmp/seo-summary.html <<EOF
+          <p style="color:#666;font-size:12px;">Partial coverage: ${CITE_SKIPPED}. Figures cover the providers that ran.</p>
+          EOF
+            fi
           else
             cat >> /tmp/seo-summary.html <<EOF
           <h3>🤖 AI Citation Status</h3>
           <div ${WARN}><b>Not collected this run.</b> Either the AI citation step did not
-          complete, or every provider was skipped for a missing API key, so no figures are
-          shown rather than reporting zero hits out of zero checks.</div>
+          complete, or every provider was skipped for a missing API key, so no checks ran at
+          all. Figures are omitted rather than reported as zero hits out of zero checks.</div>
           EOF
           fi
 
