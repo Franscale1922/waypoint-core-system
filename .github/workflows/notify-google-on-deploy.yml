@@ -1,36 +1,26 @@
-name: Notify Google on Deploy
+name: Notify Search Engines on Deploy
+
+# Renamed from "Notify Google on Deploy". The old name claimed more than the
+# workflow delivered: of its three jobs, one pinged an endpoint Google retired in
+# 2023, one submitted to a protocol Google does not participate in, and the third
+# called an API that rejects this site's content type. See the notes on each job.
 
 on:
   push:
     branches:
       - main
-  # Allow manual trigger from GitHub Actions tab for testing
+  # Allow manual trigger from the GitHub Actions tab for testing
   workflow_dispatch:
 
 jobs:
   # ─────────────────────────────────────────────────
-  # LAYER 1: Google Sitemap Ping
-  # Simple advisory ping — tells Google the sitemap was updated
-  # ─────────────────────────────────────────────────
-  ping-sitemap:
-    name: Ping Google Sitemap
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping Google with sitemap URL
-        run: |
-          SITEMAP="https://www.waypointfranchise.com/sitemap.xml"
-          echo "Pinging Google with sitemap: $SITEMAP"
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            "https://www.google.com/ping?sitemap=${SITEMAP}")
-          echo "Google ping response: $STATUS (404 is expected — Google deprecated this endpoint but still processes it)"
-          if [ "$STATUS" -ne 200 ]; then
-            echo "Warning: Google ping returned $STATUS (non-fatal)"
-          fi
-
-  # ─────────────────────────────────────────────────
-  # LAYER 2: IndexNow
-  # Submits all URLs from the sitemap to Bing/IndexNow protocol.
-  # Google also monitors IndexNow signals.
+  # IndexNow
+  # Bing, Yandex, Naver, Seznam, Yep and Amazon consume this. Google does NOT —
+  # it has never joined IndexNow. A comment here used to claim Google monitors
+  # these signals; it does not, and planning around that was wrong.
+  #
+  # This is the only deploy-time notification in this repo that reaches real
+  # search engines, so it is the one worth keeping healthy.
   # ─────────────────────────────────────────────────
   indexnow:
     name: Submit via IndexNow
@@ -57,44 +47,71 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Submit URLs to IndexNow
+        # Passed as an environment variable rather than interpolated into the script
+        # body, so sitemap content is never parsed as shell.
+        env:
+          URL_LIST: ${{ steps.extract.outputs.url_list }}
         run: |
           INDEXNOW_KEY="93b7973196acee37de3cfa2ff2665274a8815cc5e48d2ac193c2313cac442758"
           HOST="waypointfranchise.com"
           KEY_LOCATION="https://${HOST}/${INDEXNOW_KEY}.txt"
 
-          PAYLOAD=$(cat <<EOF
-          {
-            "host": "$HOST",
-            "key": "$INDEXNOW_KEY",
-            "keyLocation": "$KEY_LOCATION",
-            "urlList": ${{ steps.extract.outputs.url_list }}
-          }
-          EOF
-          )
+          # jq builds the payload, so sitemap content is never interpolated into a
+          # shell heredoc. An unquoted heredoc would evaluate a $(...) or backtick
+          # appearing inside a <loc> value, and jq -R escapes neither.
+          PAYLOAD=$(jq -n \
+            --arg host "$HOST" \
+            --arg key "$INDEXNOW_KEY" \
+            --arg keyLocation "$KEY_LOCATION" \
+            --argjson urlList "$URL_LIST" \
+            '{host: $host, key: $key, keyLocation: $keyLocation, urlList: $urlList}')
 
-          echo "Submitting to IndexNow..."
-          STATUS=$(curl -s -o /tmp/indexnow_response.txt -w "%{http_code}" \
-            -X POST "https://api.indexnow.org/indexnow" \
-            -H "Content-Type: application/json; charset=utf-8" \
-            -d "$PAYLOAD")
+          # Retried, then fatal. This is the only channel here that reaches a real
+          # search engine, so a run where it never succeeded must not report green:
+          # a silent warning is how a permanently broken submission goes unnoticed,
+          # which is the failure mode this whole workflow just came out of.
+          for ATTEMPT in 1 2 3; do
+            echo "Submitting to IndexNow (attempt $ATTEMPT)..."
+            # `|| echo 000` matters: without it a DNS or connection failure makes the
+            # assignment fail, and `bash -e` kills the step on attempt 1, so the retry
+            # loop could never retry the transport failures it exists for.
+            STATUS=$(curl -s -o /tmp/indexnow_response.txt -w "%{http_code}" \
+              -X POST "https://api.indexnow.org/indexnow" \
+              -H "Content-Type: application/json; charset=utf-8" \
+              -d "$PAYLOAD" || echo 000)
 
-          echo "IndexNow response: $STATUS"
-          cat /tmp/indexnow_response.txt || true
-          # 200 = success, 202 = accepted (queued), both are valid
-          if [ "$STATUS" -ne 200 ] && [ "$STATUS" -ne 202 ]; then
-            echo "Warning: IndexNow returned $STATUS (non-fatal)"
-          fi
+            echo "IndexNow response: $STATUS"
+            cat /tmp/indexnow_response.txt || true
+
+            # 200 = success, 202 = accepted (queued), both are valid
+            if [ "$STATUS" -eq 200 ] || [ "$STATUS" -eq 202 ]; then
+              exit 0
+            fi
+
+            # 4xx other than 429 is a bad request or key problem; retrying will not help.
+            if [ "$STATUS" -ge 400 ] && [ "$STATUS" -lt 500 ] && [ "$STATUS" -ne 429 ]; then
+              break
+            fi
+            sleep $((ATTEMPT * 5))
+          done
+
+          echo "::error title=IndexNow::IndexNow returned $STATUS; no search engine was notified"
+          exit 1
 
   # ─────────────────────────────────────────────────
-  # LAYER 3: Google Indexing API (requires secret)
-  # Uses a self-contained Node.js script with only built-in modules.
-  # No npm install required. Skipped until GOOGLE_INDEXING_ENABLED=true.
-  # See docs/GOOGLE_INDEXING_SETUP.md for one-time setup instructions.
+  # Google: Search Console sitemap submission
+  # Replaces the old Indexing API job, which was ineligible by design — Google
+  # restricts that API to JobPosting and BroadcastEvent, and every URL here is a
+  # marketing page or article.
+  #
+  # Skips cleanly when the secret is absent, and fails loudly when the secret is
+  # present but unreadable, so "not configured" and "configured wrong" never look
+  # alike again. See .github/scripts/submit-sitemap.mjs for what this does and
+  # does not claim to achieve.
   # ─────────────────────────────────────────────────
-  google-indexing-api:
-    name: Google Indexing API
+  submit-sitemap:
+    name: Submit sitemap to Google
     runs-on: ubuntu-latest
-    if: ${{ vars.GOOGLE_INDEXING_ENABLED == 'true' }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -102,9 +119,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # Matches monthly-seo-review.yml. Both actions raise a Node 20
+          # deprecation warning on the runner; bumping them is a separate change.
+          node-version: '22'
 
-      - name: Submit URLs via Google Indexing API
+      # No `npm install`: the script and its two libraries use Node built-ins only.
+      - name: Submit sitemap via Search Console API
         env:
-          GOOGLE_SA_KEY: ${{ secrets.GOOGLE_INDEXING_SA_KEY }}
-        run: node .github/scripts/google-indexing.mjs
+          GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
+        run: node .github/scripts/submit-sitemap.mjs
+
+# REMOVED: the "Ping Google Sitemap" job. It called
+# https://www.google.com/ping?sitemap=..., which Google deprecated in June 2023.
+# The job's own comment said "404 is expected", so it reported success on every
+# deploy while doing nothing. Google's replacement guidance is to submit through
+# Search Console, which the job above now does.

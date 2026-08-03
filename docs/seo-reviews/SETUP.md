@@ -28,26 +28,44 @@ This is a **one-time setup** for the two automation scripts. Once complete, the 
 3. Click **Add Key → Create new key → JSON**
 4. A JSON file downloads — keep it safe
 
-### Step 4: Convert credentials to Base64
+### Step 4: Store the credentials
 
-Run this in Terminal, replacing `path/to/credentials.json` with your actual file path:
+There is no encoding step. The loader accepts the key file's raw JSON **or** base64,
+so pick whichever is less error-prone — which is almost always raw JSON.
+
+**For GitHub Actions**, pipe the file in directly. This never puts the key on the
+clipboard, which is where the previous instructions went wrong: the `base64 ...`
+command itself was pasted into the secret box instead of its output, and both this
+report and the deploy notification failed silently for months.
 
 ```bash
-base64 -i ~/Downloads/your-credentials-file.json | tr -d '\n'
+gh secret set GSC_SERVICE_ACCOUNT_KEY < ~/Downloads/your-credentials-file.json
 ```
 
-Copy the output.
-
-### Step 5: Add to environment variables
-
-Add this line to your `.env` file (in the root of the repo):
+**For local runs**, point at the file rather than inlining it, since a multi-line
+private key does not survive a `.env` cleanly:
 
 ```
-GSC_SERVICE_ACCOUNT_KEY=paste_the_base64_string_here
-GSC_SITE_URL=sc-domain:waypointfranchise.com
+GSC_SERVICE_ACCOUNT_PATH=/absolute/path/to/your-credentials-file.json
+GSC_SITE_URL=<the exact property identifier from Search Console>
 ```
 
-Also add `GSC_SERVICE_ACCOUNT_KEY` to your **Vercel environment variables** (not needed for script execution, but consistent with the pattern).
+`GSC_SITE_URL` has no default and the scripts will not guess one. Copy it exactly as
+Search Console shows it, because the two property types are different properties
+holding different data:
+
+| Property type | Identifier | Covers |
+|---|---|---|
+| Domain | `sc-domain:waypointfranchise.com` | every host and scheme |
+| URL prefix | `https://www.waypointfranchise.com/` | that origin only |
+
+Use one that covers **www**, since the site canonicalises there. A URL-prefix
+property for the bare domain reports almost no traffic while looking healthy. If the
+value does not match, the deploy workflow prints the identifiers the account can
+actually see.
+
+If a value is ever stored wrong, the scripts now say exactly what shape they found
+and how to fix it, without printing the credential.
 
 ### Step 6: Grant the service account access to your GSC property
 

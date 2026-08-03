@@ -14,7 +14,7 @@
 5. [Inngest Setup](#5-inngest-setup)
 6. [Domain & DNS (Cloudflare)](#6-domain--dns-cloudflare)
 7. [SEO Infrastructure](#7-seo-infrastructure)
-8. [Google Indexing Automation](#8-google-indexing-automation)
+8. [Search Engine Notification on Deploy](#8-search-engine-notification-on-deploy)
 9. [Content Systems](#9-content-systems)
 10. [Post-Launch Verification](#10-post-launch-verification)
 11. [Ongoing Maintenance Processes](#11-ongoing-maintenance-processes)
@@ -65,14 +65,14 @@ Add these secrets (required for the `notify-google-on-deploy` workflow):
 
 | Secret Name | Where to Get It |
 |---|---|
-| `GOOGLE_INDEXING_SA_KEY` | base64-encoded Google service account JSON (see Section 8) |
+| `GSC_SERVICE_ACCOUNT_KEY` | Google service account JSON, raw or base64 (see Section 8) |
 | `VERCEL_DEPLOY_HOOK_URL` | Vercel → Project Settings → Git → Deploy Hooks |
 
 Add these **variables** (not secrets):
 
 | Variable Name | Value |
 |---|---|
-| `GOOGLE_INDEXING_ENABLED` | `true` (only once Google Indexing API is set up) |
+| `GSC_SITE_URL` | The exact Search Console property identifier. Must cover **www**; see `docs/seo-reviews/SETUP.md` |
 | `SITE_URL` | `https://www.waypointfranchise.com` |
 
 ---
@@ -253,23 +253,39 @@ Key contextual links established across the site:
 
 ---
 
-## 8. Google Indexing Automation
+## 8. Search Engine Notification on Deploy
 
-The `notify-google-on-deploy` GitHub Actions workflow runs on every push to `main` and does three things:
+The `notify-google-on-deploy` workflow runs on every push to `main` and does two things:
 
-1. **Sitemap ping** → tells Google a new sitemap is available
-2. **IndexNow** → notifies Bing and other IndexNow-compatible engines
-3. **Google Indexing API** → directly submits each URL in the sitemap to Google's crawl queue (requires one-time setup below)
+1. **IndexNow** → notifies Bing, Yandex, Naver, Seznam, Yep and Amazon. Google does **not**
+   participate in IndexNow, despite what an earlier comment in this repo claimed.
+2. **Search Console sitemap submission** → registers the updated sitemap with Google. Optional;
+   skipped cleanly if no credential is configured.
 
-### One-Time Google Indexing API Setup
+Set expectations honestly: neither of these is a crawl button for Google. Google retired its
+sitemap ping endpoint in June 2023 and points site owners at Search Console, which is what job 2
+uses. New articles are discovered through normal crawl, helped by accurate `lastmod` values in
+`src/app/sitemap.ts`.
 
-Full instructions in [`docs/GOOGLE_INDEXING_SETUP.md`](./GOOGLE_INDEXING_SETUP.md). Summary:
+Two former jobs are gone. The **sitemap ping** called an endpoint Google deprecated in 2023 and
+returned 404 on every run while reporting success. The **Indexing API** job was ineligible by
+design: Google restricts that API to `JobPosting` and `BroadcastEvent`, so no marketing page or
+article here ever qualified.
 
-1. Create Google Cloud project → enable Web Search Indexing API
-2. Create service account → download JSON key
-3. Add service account as Owner in Google Search Console
-4. `base64 -i key.json | tr -d '\n' | pbcopy` → add as `GOOGLE_INDEXING_SA_KEY` secret in GitHub
-5. Add `GOOGLE_INDEXING_ENABLED = true` as a GitHub Actions variable
+### One-Time Setup
+
+1. Create a Google Cloud project and a service account, then download its JSON key
+2. Add the service account as a **Full** user of the property in Google Search Console
+   (Full or Owner can submit sitemaps; Restricted is enough for the monthly SEO report,
+   which only reads)
+3. Store the key without going through the clipboard:
+
+```bash
+gh secret set GSC_SERVICE_ACCOUNT_KEY < ~/Downloads/your-key.json
+```
+
+Raw JSON and base64 are both accepted. If the value is ever stored wrong, the workflow fails with
+a named diagnosis on the run summary rather than a stack trace, and never prints the credential.
 
 ### Google Search Console
 

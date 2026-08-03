@@ -12,7 +12,7 @@
  *   node scripts/gsc-report.mjs
  *
  * ENV VARS required:
- *   GSC_SERVICE_ACCOUNT_KEY   Base64-encoded JSON service account credentials
+ *   GSC_SERVICE_ACCOUNT_KEY   Service account credentials, as raw JSON or base64
  *   GSC_SITE_URL              Site URL exactly as it appears in GSC (e.g. sc-domain:waypointfranchise.com)
  */
 
@@ -21,6 +21,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
+import { loadServiceAccount, reportCredentialFailure } from "./lib/load-service-account.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -36,33 +37,63 @@ try {
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
-const SITE_URL = process.env.GSC_SITE_URL || "sc-domain:waypointfranchise.com";
+// No default. The old fallback was `sc-domain:waypointfranchise.com`, a property
+// this account cannot see, so an unset variable produced an opaque 403 rather than
+// a configuration error. Guessing a property identifier is exactly the thing that
+// turns a misconfiguration into a mystery.
+const SITE_URL = process.env.GSC_SITE_URL;
+if (!SITE_URL) {
+  console.error("❌ GSC_SITE_URL is not set.");
+  console.error("   It must be the exact property identifier from Search Console,");
+  console.error("   e.g. https://www.example.com/ for a URL-prefix property or");
+  console.error("   sc-domain:example.com for a Domain property. The two are different");
+  console.error("   properties with different data, so the spelling matters.");
+  process.exit(1);
+}
 const DAYS_BACK = 28;
 
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 function getAuth() {
-  let credentials;
-
-  // Prefer file path (more reliable — no base64 corruption risk)
+  // Prefer an on-disk key when one is configured; otherwise read the env var.
+  // Both go through the same loader, which accepts raw JSON or base64 and
+  // reports the specific reason it could not read a value. See
+  // scripts/lib/load-service-account.mjs for why the reason never quotes it.
   const keyPath = process.env.GSC_SERVICE_ACCOUNT_PATH;
+  let raw;
+  let varName;
+
   if (keyPath) {
-    credentials = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
-    console.log("   Auth: loading from file path");
-  } else {
-    // Fall back to base64-encoded key
-    const raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
-    if (!raw) {
-      console.error("❌ Neither GSC_SERVICE_ACCOUNT_PATH nor GSC_SERVICE_ACCOUNT_KEY is set.");
-      console.error("   Add GSC_SERVICE_ACCOUNT_PATH=/path/to/credentials.json to your .env");
+    varName = "GSC_SERVICE_ACCOUNT_PATH";
+    try {
+      raw = fs.readFileSync(keyPath, "utf-8");
+    } catch {
+      console.error(`❌ GSC_SERVICE_ACCOUNT_PATH points at ${keyPath}, which could not be read.`);
       process.exit(1);
     }
-    credentials = JSON.parse(Buffer.from(raw, "base64").toString("utf-8"));
-    console.log("   Auth: loading from base64 key");
+    console.log("   Auth: loading from file path");
+  } else {
+    varName = "GSC_SERVICE_ACCOUNT_KEY";
+    raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
   }
 
+  const result = loadServiceAccount(raw, { varName });
+
+  if (result.status === "missing") {
+    console.error("❌ Neither GSC_SERVICE_ACCOUNT_PATH nor GSC_SERVICE_ACCOUNT_KEY is set.");
+    console.error("   Add GSC_SERVICE_ACCOUNT_PATH=/path/to/credentials.json to your .env");
+    process.exit(1);
+  }
+
+  if (result.status === "invalid") {
+    reportCredentialFailure(result);
+    process.exit(1);
+  }
+
+  if (!keyPath) console.log(`   Auth: loading from ${result.encoding} key in ${varName}`);
+
   return new google.auth.GoogleAuth({
-    credentials,
+    credentials: result.credentials,
     scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
   });
 }
@@ -216,20 +247,12 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
   return lines.join("\n");
 }
 
-// ─── Sitemap submission ───────────────────────────────────────────────────────
-
-async function submitSitemap(searchconsole) {
-  const sitemapUrl = "https://waypointfranchise.com/sitemap.xml";
-  try {
-    await searchconsole.sitemaps.submit({
-      siteUrl: SITE_URL,
-      feedpath: sitemapUrl,
-    });
-    console.log("✅ Sitemap submitted via GSC API");
-  } catch (e) {
-    console.log(`⚠️  Sitemap submission failed: ${e.message}`);
-  }
-}
+// Sitemap submission used to live here. It could never have worked: getAuth()
+// requests the webmasters.readonly scope, so every run printed
+// "Sitemap submission failed: Request had insufficient authentication scopes"
+// and carried on. This script only reads. Submission belongs to
+// .github/scripts/submit-sitemap.mjs, which asks for the write scope and runs on
+// deploy rather than once a month.
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
@@ -259,9 +282,6 @@ async function main() {
   const outPath = path.join(outDir, "gsc-report.md");
   fs.writeFileSync(outPath, report, "utf-8");
   console.log(`\n✅ Report saved to: docs/seo-reviews/${monthFolder}/gsc-report.md`);
-
-  // Submit sitemap via GSC API
-  await submitSitemap(searchconsole);
 
   console.log("\nDone. Open the report and run the optimization workflow.");
 }

@@ -7,21 +7,38 @@ on:
   # Allow manual trigger
   workflow_dispatch:
 
+# A scheduled run and a manual run starting from the same commit would both
+# generate a report and race at `git push`; the loser fails on non-fast-forward
+# and never sends its email. One at a time, and never cancel a run midway
+# through, since a cancelled run can leave a commit pushed with no email sent.
+concurrency:
+  group: monthly-seo-review
+  cancel-in-progress: false
+
 jobs:
   seo-review:
     name: Pull GSC Data, Check AI Citations, Email Summary
     runs-on: ubuntu-latest
 
-    env:
-      GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
-      GSC_SITE_URL: ${{ secrets.GSC_SITE_URL }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+    # Needed by "Commit reports to repo". GITHUB_TOKEN is read-only by default
+    # here, so that push returned `403 ... denied to github-actions[bot]`. Nobody
+    # had seen it because the job always died at the credential step first; with
+    # that gone it became the next blocker, and it fails the job BEFORE the email.
+    #
+    # It is job-scoped rather than step-scoped because GitHub offers no finer
+    # grain, so the blast radius is narrowed instead: checkout does not persist
+    # the token into .git/config, the push step passes it explicitly, and the
+    # third-party email action is pinned to a commit rather than a movable tag.
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          # Otherwise the token is written into .git/config and every later step,
+          # including third-party actions, inherits push rights to this repo.
+          persist-credentials: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -29,78 +46,148 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      # No secrets in scope for either install: dependency install scripts have no
+      # business seeing a Google private key, and job-level `env:` used to hand it
+      # to them. Each secret is now scoped to the one step that consumes it.
       - name: Install dependencies
         run: npm ci --ignore-scripts
 
       - name: Install googleapis (if not in package-lock)
-        run: npm install googleapis --no-save
+        run: npm install googleapis --no-save --ignore-scripts
 
-      - name: Write service account credentials to file
-        run: |
-          echo "$GSC_SERVICE_ACCOUNT_KEY" | base64 -d > /tmp/gsc-credentials.json
-          echo "GSC_SERVICE_ACCOUNT_PATH=/tmp/gsc-credentials.json" >> $GITHUB_ENV
+      # No credential-decoding step here on purpose. This job used to shell out to
+      # `base64 -d` and write /tmp/gsc-credentials.json. Because the step ran under
+      # `bash -e`, a secret that was not valid base64 aborted the WHOLE job before
+      # the report, the citation check and the summary email — which is exactly
+      # what happened every month from 2026-05 onward. gsc-report.mjs now reads
+      # GSC_SERVICE_ACCOUNT_KEY itself and accepts raw JSON or base64, so there is
+      # no decode step to fail and no plaintext key on disk.
 
+      # Both producers keep `continue-on-error` so one failing does not cost us the
+      # other's data or the email. The `id` matters: the summary step reads
+      # `steps.<id>.outcome` so a failure is REPORTED rather than rendered as a
+      # zero, and the job still ends red. See "Fail if any producer failed".
       - name: Run GSC report
+        id: gsc
         run: node scripts/gsc-report.mjs
         continue-on-error: true
+        env:
+          GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
+          GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
 
       - name: Run AI citation check
+        id: cite
         run: node scripts/ai-citation-check.mjs
         continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          PERPLEXITY_API_KEY: ${{ secrets.PERPLEXITY_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
 
       - name: Commit reports to repo
+        id: commit
+        continue-on-error: true
         run: |
           git config user.name "Waypoint SEO Bot"
           git config user.email "bot@waypointfranchise.com"
           git add docs/seo-reviews/
-          git diff --staged --quiet || git commit -m "seo: monthly review report $(date +%Y-%m)"
-          git push
+          git diff --staged --quiet && echo "nothing to commit" && exit 0
+          git commit -m "seo: monthly review report $(date +%Y-%m)"
+          # Explicit credentials, because checkout no longer persists them.
+          git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" HEAD:"${GITHUB_REF_NAME}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # A section is rendered ONLY from data this run actually collected.
+      #
+      # This previously read `${CLICKS:-0}`, so a failed producer emailed "0 clicks,
+      # 0 impressions" as though it were a measurement. That is worse than sending
+      # nothing: it reads like a real result, and it is exactly what would hide a
+      # broken credential or a misconfigured property behind a plausible number.
+      # It is also not hypothetical, it happened on run 30837081785.
+      #
+      # Two rules: never substitute a default for a value we did not collect, and
+      # never read a report file unless THIS run wrote it (a file from an earlier
+      # run in the same month is still sitting in the repo).
       - name: Build email summary
         id: summary
+        env:
+          GSC_OUTCOME: ${{ steps.gsc.outcome }}
+          CITE_OUTCOME: ${{ steps.cite.outcome }}
+          COMMIT_OUTCOME: ${{ steps.commit.outcome }}
         run: |
+          set -euo pipefail
           MONTH=$(date +%Y-%m)
+          echo "MONTH=$MONTH" >> $GITHUB_OUTPUT
           GSC_REPORT="docs/seo-reviews/${MONTH}/gsc-report.md"
           CITE_REPORT="docs/seo-reviews/${MONTH}/ai-citation-check.md"
+          WARN='style="background:#fff4e5;border-left:4px solid #d97706;padding:12px;margin:12px 0;"'
 
-          # Extract key numbers from reports
-          if [ -f "$GSC_REPORT" ]; then
-            CLICKS=$(grep "Total clicks" "$GSC_REPORT" | grep -o '[0-9]*' | head -1)
-            IMPRESSIONS=$(grep "Total impressions" "$GSC_REPORT" | grep -o '[0-9]*' | head -1)
-            AVG_POS=$(grep "Average position" "$GSC_REPORT" | grep -oE '[0-9]+\.[0-9]+' | head -1)
-            OPP_COUNT=$(grep -c "ListItem\|^|" "$GSC_REPORT" 2>/dev/null || echo "0")
-          fi
-
-          if [ -f "$CITE_REPORT" ]; then
-            # Parse the report header lines (robust to table formatting changes).
-            # "**Citation hits:** N of M checks (...)"
-            CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1)
-            CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1)
-            CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p')
-            # "**Share of Voice:** X% presence (...), Y% average share"
-            SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1)
-            SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1)
-            SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p')
-          fi
-
-          # Build plain-text summary for email
-          cat > /tmp/seo-summary.html << EOF
+          cat > /tmp/seo-summary.html <<EOF
           <html><body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333;">
           <h2 style="color: #0c1929;">Waypoint Monthly SEO Report — ${MONTH}</h2>
+          EOF
 
+          if [ "$GSC_OUTCOME" = "success" ] && [ -f "$GSC_REPORT" ]; then
+            CLICKS=$(grep "Total clicks" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1 || true)
+            IMPRESSIONS=$(grep "Total impressions" "$GSC_REPORT" | grep -oE '[0-9]+' | head -1 || true)
+            AVG_POS=$(grep "Average position" "$GSC_REPORT" | grep -oE '[0-9]+\.[0-9]+' | head -1 || true)
+            # Surfaced because a property covering the wrong host reports near-zero
+            # while looking perfectly healthy.
+            SITE=$(grep -m1 '^\*\*Site:\*\*' "$GSC_REPORT" | sed 's/^\*\*Site:\*\* *//' || true)
+            cat >> /tmp/seo-summary.html <<EOF
           <h3>📊 Search Console</h3>
+          <p style="color:#666;font-size:12px;">Property: ${SITE:-unknown}</p>
           <table style="border-collapse: collapse; width: 100%;">
-            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total clicks (28 days)</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${CLICKS:-0}</td></tr>
-            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total impressions</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${IMPRESSIONS:-0}</td></tr>
-            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Average position</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${AVG_POS:-—}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total clicks (28 days)</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${CLICKS:-n/a}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Total impressions</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${IMPRESSIONS:-n/a}</td></tr>
+            <tr><td style="padding: 8px; border-bottom: 1px solid #eee;"><b>Average position</b></td><td style="padding: 8px; border-bottom: 1px solid #eee;">${AVG_POS:-n/a}</td></tr>
           </table>
+          EOF
+          else
+            cat >> /tmp/seo-summary.html <<EOF
+          <h3>📊 Search Console</h3>
+          <div ${WARN}><b>Not collected this run.</b> The Search Console step did not
+          complete, so no figures are shown. They are omitted deliberately rather than
+          reported as zero. Check the workflow run for the reason.</div>
+          EOF
+          fi
 
+          # "0 of 0 checks (3 tool(s) skipped)" is not a result, so treat a report
+          # with no active provider as not collected.
+          CITE_SKIPPED=""
+          if [ -f "$CITE_REPORT" ]; then
+            CITE_SKIPPED=$(grep -m1 "tool(s) skipped" "$CITE_REPORT" || true)
+          fi
+          if [ "$CITE_OUTCOME" = "success" ] && [ -f "$CITE_REPORT" ] && [ -z "$CITE_SKIPPED" ]; then
+            CITE_LINE=$(grep "Citation hits" "$CITE_REPORT" | head -1 || true)
+            CITE_HITS=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | head -1 || true)
+            CITE_TOTAL=$(echo "$CITE_LINE" | grep -oE '[0-9]+' | sed -n '2p' || true)
+            SOV_LINE=$(grep "Share of Voice" "$CITE_REPORT" | head -1 || true)
+            SOV_PRESENCE=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | head -1 || true)
+            SOV_AVG=$(echo "$SOV_LINE" | grep -oE '[0-9]+%' | sed -n '2p' || true)
+            cat >> /tmp/seo-summary.html <<EOF
           <h3>🤖 AI Citation Status</h3>
-          <p>${CITE_HITS:-0} of ${CITE_TOTAL:-0} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
-          <p><b>Share of Voice:</b> ${SOV_PRESENCE:-—} presence &middot; ${SOV_AVG:-—} average share among tracked franchise advisors.</p>
+          <p>${CITE_HITS:-n/a} of ${CITE_TOTAL:-n/a} AI checks returned a Waypoint citation (GPT-4o + Perplexity + Gemini across the franchise-discovery query set).</p>
+          <p><b>Share of Voice:</b> ${SOV_PRESENCE:-n/a} presence &middot; ${SOV_AVG:-n/a} average share among tracked franchise advisors.</p>
+          EOF
+          else
+            cat >> /tmp/seo-summary.html <<EOF
+          <h3>🤖 AI Citation Status</h3>
+          <div ${WARN}><b>Not collected this run.</b> Either the AI citation step did not
+          complete, or every provider was skipped for a missing API key, so no figures are
+          shown rather than reporting zero hits out of zero checks.</div>
+          EOF
+          fi
 
+          if [ "$COMMIT_OUTCOME" != "success" ]; then
+            cat >> /tmp/seo-summary.html <<EOF
+          <div ${WARN}><b>Reports were not saved to the repo.</b> The commit step failed,
+          so the linked folder may not contain this run's reports.</div>
+          EOF
+          fi
+
+          cat >> /tmp/seo-summary.html <<EOF
           <h3>✅ Next Step</h3>
           <p>Full reports are committed to <a href="https://github.com/Franscale1922/waypoint-core-system/tree/main/docs/seo-reviews/${MONTH}">docs/seo-reviews/${MONTH}/</a></p>
           <p><b>To run optimizations:</b> open a conversation with your AI agent and type <code>/seo-review</code>. The agent will read these reports and make all keyword, schema, and AEO fixes automatically.</p>
@@ -111,16 +198,29 @@ jobs:
           EOF
           echo "summary_built=true" >> $GITHUB_OUTPUT
 
+      # Pinned to the commit behind the v3 tag rather than the tag itself: a movable
+      # tag on a third-party action is a standing invitation, and this job now holds
+      # `contents: write`. Upstream is on v18; upgrading is a separate change
+      # because the input schema has moved on.
       - name: Send email report
-        uses: dawidd6/action-send-mail@v3
+        uses: dawidd6/action-send-mail@4226df7daafa6fc901a43789c49bf7ab309066e7 # v3
         with:
           server_address: smtp.gmail.com
           server_port: 587
           username: ${{ secrets.GMAIL_USER }}
           password: ${{ secrets.GMAIL_APP_PASSWORD }}
-          subject: "Waypoint Monthly SEO Report — ${{ env.MONTH }}"
+          # steps.summary.outputs.MONTH, not env.MONTH. The summary step never wrote
+          # a MONTH output, so this rendered empty and every subject line read
+          # "Waypoint Monthly SEO Report — " with nothing after the dash.
+          subject: "Waypoint Monthly SEO Report — ${{ steps.summary.outputs.MONTH }}"
           to: kelsey@waypointfranchise.com
           from: Waypoint SEO Bot <${{ secrets.GMAIL_USER }}>
           html_body: file:///tmp/seo-summary.html
-        env:
-          MONTH: ${{ steps.summary.outputs.MONTH }}
+
+      # Last, so a degraded run still delivers its email and still goes red. Without
+      # this the job would report success while the email said "not collected".
+      - name: Fail if any producer failed
+        if: steps.gsc.outcome != 'success' || steps.cite.outcome != 'success' || steps.commit.outcome != 'success'
+        run: |
+          echo "::error title=Monthly SEO review degraded::gsc=${{ steps.gsc.outcome }} cite=${{ steps.cite.outcome }} commit=${{ steps.commit.outcome }}"
+          exit 1
