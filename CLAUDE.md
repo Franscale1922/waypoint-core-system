@@ -285,10 +285,43 @@ declaring the work done.
 
 Never at less than the effort the work itself got.
 
-Run the review with a **fresh reviewer subagent** — not self-review. The agent
-that did the work is biased toward "it works" and will defend its own choices.
-Give the reviewer only the original request plus the diff/artifacts, and prompt
-it to find fault, not to bless. The reviewer must:
+### The reviewer is Codex, not me and not a subagent
+
+**For any change to CODE, the reviewer is the OpenAI Codex CLI**, run from the
+repo:
+
+```
+codex exec --sandbox read-only - < /path/to/review-prompt.txt
+```
+
+Different vendor, different model, no memory of my reasoning — that is the
+independence the rule is buying. A subagent shares my model and my blind spots,
+and some sessions forbid spawning agents at all, which is exactly when the rule
+used to collapse into self-review. **Codex REPLACES the subagent reviewer**; do
+not run both by default. Ask me first only if I have said Codex is unavailable.
+
+- **Scope: code changes, automatically.** Any repo. Run it without asking as the
+  final phase of substantive code work. **Skip it** for docs, gitlink/deploy
+  bumps, ops and content files, and one-line mechanical edits — an external
+  review there is latency and noise, and needlessly ships my code to OpenAI.
+- **Feed it the original request verbatim + the diff**, and prompt it to find
+  fault, not to bless. Tell it not to summarize the code.
+- **Check the payload before sending.** It leaves the machine: grep the diff for
+  tokens/keys and never include `.env`. Say in chat what is being sent.
+- `read-only` cannot run a test harness (`tempfile.mkdtemp()` has nowhere to
+  write), so it reviews statically. That is usually enough — it still finds real
+  bugs. Use `--sandbox workspace-write` only when the review genuinely needs to
+  execute tests, and say so.
+- **Verify every finding against the real code before acting on it.** Codex is
+  another agent, not an oracle; the grounding rule applies to its claims too.
+  Reproduce it, fix it, or decline it with a stated reason.
+- **Self-review is the last resort, and must be labeled as such** — say plainly
+  in chat that it is self-review and therefore the biased option.
+
+For non-code work that still needs an adversarial pass (a plan, a governance
+edit, a piece of research), a fresh subagent is fine where the session allows it.
+
+The reviewer — whichever it is — must:
 
 1. **Audit claims against evidence.** Every "passing / works / done / verified"
    statement must point to an actual tool result from this session. Re-run the
