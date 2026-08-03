@@ -15,11 +15,21 @@
 
 import { hostOf } from "./gsc-property.mjs";
 
-/** Impressions descending, stable on ties by key. Never mutates the input. */
+/**
+ * Impressions descending, stable on ties by key. Never mutates the input.
+ *
+ * The tie-break compares code points rather than using localeCompare, which is
+ * locale-dependent: under en-US "ä" sorts before "z" and under sv-SE after it,
+ * so at the top-N cutoff the same data could select different rows on a
+ * developer's machine than in CI. A report should not change with the runner.
+ */
 export function byImpressions(rows) {
-  return [...rows].sort(
-    (a, b) => b.impressions - a.impressions || String(a.keys[0]).localeCompare(String(b.keys[0])),
-  );
+  return [...rows].sort((a, b) => {
+    if (b.impressions !== a.impressions) return b.impressions - a.impressions;
+    const ka = String(a.keys[0]);
+    const kb = String(b.keys[0]);
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  });
 }
 
 /**
@@ -31,6 +41,24 @@ export function byImpressions(rows) {
  */
 export function pathFor(siteUrl) {
   const propertyHost = hostOf(siteUrl);
+  // A domain property spans schemes and ports as well as hosts, so matching on
+  // hostname alone would render http://host/a and https://host/a as the same
+  // "/a" and merge two genuinely different rows. Shorten only for the origin
+  // the property itself names; anything else keeps its full URL.
+  // A domain property has no single origin, so it is matched on host alone
+  // below. Check the prefix first: `new URL("sc-domain:example.com")` does NOT
+  // throw, because "sc-domain" is a valid scheme, and its .origin is the STRING
+  // "null" for a non-special scheme. Relying on the catch here silently made
+  // every domain-property row miss.
+  const propertyOrigin = (() => {
+    if (typeof siteUrl !== "string" || siteUrl.startsWith("sc-domain:")) return null;
+    try {
+      const o = new URL(siteUrl).origin;
+      return o === "null" ? null : o;
+    } catch {
+      return null;
+    }
+  })();
   return (url) => {
     let parsed;
     try {
@@ -38,16 +66,32 @@ export function pathFor(siteUrl) {
     } catch {
       return url; // not a URL we can reason about; show it as-is
     }
-    if (propertyHost && parsed.hostname !== propertyHost) return url;
+    const sameProperty = propertyOrigin
+      ? parsed.origin === propertyOrigin
+      : propertyHost !== null && parsed.hostname === propertyHost && parsed.protocol === "https:";
+    if (!sameProperty) return url;
     return `${parsed.pathname}${parsed.search}` || "/";
   };
 }
 
-/** Article pages live under /resources/; the index itself is a core page. */
+/**
+ * Article pages live under /resources/; the index itself is a core page.
+ *
+ * Classification reads the pathname, not the raw URL. Matching the whole string
+ * put `/search?next=/resources/foo` in the articles table on the strength of its
+ * query string alone, and kept `/resources/?utm_source=x` out of the core table
+ * because the query stopped it ending in `/resources/`.
+ */
 export function splitPages(rows) {
   const isArticle = (r) => {
-    const p = String(r.keys[0]);
-    return p.includes("/resources/") && !p.endsWith("/resources/");
+    const raw = String(r.keys[0]);
+    let pathname;
+    try {
+      pathname = new URL(raw).pathname;
+    } catch {
+      pathname = raw.split(/[?#]/)[0]; // already a path, or unparseable
+    }
+    return pathname.startsWith("/resources/") && pathname !== "/resources/";
   };
   return {
     articles: byImpressions(rows.filter(isArticle)),
@@ -66,7 +110,17 @@ const TOP_N = 10;
 
 /**
  * Pages close to page one: ranked 8-20, most impressions first.
- * These need a push, not a rewrite.
+ *
+ * The buckets below are NOT mutually exclusive, deliberately. A page at
+ * position 12 with a 1% click-through rate is both close to page one and
+ * failing to earn the click, and both fixes apply to it. Treat an appearance in
+ * two tables as two things to do, not as a contradiction.
+ *
+ * A caveat that applies to all three: GSC reports `position` as the AVERAGE
+ * across a row's impressions. A page appearing at position 1 for one query and
+ * 111 for another averages to 12 and lands here without ever having ranked 8-20
+ * for anything. The band is a prompt to look, not a measurement of where the
+ * page sits.
  */
 export function selectOpportunities(rows, { minImpressions = NOISE_FLOOR, limit = TOP_N } = {}) {
   return byImpressions(

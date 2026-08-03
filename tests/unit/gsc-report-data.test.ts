@@ -77,6 +77,14 @@ describe("byImpressions", () => {
     const tied = [row("zebra", 0, 10, 5), row("alpha", 0, 10, 5)];
     expect(byImpressions(tied).map((r) => r.keys[0])).toEqual(["alpha", "zebra"]);
   });
+
+  it("breaks ties by code point, not by locale", () => {
+    // localeCompare put "ä" before "z" under en-US and after it under sv-SE, so
+    // the same data could select different rows at the top-N cutoff depending on
+    // the runner's collation. A report must not change with the machine.
+    const tied = [row("z", 0, 10, 5), row("ä", 0, 10, 5)];
+    expect(byImpressions(tied).map((r) => r.keys[0])).toEqual(["z", "ä"]);
+  });
 });
 
 describe("pathFor", () => {
@@ -109,6 +117,20 @@ describe("pathFor", () => {
     const domainSlug = pathFor("sc-domain:waypointfranchise.com");
     expect(domainSlug("https://waypointfranchise.com/about")).toBe("/about");
   });
+
+  it("keeps http and https distinguishable on a domain property", () => {
+    // Domain properties span schemes. Matching on hostname alone rendered both
+    // as "/a", silently merging two different rows in the table.
+    const domainSlug = pathFor("sc-domain:waypointfranchise.com");
+    expect(domainSlug("https://waypointfranchise.com/a")).toBe("/a");
+    expect(domainSlug("http://waypointfranchise.com/a")).toBe("http://waypointfranchise.com/a");
+  });
+
+  it("does not shorten a different port on the same host", () => {
+    expect(slug("https://www.waypointfranchise.com:8443/a")).toBe(
+      "https://www.waypointfranchise.com:8443/a",
+    );
+  });
 });
 
 describe("splitPages", () => {
@@ -126,6 +148,18 @@ describe("splitPages", () => {
       "https://www.waypointfranchise.com/glossary",
       "https://www.waypointfranchise.com/resources/",
     ]);
+  });
+
+  it("classifies on the pathname, not the raw URL string", () => {
+    // Matching the whole string put a /search page in the articles table purely
+    // because its query string contained "/resources/", and kept the index out
+    // of the core table because a utm param stopped it ending in "/resources/".
+    const { articles, corePages } = splitPages([
+      row("https://www.waypointfranchise.com/search?next=/resources/foo", 0, 1, 5.0),
+      row("https://www.waypointfranchise.com/resources/?utm_source=x", 0, 2, 3.6),
+    ]);
+    expect(articles).toEqual([]);
+    expect(corePages).toHaveLength(2);
   });
 
   it("returns both groups ordered by impressions", () => {
@@ -185,6 +219,15 @@ describe("selectLowCtr", () => {
 
   it("ignores pages that are already converting", () => {
     expect(selectLowCtr([row("/home", 3, 28, 2.4)])).toEqual([]);
+  });
+
+  it("overlaps with selectOpportunities on purpose", () => {
+    // Position 12 at 1% CTR is genuinely both: close to page one AND not
+    // earning the click. Both fixes apply. This asserts the overlap is intended
+    // so nobody "fixes" it into precedence later without deciding to.
+    const both = row("/page-two-weak-snippet", 1, 100, 12.0);
+    expect(selectOpportunities([both])).toHaveLength(1);
+    expect(selectLowCtr([both])).toHaveLength(1);
   });
 });
 
