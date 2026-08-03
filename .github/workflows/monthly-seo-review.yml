@@ -35,10 +35,13 @@ jobs:
       - name: Install googleapis (if not in package-lock)
         run: npm install googleapis --no-save
 
-      - name: Write service account credentials to file
-        run: |
-          echo "$GSC_SERVICE_ACCOUNT_KEY" | base64 -d > /tmp/gsc-credentials.json
-          echo "GSC_SERVICE_ACCOUNT_PATH=/tmp/gsc-credentials.json" >> $GITHUB_ENV
+      # No credential-decoding step here on purpose. This job used to shell out to
+      # `base64 -d` and write /tmp/gsc-credentials.json. Because the step ran under
+      # `bash -e`, a secret that was not valid base64 aborted the WHOLE job before
+      # the report, the citation check and the summary email — which is exactly
+      # what happened every month from 2026-05 onward. gsc-report.mjs now reads
+      # GSC_SERVICE_ACCOUNT_KEY itself and accepts raw JSON or base64, so there is
+      # no decode step to fail and no plaintext key on disk.
 
       - name: Run GSC report
         run: node scripts/gsc-report.mjs

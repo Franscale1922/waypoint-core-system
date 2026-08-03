@@ -3,9 +3,12 @@
 // Signs a service-account JWT and exchanges it for a Google OAuth2 access token,
 // using only Node built-ins so .github/scripts/ can run without `npm install`.
 //
-// Lifted from the working implementation in .github/scripts/google-indexing.mjs
-// (the JWT block and token exchange), with the scope parameterised and the
-// failure paths given real messages.
+// Lifted from .github/scripts/google-indexing.mjs (the JWT block and token
+// exchange), with the scope parameterised and the failure paths given real
+// messages. Note that script never reached this code in CI — it died on the
+// credential first, on every run it ever had — so the signature is verified
+// against a generated keypair in tests/unit/google-jwt.test.ts rather than
+// being trusted on the strength of having shipped.
 //
 // SECURITY NOTE: the signed assertion is derived from the private key and is
 // itself a short-lived credential, so it is never logged. Google's *response* is

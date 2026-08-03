@@ -12,7 +12,7 @@
  *   node scripts/gsc-report.mjs
  *
  * ENV VARS required:
- *   GSC_SERVICE_ACCOUNT_KEY   Base64-encoded JSON service account credentials
+ *   GSC_SERVICE_ACCOUNT_KEY   Service account credentials, as raw JSON or base64
  *   GSC_SITE_URL              Site URL exactly as it appears in GSC (e.g. sc-domain:waypointfranchise.com)
  */
 
@@ -21,6 +21,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
+import { loadServiceAccount, reportCredentialFailure } from "./lib/load-service-account.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -42,27 +43,45 @@ const DAYS_BACK = 28;
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 function getAuth() {
-  let credentials;
-
-  // Prefer file path (more reliable — no base64 corruption risk)
+  // Prefer an on-disk key when one is configured; otherwise read the env var.
+  // Both go through the same loader, which accepts raw JSON or base64 and
+  // reports the specific reason it could not read a value. See
+  // scripts/lib/load-service-account.mjs for why the reason never quotes it.
   const keyPath = process.env.GSC_SERVICE_ACCOUNT_PATH;
+  let raw;
+  let varName;
+
   if (keyPath) {
-    credentials = JSON.parse(fs.readFileSync(keyPath, "utf-8"));
-    console.log("   Auth: loading from file path");
-  } else {
-    // Fall back to base64-encoded key
-    const raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
-    if (!raw) {
-      console.error("❌ Neither GSC_SERVICE_ACCOUNT_PATH nor GSC_SERVICE_ACCOUNT_KEY is set.");
-      console.error("   Add GSC_SERVICE_ACCOUNT_PATH=/path/to/credentials.json to your .env");
+    varName = "GSC_SERVICE_ACCOUNT_PATH";
+    try {
+      raw = fs.readFileSync(keyPath, "utf-8");
+    } catch {
+      console.error(`❌ GSC_SERVICE_ACCOUNT_PATH points at ${keyPath}, which could not be read.`);
       process.exit(1);
     }
-    credentials = JSON.parse(Buffer.from(raw, "base64").toString("utf-8"));
-    console.log("   Auth: loading from base64 key");
+    console.log("   Auth: loading from file path");
+  } else {
+    varName = "GSC_SERVICE_ACCOUNT_KEY";
+    raw = process.env.GSC_SERVICE_ACCOUNT_KEY;
   }
 
+  const result = loadServiceAccount(raw, { varName });
+
+  if (result.status === "missing") {
+    console.error("❌ Neither GSC_SERVICE_ACCOUNT_PATH nor GSC_SERVICE_ACCOUNT_KEY is set.");
+    console.error("   Add GSC_SERVICE_ACCOUNT_PATH=/path/to/credentials.json to your .env");
+    process.exit(1);
+  }
+
+  if (result.status === "invalid") {
+    reportCredentialFailure(result);
+    process.exit(1);
+  }
+
+  if (!keyPath) console.log(`   Auth: loading from ${result.encoding} key in ${varName}`);
+
   return new google.auth.GoogleAuth({
-    credentials,
+    credentials: result.credentials,
     scopes: ["https://www.googleapis.com/auth/webmasters.readonly"],
   });
 }

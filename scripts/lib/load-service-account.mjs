@@ -182,3 +182,27 @@ export function describeMissing(result) {
     `Set it with:  gh secret set ${result.varName} < /path/to/your-key.json`
   );
 }
+
+/**
+ * Prints a credential failure so it is visible where people actually look.
+ *
+ * Under Actions this also emits a `::error::` annotation, which surfaces on the
+ * run summary rather than only inside the step log. That distinction is the
+ * reason this workflow stayed broken for 8+ deploys: the failure was there in
+ * the log the whole time and nothing pulled it up to where it would be seen.
+ *
+ * The annotation carries only a one-line summary because Actions renders
+ * annotations on a single line; the full diagnosis follows as ordinary output.
+ */
+export function reportCredentialFailure(result, logger = console) {
+  const summary =
+    result.status === "missing"
+      ? `${result.varName} is not set`
+      : `${result.varName} is set but is not a usable service-account key (${result.code})`;
+
+  if (process.env.GITHUB_ACTIONS === "true") {
+    logger.error(`::error title=Google credential problem::${summary}`);
+  }
+
+  logger.error(result.status === "missing" ? describeMissing(result) : result.diagnosis);
+}

@@ -26,7 +26,6 @@ This is the full codebase for the Waypoint Franchise Advisors web application â€
 | [`ROADMAP.md`](./ROADMAP.md) | Current sprint status, what's done, what's next |
 | [`docs/LAUNCH.md`](./docs/LAUNCH.md) | **Complete new site launch runbook** â€” setup, env vars, SEO, OG images, indexing |
 | [`docs/hosting-requirements.md`](./docs/hosting-requirements.md) | Hosting platform requirements and env var list |
-| [`docs/GOOGLE_INDEXING_SETUP.md`](./docs/GOOGLE_INDEXING_SETUP.md) | One-time Google Indexing API setup |
 | [`TECH_STACK.md`](./TECH_STACK.md) | Full tool and platform inventory |
 | [`content/CONTENT-CALENDAR.md`](./content/CONTENT-CALENDAR.md) | Article publishing schedule |
 | [`content/CONTENT-STANDARDS.md`](./content/CONTENT-STANDARDS.md) | Voice and writing rules for all content |
