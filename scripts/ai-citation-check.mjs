@@ -19,6 +19,11 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { createRequire } from "module";
+import {
+  PINNED_CHAT_MODELS,
+  orderChatModels,
+  isModelNotFound,
+} from "./lib/openai-models.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, "..");
@@ -113,22 +118,77 @@ function analyzeResponse(responseText) {
 
 // ─── OpenAI ───────────────────────────────────────────────────────────────────
 
+// Pinned list first, discovery only if every pinned name is rejected. See
+// scripts/lib/openai-models.mjs for why this is deliberately not the Gemini
+// "ask and take the newest" approach: OpenAI bills, and its newest tier is
+// usually its priciest.
+let openaiCandidates = [...PINNED_CHAT_MODELS];
+let openaiIndex = 0;
+let openaiLogged = false;
+let openaiDiscoveryTried = false;
+
+async function discoverOpenAIModels(key) {
+  const res = await fetch("https://api.openai.com/v1/models", {
+    headers: { Authorization: `Bearer ${key}` },
+  });
+  if (!res.ok) return [];
+  const body = await res.json();
+  return orderChatModels(body.data, { exclude: openaiCandidates });
+}
+
 async function queryOpenAI(question) {
   const key = process.env.OPENAI_API_KEY;
   if (!key) return { skipped: true, reason: "OPENAI_API_KEY not set" };
 
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "gpt-4o",
-      messages: [{ role: "user", content: question }],
-      max_tokens: 500,
-    }),
-  });
+  let res;
+  let err = "";
 
-  if (!res.ok) {
-    const err = await res.text();
+  while (true) {
+    if (openaiIndex >= openaiCandidates.length) {
+      // Every pinned name was rejected. Ask what exists, cheapest tier first, and
+      // say so loudly rather than changing cost tier in silence.
+      if (openaiDiscoveryTried) break;
+      openaiDiscoveryTried = true;
+      const discovered = await discoverOpenAIModels(key);
+      if (discovered.length === 0) break;
+      console.log(
+        `   OpenAI: every pinned model was rejected. Falling back to discovery, ` +
+          `trying ${discovered.slice(0, 3).join(", ")}`,
+      );
+      openaiCandidates = openaiCandidates.concat(discovered);
+    }
+
+    const model = openaiCandidates[openaiIndex];
+    res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model,
+        messages: [{ role: "user", content: question }],
+        max_tokens: 500,
+      }),
+    });
+
+    if (res.ok) {
+      if (!openaiLogged) {
+        console.log(`   OpenAI model: ${model}`);
+        openaiLogged = true;
+      }
+      break;
+    }
+
+    err = await res.text();
+    // A bad key or exhausted quota is a real failure; only an unknown model name
+    // is worth retrying with a different one.
+    if (!isModelNotFound(res.status, err)) break;
+    console.log(`   OpenAI model ${model} rejected, trying the next one`);
+    openaiIndex += 1;
+  }
+
+  if (!res || !res.ok) {
+    if (openaiIndex >= openaiCandidates.length) {
+      return { skipped: true, reason: `no usable chat model found. Last response: ${err.slice(0, 300)}` };
+    }
     return { skipped: true, reason: `API error ${res.status}: ${err.slice(0, 300)}` };
   }
 
