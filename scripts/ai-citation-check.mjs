@@ -165,12 +165,52 @@ async function queryPerplexity(question) {
 
 // ─── Gemini ───────────────────────────────────────────────────────────────────
 
+// Resolved once per run rather than hardcoded. The previous hardcoded
+// `gemini-1.5-flash` was retired by Google, so every check returned 404 and was
+// reported as a skipped tool — indistinguishable, in the summary, from a missing
+// key. Asking the API which models exist means the next retirement does not
+// silently blank this section.
+let geminiModelPromise = null;
+
+function resolveGeminiModel(key) {
+  geminiModelPromise ??= (async () => {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${key}`);
+    if (!res.ok) {
+      throw new Error(`model list unavailable (HTTP ${res.status})`);
+    }
+    const names = ((await res.json()).models ?? [])
+      .filter((m) => (m.supportedGenerationMethods ?? []).includes("generateContent"))
+      .map((m) => m.name.replace(/^models\//, ""))
+      // Preview and experimental models come and go; a scheduled monthly job
+      // should sit on something stable.
+      .filter((n) => !/preview|exp|thinking/i.test(n));
+
+    // Cheapest first: this asks a short question a few dozen times a month.
+    const pick =
+      names.find((n) => /flash-lite/i.test(n)) ??
+      names.find((n) => /flash/i.test(n)) ??
+      names[0];
+
+    if (!pick) throw new Error("no model supporting generateContent is available to this key");
+    console.log(`   Gemini model: ${pick}`);
+    return pick;
+  })();
+  return geminiModelPromise;
+}
+
 async function queryGemini(question) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return { skipped: true, reason: "GEMINI_API_KEY not set — add to .env to enable" };
 
+  let model;
+  try {
+    model = await resolveGeminiModel(key);
+  } catch (e) {
+    return { skipped: true, reason: `Gemini unavailable: ${e.message}` };
+  }
+
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -224,10 +264,22 @@ function buildReport(results, now) {
   }, 0);
   const sov = computeSOV(results);
   const skippedTools = new Set();
-  results.forEach(r => {
-    if (r.openai?.skipped) skippedTools.add("OpenAI");
-    if (r.perplexity?.skipped) skippedTools.add("Perplexity");
-    if (r.gemini?.skipped) skippedTools.add("Gemini");
+  // Kept alongside the set so the note can say WHY, not just which.
+  const skippedReasons = new Map();
+  const noteSkip = (tool, result) => {
+    if (!result?.skipped) return;
+    skippedTools.add(tool);
+    if (!skippedReasons.has(tool)) {
+      // Trimmed: an upstream error body can be long, and the first line carries
+      // the useful part (status code and message).
+      const reason = String(result.reason ?? "no reason given").replace(/\s+/g, " ").trim();
+      skippedReasons.set(tool, reason.length > 160 ? `${reason.slice(0, 160)}...` : reason);
+    }
+  };
+  results.forEach((r) => {
+    noteSkip("OpenAI", r.openai);
+    noteSkip("Perplexity", r.perplexity);
+    noteSkip("Gemini", r.gemini);
   });
 
   const emojiFor = (result) => {
@@ -246,7 +298,20 @@ function buildReport(results, now) {
   ];
 
   if (skippedTools.size > 0) {
-    lines.push(`> **Note:** Some tools were skipped due to missing API keys. See \`docs/seo-reviews/SETUP.md\` to enable them.`);
+    // A tool skips for two very different reasons: no key configured, or the API
+    // rejected the call. Reporting both as "missing API keys" cost real
+    // debugging time -- all three providers were actually returning 401/400/404
+    // (an expired key and two retired model names) while this note insisted the
+    // keys were absent. Say which it is.
+    const reasons = [...skippedReasons.entries()]
+      .map(([tool, reason]) => `**${tool}** — ${reason}`)
+      .join("; ");
+    lines.push(`> **Note:** ${skippedTools.size} tool(s) did not run: ${reasons}`);
+    lines.push(``);
+    lines.push(
+      `> An \`API error\` means the key is present but the call was rejected, commonly an` +
+        ` expired key or a retired model name. That is a different fix from a missing key.`,
+    );
     lines.push(``);
   }
 
