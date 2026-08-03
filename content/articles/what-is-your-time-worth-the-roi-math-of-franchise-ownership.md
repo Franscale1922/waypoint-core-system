@@ -9,7 +9,7 @@ date: "2026-01-14"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Most franchise buyers add up the capital and stop there. Few account for the two costs that actually determine whether the math works: the cost of financing, and the opportunity cost of their own time."
+excerpt: "Most franchise buyers add up the capital and stop there. Two costs decide whether the math works: what financing costs, and what your own time is worth."
 faqs:
   - q: "How do you calculate the real cost of a franchise investment?"
     a: "A complete picture includes three components, and most buyers only count the first: your capital investment (franchise fee, build-out, working capital), the ongoing cost of capital (debt service if you finance, or the market return you give up if you pay cash), and the opportunity cost of your time (what you could earn deploying those same hours elsewhere). Add the second and third to the first and you are looking at the true cost of the decision, not just the sticker price."

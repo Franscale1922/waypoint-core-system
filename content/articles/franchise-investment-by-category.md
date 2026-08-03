@@ -9,7 +9,7 @@ date: "2026-06-18"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "What a franchise costs depends almost entirely on category. As of 2026, ranges run from roughly $60,000 for an asset-light home service to well over $1,000,000 for a real-estate-heavy concept like food service or a car wash. Here is the range by category, and what actually moves the number."
+excerpt: "What a franchise costs depends on category. As of 2026, ranges run from about $60,000 for an asset-light home service to over $1,000,000 for food service."
 faqs:
   - q: "How much does it cost to open a franchise?"
     a: "It depends on the category more than anything else. As of 2026, asset-light, home-based, and mobile service franchises typically run $60,000 to $250,000 all-in, while capital-heavy concepts that require a built-out physical location (food service, full-service fitness, car washes) run from $250,000 to well over $1,000,000. The single biggest driver of the number is whether the business needs real estate and build-out. Always confirm the specific figure in the franchise disclosure document the franchisor is required to share before you sign."

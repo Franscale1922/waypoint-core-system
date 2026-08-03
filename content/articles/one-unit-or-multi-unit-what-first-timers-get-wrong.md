@@ -9,7 +9,7 @@ date: "2025-12-09"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Most first-time franchise buyers have a strong instinct about how many units to buy, and most of them are wrong. Here is where the math actually lands and why the 2 to 5 unit range is where most advisors land with first-time buyers."
+excerpt: "Most first-time franchise buyers have a strong instinct about unit count, and most of them are wrong. Here is where the math lands for a first-time owner."
 faqs:
   - q: "Should a first-time franchise buyer start with one unit or multiple?"
     a: "Most buyers who work with advisors end up purchasing 2 to 5 units or territories, not one and not ten. Starting with a single unit can limit your territory access, cap your exit value, and leave you owning a job rather than an asset. Buying more than you can realistically manage spreads resources too thin. The 2 to 5 unit range is typically where manageable risk and real growth potential align for first-time buyers."

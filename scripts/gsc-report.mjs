@@ -242,7 +242,7 @@ function buildReport(pageRows, queryRows, startDate, endDate) {
     poorlyRanked.length === 0
       ? `_No pages earning impressions from beyond position 20._`
       : [
-          `Earning impressions from well down the results. Rewriting the title will not help — nobody is declining to click a result they never scrolled to. Fix: relevance, internal links, and depth.`,
+          `Earning impressions from well down the results. Rewriting the title will not help, because nobody is declining to click a result they never scrolled to. Fix: relevance, internal links, and depth.`,
           ``,
           `| URL | Clicks | Impressions | CTR | Position |`,
           `|---|---|---|---|---|`,

@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "food-and-beverage"
-excerpt: "Food franchises dominate franchise searches. They're also the most operationally demanding category most buyers will consider. Here's an honest look at what the category requires, and who it's actually built for."
+excerpt: "Food franchises dominate franchise searches and ask the most operationally. Here is an honest look at what the category demands, and who it truly fits."
 relatedSlugs:
   - "you-dont-need-to-love-your-franchise"
   - "recession-proof-franchise-categories"

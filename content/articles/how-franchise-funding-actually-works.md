@@ -10,7 +10,7 @@ updatedAt: "2026-06-19"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Before you fill out a loan application, inventory what you actually have. Most buyers are closer to a clean funding solution than they realize. The SBA, while useful, is the most painful path available."
+excerpt: "Before you apply for anything, inventory what you already have. Most franchise buyers are closer to a clean funding path than they realize, and SBA is hardest."
 faqs:
   - q: "What is the best way to finance a franchise?"
     a: "The best funding path is the one that requires the least borrowing. Start by taking honest stock of liquid savings, accessible investment accounts, home equity, and retirement account balances. Cash or near-cash covers the purchase cleanly. A ROBS structure avoids debt entirely for buyers with retirement savings. A HELOC provides lower-rate borrowing without bank underwriting. SBA financing is useful when no other option fits, but it is the most documentation-heavy, slowest, and most banker-involved path available. It is a last resort, not a starting point."

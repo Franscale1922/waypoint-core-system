@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Buying an existing franchise unit has a real appeal: skip the startup phase, inherit the cash flow, and get moving faster. What most buyers don't realize is how rarely a resale actually fits them, and why that matters more than the income that's already there."
+excerpt: "Buying an existing franchise skips the startup phase and inherits the operation. Here is why a resale fits far fewer buyers than most people expect it to."
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "the-franchise-agreement-what-you-can-and-cant-negotiate"

@@ -8,7 +8,7 @@ slug: "what-to-expect-at-discovery-day"
 date: "2026-01-22"
 category: "Going Deeper"
 tier: 2
-excerpt: "Discovery day is not a sales pitch. By the time you get invited, both sides have already done the real work. This is where you make your final call, not where they make their case."
+excerpt: "Discovery day is not a sales pitch. By the time you are invited, both sides have done the real work. This is where you make your call, not where they pitch."
 faqs:
   - q: "What is discovery day in franchising?"
     a: "Discovery day is the final step in the franchise evaluation process, where the candidate travels to the franchisor's headquarters to spend one to two days with the executive team, see the operation, and get an unfiltered sense of the culture. By this point, the candidate should have read the FDD, completed franchisee validation calls, chosen their territory, and confirmed funding. Discovery day is where both sides make a final decision about whether to move forward together."

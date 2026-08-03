@@ -9,7 +9,7 @@ date: "2025-09-02"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "The skepticism is fair. 'Franchise consultant' sounds like a sales title, and in a lot of cases, it is. Here is what a good one does, what they cost, and how to tell the bad ones from the good ones quickly."
+excerpt: "Franchise consultant sounds like a sales title, and sometimes it is. Here is what a good one does, who pays them, and how to spot a bad one very quickly."
 faqs:
   - q: "How much does a franchise consultant cost?"
     a: "Nothing. Franchise consultants are paid by the franchisor when a candidate they represent becomes a franchisee. The fee comes from the franchisor's marketing budget, not from you. The franchisor's cost to you does not change whether you came to them directly or through a consultant."

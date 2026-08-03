@@ -39,7 +39,7 @@ Ranked where people can see them, but not earning the click. Fix: rewrite the ti
 
 ## 📉 Ranking Too Low to Be Clicked (position > 20)
 
-Earning impressions from well down the results. Rewriting the title will not help — nobody is declining to click a result they never scrolled to. Fix: relevance, internal links, and depth.
+Earning impressions from well down the results. Rewriting the title will not help, because nobody is declining to click a result they never scrolled to. Fix: relevance, internal links, and depth.
 
 | URL | Clicks | Impressions | CTR | Position |
 |---|---|---|---|---|

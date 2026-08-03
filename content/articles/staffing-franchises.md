@@ -5,7 +5,7 @@ date: "2026-04-02"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "b2b"
-excerpt: "Staffing franchises offer strong B2B recurring revenue, but the distinction between temporary placement and direct hire changes the entire margin profile. Here is how the business actually works."
+excerpt: "Staffing franchises run on B2B recurring revenue, but temporary placement and direct hire carry different margin structures. Here is how the model works."
 relatedSlugs:
   - "b2b-franchise-opportunities-lower-risk-steadier-cash"
   - "asset-light-vs-capital-heavy-choosing-your-franchise-type"

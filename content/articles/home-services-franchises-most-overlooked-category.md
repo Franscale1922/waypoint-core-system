@@ -9,7 +9,7 @@ date: "2026-02-25"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "home-services"
-excerpt: "Home services is a $29 billion industry, as of 2025, with no major franchised brand dominating most of its niches. Consumer-facing brands get the attention during franchise searches, but overlooked categories tend to have lighter competition, recurring demand, and lower entry costs."
+excerpt: "Home services is a $29 billion industry as of 2025, with no brand dominating most niches: lighter competition, recurring demand, and lower entry costs."
 faqs:
   - q: "What is a home services franchise?"
     a: "A home services franchise is a business that delivers recurring or on-call services to residential or commercial property owners. Common categories include pavement maintenance, holiday lighting, gutter cleaning, restoration, specialty cleaning, and pest control. Many home services franchises operate from a home office with a vehicle and crew, with no retail storefront or inventory required."

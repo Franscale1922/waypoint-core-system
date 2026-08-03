@@ -5,7 +5,7 @@ date: "2026-04-02"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "home-services"
-excerpt: "Residential cleaning offers strong recurring revenue, but the core challenge isn't finding clients. It is managing the workforce. Here is what this model actually demands from an owner."
+excerpt: "Residential cleaning franchises run on recurring work, but the hard part is not finding clients. It is staffing. Here is what the model asks of an owner."
 relatedSlugs:
   - "home-services-franchises-most-overlooked-category"
   - "the-semi-absentee-franchise-real-talk"

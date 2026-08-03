@@ -9,7 +9,7 @@ date: "2025-11-22"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Territory selection is one of the decisions that most franchise buyers spend the least time on. It is also one of the few decisions you cannot undo once you have signed."
+excerpt: "Franchise territory is one of the decisions buyers spend the least time on, and it is one of the very few they cannot undo once the agreement is signed."
 faqs:
   - q: "What is a franchise territory?"
     a: "A franchise territory is a defined geographic area, typically by zip code, radius, or population threshold, within which a franchisee has exclusive or protected rights to operate. The specific terms governing your territory, including what competitors can operate nearby and whether your territory protections are exclusive, are defined in the franchise agreement and disclosed in the franchise disclosure document the franchisor is required to share before you sign."

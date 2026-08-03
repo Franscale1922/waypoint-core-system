@@ -43,7 +43,15 @@ for (const f of files) {
   const hasAsOf = /as of (20\d\d|\[year\])/i.test(body);
   const firstPara = body.trim().split(/\n\n/)[0] || "";
 
-  rows.push({ f: f.replace(".md", ""), words, h2: h2s.length, h2q, faqCount, relCount, emdash, hasAsOf, leadLen: firstPara.length });
+  // Excerpt length. This field is not decorative: resources/[slug]/page.tsx
+  // feeds it to the meta description, the OpenGraph description, AND the
+  // Article JSON-LD description. Google truncates around 160 characters, so an
+  // over-long excerpt is cut off mid-sentence in the result, in the social
+  // preview, and in the structured data answer engines read.
+  const excerptMatch = fm.match(/^excerpt:\s*"([\s\S]*?)"\s*$/m);
+  const excerptLen = excerptMatch ? excerptMatch[1].length : null;
+
+  rows.push({ f: f.replace(".md", ""), words, h2: h2s.length, h2q, faqCount, relCount, emdash, hasAsOf, leadLen: firstPara.length, excerptLen });
 }
 
 const n = rows.length;
@@ -68,6 +76,36 @@ console.log(`\nEm dashes in body (banned): ${emdashed.length}${list(emdashed, (r
 console.log(`\nDate qualifier "as of YYYY": present in ${rows.filter((r) => r.hasAsOf).length}/${n}`);
 console.log(`\nThin (<900 words): ${thin.length}${list(thin, (r) => `${r.f}(${r.words})`)}`);
 console.log(`Long lead paragraph (>320 chars): ${longLead.length}${list(longLead, (r) => `${r.f}(${r.leadLen})`)}`);
+
+// ─── Excerpt length guard ───────────────────────────────────────────────────
+// CONTENT-STANDARDS Section 4 requires a search-snippet-ready excerpt, and the
+// seo-review workflow's Step 3 puts the target at 150-160 characters.
+//
+// Over 160 is a hard failure because it does actual damage: the description is
+// truncated mid-sentence in the SERP, in social previews, and in the JSON-LD
+// that answer engines read. Under 150 is only wasted space, so it is reported
+// and not enforced. When this guard was added, 43 of 45 articles were over and
+// exactly 0 were inside the window, which is how a whole-catalogue defect stayed
+// invisible while every other AEO check passed.
+const EXCERPT_MAX = 160;
+const EXCERPT_MIN = 150;
+const missingExcerpt = rows.filter((r) => r.excerptLen === null);
+const tooLong = rows.filter((r) => r.excerptLen !== null && r.excerptLen > EXCERPT_MAX)
+  .sort((a, b) => b.excerptLen - a.excerptLen);
+const tooShort = rows.filter((r) => r.excerptLen !== null && r.excerptLen < EXCERPT_MIN);
+
+console.log(`\nExcerpt length (target ${EXCERPT_MIN}-${EXCERPT_MAX} chars, feeds meta + OG + JSON-LD):`);
+console.log(`  within target: ${rows.length - missingExcerpt.length - tooLong.length - tooShort.length}/${n}`);
+console.log(`  OVER ${EXCERPT_MAX} (truncated in search): ${tooLong.length}${list(tooLong, (r) => `${r.f}(${r.excerptLen})`)}`);
+console.log(`  under ${EXCERPT_MIN} (wastes snippet space): ${tooShort.length}${list(tooShort, (r) => `${r.f}(${r.excerptLen})`)}`);
+if (missingExcerpt.length) console.log(`  unparseable excerpt: ${missingExcerpt.length}${list(missingExcerpt)}`);
+
+if (tooLong.length > 0 || missingExcerpt.length > 0) {
+  console.log(`\nFAIL: ${tooLong.length} excerpt(s) over ${EXCERPT_MAX} chars${missingExcerpt.length ? ` and ${missingExcerpt.length} unparseable` : ""}. Google cuts these off mid-sentence.`);
+  process.exitCode = 1;
+} else {
+  console.log(`PASS: every excerpt fits the search snippet.`);
+}
 
 // ─── Section 11 em-dash guard across all of src/ ────────────────────────────
 // CONTENT-STANDARDS Section 11 bans em dashes in ALL public-facing and

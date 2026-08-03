@@ -9,7 +9,7 @@ date: "2025-10-10"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "The number most people see first is the franchise fee. It is almost never the number that matters. Here is how to think about the four different costs of franchise ownership before you evaluate a single concept."
+excerpt: "The franchise fee is the first number people see and almost never the one that matters. Here are the four costs to weigh before you evaluate a concept."
 faqs:
   - q: "How much does it cost to buy a franchise?"
     a: "The total cost to buy a franchise as of 2026 typically ranges from $150,000 to $800,000 or more depending on the business model. Brick-and-mortar concepts (fitness studios, food service, retail) generally run $300,000 to $800,000 all-in. Non-brick-and-mortar concepts (home services, B2B, restoration, senior care) typically run $150,000 to $350,000. The initial franchise fee alone is typically $40,000 to $60,000 for an established brand, which is a fraction of the total investment."

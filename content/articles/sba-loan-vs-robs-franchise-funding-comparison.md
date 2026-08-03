@@ -6,7 +6,7 @@ updatedAt: "2026-06-19"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "SBA loans create debt. ROBS creates equity from your retirement savings: no monthly payment, closes in 3–4 weeks, no bank required. Here's when to use each, and why ROBS often beats SBA for franchise buyers with retirement savings."
+excerpt: "SBA loans create debt. ROBS converts retirement savings into equity with no monthly payment. Here is when each franchise funding path actually makes sense."
 relatedSlugs:
   - "how-franchise-funding-actually-works"
   - "the-true-cost-of-buying-a-franchise"

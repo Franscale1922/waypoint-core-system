@@ -4,7 +4,7 @@ slug: "how-to-sell-a-franchise-exit-strategy"
 date: "2026-03-22"
 category: "Going Deeper"
 tier: 2
-excerpt: "Most franchise buyers don't think about exit until they're ready to leave. That's usually too late to maximize what the business is worth. The decisions you make when you buy a franchise determine what you'll be able to sell, and for how much, years later."
+excerpt: "Most buyers think about exit only when they are ready to leave, which is far too late. What you can sell later is shaped by what you agree to on day one."
 relatedSlugs:
   - "one-unit-or-multi-unit-what-first-timers-get-wrong"
   - "what-is-your-time-worth-the-roi-math-of-franchise-ownership"

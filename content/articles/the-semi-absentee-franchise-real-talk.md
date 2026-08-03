@@ -9,7 +9,7 @@ date: "2025-12-29"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Keeping your job while a franchise grows in the background sounds like the smart play. Nine times out of ten, it creates exactly the problem you were trying to avoid. Here is what that path really looks like and what actually works."
+excerpt: "Keeping your job while a semi-absentee franchise grows sounds like the smart play. Usually it creates the exact problem you were trying hardest to avoid."
 faqs:
   - q: "What does semi-absentee franchise ownership mean?"
     a: "In franchise terminology, semi-absentee ownership means the business is designed to be run by a general manager or team day-to-day, with the owner involved for a defined number of hours per week, often cited as 10 to 20 hours. For this to work, three things need to be true: there is enough capital to hire quality management from the start, the franchise system has proven training so the manager isn't inventing the job, and there is enough revenue in the model to sustain that management layer."

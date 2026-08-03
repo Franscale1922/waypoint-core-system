@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "Franchise royalty rates typically run 4–8% of gross revenue, paid every month, for life, whether you're profitable or not. Here's what the royalty actually covers, how to evaluate whether it's worth it, and the red flags to watch for before you sign."
+excerpt: "Franchise royalties typically run 4 to 8% of gross revenue, paid every month for the life of the agreement. Here is what that payment actually buys you."
 relatedSlugs:
   - "the-true-cost-of-buying-a-franchise"
   - "fdd-decoded-what-actually-matters"

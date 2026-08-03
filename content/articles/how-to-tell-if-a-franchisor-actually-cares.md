@@ -9,7 +9,7 @@ date: "2025-12-01"
 category: "Going Deeper"
 tier: 2
 checklistSlug: "universal"
-excerpt: "Your incentives and your franchisor's incentives are not automatically the same. Understanding the structural tension, and knowing what alignment looks like in practice, is one of the most important things you can do before you sign."
+excerpt: "Your incentives and your franchisor's are not automatically aligned. Here is what real support looks like in practice, and how to check it before you sign."
 faqs:
   - q: "What is franchise incentive misalignment?"
     a: "Incentive misalignment occurs when a franchisor's financial structure rewards behaviors that do not necessarily benefit individual franchisees. The clearest example: franchisors collect royalties as a percentage of gross revenue, so they benefit from higher top-line volume. Individual franchisees make money on cash flow after costs. A franchisor who pushes volume or discounted pricing to increase royalty revenue may be optimizing for their income at the expense of franchisee unit economics."

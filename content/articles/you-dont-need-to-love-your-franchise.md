@@ -9,7 +9,7 @@ date: "2025-10-21"
 category: "Getting Started"
 tier: 1
 checklistSlug: "universal"
-excerpt: "The most durable franchise businesses are rarely built by people who are passionate about the product. They are built by people who are passionate about building businesses. Here is what to care about instead, and why that distinction matters."
+excerpt: "The most durable franchise businesses are rarely built by people passionate about the product. They are built by people passionate about building companies."
 faqs:
   - q: "Do you need to be passionate about a franchise to succeed in it?"
     a: "No. In franchise ownership, passion for the product can be a liability rather than an advantage. Operators who care deeply about how the service is delivered tend to work in the business rather than on it, resist handing off the work, and push against the proven system they paid to license. The operators who build durable, scalable franchise businesses are typically those who care about business fundamentals: building teams, converting leads, reading financials, and watching the operation's value grow over time."

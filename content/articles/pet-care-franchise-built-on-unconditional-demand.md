@@ -5,7 +5,7 @@ date: "2026-03-22"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "universal"
-excerpt: "Americans spend more on their pets every year regardless of economic conditions. The pet care franchise category sits on top of that demand, with recurring services, emotionally committed customers, and business models that range from boarding facilities to mobile grooming. Here's what the category actually looks like to own."
+excerpt: "Pet care franchises sit on demand that holds through downturns, with recurring services and committed customers. Here is what the category asks of you."
 relatedSlugs:
   - "recession-proof-franchise-categories"
   - "health-wellness-franchises-fad-vs-durable-business"

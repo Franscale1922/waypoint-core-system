@@ -4,7 +4,7 @@ slug: "weight-loss-franchises"
 date: "2026-04-28"
 category: "Industry Spotlights"
 tier: 3
-excerpt: "The weight loss franchise category is rapidly evolving as medical weight loss and GLP-1 treatments disrupt traditional behavioral coaching models."
+excerpt: "The weight loss franchise category is changing quickly as medical weight loss and GLP-1 treatments disrupt the traditional behavioral coaching models."
 relatedSlugs:
   - "health-wellness-franchises-fad-vs-durable-business"
   - "fitness-franchise-comparison-what-the-numbers-say"

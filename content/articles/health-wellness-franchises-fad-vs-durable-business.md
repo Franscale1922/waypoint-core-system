@@ -9,7 +9,7 @@ date: "2026-02-18"
 category: "Industry Spotlights"
 tier: 3
 checklistSlug: "fitness-wellness"
-excerpt: "Wellness franchises fall into two distinct categories: single-modality concepts that carry significant trend risk, and diversified models built for durability. Here is how to tell the difference before you invest."
+excerpt: "Wellness franchises split into single-modality concepts carrying trend risk and diversified models built to last. Here is how to tell them apart early."
 faqs:
   - q: "Are health and wellness franchises a good investment?"
     a: "Wellness franchises vary significantly in durability. Diversified wellness concepts, those with multiple revenue streams from distinct services, have meaningfully different risk profiles than single-modality concepts built around one trend. The evaluation should start with how many distinct service lines generate revenue, what percentage each contributes, and whether those services have independent demand or are trend-linked."
