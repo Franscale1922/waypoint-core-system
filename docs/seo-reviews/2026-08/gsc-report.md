@@ -151,6 +151,45 @@ Earning impressions from well down the results. Rewriting the title will not hel
 
 ---
 
+## Which Page Serves Which Query
+
+_Pulled with the ["query","page"] dimension pair, so this is measured rather than inferred._
+
+| Query | Page | Impressions | Position |
+|---|---|---|---|
+| auv franchise                            | /glossary/average-unit-volume-auv |          30 | 43.7 |
+| payroll franchise investment info        | /investment |          27 | 92.3 |
+| robs sba loan                            | /resources/sba-loan-vs-robs-franchise-funding-comparison |          26 | 68.8 |
+| robs rollovers options                   | /franchise-financing/robs-401k-rollover |          20 | 84.3 |
+| franchise costs                          | /investment |          15 | 96.7 |
+| is franchising worth it                  | /is-a-franchise-worth-it |          15 | 64.5 |
+| franchise cost                           | /investment |          13 | 93.7 |
+| auv franchise meaning                    | /glossary/average-unit-volume-auv |          11 | 17.1 |
+| consultant broker                        | /franchise-consultant-vs-broker |          10 | 98.1 |
+| franchise price                          | /investment |          10 | 85.3 |
+| freight franchise cost                   | /investment |          10 | 91.7 |
+| bonkers corner franchise cost            | /resources/franchise-investment-by-category |           8 | 1.0 |
+| average unit volume                      | /glossary/average-unit-volume-auv |           6 | 20.5 |
+| franchise                                | /glossary |           6 | 4.7 |
+| franchise auv                            | /glossary/average-unit-volume-auv |           6 | 42.7 |
+| franchise territories available          | /resources/how-to-pick-a-franchise-territory |           6 | 82.2 |
+| bonkers franchise cost                   | /resources/franchise-investment-by-category |           5 | 1.0 |
+| payroll franchise business cost          | /investment |           5 | 100.8 |
+| auv meaning                              | /glossary/average-unit-volume-auv |           4 | 68.5 |
+| auv meaning restaurant                   | /glossary/average-unit-volume-auv |           4 | 45.3 |
+| franchise property management company    | /resources/property-management-franchises |           4 | 99.5 |
+| robs 401k sba                            | /resources/sba-loan-vs-robs-franchise-funding-comparison |           4 | 67.3 |
+| robs rollover options                    | /franchise-financing/robs-401k-rollover |           4 | 87.3 |
+| what does auv mean                       | /glossary/average-unit-volume-auv |           4 | 18.0 |
+| advantage waypoint                       | /industries |           3 | 91.0 |
+| available franchise territories          | /resources/how-to-pick-a-franchise-territory |           3 | 67.7 |
+| define auv                               | /glossary/average-unit-volume-auv |           3 | 80.7 |
+| franchise checklist                      | /checklists |           3 | 99.7 |
+| franchise investment cost                | /investment |           3 | 93.3 |
+| angel one franchise                      | /resources/franchise-investment-by-category |           2 | 2.0 |
+
+---
+
 ## Next Actions
 
 - [ ] Review optimization opportunities above and update those article files
