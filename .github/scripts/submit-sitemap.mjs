@@ -32,7 +32,7 @@ import { loadServiceAccount, reportCredentialFailure } from "../../scripts/lib/l
 import { getAccessToken } from "../../scripts/lib/google-jwt.mjs";
 
 const SCOPE = "https://www.googleapis.com/auth/webmasters";
-const SITEMAP_URL = "https://www.waypointfranchise.com/sitemap.xml";
+const CANONICAL_HOST = "www.waypointfranchise.com";
 const VAR_NAME = "GSC_SERVICE_ACCOUNT_KEY";
 
 // ── 1. Credentials ────────────────────────────────────────────────────────
@@ -118,16 +118,24 @@ if (site.permission === "siteUnverifiedUser" || site.permission === "siteRestric
 }
 
 // ── 4. Submit ─────────────────────────────────────────────────────────────
+// The sitemap must live INSIDE the property being submitted against, or Google
+// returns `400 invalidParameter` on `feedpath`. This was hardcoded to the www
+// host and the resolved property is the non-www prefix, so it is derived from
+// the property instead of assumed.
+const sitemapUrl = sitemapUrlFor(site.url);
 const path =
   `/webmasters/v3/sites/${encodeURIComponent(site.url)}` +
-  `/sitemaps/${encodeURIComponent(SITEMAP_URL)}`;
+  `/sitemaps/${encodeURIComponent(sitemapUrl)}`;
 
 const submitted = await request("PUT", path);
 
 if (submitted.status === 204) {
-  console.log(`✅ Submitted ${SITEMAP_URL} to ${site.url}`);
+  console.log(`✅ Submitted ${sitemapUrl} to ${site.url}`);
 } else {
-  fail(`Sitemap submission failed (HTTP ${submitted.status}): ${submitted.body}`);
+  fail(
+    `Sitemap submission failed (HTTP ${submitted.status}) for ${sitemapUrl}\n` +
+      `on property ${site.url}.\n${submitted.body}`,
+  );
 }
 
 // ── helpers ───────────────────────────────────────────────────────────────
@@ -153,6 +161,21 @@ function resolveSite(configured, available) {
   }
 
   return null;
+}
+
+/**
+ * The sitemap path Google will accept for a given property.
+ *
+ * A domain property (`sc-domain:`) covers every host, so the canonical www host
+ * is used. A URL-prefix property only covers its own origin, so the sitemap has
+ * to be resolved against that exact origin even when the site canonicalises
+ * elsewhere.
+ */
+function sitemapUrlFor(propertyUrl) {
+  if (propertyUrl.startsWith("sc-domain:")) {
+    return `https://${CANONICAL_HOST}/sitemap.xml`;
+  }
+  return new URL("sitemap.xml", propertyUrl).toString();
 }
 
 function hostOf(value) {
