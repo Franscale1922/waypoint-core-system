@@ -4,7 +4,9 @@
 **Citation hits:** 0 of 0 checks (3 tool(s) skipped: OpenAI, Perplexity, Gemini)  
 **Share of Voice:** 0% presence (0/0 answers that named any tracked advisor), 0% average share
 
-> **Note:** Some tools were skipped due to missing API keys. See `docs/seo-reviews/SETUP.md` to enable them.
+> **Note:** 3 tool(s) did not run: **OpenAI** — API error 401: { "error": { "message": "Incorrect API key provided: sk-proj-*********************************; **Perplexity** — API error 400: {"error":{"message":"Invalid model 'llama-3.1-sonar-small-128k-online'. Permitted models can be foun; **Gemini** — API error 404: { "error": { "code": 404, "message": "This model models/gemini-2.0-flash-lite-001 is no lo
+
+> An `API error` means the key is present but the call was rejected, commonly an expired key or a retired model name. That is a different fix from a missing key.
 
 ---
 
@@ -76,7 +78,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -91,7 +93,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -106,7 +108,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -121,7 +123,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -136,7 +138,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -151,7 +153,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -166,7 +168,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -181,7 +183,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -196,7 +198,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -211,7 +213,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -226,7 +228,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -241,7 +243,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -256,7 +258,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -271,7 +273,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -286,7 +288,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
@@ -301,7 +303,7 @@ _First 300 characters of each AI response, for review._
 **Gemini:** ⏭️ _Skipped — API error 404: {
   "error": {
     "code": 404,
-    "message": "models/gemini-1.5-flash is not found for API version_
+    "message": "This model models/gemini-2.0-flash-lite-001 is no lo_
 
 ---
 
