@@ -13,7 +13,10 @@
  *
  * ENV VARS required:
  *   GSC_SERVICE_ACCOUNT_KEY   Service account credentials, as raw JSON or base64
- *   GSC_SITE_URL              Site URL exactly as it appears in GSC (e.g. sc-domain:waypointfranchise.com)
+ *   GSC_SITE_URL              The property identifier exactly as Search Console shows it.
+ *                             Currently https://www.waypointfranchise.com/ — a URL-prefix
+ *                             property, NOT sc-domain:. The two are different properties
+ *                             holding different data, and no default is assumed.
  */
 
 import { google } from "googleapis";

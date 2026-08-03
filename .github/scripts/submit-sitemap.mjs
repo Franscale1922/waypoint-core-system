@@ -83,12 +83,13 @@ const token = await getAccessToken(credentials, SCOPE).catch((err) => {
 console.log("✅ Got access token");
 
 // ── 3. Resolve which Search Console property to submit against ────────────
-// Not hardcoded, because three places in this repo disagree about the identifier:
-// the GSC_SITE_URL repo variable says https://waypointfranchise.com, a secret of
-// the same name also exists, and scripts/gsc-report.mjs defaults to
-// sc-domain:waypointfranchise.com. Only one is right, and guessing turns a
-// mismatch into an opaque 403. Asking the API turns it into a list of what the
-// account can actually see.
+// Resolved rather than hardcoded. Three places in this repo used to disagree
+// about the identifier: a GSC_SITE_URL repo variable, a SECRET of the same name,
+// and a hardcoded sc-domain default in gsc-report.mjs that named a property this
+// account cannot see. The duplicate secret and the default are both gone now, so
+// GSC_SITE_URL (the variable) is the single source, but the resolution stays:
+// guessing a property turns a mismatch into an opaque 403, while asking the API
+// turns it into a list of what the account can actually see.
 const sites = await request("GET", "/webmasters/v3/sites").catch((err) =>
   fail(`Could not reach the Search Console API: ${err.message}`),
 );
