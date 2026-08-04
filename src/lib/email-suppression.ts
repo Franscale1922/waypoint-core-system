@@ -67,15 +67,28 @@ export async function isEmailSuppressed(email: string): Promise<boolean> {
   const key = normalizeEmail(email);
   if (!key) return false;
 
-  const hits = await Promise.all(
-    SUPPRESSION_LISTS.map((list) =>
+  const domain = key.split("@")[1] ?? "";
+
+  // SuppressionList is the pre-existing canonical record: the Resend webhook
+  // writes bounces and complaints into it, and cold outreach already gates on
+  // it. Skipping it here would have made this a SECOND, disconnected source of
+  // truth, so an address that hard-bounced could still be dripped to and
+  // reactivated on the newsletter. It carries domain-level entries too.
+  const canonical = prisma.suppressionList.findFirst({
+    where: { OR: [{ email: key }, ...(domain ? [{ domain }] : [])] },
+    select: { id: true },
+  });
+
+  const hits = await Promise.all([
+    canonical,
+    ...SUPPRESSION_LISTS.map((list) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (prisma as any)[list].findFirst({
         where: { email: { equals: key, mode: "insensitive" }, unsubscribed: true },
         select: { id: true },
       })
-    )
-  );
+    ),
+  ]);
   return hits.some(Boolean);
 }
 
@@ -105,6 +118,15 @@ export async function suppressEmailEverywhere(email: string): Promise<number> {
   const key = normalizeEmail(email);
   if (!key) return 0;
 
+  // Written to the canonical record too, so the opt-out also reaches cold
+  // outreach. Someone asking to stop hearing from Waypoint means all of it, not
+  // just the list whose footer they happened to click.
+  const canonical = prisma.suppressionList.upsert({
+    where: { email: key },
+    create: { email: key, reason: "unsubscribed" },
+    update: {},
+  });
+
   const results = await Promise.all(
     SUPPRESSION_LISTS.map((list) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -114,5 +136,6 @@ export async function suppressEmailEverywhere(email: string): Promise<number> {
       })
     )
   );
+  await canonical;
   return results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
 }

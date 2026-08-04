@@ -1057,7 +1057,7 @@ Write Kelsey's follow-up reply.`
 
             const urgencyLabel = classification === "Interested" ? "🔥 INTERESTED" : classification === "Curious" ? "👀 CURIOUS" : "💬 AMBIGUOUS";
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: ["kelsey@waypointfranchise.com"],
                 subject: `${urgencyLabel} reply from ${lead.name}: respond within 15 min`,
@@ -1097,6 +1097,13 @@ Write Kelsey's follow-up reply.`
                     `Only use after 30+ days of silence.`,
                 ].join("\n"),
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             // Slack push notification: instant alert to phone via #waypoint-hot-replies
             const slackWebhook = process.env.SLACK_WEBHOOK_URL;
@@ -2182,7 +2189,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             const em2 = NURTURE_EMAIL_2[checklistType] ?? NURTURE_EMAIL_2["universal"];
             const body = [`Hi ${firstName},`, "", em2.body, footer].join("\n");
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
@@ -2193,6 +2200,13 @@ export const checklistNurtureProcess = inngest.createFunction(
                 },
                 text: body,
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -2208,7 +2222,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             const em3 = NURTURE_EMAIL_3[checklistType] ?? NURTURE_EMAIL_3["universal"];
             const body = [`Hi ${firstName},`, "", em3.body, footer].join("\n");
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
@@ -2219,6 +2233,13 @@ export const checklistNurtureProcess = inngest.createFunction(
                 },
                 text: body,
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(3);
             return { sent: true, step: 3 };
@@ -2233,7 +2254,7 @@ export const checklistNurtureProcess = inngest.createFunction(
 
             const body = [`Hi ${firstName},`, "", NURTURE_EMAIL_4.body, footer].join("\n");
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
@@ -2244,6 +2265,13 @@ export const checklistNurtureProcess = inngest.createFunction(
                 },
                 text: body,
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(4);
             return { sent: true, step: 4 };
@@ -2259,7 +2287,7 @@ export const checklistNurtureProcess = inngest.createFunction(
             // Email 5 has a built-in sign-off so we omit the "Hi firstName" greeting
             const body = [NURTURE_EMAIL_5.body, footer].join("\n");
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
@@ -2270,6 +2298,13 @@ export const checklistNurtureProcess = inngest.createFunction(
                 },
                 text: body,
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(5, true); // mark sequence complete
             return { sent: true, step: 5 };
@@ -2451,7 +2486,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
                 plainFooter,
             ].join("\n");
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: SCORECARD_FROM,
                 to: email,
                 replyTo: SCORECARD_REPLY_TO,
@@ -2461,6 +2496,13 @@ export const scorecardNurtureProcess = inngest.createFunction(
                 headers: unsubscribeHeaders,
                 tags: [{ name: "sequence", value: "scorecard-email-2" }],
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -2510,7 +2552,7 @@ export const scorecardNurtureProcess = inngest.createFunction(
                 textBody = scorecardDay7EarlyText(name, score, unsubscribeUrl) + plainFooter;
             }
 
-            await resend.emails.send({
+            const sendResult = await resend.emails.send({
                 from: SCORECARD_FROM,
                 to: email,
                 replyTo: SCORECARD_REPLY_TO,
@@ -2523,6 +2565,13 @@ export const scorecardNurtureProcess = inngest.createFunction(
                     { name: "band", value: band },
                 ],
             });
+            // Resend resolves with { data, error } rather than rejecting, so an
+            // unchecked await advanced nurtureStep for mail that never left, which
+            // both lost the message and marked the step done so it never retried.
+            // Throwing hands it back to Inngest, which is what retries: 2 is for.
+            if (sendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(sendResult.error)}`);
+            }
 
             await markStep(3, true);
             return { sent: true, step: 3, band };

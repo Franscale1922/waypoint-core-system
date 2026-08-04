@@ -137,14 +137,17 @@ const LOCK_WINDOW_MS = 15 * 60 * 1000;
  *
  * THROWS on infrastructure failure, like consumeRateLimit, so the caller decides.
  */
-export async function acquireDeliveryLock(key: string, now = Date.now()): Promise<boolean> {
+export async function acquireDeliveryLock(key: string, now = Date.now()): Promise<Date | null> {
+  const bucket = bucketStart(LOCK_WINDOW_MS, now);
   try {
-    await prisma.rateLimitBucket.create({
-      data: { scope: "lock", key, bucket: bucketStart(LOCK_WINDOW_MS, now), count: 1 },
-    });
-    return true;
+    await prisma.rateLimitBucket.create({ data: { scope: "lock", key, bucket, count: 1 } });
+    // Returns the bucket it actually created, which release must be given back.
+    // Recomputing it at release time is wrong: acquiring at 12:14:59 and
+    // releasing at 12:15:01 lands on different windows, so the release would
+    // delete a LATER request's lock and let a third delivery through.
+    return bucket;
   } catch (err) {
-    if (isUniqueViolation(err)) return false;
+    if (isUniqueViolation(err)) return null;
     throw err;
   }
 }
@@ -156,11 +159,9 @@ export async function acquireDeliveryLock(key: string, now = Date.now()): Promis
  * costs one blocked retry for at most LOCK_WINDOW_MS, which is not worth
  * replacing an error the caller is already handling.
  */
-export async function releaseDeliveryLock(key: string, now = Date.now()): Promise<void> {
+export async function releaseDeliveryLock(key: string, bucket: Date): Promise<void> {
   try {
-    await prisma.rateLimitBucket.deleteMany({
-      where: { scope: "lock", key, bucket: bucketStart(LOCK_WINDOW_MS, now) },
-    });
+    await prisma.rateLimitBucket.deleteMany({ where: { scope: "lock", key, bucket } });
   } catch (err) {
     console.error("[rate-limit] could not release delivery lock:", err);
   }

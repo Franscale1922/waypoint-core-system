@@ -15,7 +15,9 @@ import { NextRequest } from "next/server";
 const h = vi.hoisted(() => {
   const model = () => ({
     findUnique: vi.fn(),
+    findFirst: vi.fn(),
     updateMany: vi.fn(),
+    upsert: vi.fn(),
   });
   return {
     db: {
@@ -25,6 +27,8 @@ const h = vi.hoisted(() => {
       aiFddReaderDownload: model(),
       scorecardSubmission: model(),
       archetypeSubmission: model(),
+      // suppressEmailEverywhere upserts the canonical record too.
+      suppressionList: model(),
     },
   };
 });
@@ -58,7 +62,9 @@ const ROUTES = [
 beforeEach(() => {
   for (const m of Object.values(h.db)) {
     m.findUnique.mockReset().mockResolvedValue({ email: EMAIL });
+    m.findFirst.mockReset().mockResolvedValue(null);
     m.updateMany.mockReset().mockResolvedValue({ count: 1 });
+    m.upsert.mockReset().mockResolvedValue({ id: "sup_1" });
   }
 });
 
@@ -70,6 +76,7 @@ describe.each(ROUTES)("$name", (route) => {
 
     expect(res.status).toBe(200);
     for (const m of Object.values(h.db)) expect(m.updateMany).not.toHaveBeenCalled();
+    expect(h.db.suppressionList.upsert).not.toHaveBeenCalled();
   });
 
   it("offers a POST form on GET so the one-click header is honest", async () => {
@@ -87,11 +94,16 @@ describe.each(ROUTES)("$name", (route) => {
 
     expect(res.status).toBe(200);
     // Across EVERY list, not just the one whose link was clicked.
-    for (const m of Object.values(h.db)) {
+    for (const [name, m] of Object.entries(h.db)) {
+      if (name === "suppressionList") continue;
       expect(m.updateMany).toHaveBeenCalledWith(
         expect.objectContaining({ data: expect.objectContaining({ unsubscribed: true }) })
       );
     }
+    // And into the canonical record, so the opt-out also reaches cold outreach.
+    expect(h.db.suppressionList.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { email: EMAIL } })
+    );
   });
 
   it("looks the id up in its own list's table", async () => {
@@ -113,6 +125,7 @@ describe.each(ROUTES)("$name", (route) => {
 
     expect(res.status).toBe(400);
     for (const m of Object.values(h.db)) expect(m.updateMany).not.toHaveBeenCalled();
+    expect(h.db.suppressionList.upsert).not.toHaveBeenCalled();
   });
 
   it("reports success for a record it cannot find", async () => {

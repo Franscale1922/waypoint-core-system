@@ -196,14 +196,17 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
   // the losers are duplicates rather than three rows, three copies of the email
   // and three independent nurture sequences.
   const lockKey = `${idempotency.model}|${JSON.stringify(idempotency.where ?? {})}|${email}`;
+  let bucket: Date | null;
   try {
-    if (!(await acquireDeliveryLock(lockKey))) return { proceed: false, response: duplicate(route) };
+    bucket = await acquireDeliveryLock(lockKey);
   } catch (err) {
     console.error(`[${route}] could not reserve delivery; continuing without the lock:`, err);
     return { proceed: true, email, release: noopRelease };
   }
+  if (!bucket) return { proceed: false, response: duplicate(route) };
 
-  return { proceed: true, email, release: () => releaseDeliveryLock(lockKey) };
+  const held = bucket;
+  return { proceed: true, email, release: () => releaseDeliveryLock(lockKey, held) };
 }
 
 /**

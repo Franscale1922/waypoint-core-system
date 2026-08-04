@@ -42,6 +42,10 @@ const h = vi.hoisted(() => {
       // anything. Without it the guard sees an undefined model, fails closed,
       // and every route returns 503 — which is the limiter working, not a bug.
       rateLimitBucket: model(),
+      // The canonical opt-out record (bounces, complaints, unsubscribes).
+      // Absent, the suppression check throws and fails closed, which reads
+      // as 'everyone is suppressed'.
+      suppressionList: model(),
     },
     sendEvent: vi.fn(),
     emailSend: vi.fn(),

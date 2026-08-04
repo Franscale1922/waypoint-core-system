@@ -15,6 +15,24 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM = "Kelsey Stuart <kelsey@mail.waypointfranchise.com>";
 const REPLY_TO = "kelsey@waypointfranchise.com";
 
+/**
+ * Escapes a caller-supplied value for interpolation into the HTML email below.
+ *
+ * The quiz endpoint is public and takes the recipient address in the same body
+ * as the archetype text, so without this a caller could have Waypoint deliver
+ * arbitrary markup and links to a victim, from Waypoint's verified sending
+ * domain. The schema also bounds these fields; this is the half that makes the
+ * content inert rather than merely short.
+ */
+function esc(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 export async function POST(req: Request) {
   try {
     const raw = await req.json();
@@ -158,8 +176,17 @@ export async function POST(req: Request) {
     // ── 3. Send confirmation email (Day 0) ───────────────────────────────────
     // Uses HMAC unsubscribe URL keyed to the archetypeSubmission.id so the
     // unsubscribe link is signed and 1-click compliant. Mirrors scorecard pattern.
-    const strongFitsText = strongFits.join(", ");
-    const weakFitsText = weakFits.join(", ");
+    const strongFitsText = strongFits.map(esc).join(", ");
+    const weakFitsText = weakFits.map(esc).join(", ");
+    const safeArchetypeName = esc(archetypeName);
+    const safeFirstName = esc(name.split(" ")[0]);
+    // The plain-text alternative is not HTML, so it takes the raw values: an
+    // escaped "&" would render as "&amp;" to the reader. A header, though, is
+    // neither, and a newline in a subject is header injection.
+    const firstName = name.split(" ")[0];
+    const plainStrongFits = strongFits.join(", ");
+    const plainWeakFits = weakFits.join(", ");
+    const subjectName = archetypeName.replace(/[\r\n]+/g, " ");
 
     // Was a local IIFE whose no-secret branch returned `/unsubscribe`, a path
     // with no handler. The shared builder degrades to a mailto instead, so the
@@ -171,15 +198,15 @@ export async function POST(req: Request) {
       from: FROM,
       replyTo: REPLY_TO,
       to: email,
-      subject: `Your Franchise Archetype: ${archetypeName}`,
+      subject: `Your Franchise Archetype: ${subjectName}`,
       headers: unsub.headers,
       html: `
         <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
           <p style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Your Franchise Archetype</p>
-          <h1 style="font-size: 28px; margin: 0 0 8px; color: #1b3a5f;">${archetypeName}</h1>
+          <h1 style="font-size: 28px; margin: 0 0 8px; color: #1b3a5f;">${safeArchetypeName}</h1>
           <hr style="border: none; border-top: 1px solid #e5e5e5; margin: 20px 0;" />
-          <p>${name.split(" ")[0]},</p>
-          <p>Based on how you answered, your franchise archetype is <strong>${archetypeName}</strong>.</p>
+          <p>${safeFirstName},</p>
+          <p>Based on how you answered, your franchise archetype is <strong>${safeArchetypeName}</strong>.</p>
           <p style="margin: 20px 0 8px; font-weight: bold; color: #1b3a5f;">Industries that tend to fit you:</p>
           <p style="color: #2d7a4f;">${strongFitsText}</p>
           <p style="margin: 20px 0 8px; font-weight: bold; color: #1b3a5f;">Industries that often don't align:</p>
@@ -194,7 +221,7 @@ export async function POST(req: Request) {
           <p style="font-size: 11px; color: #aaa;">Waypoint Franchise Advisors · P.O. Box 3421, Whitefish, MT 59937. You received this because you completed the Franchise Archetype Quiz at waypointfranchise.com. <a href="${unsubscribeUrl}" style="color: #aaa;">Unsubscribe</a></p>
         </div>
       `,
-      text: `Your Franchise Archetype: ${archetypeName}\n\n${name.split(" ")[0]},\n\nBased on how you answered, your franchise archetype is ${archetypeName}.\n\nIndustries that tend to fit you: ${strongFitsText}\nIndustries that often don't align: ${weakFitsText}\n\nI'll follow up over the next week with a few more notes specific to your archetype. If you want to skip ahead, book a free call at waypointfranchise.com/book.\n\nKelsey\nWaypoint Franchise Advisors\n\n---\nWaypoint Franchise Advisors\nP.O. Box 3421, Whitefish, MT 59937\nTo stop receiving these notes: ${unsubscribeUrl}`,
+      text: `Your Franchise Archetype: ${subjectName}\n\n${firstName},\n\nBased on how you answered, your franchise archetype is ${archetypeName}.\n\nIndustries that tend to fit you: ${plainStrongFits}\nIndustries that often don't align: ${plainWeakFits}\n\nI'll follow up over the next week with a few more notes specific to your archetype. If you want to skip ahead, book a free call at waypointfranchise.com/book.\n\nKelsey\nWaypoint Franchise Advisors\n\n---\nWaypoint Franchise Advisors\nP.O. Box 3421, Whitefish, MT 59937\nTo stop receiving these notes: ${unsubscribeUrl}`,
       tags: [{ name: "sequence", value: "archetype-email-1" }],
     });
 

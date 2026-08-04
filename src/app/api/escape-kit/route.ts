@@ -24,6 +24,12 @@ function loadGuide(): string {
 }
 
 export async function POST(req: Request) {
+  // Hoisted so the catch below can hand the reservation back. A send that
+  // REJECTS at the network layer, rather than resolving with { error }, skips
+  // every release inside the try; the lock would then survive, and the
+  // visitor's retry would be answered with a deduplicated success for a
+  // delivery that never happened.
+  let release: (() => Promise<void>) | null = null;
   try {
     const body = await req.json();
     const { name, articleSlug } = body;
@@ -35,6 +41,7 @@ export async function POST(req: Request) {
       idempotency: { model: MODEL },
     });
     if (!guard.proceed) return guard.response;
+    release = guard.release;
     const email = guard.email;
 
     const firstName = name ? String(name).split(" ")[0] : "there";
@@ -68,11 +75,6 @@ export async function POST(req: Request) {
         notes: articleSlug ? `Article: ${articleSlug}` : undefined,
       })
     );
-
-    // Skipped for Kelsey's own address (test submissions)
-    if (!isKelsey) {
-      afterResponse(`${LABEL} Beehiiv sync`, () => subscribeToBeehiiv(email, name || undefined));
-    }
 
     // Notify Kelsey. Best-effort: logged, never raised to the visitor.
     const notifyResult = await resend.emails.send({
@@ -140,6 +142,12 @@ export async function POST(req: Request) {
 
       if (downloadId) await markDelivered(MODEL, downloadId, LABEL);
 
+      // Queued only now. Scheduling it earlier subscribed people to the
+      // newsletter off the back of a delivery that then failed, and the
+      // callback runs post-response either way, so returning 500 did not stop
+      // it. (Kelsey's own address never reaches this branch.)
+      afterResponse(`${LABEL} Beehiiv sync`, () => subscribeToBeehiiv(email, name || undefined));
+
       if (downloadId) {
         const recordId = downloadId;
         afterResponse(`${LABEL} Nurture trigger`, async () => {
@@ -165,6 +173,7 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
+    if (release) await release();
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error(LABEL, message);
     return NextResponse.json({ error: message }, { status: 500 });

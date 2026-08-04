@@ -33,6 +33,10 @@ const h = vi.hoisted(() => {
       scorecardSubmission: model(),
       archetypeSubmission: model(),
       rateLimitBucket: model(),
+      // The canonical opt-out record (bounces, complaints, unsubscribes).
+      // Absent, the suppression check throws and fails closed, which reads
+      // as 'everyone is suppressed'.
+      suppressionList: model(),
     },
     sendEvent: vi.fn(),
     emailSend: vi.fn(),
@@ -434,5 +438,57 @@ describe("quiz routes do not drip to someone whose result never arrived", () => 
 
     expect(h.sendEvent).toHaveBeenCalledTimes(1);
     expect(h.db.scorecardSubmission.delete).not.toHaveBeenCalled();
+  });
+});
+
+// ── Findings from the round-2 adversarial review ────────────────────────────
+
+describe("the canonical suppression record is honoured", () => {
+  it("starts no sequence for an address the bounce webhook suppressed", async () => {
+    // SuppressionList is written by the Resend webhook and already gates cold
+    // outreach. Querying only the six capture tables made this a second,
+    // disconnected source of truth, so a hard-bounced address could still be
+    // dripped to.
+    h.db.suppressionList.findFirst.mockResolvedValue({ id: "bounced" });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.sendEvent).not.toHaveBeenCalled();
+  });
+
+  it("checks the sender's domain, not only the address", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.db.suppressionList.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { OR: [{ email: EMAIL }, { domain: "example.com" }] },
+      })
+    );
+  });
+});
+
+describe("the newsletter is not joined on a delivery that failed", () => {
+  it("does not subscribe when the send failed", async () => {
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+
+  it("subscribes once the send succeeded", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.subscribeToBeehiiv).toHaveBeenCalledTimes(1);
   });
 });
