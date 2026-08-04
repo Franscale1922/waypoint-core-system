@@ -45,6 +45,7 @@ import {
   classifyFaqs,
   hardCodesBrand,
 } from "../src/lib/frontmatterFields.mjs";
+import { REVIEW_CADENCE_FIELD, validateReviewCadence } from "../src/lib/reviewCadence.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -283,9 +284,18 @@ export function auditArticle(raw, file) {
       ? { file: `content/articles/${slug}.md`, frontmatter: String(data.slug), filename: slug }
       : null;
 
+  // The optional authored review cadence. Gated because it OVERRIDES every inference in
+  // getRefreshCadenceDays, so a typo is worse than an absent field: `reviewCadence: stategic`
+  // is silently ignored at runtime and the article quietly keeps whatever the slug implied,
+  // which is the outcome the author wrote the field to prevent. Absent stays legal.
+  const cadenceError = validateReviewCadence(data[REVIEW_CADENCE_FIELD], {
+    label: `content/articles/${slug}.md`,
+  });
+
   return {
     f: slug,
     slugMismatch,
+    cadenceError,
     words,
     h2: h2s.length,
     h2q,
@@ -595,6 +605,7 @@ export function auditAll({
   const parseErrors = rows.filter((r) => r.parseError);
   const malformedFaqs = rows.filter((r) => r.faqsMalformed);
   const slugMismatches = rows.filter((r) => r.slugMismatch).map((r) => r.slugMismatch);
+  const cadenceErrors = rows.filter((r) => r.cadenceError).map((r) => r.cadenceError);
 
   const missingExcerpt = rows.filter((r) => r.excerptLen === null);
   const tooLong = rows
@@ -648,6 +659,9 @@ export function auditAll({
   if (slugMismatches.length) {
     failures.push(`${slugMismatches.length} article(s) have a frontmatter slug that contradicts the filename`);
   }
+  if (cadenceErrors.length) {
+    failures.push(`${cadenceErrors.length} article(s) declare an unknown ${REVIEW_CADENCE_FIELD}`);
+  }
   if (tooLong.length || missingExcerpt.length) {
     failures.push(`${tooLong.length} excerpt(s) over ${EXCERPT_MAX}, ${missingExcerpt.length} unparseable`);
   }
@@ -667,6 +681,7 @@ export function auditAll({
     parseErrors,
     malformedFaqs,
     slugMismatches,
+    cadenceErrors,
     missingExcerpt,
     tooLong,
     tooShort,
@@ -713,6 +728,12 @@ function main() {
       console.log(`  ${m.file}: frontmatter says "${m.frontmatter}", filename says "${m.filename}"`);
     }
     console.log(`  The filename is authoritative. Fix the frontmatter, or rename the file.`);
+    console.log("");
+  }
+
+  if (a.cadenceErrors.length) {
+    console.log(`Unknown ${REVIEW_CADENCE_FIELD} values: ${a.cadenceErrors.length}`);
+    for (const e of a.cadenceErrors) console.log(`  ${e}`);
     console.log("");
   }
 

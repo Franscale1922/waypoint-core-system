@@ -9,6 +9,19 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import {
+  REVIEW_CADENCES,
+  REVIEW_CADENCE_FIELD,
+  isReviewCadence,
+} from "./reviewCadence.mjs";
+
+/**
+ * Typed view of the shared table. reviewCadence.mjs is plain JS so that the audit script can
+ * import it too, which means TypeScript sees an object literal with five specific keys and
+ * refuses to index it with an arbitrary string. The membership test is isReviewCadence, which
+ * runs first; this only gives the lookup a type.
+ */
+const CADENCE_DAYS: Record<string, number | null> = REVIEW_CADENCES;
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -21,6 +34,11 @@ export interface ArticleFrontmatter {
   excerpt: string;
   relatedSlugs: string[];
   faqs?: { q: string; a: string }[];
+  // Optional, and the only cadence signal anybody actually authored. Declared
+  // explicitly rather than left to the index signature below because
+  // getRefreshCadenceDays reads it to override every other rule: a field that
+  // load-bearing is a rename away from silently becoming undefined.
+  reviewCadence?: string;
   [key: string]: unknown;
 }
 
@@ -155,10 +173,34 @@ export function discoverArticles(): ArticleDiscovery {
  *   - Category analysis / Industry Spotlights → 548 days (18 months)
  *   - Process / structural articles → 730 days (24 months)
  *   - Strategic / mindset articles → null (never)
+ *
+ * An article may declare its own `reviewCadence` in frontmatter, which wins over
+ * everything below. See src/lib/reviewCadence.mjs for why that exists: the rules
+ * below infer cadence from the slug string, and two articles already queued in
+ * CONTENT-CALENDAR.md are ones no ordering of them can classify correctly.
  */
 export function getRefreshCadenceDays(article: Article): number | null {
   const { slug, frontmatter } = article;
   const { category, tier } = frontmatter;
+
+  // An authored cadence beats every inference below, including the strategic
+  // slug list: it is the one signal here that someone actually decided, rather
+  // than something derived from how a title happens to read.
+  // Read through the declared `reviewCadence?: string` field rather than the index signature:
+  // reviewCadence.mjs is plain JS, so `isReviewCadence` reaches TypeScript as a plain boolean
+  // rather than a type predicate and narrows nothing on its own.
+  const declared: string | undefined = frontmatter.reviewCadence;
+  if (declared !== undefined) {
+    if (isReviewCadence(declared)) return CADENCE_DAYS[declared];
+    // Unreachable through a pushed article: scripts/aeo-audit.mjs fails the push
+    // on an unknown value. Falling back to the heuristic rather than throwing
+    // keeps a single bad field from taking down the monthly batch, matching how
+    // every other malformed input on this path behaves.
+    console.warn(
+      `[contentRefresh] ${slug}: ignoring unknown ${REVIEW_CADENCE_FIELD} ` +
+        `"${String(declared)}"; falling back to the inferred cadence.`,
+    );
+  }
 
   // Strategic / mindset slugs: never auto-refresh
   const STRATEGIC_SLUGS = new Set([
@@ -172,25 +214,19 @@ export function getRefreshCadenceDays(article: Article): number | null {
 
   if (STRATEGIC_SLUGS.has(slug)) return null;
 
-  // Industry Spotlights category → 18 months.
-  //
-  // The CATEGORY, and only the category, is checked before the financing
-  // keywords below, because an explicitly authored field must beat a guess made
-  // from the slug string. Those keywords match anywhere in the slug, so a
-  // spotlight on a cost-sensitive segment (`...-cost-...`, `...-fees-...`) would
-  // otherwise take the 365-day financing cadence and refresh 183 days early on
-  // every cycle, purely because of how its title happens to read.
-  //
-  // `tier === 3` deliberately stays BELOW financing, where it has always been.
-  // Promoting it here too would silently reverse an unrelated rule: a tier-3
-  // article that is genuinely financing material would jump from 365 to 548 and
-  // sit half a year longer than the standard says it should. Category and tier
-  // agree in all 45 articles today, so this distinction changes nothing now; it
-  // is drawn so that the day they disagree, the more specific field wins and the
-  // looser numeric one does not quietly redefine the financing cadence.
-  if (category === "Industry Spotlights") return 548;
-
   // Financing / investment / cost → 12 months.
+  //
+  // Kept AHEAD of the category branches, which is where it has always been. An
+  // earlier revision of this change moved Industry Spotlights above it, on the
+  // review's premise that a spotlight whose slug contains "cost" ought to take
+  // its category's 548. The one real article that hits this, "Cost and
+  // Operational Efficiency Franchises" (queued in CONTENT-CALENDAR.md), is
+  // wanted on 365: it is a cost article that happens to be a spotlight, and
+  // CONTENT-STANDARDS lists investment and cost at 12 months. The reorder would
+  // have delayed exactly the article it was written for by 183 days.
+  //
+  // Where the slug genuinely cannot carry the answer, the reviewCadence field
+  // handled above is the way out, not a different ordering of these guesses.
   //
   // Matched on TOKENS, not on substrings. `slug.includes("fee")` fires inside
   // "coffee", so `coffee-franchise-due-diligence` took the 365-day financing

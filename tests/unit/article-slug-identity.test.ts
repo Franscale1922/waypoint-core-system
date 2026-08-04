@@ -213,27 +213,25 @@ function articleFor(slug: string, category: string, tier: number): Article {
   };
 }
 
-describe("refresh cadence prefers a curated category over a slug keyword", () => {
-  it("gives an Industry Spotlight its 548-day cadence even when the slug contains a financing word", () => {
-    // The reported bug. FINANCING_KEYWORDS matches a substring anywhere in the slug, so a spotlight
-    // on a cost-sensitive segment was pulled onto the 365-day financing cadence and refreshed 183
-    // days early on every cycle, purely because of how its title reads.
+describe("refresh cadence", () => {
+  it("keeps a cost article on 365 even when its category is Industry Spotlights", () => {
+    // "Cost and Operational Efficiency Franchises" is queued in CONTENT-CALENDAR.md as an Industry
+    // Spotlight, and is wanted on the 365-day cost cadence: CONTENT-STANDARDS lists investment and
+    // cost at 12 months, and the article will carry cost figures that go stale on that clock.
+    //
+    // An earlier revision of this change promoted the category above the financing keywords, on
+    // the premise that a spotlight should take its category's 548. That would have delayed review
+    // of precisely this article by 183 days. Financing stays ahead of the category branches, where
+    // it has always been.
     expect(
       getRefreshCadenceDays(
         articleFor("cost-and-operational-efficiency-franchises", "Industry Spotlights", 3),
       ),
-    ).toBe(548);
+    ).toBe(365);
   });
 
-  it("promotes only the CATEGORY, leaving tier 3 below financing where it has always been", () => {
-    // The category is an explicit editorial statement; `tier === 3` is a looser numeric proxy for
-    // it. Promoting both would silently reverse an unrelated rule, sending a tier-3 article that
-    // is genuinely financing material from 365 to 548 and leaving rate-sensitive copy half a year
-    // longer than the standard allows. The two agree in all 45 articles today, so this asserts the
-    // distinction rather than any current behaviour.
-    expect(getRefreshCadenceDays(articleFor("sba-lending-for-widgets", "Going Deeper", 3))).toBe(365);
-    // ...while a tier-3 article with no financing signal still gets the spotlight cadence.
-    expect(getRefreshCadenceDays(articleFor("pilates-studio-franchises", "Going Deeper", 3))).toBe(548);
+  it("still gives a spotlight with no financing signal its 548-day cadence", () => {
+    expect(getRefreshCadenceDays(articleFor("pilates-studio-franchises", "Industry Spotlights", 3))).toBe(548);
   });
 
   it("matches financing keywords as slug TOKENS, not as substrings", () => {
@@ -272,6 +270,70 @@ describe("refresh cadence prefers a curated category over a slug keyword", () =>
 
   it("still never refreshes a strategic slug, whatever its category says", () => {
     expect(getRefreshCadenceDays(articleFor("are-you-ready-to-own-a-franchise", "Industry Spotlights", 3))).toBeNull();
+  });
+});
+
+// ─── The authored override ──────────────────────────────────────────────────
+
+describe("an authored reviewCadence overrides every inference", () => {
+  function withCadence(slug: string, category: string, tier: number, reviewCadence: unknown): Article {
+    const a = articleFor(slug, category, tier);
+    return { ...a, frontmatter: { ...a.frontmatter, reviewCadence } as Article["frontmatter"] };
+  }
+
+  it("rescues the article no ordering of the rules can classify", () => {
+    // "The Playbook Is There for a Reason: Why Improvising Early Costs You" is queued as a
+    // strategic piece, and "Costs" in it is a VERB. No precedence change and no amount of
+    // tokenizing separates it from a cost article, because the signal simply is not in the slug.
+    // Without the override it takes the 12-month financing cadence.
+    const slug = "the-playbook-is-there-for-a-reason-why-improvising-early-costs-you";
+    expect(getRefreshCadenceDays(articleFor(slug, "After You Buy", 1))).toBe(365);
+    expect(getRefreshCadenceDays(withCadence(slug, "After You Buy", 1, "strategic"))).toBeNull();
+  });
+
+  it("beats the hard-coded strategic slug list too", () => {
+    // The list is itself an inference about a fixed set of slugs. An authored value is the only
+    // signal here anybody actually decided, so it wins over that as well.
+    expect(
+      getRefreshCadenceDays(withCadence("are-you-ready-to-own-a-franchise", "Getting Started", 1, "process")),
+    ).toBe(730);
+  });
+
+  it("maps every name in the CONTENT-STANDARDS table", () => {
+    const cases: [string, number | null][] = [
+      ["investment-and-cost", 365],
+      ["financing", 365],
+      ["category-analysis", 548],
+      ["process", 730],
+      ["strategic", null],
+    ];
+    for (const [name, days] of cases) {
+      expect(getRefreshCadenceDays(withCadence("some-article", "Going Deeper", 2, name))).toBe(days);
+    }
+  });
+
+  it("falls back to the inferred cadence on an unknown value rather than throwing", () => {
+    // The gate rejects a bad value at push time, so this is unreachable through a pushed article.
+    // Falling back keeps one typo from taking down the monthly batch, matching how every other
+    // malformed input on this path behaves.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect(getRefreshCadenceDays(withCadence("how-to-read-an-fdd", "Going Deeper", 2, "stategic"))).toBe(730);
+      expect(warn).toHaveBeenCalledOnce();
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it("is not fooled by a value inherited from Object.prototype", () => {
+    // `"constructor" in REVIEW_CADENCES` is true. A membership test written that way would treat
+    // it as a declared cadence and return undefined as the cadence, making the article never stale.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect(getRefreshCadenceDays(withCadence("how-to-read-an-fdd", "Going Deeper", 2, "constructor"))).toBe(730);
+    } finally {
+      warn.mockRestore();
+    }
   });
 });
 
@@ -330,6 +392,33 @@ describe("aeo-audit fails the push on a slug that contradicts its filename", () 
 
   it("reports nothing when the slug field is absent", () => {
     expect(auditArticle(article({ title: "Guide" }), "guide.md").slugMismatch).toBeNull();
+  });
+
+  it("fails the push on an unknown reviewCadence, since a typo silently reverts to the guess", () => {
+    const dirs = repo();
+    writeFileSync(
+      join(dirs.articlesDir, "guide.md"),
+      article({ slug: "guide", title: "Guide", reviewCadence: "stategic" }),
+    );
+
+    const result = auditAll(dirs);
+
+    expect(result.cadenceErrors).toHaveLength(1);
+    expect(result.failures.join(" ")).toContain("reviewCadence");
+  });
+
+  it("accepts a valid reviewCadence, and an absent one", () => {
+    const dirs = repo();
+    writeFileSync(
+      join(dirs.articlesDir, "a.md"),
+      article({ slug: "a", title: "A", reviewCadence: "strategic" }),
+    );
+    writeFileSync(join(dirs.articlesDir, "b.md"), article({ slug: "b", title: "B" }));
+
+    const result = auditAll(dirs);
+
+    expect(result.rows).toHaveLength(2);
+    expect(result.cadenceErrors).toEqual([]);
   });
 
   it("turns the mismatch into an actual FAILURE, not just a printed line", () => {
