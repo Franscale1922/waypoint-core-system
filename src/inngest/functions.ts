@@ -1494,8 +1494,14 @@ export const contentRefreshFunction = inngest.createFunction(
                 );
                 const newBody = parsed.content;
 
-                // Compliance check before writing
-                const { passes, violations } = passesComplianceCheck(newBody);
+                // Compliance check before writing. Every field the model wrote, not just
+                // the body: the excerpt and the FAQ answers are published too.
+                const { passes, violations } = passesComplianceCheck({
+                    title: newFrontmatter.title,
+                    excerpt: newFrontmatter.excerpt,
+                    faqs: newFrontmatter.faqs,
+                    body: newBody,
+                });
                 if (!passes) {
                     return {
                         success: false as const,
