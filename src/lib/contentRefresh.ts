@@ -192,13 +192,22 @@ export function getRefreshCadenceDays(article: Article): number | null {
 
   // Financing / investment / cost → 12 months.
   //
-  // Matched on hyphen-separated TOKENS, not on substrings. `slug.includes("fee")`
-  // fires inside "coffee", so `coffee-franchise-due-diligence` took the 365-day
-  // financing cadence instead of its 730-day process one. On a franchise site
-  // that is not a hypothetical: coffee is a real category. No article on disk
-  // hits it today, and every one of the six that DO match still matches as a
-  // whole word, so this narrowing changes nothing now. Plurals are matched
-  // explicitly because the corpus uses both ("fee", "fees", "costs").
+  // Matched on TOKENS, not on substrings. `slug.includes("fee")` fires inside
+  // "coffee", so `coffee-franchise-due-diligence` took the 365-day financing
+  // cadence instead of its 730-day process one. On a franchise site that is not
+  // a hypothetical: coffee is a real category. No article on disk hits it today,
+  // and every one of the six that DO match still matches as a whole word, so
+  // this narrowing changes nothing now. Plurals are matched explicitly because
+  // the corpus uses both ("fee", "fees", "costs").
+  //
+  // Split on every non-alphanumeric run, and lowercased, rather than on "-"
+  // alone. Nothing in this repo enforces kebab-case FILENAMES (the shape check
+  // in src/lib/articles.ts is discovery-side and does not exist on this path),
+  // so `franchise_cost_guide.md` is authorable today. Splitting on hyphens only
+  // would hand back a single token, match nothing, and quietly give genuinely
+  // cost-focused copy the 730-day process cadence: a narrowing that is stricter
+  // than the substring check it replaced, in the one direction that matters.
+  // All 45 filenames are kebab-case today, so this changes nothing now either.
   //
   // Still ahead of the Going Deeper branch on purpose. Financing material (SBA
   // terms, ROBS rules, fee structures) goes stale materially faster than the
@@ -208,7 +217,7 @@ export function getRefreshCadenceDays(article: Article): number | null {
   // rate and rule changes sit unreviewed for two years, trading a latent bug for
   // a live one.
   const FINANCING_KEYWORDS = ["funding", "cost", "fee", "sba", "robs", "financing", "investment"];
-  const slugTokens = new Set(slug.split("-"));
+  const slugTokens = new Set(slug.toLowerCase().split(/[^a-z0-9]+/));
   if (FINANCING_KEYWORDS.some((kw) => slugTokens.has(kw) || slugTokens.has(`${kw}s`))) return 365;
 
   // Industry Spotlights by tier, for an article whose category says otherwise.

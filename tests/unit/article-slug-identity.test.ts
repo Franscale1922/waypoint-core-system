@@ -246,6 +246,15 @@ describe("refresh cadence prefers a curated category over a slug keyword", () =>
     expect(getRefreshCadenceDays(articleFor("startup-costs-by-brand", "Going Deeper", 2))).toBe(365);
   });
 
+  it("still tokenizes a slug that is not kebab-case", () => {
+    // Nothing on this path enforces kebab-case filenames, so `franchise_cost_guide.md` is
+    // authorable today. Splitting on "-" alone would yield one token, match nothing, and give
+    // genuinely cost-focused copy the 730-day process cadence: stricter than the substring check
+    // it replaced, in the one direction that matters. The old check caught this; so must the new.
+    expect(getRefreshCadenceDays(articleFor("franchise_cost_guide", "Going Deeper", 2))).toBe(365);
+    expect(getRefreshCadenceDays(articleFor("Franchise-COST-Guide", "Going Deeper", 2))).toBe(365);
+  });
+
   it("KEEPS financing articles on 365 rather than letting Going Deeper claim them", () => {
     // The half of the ordering that is deliberately NOT changed, and the reason this was not fixed
     // by moving every category branch above the keywords. Three real articles depend on it: SBA
