@@ -9,6 +9,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import identityMap from "./match-workspace/brand-identity-map.json";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -123,41 +124,189 @@ export function isStale(article: Article, force = false): boolean {
 
 // ─── Compliance Validation ───────────────────────────────────────────────────
 
+const escapeRegExp = (value: string) =>
+  value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// `\b` is unusable here: registry brand names begin and end with non-word characters
+// ("junkco+", "blingle!", "360°", "1-800-striper"), where a word boundary inverts its
+// meaning. Alphanumeric look-arounds behave the same for both shapes.
+const bounded = (phrase: string) =>
+  new RegExp(`(?<![a-z0-9])${escapeRegExp(phrase)}(?![a-z0-9])`, "i");
+
 /**
- * Profitability phrases banned in all forms per CONTENT-STANDARDS.md Section 1.
- * Returns any found violations.
+ * Terms that are a profitability claim wherever they appear, per CONTENT-STANDARDS.md
+ * Section 1.
+ *
+ * "earns a", "makes a" and "income of" used to live here and were removed: as unbounded
+ * substrings they matched ordinary prose, including the FAQ question "What makes a
+ * franchise harder to sell?" that ships on main today. Real claims of that shape are now
+ * caught by EARNINGS_CLAIM_PATTERNS, which requires an actual figure.
  */
 const PROFITABILITY_PHRASES = [
   "break even",
   "break-even",
   "roi",
   "return on investment",
+  "return on invested capital",
   "net profit",
   "gross profit",
+  "profit margin",
   "ebitda",
   "payback period",
   "highly profitable",
   "strong returns",
   "lucrative",
   "financially rewarding",
-  "earns a",
-  "makes a",
-  "income of",
+];
+
+const PROFITABILITY_PATTERNS = PROFITABILITY_PHRASES.map((phrase) => ({
+  label: phrase,
+  re: bounded(phrase),
+}));
+
+// A figure, or an order-of-magnitude stand-in for one.
+const MONEY = String.raw`(?:\$\s?\d[\d,]*(?:\.\d+)?\s*(?:k\b|m\b|mm\b|million|thousand)?|\b(?:six|seven|eight)[-\s]?figures?\b)`;
+// Deliberately excludes "revenue" and "margin". Section 1 permits revenue ranges outright,
+// and its own approved example pairs "margin" with a royalty percentage.
+const EARNINGS_NOUN = String.raw`(?:earnings|income|profits?|take[-\s]?home(?:\s+pay)?|owner(?:'s|s')?\s+(?:draw|compensation|pay|salary)|payouts?)`;
+// "nets" excludes "net worth", which Section 1 permits as an investment input.
+const EARNINGS_VERB = String.raw`(?:earns?|earned|earning|nets(?!\s+worth)|netted|takes?\s+home|taking\s+home|brings?\s+home|pulls?\s+in|pulling\s+in|makes?|made|making)`;
+const PERCENT = String.raw`\d{1,3}(?:\.\d+)?\s?(?:%|percent\b)`;
+const RETURN_NOUN = String.raw`\b(?:returns?|profits?|profitable|profitability|yields?)\b`;
+// Sentence scope. Crude, and that is the point: it must not let a figure in one sentence
+// pair with an earnings word in the next.
+const SAME_SENTENCE = String.raw`[^.!?\n]*`;
+
+/**
+ * Earnings claims that name a figure. Section 1 bans these even when no phrase from the
+ * list above appears: "Typical owners can expect annual earnings of $150,000" contains
+ * none of them.
+ */
+const EARNINGS_CLAIM_PATTERNS = [
+  {
+    label: "earnings figure",
+    re: new RegExp(
+      `${SAME_SENTENCE}${EARNINGS_NOUN}${SAME_SENTENCE}${MONEY}|${SAME_SENTENCE}${MONEY}${SAME_SENTENCE}${EARNINGS_NOUN}`,
+      "i"
+    ),
+  },
+  {
+    // A tight window, not sentence scope: at 25 characters this matched "ROBS makes
+    // financial sense with $50,000 or more" and the "$250,000 net worth and $100,000 in
+    // liquid capital" line, both compliant and both on main.
+    label: "earnings claim",
+    re: new RegExp(`\\b${EARNINGS_VERB}\\b[^.!?\\n]{0,15}${MONEY}`, "i"),
+  },
+  {
+    label: "percentage return claim",
+    re: new RegExp(
+      `${SAME_SENTENCE}${RETURN_NOUN}${SAME_SENTENCE}${PERCENT}|${SAME_SENTENCE}${PERCENT}${SAME_SENTENCE}${RETURN_NOUN}`,
+      "i"
+    ),
+  },
 ];
 
 export function findProfitabilityViolations(text: string): string[] {
-  const lower = text.toLowerCase();
-  return PROFITABILITY_PHRASES.filter((phrase) => lower.includes(phrase));
+  const found = PROFITABILITY_PATTERNS.filter((p) => p.re.test(text)).map((p) => p.label);
+  for (const pattern of EARNINGS_CLAIM_PATTERNS) {
+    const match = pattern.re.exec(text);
+    // The tail, not the head: these patterns match from the start of the sentence, so the
+    // token that actually tripped the rule is at the end of the match.
+    if (match) {
+      const span = match[0].trim();
+      found.push(`${pattern.label}: "${span.length > 80 ? `…${span.slice(-80)}` : span}"`);
+    }
+  }
+  return found;
 }
 
 /**
- * Returns true if the article body passes both hard rules.
+ * Registry names that are also ordinary English, and so cannot be treated as evidence a
+ * brand was named. "squeeze" is the one measured collision across the 45 articles on main
+ * ("you cannot simply squeeze two more people into the room"); the rest are held out
+ * because they are common words or phrases a compliant article can reach for. Each one is
+ * a deliberate blind spot in the gate, so the list stays short.
  */
-export function passesComplianceCheck(body: string): {
+const AMBIGUOUS_BRAND_NAMES = new Set([
+  "squeeze",
+  "serf",
+  "surv",
+  "tga",
+  "ulc",
+  "all dry",
+  "assisted living locators",
+  "building kids",
+  "exercise coach",
+  "first light",
+  "gone for good",
+  "gotcha covered",
+  "home aides",
+  "home aids",
+  "next day access",
+  "real property management",
+  "right at home",
+  "senior care authority",
+  "senior helpers",
+  "service experts",
+  "tee box",
+  "the maids",
+  "the seals",
+  "training franchisor",
+]);
+
+const BRAND_NAME_PATTERNS = Object.keys(identityMap.nameKeys)
+  .filter((name) => !AMBIGUOUS_BRAND_NAMES.has(name))
+  .map((name) => ({ label: name, re: bounded(name) }));
+
+/**
+ * Section 2 bans named franchise brands in body copy, headings, excerpts and metadata.
+ * The names come from the committed brand identity map, the same artifact the match
+ * workspace resolves against, so the gate tracks the registry instead of a second list
+ * that would drift away from it.
+ */
+export function findBrandNameViolations(text: string): string[] {
+  return BRAND_NAME_PATTERNS.filter((p) => p.re.test(text)).map((p) => p.label);
+}
+
+export interface ComplianceFields {
+  title?: unknown;
+  excerpt?: unknown;
+  faqs?: unknown;
+  body: string;
+}
+
+/**
+ * Checks every field the refresh model writes, not just the body: an excerpt reading
+ * "a lucrative category", or an FAQ answer naming a brand, is published exactly as
+ * prominently as the body is.
+ */
+export function passesComplianceCheck(fields: ComplianceFields): {
   passes: boolean;
   violations: string[];
 } {
-  const violations = findProfitabilityViolations(body);
+  const parts: { field: string; text: string }[] = [];
+  if (typeof fields.title === "string") parts.push({ field: "title", text: fields.title });
+  if (typeof fields.excerpt === "string") parts.push({ field: "excerpt", text: fields.excerpt });
+  parts.push({ field: "body", text: fields.body });
+
+  if (Array.isArray(fields.faqs)) {
+    fields.faqs.forEach((faq, i) => {
+      const entry = faq as { q?: unknown; a?: unknown } | null;
+      if (typeof entry?.q === "string") parts.push({ field: `faq[${i}].q`, text: entry.q });
+      if (typeof entry?.a === "string") parts.push({ field: `faq[${i}].a`, text: entry.a });
+    });
+  }
+
+  const violations: string[] = [];
+  for (const { field, text } of parts) {
+    for (const hit of findProfitabilityViolations(text)) {
+      violations.push(`${field}: profitability ${hit}`);
+    }
+    for (const hit of findBrandNameViolations(text)) {
+      violations.push(`${field}: brand name "${hit}"`);
+    }
+  }
+
   return { passes: violations.length === 0, violations };
 }
 
