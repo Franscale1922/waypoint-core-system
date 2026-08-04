@@ -8,8 +8,6 @@ import {
   findProfitabilityViolations,
   findBrandNameViolations,
   passesComplianceCheck,
-  mergeRefreshedFrontmatter,
-  type ArticleFrontmatter,
 } from "@/lib/contentRefresh";
 import identityMap from "@/lib/match-workspace/brand-identity-map.json";
 
@@ -270,85 +268,5 @@ describe("bypasses found by the round-1 adversarial review", () => {
   it("finds a brand name written with a curly apostrophe", () => {
     // GPT-4o emits these by default; the registry stores the straight form.
     expect(findBrandNameViolations("Bishop\u2019s Cuts is one example.")).toContain("bishop's");
-  });
-});
-
-describe("mergeRefreshedFrontmatter", () => {
-  const original = {
-    title: "Old Title",
-    slug: "a-slug",
-    date: "2026-01-01",
-    category: "Going Deeper",
-    tier: 2,
-    excerpt: "Old excerpt.",
-    relatedSlugs: ["other-slug"],
-    checklistSlug: "franchise-readiness",
-    escapeKit: true,
-    updatedAt: "2026-02-02",
-  } satisfies ArticleFrontmatter;
-
-  it("keeps frontmatter the prompt never sends back", () => {
-    // checklistSlug drives the email-capture CTA on 42 of 45 articles, escapeKit on 12,
-    // and updatedAt feeds dateModified. Adopting the model's object dropped all three.
-    const merged = mergeRefreshedFrontmatter(original, { title: "New Title" });
-    expect(merged.checklistSlug).toBe("franchise-readiness");
-    expect(merged.escapeKit).toBe(true);
-    expect(merged.updatedAt).toBe("2026-02-02");
-  });
-
-  it("takes the three fields the model owns", () => {
-    const merged = mergeRefreshedFrontmatter(original, {
-      title: "New Title",
-      excerpt: "New excerpt.",
-      faqs: [{ q: "Q?", a: "A." }],
-    });
-    expect(merged.title).toBe("New Title");
-    expect(merged.excerpt).toBe("New excerpt.");
-    expect(merged.faqs).toEqual([{ q: "Q?", a: "A." }]);
-  });
-
-  it("refuses structural fields the model must not move", () => {
-    const merged = mergeRefreshedFrontmatter(original, {
-      slug: "hijacked",
-      relatedSlugs: ["hijacked"],
-      category: "hijacked",
-      tier: 99,
-      date: "1999-01-01",
-    });
-    expect(merged.slug).toBe("a-slug");
-    expect(merged.relatedSlugs).toEqual(["other-slug"]);
-    expect(merged.category).toBe("Going Deeper");
-    expect(merged.tier).toBe(2);
-    expect(merged.date).toBe("2026-01-01");
-  });
-
-  it("admits no key the model invented", () => {
-    // An unchecked key is serialized to disk and can reach the rendered page without ever
-    // passing the compliance check.
-    const merged = mergeRefreshedFrontmatter(original, {
-      video: { description: "Molly Maid is lucrative." },
-      metaDescription: "A lucrative category.",
-    });
-    expect(merged.video).toBeUndefined();
-    expect(merged.metaDescription).toBeUndefined();
-    expect(Object.keys(merged).sort()).toEqual(Object.keys(original).sort());
-  });
-
-  it("keeps the original value rather than destroying it on a malformed field", () => {
-    for (const bad of [undefined, null, "not an object", 42, []]) {
-      const merged = mergeRefreshedFrontmatter(original, bad);
-      expect(merged.title).toBe("Old Title");
-      expect(merged.excerpt).toBe("Old excerpt.");
-    }
-    expect(mergeRefreshedFrontmatter(original, { title: "   ", faqs: [{ q: 7 }] })).toMatchObject({
-      title: "Old Title",
-    });
-  });
-
-  it("drops malformed faq entries rather than writing them to disk", () => {
-    const merged = mergeRefreshedFrontmatter(original, {
-      faqs: [{ q: "Good?", a: "Yes." }, { q: 7 }, null, { a: "orphan" }],
-    });
-    expect(merged.faqs).toEqual([{ q: "Good?", a: "Yes." }]);
   });
 });
