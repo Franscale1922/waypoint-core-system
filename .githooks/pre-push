@@ -16,6 +16,23 @@ if ! node scripts/aeo-audit.mjs; then
   exit 1
 fi
 
+# Article frontmatter dates. Separate from the unit suites below on purpose: those run
+# against temp-directory fixtures and prove the CHECKER works, while this runs the checker
+# against the real content/articles corpus and is the only thing that proves the ARTICLES
+# are clean. A date that is missing, unquoted, or not a real calendar day fails here.
+#
+# Unquoted is a failure even when the day is valid, because js-yaml resolves a bare
+# YYYY-MM-DD into a Date and silently rolls over impossible days before any app code runs
+# (2026-02-30 becomes March 2). By then the authored value is gone, so this is the last
+# point at which the mistake is still visible.
+if ! node scripts/verify-dates.mjs; then
+  echo ""
+  echo "PUSH BLOCKED: an article frontmatter date is missing, unquoted, or not a real day."
+  echo "  Quote it:  date: \"2026-02-28\"   (single quotes are fine too)"
+  echo "  Re-check:  npm run verify-dates"
+  exit 1
+fi
+
 # Brand-identity map drift. The map is generated from a registry in the brand-intelligence-pipeline
 # repo, so the realistic failure is that the registry moves and the committed artifact does not,
 # after which imports refuse brands that genuinely exist. Skipped, loudly, when that repo is not

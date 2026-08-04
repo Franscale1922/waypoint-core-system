@@ -412,3 +412,33 @@ The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the pu
 `grep -rn "Waypoint Franchise Advisors" content/articles src/data`
 
 and confirm no `title:` or `metaTitle:` line appears in the results.
+
+---
+
+## Section 15 — Frontmatter Dates Must Be Quoted
+
+Every article's `date:` is **required**, and both `date:` and the optional `updatedAt:` **must be wrapped in quotes**.
+
+- ✅ `date: "2026-02-28"`
+- ✅ `date: '2026-02-28'` (single quotes are equally fine; this is what the automated content refresh writes)
+- ❌ `date: 2026-02-28` (unquoted, even though the day is valid)
+
+### Why quoting is not a style preference
+
+YAML resolves an unquoted `YYYY-MM-DD` into a date object *before* any application code runs, and it silently rolls over a day that does not exist:
+
+| Written in frontmatter | What the app actually receives |
+| --- | --- |
+| `date: 2026-02-30` | March 2, 2026 |
+| `date: 2026-13-01` | January 1, 2027 |
+| `date: "2026-02-30"` | the text `2026-02-30`, preserved and rejected as invalid |
+
+Once the rollover has happened the authored value is gone, and a rolled-over date is indistinguishable from one somebody meant to write. Quoting is what keeps the mistake visible long enough to catch.
+
+A malformed date costs more than it looks: it removes the article's publication metadata from search results, and it sorts as `NaN` in the resources listing.
+
+### Verification
+
+The pre-push hook (`.githooks/pre-push` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, or not a real calendar day. The same check runs in CI and in `npm test`. To check manually:
+
+`npm run verify-dates`

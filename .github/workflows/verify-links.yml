@@ -28,5 +28,13 @@ jobs:
         run: npx vitest run --project unit tests/unit/verify-links.test.ts
       - name: Verify Links
         run: node scripts/verify-links.mjs
+      # Frontmatter dates. This job is the ONLY gate that sees them on some
+      # commits: src/lib/githubArticleCommit.ts writes articles straight through
+      # the GitHub API, so those commits never touch .githooks/pre-push. Same
+      # narrow test selection as above, for the same brand-map-registry reason.
+      - name: Verify Dates (unit tests)
+        run: npx vitest run --project unit tests/unit/verify-dates.test.ts
+      - name: Verify Dates
+        run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)
         run: node scripts/aeo-audit.mjs
