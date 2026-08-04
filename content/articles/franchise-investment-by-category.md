@@ -62,7 +62,7 @@ Before you compare specific brands, the more useful question is which side of th
 
 An investment range tells you what it costs to get in the door. It tells you nothing about what the business generates once it is open. Two franchises with identical investment ranges can operate on very different margins, because cost structures vary widely by category and by how the business is run.
 
-That is why the investment figure is a starting filter, not a decision. Use it to rule out what your capital cannot support, then validate the specific economics directly with existing franchisees and in the financial performance data a franchisor may disclose. For the difference between the four numbers people confuse here, read [the true cost of buying a franchise](/resources/the-true-cost-of-buying-a-franchise).
+That is why the investment figure is a starting filter, not a decision. Use it to rule out what your capital cannot support, then validate the specific economics directly with existing franchisees and in the financial performance data a franchisor may disclose, where [average unit volume](/glossary/average-unit-volume-auv) is usually the headline number. For the difference between the four numbers people confuse here, read [the true cost of buying a franchise](/resources/the-true-cost-of-buying-a-franchise).
 
 ## How do you fund the range you land on?
 
