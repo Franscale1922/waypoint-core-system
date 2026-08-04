@@ -170,15 +170,26 @@ export function getRelatedArticles(relatedSlugs: string[]): Article[] {
 export function getArticlesByCategory(): Record<string, Article[]> {
   const articles = getAllArticles();
   const ORDER = ["Getting Started", "Going Deeper", "Industry Spotlights"];
-  // Object.create(null) rather than {}: a plain object literal inherits
-  // Object.prototype, so a category value of "constructor" or "toString"
-  // would resolve `grouped[article.category]` to an inherited FUNCTION
-  // instead of undefined, and `.push()` on it throws, taking down every
-  // category-based index for one bad frontmatter value.
-  const grouped: Record<string, Article[]> = Object.create(null);
+  const grouped: Record<string, Article[]> = {};
   for (const cat of ORDER) grouped[cat] = [];
   for (const article of articles) {
-    if (!grouped[article.category]) grouped[article.category] = [];
+    // Object.hasOwn, not a truthy check on grouped[article.category]. A
+    // category value of "constructor" or "toString" resolves the truthy
+    // check to an INHERITED function from Object.prototype rather than
+    // undefined, so `.push()` on it throws and takes the whole index down
+    // for one bad frontmatter value. Object.hasOwn only sees properties this
+    // object actually set, so it correctly treats "constructor" as absent
+    // the first time and assigns an own array that shadows the inherited
+    // one, harmlessly, for just this object instance.
+    //
+    // Object.create(null) was tried first and reverted: getArticlesByCategory's
+    // result crosses a Server-to-Client Component boundary
+    // (resources/page.tsx -> ResourcesGrid), and Next's RSC serialization
+    // rejects a null-prototype object outright ("Classes or null prototypes
+    // are not supported"), so that fix broke the resources page. A plain
+    // object with an ownership check gets the same safety without leaving
+    // the RSC-serializable shape.
+    if (!Object.hasOwn(grouped, article.category)) grouped[article.category] = [];
     grouped[article.category].push(article);
   }
   for (const key of Object.keys(grouped)) {
