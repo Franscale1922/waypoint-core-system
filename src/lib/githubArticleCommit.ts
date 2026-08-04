@@ -13,6 +13,7 @@
 
 import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
+import { revisionUpdatedAt } from "./articleDate";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -70,9 +71,27 @@ async function githubRequest<T>(
 
 // ─── Serialize article to .md string ─────────────────────────────────────────
 
-function serializeArticle(frontmatter: ArticleFrontmatter, body: string): string {
+/**
+ * A refresh is a REVISION, so it stamps `updatedAt` and leaves `date` alone.
+ *
+ * This previously wrote `date: today`, which permanently destroyed the article's
+ * real publication date on every run: datePublished walked forward monthly, the
+ * sitemap reported the page as newer than it was, and the authored value was
+ * gone from the committed file with no way to recover it. Nothing caught it,
+ * because `today` is always a real calendar day and gray-matter emits it quoted,
+ * so verify-dates passed cleanly. `updatedAt` is the field that already exists
+ * for this, and is already what dateModified and the sitemap prefer.
+ *
+ * isStale() reads `updatedAt ?? date`, so this write is what resets the
+ * staleness clock. The two must change together or the refresh either loops
+ * forever (clock never resets) or loses the publication date (this bug).
+ */
+export function serializeArticle(frontmatter: ArticleFrontmatter, body: string): string {
   const today = new Date().toISOString().split("T")[0];
-  return matter.stringify(body, { ...frontmatter, date: today });
+  return matter.stringify(body, {
+    ...frontmatter,
+    updatedAt: revisionUpdatedAt(frontmatter.date, today),
+  });
 }
 
 // ─── Single-commit batch push ─────────────────────────────────────────────────

@@ -12,6 +12,7 @@ import {
   getArticlesByCategoryName,
   type Article,
 } from "@/lib/articles";
+import { articleDateISO } from "@/lib/articleDate";
 import { terms } from "@/data/glossary";
 import { faqs } from "@/data/faq";
 import { industries, getIndustry, getIndustryCost } from "@/data/industries";
@@ -51,10 +52,15 @@ export function articleMarkdown(slug: string): string | null {
   if (!article) return null;
   const { meta, content } = article;
 
+  // Validated before it reaches the byline. This view is what agents and answer
+  // engines read, so an unusable date is dropped rather than quoted back to
+  // them as fact.
+  const published = articleDateISO(meta.date);
+  const updated = articleDateISO(meta.updatedAt);
   const byline = [
     meta.category,
-    `Published ${meta.date}`,
-    meta.updatedAt ? `Updated ${meta.updatedAt}` : null,
+    published ? `Published ${published}` : null,
+    updated ? `Updated ${updated}` : null,
     "By Kelsey Stuart, Waypoint Franchise Advisors",
   ]
     .filter(Boolean)

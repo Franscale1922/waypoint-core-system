@@ -9,13 +9,19 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { articleDateObject, revisionUpdatedAt } from "./articleDate";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export interface ArticleFrontmatter {
   title: string;
   slug: string;
-  date: string; // YYYY-MM-DD
+  date: string; // YYYY-MM-DD, the ORIGINAL publication date. Never rewritten.
+  // Set when the article is meaningfully revised, including by the automated
+  // refresh. Declared explicitly rather than left to the index signature below,
+  // because the refresh writes it and isStale reads it: an untyped field that
+  // load-bearing is a rename away from silently becoming undefined.
+  updatedAt?: string; // YYYY-MM-DD
   category: string;
   tier: number;
   excerpt: string;
@@ -114,9 +120,29 @@ export function isStale(article: Article, force = false): boolean {
 
   if (force) return true;
 
-  const articleDate = new Date(article.frontmatter.date);
+  // Age is measured from the last REVISION, falling back to publication.
+  //
+  // This pairing with serializeArticle is the whole staleness clock, and getting
+  // it wrong in either direction is silent. The refresh used to reset the clock
+  // by overwriting `date` with the run date, which destroyed the real
+  // publication date on every run. Now it writes `updatedAt` instead, so this
+  // read has to prefer `updatedAt` or a refreshed article would stay
+  // permanently stale and be rewritten on every single monthly run.
+  //
+  // Anchored to local noon for the same reason every render site is: a bare
+  // `new Date("2026-03-22")` is UTC midnight, which is the previous day in any
+  // negative-offset zone, so ages drifted by a day depending on server region.
+  const lastTouched = articleDateObject(
+    article.frontmatter.updatedAt ?? article.frontmatter.date,
+  );
+
+  // An unvalidatable date cannot be aged. Treat it as NOT stale so the refresh
+  // never rewrites an article whose frontmatter is already broken: that is a
+  // job for verify-dates, which fails the build on exactly this.
+  if (lastTouched === null) return false;
+
   const now = new Date();
-  const ageInDays = (now.getTime() - articleDate.getTime()) / (1000 * 60 * 60 * 24);
+  const ageInDays = (now.getTime() - lastTouched.getTime()) / (1000 * 60 * 60 * 24);
 
   return ageInDays >= cadenceDays;
 }
@@ -164,8 +190,16 @@ export function passesComplianceCheck(body: string): {
 // ─── Disk Write-Back ─────────────────────────────────────────────────────────
 
 /**
- * Writes a refreshed article to disk.
- * Updates the `date` field in frontmatter to today.
+ * Writes a refreshed article to disk, stamping `updatedAt` and leaving the
+ * publication `date` intact.
+ *
+ * Currently unreferenced: the live refresh commits through the GitHub API via
+ * githubArticleCommit.ts rather than writing to disk. It is kept because
+ * verify-dates.mjs names both as the repo's machine writers, and it is fixed
+ * rather than left alone because it previously did `{ ...frontmatter, date:
+ * today }` under a comment describing that as intended. Whoever wires this up
+ * next would have reintroduced the exact bug this change removes, with the
+ * documentation telling them it was correct.
  */
 export function writeArticle(
   filePath: string,
@@ -173,7 +207,10 @@ export function writeArticle(
   body: string
 ): void {
   const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-  const updatedFrontmatter = { ...frontmatter, date: today };
+  const updatedFrontmatter = {
+    ...frontmatter,
+    updatedAt: revisionUpdatedAt(frontmatter.date, today),
+  };
 
   // gray-matter stringify preserves all frontmatter fields cleanly
   const output = matter.stringify(body, updatedFrontmatter);

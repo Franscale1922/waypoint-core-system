@@ -11,6 +11,7 @@ import EmailCapture from "../../../components/EmailCapture";
 import NewsletterForm from "../../../components/NewsletterForm";
 import { FAQItem } from "../../faq/FAQItem";
 import { pillarForArticle } from "../../../../lib/pillars";
+import { articleDateISO, formatArticleDate } from "../../../../lib/articleDate";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -39,7 +40,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://www.waypointfranchise.com/resources/${slug}`,
       images: [{ url: "/og_default_1773343895292.png", width: 1200, height: 630, alt: article.meta.title }],
       type: "article",
-      publishedTime: article.meta.date,
+      // Validated rather than passed through raw. schemaDate already guarded the
+      // JSON-LD, which made structured data the only protected consumer: the
+      // same bad value was still emitted here and into the visible byline.
+      publishedTime: articleDateISO(article.meta.date) ?? undefined,
     },
   };
 }
@@ -63,6 +67,10 @@ export default async function ArticlePage({ params }: Props) {
   // when the video cannot be described validly. jsonLdGraph filters nullish nodes,
   // so that undefined can be passed straight through.
   const videoNode = video ? videoObjectSchema(video, articleUrl) : undefined;
+  // The visible byline reads from the same validated date the metadata does.
+  // Computed once so the <time> attribute and its text cannot drift apart.
+  const publishedISO = articleDateISO(meta.date);
+  const publishedLabel = formatArticleDate(meta.date, "long");
   // And the same story again for the FAQ list. Filtered ONCE here, then used for
   // both the markup and the visible section below: a malformed entry would
   // otherwise crash this render exactly as it crashed the schema builder, and
@@ -113,8 +121,17 @@ export default async function ArticlePage({ params }: Props) {
         <h1 className="font-playfair text-3xl sm:text-4xl md:text-5xl leading-tight mb-6">{meta.title}</h1>
         <div className="flex items-center gap-4 text-xs text-[#7a7a7a]">
           <Link href="/about" className="hover:text-[#8E3012] transition-colors font-medium">Kelsey Stuart</Link>
-          <span>·</span>
-          <span>Published <time dateTime={meta.date}>{new Date(meta.date + "T12:00:00").toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</time></span>
+          {/* The machine-readable attribute and the human-readable text now come
+              from the same validated value, so they cannot disagree. Previously
+              dateTime carried the raw string while the text was whatever
+              new Date() normalized it to, and an unusable value printed the
+              literal words "Invalid Date" to visitors. */}
+          {publishedISO && publishedLabel && (
+            <>
+              <span>·</span>
+              <span>Published <time dateTime={publishedISO}>{publishedLabel}</time></span>
+            </>
+          )}
         </div>
         <div className="w-full h-px bg-[#e8e0d0] mt-8" />
       </section>

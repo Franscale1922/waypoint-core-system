@@ -1436,6 +1436,13 @@ export const contentRefreshFunction = inngest.createFunction(
                 newFrontmatter.slug = article.frontmatter.slug;
                 newFrontmatter.category = article.frontmatter.category;
                 newFrontmatter.tier = article.frontmatter.tier;
+                // `date` is the original publication date and belongs on this
+                // list for the same reason the others do: everything here is
+                // identity or provenance the model has no standing to restate.
+                // GPT-4o is asked for a complete .md file, so it emits its own
+                // frontmatter and will happily invent a date. serializeArticle
+                // stamps `updatedAt` for the revision itself.
+                newFrontmatter.date = article.frontmatter.date;
 
                 // Compliance check before writing
                 const { passes, violations } = passesComplianceCheck(newBody);

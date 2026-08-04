@@ -1,6 +1,7 @@
 import fs from "fs";
 import nodePath from "path";
 import matter from "gray-matter";
+import { articleDateSortKey } from "./articleDate";
 
 export type Article = {
   slug: string;
@@ -47,7 +48,11 @@ export function getAllArticles(): Article[] {
         escapeKit: (data.escapeKit as boolean | undefined) ?? undefined,
       };
     })
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Newest first. articleDateSortKey pushes an unvalidatable date to the end
+    // instead of returning NaN: every comparison against NaN is false, so one
+    // bad date used to make the surrounding order arbitrary rather than just
+    // misplacing that single article.
+    .sort((a, b) => articleDateSortKey(b.date) - articleDateSortKey(a.date));
 }
 
 export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[]; faqs?: { q: string; a: string }[]; video?: ArticleVideo } | null {
