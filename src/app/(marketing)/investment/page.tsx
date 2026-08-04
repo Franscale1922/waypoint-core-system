@@ -28,7 +28,7 @@ const LAST_REVIEWED_LABEL = "August 2026";
 const investmentFaqs: { q: string; a: string; link?: { href: string; label: string } }[] = [
   {
     q: "How much does it cost to buy a franchise?",
-    a: "The total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
+    a: "As of 2026, the total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
   },
   {
     // Google ranks this page 4.1 for "best franchises to own" (21 impressions in
@@ -45,15 +45,21 @@ const investmentFaqs: { q: string; a: string; link?: { href: string; label: stri
   },
   {
     q: "What is a franchise fee?",
-    a: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
+    a: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. As of 2026 it typically ranges from $20,000 to $60,000, and it is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
   },
   {
     q: "What is a franchise royalty?",
-    a: "A royalty is an ongoing fee paid to the franchisor, typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
+    a: "A royalty is an ongoing fee paid to the franchisor, as of 2026 typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
   },
   {
+    // Reconciled with the two other liquidity figures this page already shows:
+    // the entry tier below opens at $50K to $75K of cash, and the stat tile
+    // states a $75K floor. This answer previously asserted a flat $100K, which
+    // was invisible while it lived only in the schema, but reads as a direct
+    // contradiction now that it renders. It also counted a rollable 401k as a
+    // liquid asset, which the Liquid Capital glossary entry explicitly denies.
     q: "How much liquid capital do I need to buy a franchise?",
-    a: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
+    a: "It depends on the model. As of 2026, entry-level service franchises generally open to buyers with $50,000 to $75,000 in cash, and closer to $100,000 puts most of the market within reach. Liquid means what you can deploy now: checking and savings balances, money market funds, and short-term CDs, with brokerage holdings sometimes counted at a discount. Home equity and retirement accounts usually do not count toward a franchisor's liquidity screen, because reaching them requires a loan or a rollover structure first. Both can still help fund the investment itself once you qualify, as can HELOC or SBA financing.",
   },
   {
     q: "Is the franchise fee negotiable?",
