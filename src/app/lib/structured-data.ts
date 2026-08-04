@@ -64,26 +64,40 @@ export function toWww(url: string): string {
  *    out-of-range day. `new Date("2026-02-30")` silently becomes March 2, and
  *    "2026-02-29" in a non-leap year becomes March 1.
  *
- * The round-trip is applied only to the date-only form: a datetime carrying a
- * UTC offset legitimately lands on a different UTC calendar day.
+ * The calendar round-trip applies to BOTH forms. An earlier version checked only
+ * the date-only form on the theory that an offset datetime legitimately lands on
+ * another UTC day. That reasoning was wrong: the offset shifts the INSTANT, not
+ * the day named in the string, and "2026-02-30T12:00:00Z" rolls over to March 2
+ * exactly as the bare date does. Validating the named Y-M-D separately from the
+ * time keeps both correct.
  */
 const ISO_DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
-const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
+const ISO_DATE_TIME =
+  /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
+
+/** True when Y-M-D name a real calendar day, catching the silent rollover. */
+function isRealCalendarDay(year: string, month: string, day: string): boolean {
+  const parsed = new Date(`${year}-${month}-${day}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return false;
+  return (
+    parsed.getUTCFullYear() === Number(year) &&
+    parsed.getUTCMonth() + 1 === Number(month) &&
+    parsed.getUTCDate() === Number(day)
+  );
+}
 
 function isValidSchemaDate(value: string): boolean {
   const dateOnly = ISO_DATE_ONLY.exec(value);
-  if (dateOnly) {
-    const parsed = new Date(value);
-    if (Number.isNaN(parsed.getTime())) return false;
-    // A bare YYYY-MM-DD parses as UTC midnight, so the UTC components must
-    // round-trip exactly. They do not when the day rolled over.
+  if (dateOnly) return isRealCalendarDay(dateOnly[1], dateOnly[2], dateOnly[3]);
+  const dateTime = ISO_DATE_TIME.exec(value);
+  if (dateTime) {
+    // Date.parse DOES reject an out-of-range time (25:00, 12:60) but silently
+    // rolls over an out-of-range DAY, so both checks are needed.
     return (
-      parsed.getUTCFullYear() === Number(dateOnly[1]) &&
-      parsed.getUTCMonth() + 1 === Number(dateOnly[2]) &&
-      parsed.getUTCDate() === Number(dateOnly[3])
+      !Number.isNaN(new Date(value).getTime()) &&
+      isRealCalendarDay(dateTime[1], dateTime[2], dateTime[3])
     );
   }
-  if (ISO_DATE_TIME.test(value)) return !Number.isNaN(new Date(value).getTime());
   return false;
 }
 
@@ -91,13 +105,18 @@ function isValidSchemaDate(value: string): boolean {
  * Validate a date destined for JSON-LD. Returns the value to emit, or undefined
  * to omit the property.
  *
- * Omit-and-warn rather than throw ON PURPOSE: one caller feeds this straight
- * from markdown frontmatter (resources/[slug] passes `meta.updatedAt`, which
- * nothing validates), so throwing would take a live article page down over a
- * typo. Dropping the property keeps the markup valid and the page up, and the
- * warning makes the bad value loud in the build log.
+ * Exported because most date-bearing nodes are hand-rolled at the page rather
+ * than built by the factories here: resources/[slug] and the 2026 report both
+ * assemble their own Article node. The article path is also the ONLY one fed by
+ * unvalidated input (markdown frontmatter), so a validator the factories keep to
+ * themselves would miss the single case that actually matters.
+ *
+ * Omit-and-warn rather than throw ON PURPOSE: that same article path is rendered
+ * per-request, so throwing would take a live page down over one frontmatter typo.
+ * Dropping the property keeps the markup valid and the page up, and the warning
+ * makes the bad value loud in the build log.
  */
-function validSchemaDate(value: unknown, pageUrl: string): string | undefined {
+export function schemaDate(value: unknown, context: string): string | undefined {
   if (value === undefined || value === null) return undefined;
   // gray-matter turns an UNQUOTED frontmatter date into a Date object, so this
   // can arrive as a Date despite the declared string type (articles.ts casts
@@ -108,8 +127,8 @@ function validSchemaDate(value: unknown, pageUrl: string): string | undefined {
     return value;
   }
   console.warn(
-    `[structured-data] Dropped invalid dateModified ${JSON.stringify(String(value))} for ` +
-      `${pageUrl}. Expected ISO 8601 (YYYY-MM-DD or a full datetime). Emitting it would ` +
+    `[structured-data] Dropped invalid date ${JSON.stringify(String(value))} for ` +
+      `${context}. Expected ISO 8601 (YYYY-MM-DD or a full datetime). Emitting it would ` +
       `ship invalid structured data, so the property was omitted.`,
   );
   return undefined;
@@ -470,7 +489,7 @@ export function webPageSchema({
   dateModified?: string;
 }) {
   const canonical = toWww(url);
-  const validDateModified = validSchemaDate(dateModified, canonical);
+  const validDateModified = schemaDate(dateModified, canonical);
   return {
     "@type": "WebPage",
     "@id": fragmentId(canonical, "#webpage"),

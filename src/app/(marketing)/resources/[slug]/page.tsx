@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
-import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema } from "../../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema, schemaDate } from "../../../lib/structured-data";
 import JsonLd from "../../../components/JsonLd";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
@@ -50,6 +50,11 @@ export default async function ArticlePage({ params }: Props) {
   const related = getRelatedArticles(relatedSlugs);
   const pillar = pillarForArticle(slug);
   const articleUrl = `${SITE_URL}/resources/${slug}`;
+  // Both dates come from markdown frontmatter, which nothing validates, so they
+  // go through schemaDate: a typo is dropped with a build warning rather than
+  // shipped as invalid structured data. Computed once so a bad value warns once.
+  const datePublished = schemaDate(meta.date, articleUrl);
+  const dateModified = schemaDate(meta.updatedAt ?? meta.date, articleUrl);
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
   const articleGraph = jsonLdGraph(
@@ -59,8 +64,8 @@ export default async function ArticlePage({ params }: Props) {
       url: articleUrl,
       headline: meta.title,
       description: meta.excerpt,
-      datePublished: meta.date,
-      dateModified: meta.updatedAt ?? meta.date,
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
       image: `${SITE_URL}/og_default_1773343895292.png`,
       author: { "@id": `${SITE_URL}/about#kelsey` },
       publisher: { "@id": `${SITE_URL}/#business` },

@@ -8,6 +8,7 @@ import {
   franchiseConsultingServiceSchema,
   jsonLdGraph,
   webPageSchema,
+  schemaDate,
 } from "@/app/lib/structured-data";
 
 /**
@@ -192,6 +193,29 @@ describe("webPageSchema dateModified", () => {
     expect(warn.mock.calls[0][0]).toContain(base.url);
   });
 
+  /**
+   * Regression: an earlier version skipped the calendar round-trip for the
+   * datetime form, reasoning that a UTC offset legitimately lands on another
+   * day. That confused the INSTANT with the day named in the string, so an
+   * impossible datetime rolled over and shipped.
+   */
+  it.each([
+    ["date-only rollover", "2026-02-30"],
+    ["datetime rollover", "2026-02-30T12:00:00Z"],
+    ["datetime rollover with offset", "2026-02-30T12:00:00-05:00"],
+    ["Feb 29 non-leap datetime", "2026-02-29T12:00:00Z"],
+  ])("rejects an impossible calendar day in either form (%s)", (_label, bad) => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(webPageSchema({ ...base, dateModified: bad })).not.toHaveProperty("dateModified");
+    expect(warn).toHaveBeenCalledOnce();
+  });
+
+  it("still accepts a real leap day, so the rollover check is not over-broad", () => {
+    expect(webPageSchema({ ...base, dateModified: "2024-02-29" })).toMatchObject({
+      dateModified: "2024-02-29",
+    });
+  });
+
   it("accepts a Date object, which unquoted frontmatter yields at runtime", () => {
     // articles.ts casts frontmatter with `as string`, but gray-matter returns a
     // Date for an UNQUOTED YAML date. Dropping that would be a regression.
@@ -202,5 +226,36 @@ describe("webPageSchema dateModified", () => {
     });
     expect(node).toMatchObject({ dateModified: "2026-08-03T00:00:00.000Z" });
     expect(warn).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * schemaDate is exported because most date-bearing nodes are hand-rolled at the
+ * page, not built by the factories here. resources/[slug] assembles its own
+ * Article and is the ONLY path fed by unvalidated input (markdown frontmatter),
+ * so a validator confined to webPageSchema would miss the case that matters.
+ */
+describe("schemaDate (used by the hand-rolled Article nodes)", () => {
+  it("returns a valid date unchanged", () => {
+    expect(schemaDate("2026-05-29", "ctx")).toBe("2026-05-29");
+  });
+
+  it("returns undefined for a malformed date so the caller omits the property", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(schemaDate("not-a-date", "ctx")).toBeUndefined();
+    expect(schemaDate("2026-02-30", "ctx")).toBeUndefined();
+    expect(warn).toHaveBeenCalledTimes(2);
+  });
+
+  it("returns undefined without warning when there is simply no date", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(schemaDate(undefined, "ctx")).toBeUndefined();
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("names the context in the warning so the offending page is identifiable", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    schemaDate("nope", `${SITE_URL}/resources/some-article`);
+    expect(warn.mock.calls[0][0]).toContain("/resources/some-article");
   });
 });
