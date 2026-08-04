@@ -58,8 +58,8 @@ export default async function ArticlePage({ params }: Props) {
   const dateModified = schemaDate(meta.updatedAt ?? meta.date, articleUrl, { required: true });
   // Same story for the optional video block: it is an `as ArticleVideo` cast over
   // frontmatter, so videoObjectSchema re-checks every field and returns undefined
-  // when the video cannot be described validly. Built here rather than inline
-  // because jsonLdGraph destructures each argument and would throw on undefined.
+  // when the video cannot be described validly. jsonLdGraph filters nullish nodes,
+  // so that undefined can be passed straight through.
   const videoNode = video ? videoObjectSchema(video, articleUrl) : undefined;
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
@@ -92,7 +92,7 @@ export default async function ArticlePage({ params }: Props) {
       ]),
     },
     ...(faqs && faqs.length > 0 ? [faqPageSchema(faqs, articleUrl)] : []),
-    ...(videoNode ? [videoNode] : []),
+    videoNode,
   );
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">

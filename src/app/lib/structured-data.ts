@@ -414,7 +414,7 @@ function isVideoUploadDate(value: unknown): value is string {
 }
 
 /**
- * True for an absolute http(s) URL.
+ * Return an absolute http(s) URL in its normalized form, or undefined.
  *
  * Parsed with the WHATWG URL parser rather than pattern-matched, for two
  * reasons. A regex tight enough to be meaningful rejects legitimate URLs: the
@@ -423,14 +423,23 @@ function isVideoUploadDate(value: unknown): value is string {
  * the parser is what actually settles the scheme, so a "javascript:" URL and a
  * bare relative path are both refused by the same gate rather than by extra
  * special cases.
+ *
+ * It returns the parsed `href` rather than a boolean because the parser is
+ * LENIENT about things it then fixes: it strips surrounding whitespace and
+ * percent-encodes a literal space, so `" https://cdn.example/thumb 1.jpg "`
+ * validates as a URL whose href is clean. Answering only yes/no and then
+ * emitting the caller's original string would ship exactly the raw, unencoded
+ * value the check just approved. Emit what was validated, not what was passed.
+ * The three live URLs round-trip through this byte-identically.
  */
-function isAbsoluteHttpUrl(value: unknown): value is string {
-  if (typeof value !== "string") return false;
+function absoluteHttpUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
   try {
-    const { protocol } = new URL(value);
-    return protocol === "http:" || protocol === "https:";
+    const parsed = new URL(value);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return undefined;
+    return parsed.href;
   } catch {
-    return false;
+    return undefined;
   }
 }
 
@@ -442,6 +451,10 @@ function isAbsoluteHttpUrl(value: unknown): value is string {
  * component group is optional, so without them a bare "P" or "PT" matches and
  * ships as a duration with no duration in it.
  *
+ * The week form is a separate ALTERNATIVE, not another optional group. ISO 8601
+ * does not allow PnW to combine with calendar or time components, so folding it
+ * into the sequence accepts "P1W1D", which no consumer is obliged to parse.
+ *
  * Minutes are deliberately NOT capped at 59: a 90-minute video is legitimately
  * PT90M0S, which is exactly what the about page's own secondsToISO8601 emits.
  * Lowercase is rejected rather than upcased, matching how schemaDate treats an
@@ -449,15 +462,20 @@ function isAbsoluteHttpUrl(value: unknown): value is string {
  * of reporting it.
  */
 const ISO_DURATION =
-  /^P(?!$)(?:\d+Y)?(?:\d+M)?(?:\d+W)?(?:\d+D)?(?:T(?!$)(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?$/;
+  /^P(?:\d+W|(?!$)(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?!$)(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?)$/;
 
-function isIso8601Duration(value: unknown): value is string {
-  return typeof value === "string" && ISO_DURATION.test(value);
+function iso8601Duration(value: unknown): string | undefined {
+  return typeof value === "string" && ISO_DURATION.test(value) ? value : undefined;
 }
 
 /** A required string property is only satisfied by actual, non-blank text. */
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+/** The normalizer form of isNonEmptyString, for the optional-property table. */
+function nonEmptyText(value: unknown): string | undefined {
+  return isNonEmptyString(value) ? value : undefined;
 }
 
 /**
@@ -525,9 +543,10 @@ export function videoObjectSchema(
   // produces one actionable warning naming all of them rather than a drip of
   // four that each look like a separate problem.
   const required: string[] = [];
+  const normalizedThumbnail = absoluteHttpUrl(thumbnailUrl);
   if (!isNonEmptyString(name)) required.push(`name: ${describeBadValue(name)}`);
   if (!isNonEmptyString(description)) required.push(`description: ${describeBadValue(description)}`);
-  if (!isAbsoluteHttpUrl(thumbnailUrl)) {
+  if (normalizedThumbnail === undefined) {
     required.push(`thumbnailUrl: ${describeBadValue(thumbnailUrl)} (need an absolute http(s) URL)`);
   }
   if (!isVideoUploadDate(uploadDate)) {
@@ -545,6 +564,10 @@ export function videoObjectSchema(
     );
     return undefined;
   }
+  // Unreachable: an undefined thumbnail always populates `required` above. It is
+  // restated because TypeScript cannot infer that from the length check, and the
+  // emitted node must use the NORMALIZED url rather than the raw argument.
+  if (normalizedThumbnail === undefined) return undefined;
 
   // Optional properties degrade one at a time: an unusable duration should not
   // cost the video its eligibility, but it should not ship as garbage either.
@@ -557,15 +580,20 @@ export function videoObjectSchema(
     contentUrl?: string;
     transcript?: string;
   } = {};
+  // Every checker is a NORMALIZER rather than a predicate, so what gets emitted
+  // is always the value that was validated. See absoluteHttpUrl: answering
+  // yes/no and then emitting the caller's original string would ship raw,
+  // unencoded input that the check had silently cleaned up before approving.
   const addOptional = (
     key: "duration" | "embedUrl" | "contentUrl" | "transcript",
     value: unknown,
-    isValid: (candidate: unknown) => boolean,
+    normalize: (candidate: unknown) => string | undefined,
     expectation: string,
   ) => {
     if (value === undefined || value === null) return;
-    if (isValid(value)) {
-      optional[key] = value as string;
+    const normalized = normalize(value);
+    if (normalized !== undefined) {
+      optional[key] = normalized;
       return;
     }
     console.warn(
@@ -573,17 +601,17 @@ export function videoObjectSchema(
         `${describeBadValue(value)} is not ${expectation}. The rest of the node still ships.`,
     );
   };
-  addOptional("duration", duration, isIso8601Duration, "an ISO 8601 duration (e.g. PT3M30S)");
-  addOptional("embedUrl", embedUrl, isAbsoluteHttpUrl, "an absolute http(s) URL");
-  addOptional("contentUrl", contentUrl, isAbsoluteHttpUrl, "an absolute http(s) URL");
-  addOptional("transcript", transcript, isNonEmptyString, "non-empty text");
+  addOptional("duration", duration, iso8601Duration, "an ISO 8601 duration (e.g. PT3M30S)");
+  addOptional("embedUrl", embedUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("contentUrl", contentUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("transcript", transcript, nonEmptyText, "non-empty text");
 
   return {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name,
     description,
-    thumbnailUrl: [thumbnailUrl],
+    thumbnailUrl: [normalizedThumbnail],
     uploadDate,
     ...optional,
     publisher: {
@@ -622,11 +650,19 @@ type JsonLdNode = Record<string, unknown>;
  * per-node `@context` (the wrapper carries the one authoritative context), so
  * existing schemas that include `@context` and new builder nodes that don't can
  * be mixed freely. Emit the result in a single <script type="application/ld+json">.
+ *
+ * Nullish nodes are ACCEPTED and filtered out. Node factories that validate
+ * their input return undefined when the input cannot be described validly
+ * (videoObjectSchema does), and destructuring that undefined here would turn one
+ * bad optional field into a page or build failure. Callers used to guard at
+ * every call site instead, which works only for as long as every future caller
+ * remembers to. Dropping silently is right because the factory has already
+ * warned about the specific field it rejected.
  */
-export function jsonLdGraph(...nodes: JsonLdNode[]) {
+export function jsonLdGraph(...nodes: (JsonLdNode | null | undefined)[]) {
   return {
     "@context": "https://schema.org",
-    "@graph": nodes.map((node) => {
+    "@graph": nodes.filter((node): node is JsonLdNode => node != null).map((node) => {
       const { "@context": _ctx, ...rest } = node as JsonLdNode & { "@context"?: unknown };
       return rest;
     }),

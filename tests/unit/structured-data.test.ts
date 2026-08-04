@@ -348,6 +348,34 @@ describe("videoObjectSchema", () => {
     expect(videoObjectSchema(LIVE, "ctx")).toBeDefined();
   });
 
+  /**
+   * Regression, found by Codex round 1. The URL check parsed with `new URL` but
+   * emitted the caller's ORIGINAL string. The WHATWG parser is lenient about
+   * things it then silently fixes, so a value with surrounding whitespace and an
+   * unencoded space validated as a URL and shipped raw: the emitted thumbnail was
+   * exactly the malformed string the check had just approved a cleaned-up version
+   * of. Every URL is now emitted in its parsed, normalized form.
+   */
+  it("emits the NORMALIZED url, not the raw string that merely parsed", () => {
+    const warn = silenceWarn();
+    const messy = " https://cdn.example/thumb 1.jpg ";
+    // Non-vacuous: the input really is one the parser accepts and rewrites.
+    expect(new URL(messy).href).toBe("https://cdn.example/thumb%201.jpg");
+    const node = videoObjectSchema({ ...LIVE, thumbnailUrl: messy }, "ctx");
+    expect(node?.thumbnailUrl).toEqual(["https://cdn.example/thumb%201.jpg"]);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("normalizes the optional urls too, not just the required thumbnail", () => {
+    silenceWarn();
+    const node = videoObjectSchema(
+      { ...LIVE, embedUrl: " https://player.example/a b ", contentUrl: "HTTPS://Example.COM/x" },
+      "ctx",
+    );
+    expect(node?.embedUrl).toBe("https://player.example/a%20b");
+    expect(node?.contentUrl).toBe("https://example.com/x");
+  });
+
   it("keeps its own @context for standalone use, and jsonLdGraph still strips it", () => {
     expect(videoObjectSchema(LIVE, "ctx")).toMatchObject({ "@context": "https://schema.org" });
     const graph = jsonLdGraph(videoObjectSchema(LIVE, "ctx")!) as {
@@ -356,11 +384,32 @@ describe("videoObjectSchema", () => {
     expect(graph["@graph"][0]).not.toHaveProperty("@context");
   });
 
-  it("throws if an undefined node reaches jsonLdGraph, which is why the caller filters", () => {
-    // resources/[slug] builds the node into a variable and spreads it only when
-    // defined. This is the crash that guard prevents, pinned here so a refactor
-    // back to an inline call fails in the suite rather than at build time.
-    expect(() => jsonLdGraph(undefined as never)).toThrow();
+  /**
+   * A dropped video must not take the page down with it. jsonLdGraph used to
+   * destructure every argument unconditionally, so passing the undefined this
+   * factory now returns threw, and safety depended on each call site remembering
+   * to guard. It filters nullish nodes instead.
+   */
+  it("is safe to hand straight to jsonLdGraph when it drops the node", () => {
+    silenceWarn();
+    const dropped = videoObjectSchema({ ...LIVE, uploadDate: "nope" }, "ctx");
+    expect(dropped).toBeUndefined();
+    const graph = jsonLdGraph(localBusinessSchema, dropped) as {
+      "@graph": Record<string, unknown>[];
+    };
+    // The surviving node is still there, and the dropped one left no hole.
+    expect(graph["@graph"]).toHaveLength(1);
+    expect(graph["@graph"][0]["@id"]).toBe(`${SITE_URL}/#business`);
+  });
+
+  it("filters nullish nodes without disturbing the order of the rest", () => {
+    const graph = jsonLdGraph(null, localBusinessSchema, undefined, webSiteSchema) as {
+      "@graph": Record<string, unknown>[];
+    };
+    expect(graph["@graph"].map((node) => node["@id"])).toEqual([
+      `${SITE_URL}/#business`,
+      `${SITE_URL}/#website`,
+    ]);
   });
 
   /**
@@ -505,6 +554,7 @@ describe("videoObjectSchema", () => {
     ["zero length", "PT0M0S"],
     ["over 60 minutes, which is legal ISO 8601", "PT90M0S"],
     ["days", "P1D"],
+    ["the week form on its own, which IS valid", "P1W"],
     ["fractional seconds", "PT1.5S"],
   ])("accepts a valid ISO 8601 duration (%s)", (_label, good) => {
     const warn = silenceWarn();
@@ -526,6 +576,11 @@ describe("videoObjectSchema", () => {
     ["lowercase", "pt3m30s"],
     ["prose", "three minutes"],
     ["bare seconds count", "204"],
+    // Found by Codex round 1: ISO 8601 does not allow the week form to combine
+    // with calendar or time components, so PnW is a separate alternative rather
+    // than one more optional group in the sequence.
+    ["week combined with days", "P1W1D"],
+    ["week combined with time", "P1WT1H"],
   ])("rejects a malformed duration (%s)", (_label, bad) => {
     silenceWarn();
     expect(videoObjectSchema({ ...LIVE, duration: bad }, "ctx")).not.toHaveProperty("duration");
