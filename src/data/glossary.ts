@@ -106,6 +106,23 @@ export const terms: GlossaryGroup[] = [
           "A franchise that operates from a fixed physical location: a storefront, studio, restaurant, or clinic. Brick-and-mortar franchises carry higher build-out costs, longer ramp-up timelines, and more complex real estate negotiations than home-based or mobile models. They benefit from walk-in traffic, brand visibility, and stronger customer loyalty from regular in-person visits. Fitness studios, med spas, and QSR brands are typical examples.",
         related: "/resources/asset-light-vs-capital-heavy-choosing-your-franchise-type",
         relatedLabel: "Asset-light vs. capital-heavy: choosing your type",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is a brick-and-mortar franchise?",
+            a: "A franchise that operates from a fixed commercial location customers visit: a restaurant, gym, salon, clinic, or retail store. It stands in contrast to home-based, mobile, and van-based models, which have no customer-facing premises. The defining feature is not the industry but the lease and the build-out that come with it.",
+          },
+          {
+            q: "How much more does a brick-and-mortar franchise cost?",
+            a: "Substantially more, because the build-out is the largest line in Item 7. Home-based and mobile service concepts commonly start under $100,000 while full brick-and-mortar locations frequently run past $500,000. The gap is leasehold improvements, equipment, signage, and the longer working-capital runway needed while a physical location ramps.",
+          },
+          {
+            q: "What should you check before signing a lease?",
+            a: "The lease term against the franchise term, first. A ten-year lease behind a five-year franchise agreement leaves you personally exposed if the agreement is not renewed. Also check the personal guarantee, the assignment clause that decides whether you can sell the business with the lease attached, and whether the franchisor has approval rights over the site.",
+          },
+        ],
       },
       {
         term: "Build-Out",
@@ -139,6 +156,23 @@ export const terms: GlossaryGroup[] = [
           "When a franchisor repeatedly resells a failing franchise location to new buyers, even though the location has a pattern of failure regardless of who owns it. A single territory might be churned through several owners, each paying a fresh franchise fee. You can spot potential churning by studying Item 20 of the FDD, which discloses unit openings, closings, transfers, and terminations over the past three years. If you see the same territory changing hands multiple times, proceed with extreme caution.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is franchise churning?",
+            a: "Churning is when a franchisor repeatedly resells the same territory or location after each franchisee fails, collecting a new franchise fee every time. The unit keeps changing hands while the underlying problem, which may be the site, the territory, or the model itself, is never fixed. The franchisor earns on each turnover, so the incentive to fix it is weak.",
+          },
+          {
+            q: "How do you spot churning in an FDD?",
+            a: "Item 20 is where it shows. It lists outlet openings, closures, terminations, non-renewals, and transfers by year and by state. A brand with steady transfers and terminations in the same markets, or a total count that stays flat while turnover is high, is worth asking hard questions about. Then call the previous owners, not only the current ones Item 20 points you to.",
+          },
+          {
+            q: "Is franchise churning illegal?",
+            a: "Not in itself. Reselling a failed location is legal, and the FTC Franchise Rule addresses it through disclosure rather than prohibition, which is why Item 20 exists. It becomes a legal problem when a franchisor misrepresents the history or hides the turnover. The practical protection is reading Item 20 closely and speaking to franchisees who left.",
+          },
+        ],
       },
       {
         term: "Co-Branding",
@@ -364,6 +398,23 @@ export const terms: GlossaryGroup[] = [
           "A federally mandated document, typically 200–400 pages, that every franchisor must provide to prospective buyers before any agreement or payment. Organized into 23 items, it covers the franchisor's history, leadership, litigation history, fees, investment requirements, territory rights, franchisee obligations, financial performance data (Item 19), and a contact list of all current franchisees (Item 20). Reading the FDD, especially Items 5, 6, 7, 19, and 20, is one of the most important steps in franchise due diligence.",
         related: "/resources/fdd-decoded-what-actually-matters",
         relatedLabel: "FDD decoded: what actually matters",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is an FDD document?",
+            a: "The Franchise Disclosure Document is the legally mandated disclosure every US franchisor must give a prospective buyer before any money changes hands. It runs to 23 numbered items covering fees, obligations, litigation, territory, outlet turnover, and any financial performance the franchisor chooses to publish. It is the single most useful document in the whole process.",
+          },
+          {
+            q: "When do you receive the FDD?",
+            a: "At least 14 calendar days before you sign anything or pay any money, under the FTC Franchise Rule. That window is yours to use: it exists so you can read it, take it to a franchise attorney, and call existing franchisees without pressure. A franchisor pushing you to sign inside those 14 days is telling you something.",
+          },
+          {
+            q: "Which FDD items matter most?",
+            a: "Item 5 and Item 6 for what you pay upfront and ongoing, Item 7 for the total investment range, Item 12 for territory, Item 19 for any financial performance the brand is willing to state, and Item 20 for the outlet turnover that shows whether franchisees stay. Item 3 for litigation history is worth a careful read too.",
+          },
+        ],
       },
       {
         term: "Franchise Fee",
@@ -399,6 +450,23 @@ export const terms: GlossaryGroup[] = [
           "The independent business owner who purchases the rights to operate a franchise unit under the franchisor's brand and system. A franchisee owns their business, including the assets, the operations, and the employees, but operates within the standards and guidelines set by the franchisor.",
         related: null,
         relatedLabel: null,
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is a franchisee?",
+            a: "The person or company that buys the right to operate a business under an established brand's name and system. The franchisee owns and runs the individual location, pays the initial fee and ongoing royalties, and agrees to operate to the brand's standards. They own the business but not the brand.",
+          },
+          {
+            q: "How do you become a franchisee?",
+            a: "In outline: decide what you actually want from ownership, get matched to brands that fit, review each brand's FDD, speak to existing franchisees through validation calls, attend a discovery day, secure funding, and sign. The step most people underrate is validation, because current franchisees will tell you things no document does.",
+          },
+          {
+            q: "What is the difference between a franchisee and a franchise owner?",
+            a: "In everyday use, none. Both describe the person who bought and runs the unit. Franchisee is the legal term used throughout the FDD and franchise agreement, and franchise owner is how most people say it out loud. Neither implies anything about whether the owner works in the business.",
+          },
+        ],
       },
       {
         term: "Franchisor",
@@ -406,6 +474,23 @@ export const terms: GlossaryGroup[] = [
           "The company that licenses its brand, systems, and intellectual property to franchisees in exchange for fees and royalties. The franchisor sets operating standards, provides training and support, manages the national brand, and is responsible for the strength of the system overall. Not all franchisors are equal in their support quality.",
         related: "/resources/how-to-tell-if-a-franchisor-actually-cares",
         relatedLabel: "How to tell if a franchisor actually cares",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is a franchisor?",
+            a: "The company that owns the brand, the trademarks, and the operating system, and licenses the right to use them to franchisees. The franchisor recruits and approves buyers, provides training and support, sets brand standards, and collects the initial fee and ongoing royalties. It does not own the individual locations its franchisees run.",
+          },
+          {
+            q: "What is the difference between a franchisor and a franchisee?",
+            a: "The franchisor owns the brand and licenses it. The franchisee buys that licence and operates a location under it. Money flows from franchisee to franchisor as an initial fee and then royalties; standards, training, and systems flow the other way. One brand has a single franchisor and many franchisees.",
+          },
+          {
+            q: "How does a company become a franchisor?",
+            a: "By proving the model works in company-owned locations first, then building the legal and operational apparatus to license it: a Franchise Disclosure Document prepared by a franchise attorney, registration in the states that require it, an operations manual, and a training programme. Doing it before the model is proven is how brands end up with franchisees who cannot succeed.",
+          },
+        ],
       },
       {
         term: "FranchiseWire",
@@ -646,6 +731,23 @@ export const terms: GlossaryGroup[] = [
           "A franchisee who is actively involved in the day-to-day running of their business, either performing the service work themselves or managing staff directly on-site. Owner-operator models have lower initial capital requirements (no management layer to fund from day one) and faster break-even timelines. They suit people who want hands-on experience and a close relationship with their customer base. The trade-off is time: owner-operators are working in the business, not just on it.",
         related: null,
         relatedLabel: null,
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What does owner-operator mean in franchising?",
+            a: "It means the owner works in the business day to day rather than hiring a manager to run it. In an owner-operator model you are the first employee: opening, selling, serving customers, and covering shifts nobody else can. Most franchisors state plainly which model a brand is built for, and a brand designed for owner-operators rarely performs the same way when run at arm's length.",
+          },
+          {
+            q: "What is the difference between owner-operator and semi-absentee?",
+            a: "Hours and who runs the day. Owner-operator means you are in the business full time. Semi-absentee means a manager runs daily operations while you stay involved for a smaller and defined number of hours. The gap matters because the financial model is different: a semi-absentee unit carries a manager's salary the owner-operator model does not.",
+          },
+          {
+            q: "Does owner-operator mean I have to give up my job?",
+            a: "For most owner-operator brands, yes, at least once the location opens. Some buyers keep working through the build-out and training period, but a model built around the owner being present does not usually survive being run in evenings and weekends. If keeping your income is non-negotiable, that points you toward semi-absentee models rather than toward doing this one part time.",
+          },
+        ],
       },
     ],
   },
@@ -844,6 +946,23 @@ export const terms: GlossaryGroup[] = [
           "A franchise model designed to be operated by a manager rather than the owner full-time. The franchisee may work the business 10–20 hours per week, handling oversight, financials, and growth while a hired general manager handles day-to-day operations. Semi-absentee ownership typically requires a larger initial staff and more working capital, but it allows owners to remain in their current career while building a business.",
         related: "/resources/the-semi-absentee-franchise-real-talk",
         relatedLabel: "The semi-absentee franchise: real talk",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What is a semi-absentee franchise?",
+            a: "A model built to run with a manager handling daily operations while the owner stays involved for a defined and smaller number of hours, often ten to twenty a week. It is not passive ownership. The owner still handles hiring, financial oversight, and the decisions a manager cannot make.",
+          },
+          {
+            q: "How many hours a week is semi-absentee really?",
+            a: "More than the marketing suggests, especially in the first year. Ten to fifteen hours is a common figure once a location is stable and a good manager is in place, but the opening period usually demands close to full-time attention regardless of the model. Ask existing franchisees what their first six months actually looked like.",
+          },
+          {
+            q: "Can you buy a semi-absentee franchise while keeping your job?",
+            a: "Many people do, and it is the main reason the model exists. The two things that decide whether it works are the quality of the manager and whether your employer and schedule can absorb the opening period. The model depends entirely on hiring well, so budget for a real manager's salary from day one rather than treating it as a later expense.",
+          },
+        ],
       },
       {
         term: "Single-Unit Franchise",
@@ -926,6 +1045,23 @@ export const terms: GlossaryGroup[] = [
           "A franchise location delivered to you fully built out, equipped, stocked, and ready to operate. You turn the key and open for business on day one. The franchisor handles all construction, design, equipment installation, and initial inventory. Turnkey setups significantly reduce the complexity and project management burden of opening, but they typically come at a premium price compared to managing the build-out yourself. Compare turnkey pricing against self-managed costs to decide which approach fits your budget and comfort level.",
         related: "/investment",
         relatedLabel: "Full franchise investment guide",
+        // Query evidence from the 90-day /glossary pull, 2026-08-03. The index is
+        // ranking for this term while the term page draws nothing, which is the
+        // cannibalisation this content is meant to break.
+        faqs: [
+          {
+            q: "What does turnkey mean in franchising?",
+            a: "It describes a franchise package where the franchisor supplies the system, training, and setup support so the location is ready to open without the owner designing the business from scratch. The word describes how complete the package is, not how easy the business is to run.",
+          },
+          {
+            q: "Is a franchise really turnkey?",
+            a: "The systems usually are. The work is not. A brand can hand you an operations manual, a build-out specification, approved vendors, and a marketing calendar, and you still have to hire, sell, manage payroll, and be present. Treat turnkey as a claim about what is provided, then verify what is actually included in Item 11.",
+          },
+          {
+            q: "What is not included in a turnkey package?",
+            a: "Almost always: the site and the lease, working capital, hiring and payroll, local marketing beyond what the ad fund covers, and the licences and permits your state requires. Item 7 shows what the franchisor expects you to fund on top of the fee, and it is the honest counterweight to the word turnkey.",
+          },
+        ],
       },
     ],
   },

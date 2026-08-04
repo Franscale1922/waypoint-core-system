@@ -37,7 +37,7 @@ const faqs = [
 const comparisonSchema = faqPageSchema(faqs, `${SITE_URL}/franchise-consultant-vs-broker`);
 
 export const metadata: Metadata = {
-  title: "Franchise Consultant vs. Franchise Broker: What's the Difference?",
+  title: "Franchise Consultant vs. Franchise Broker",
   description:
     "Franchise consultants and brokers are often the same thing legally, but they work very differently. Here is what that distinction means for your search.",
   alternates: { canonical: "https://www.waypointfranchise.com/franchise-consultant-vs-broker" },

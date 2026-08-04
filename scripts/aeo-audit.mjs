@@ -187,9 +187,12 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 
 // ─── Brand-duplication guard (title template safety) ────────────────────────
 // Enforces CONTENT-STANDARDS Section 14.
-// The root layout applies title.template "%s | Waypoint Franchise Advisors".
+// The root layout applies title.template "%s | Waypoint".
 // Any title fed into that %s that ALSO hard-codes the brand renders it twice,
-// e.g. "Foo | Waypoint Franchise Advisors | Waypoint Franchise Advisors".
+// e.g. "Foo | Waypoint | Waypoint".
+// Both the short suffix and the old long form are banned in a template-fed
+// title: the long form was the suffix until 2026-08-03 and still reads as
+// duplication now that the template appends the short one.
 // Page-level metadata titles are visible in a page diff and caught in review;
 // the data-layer sources below are invisible there, so they are the real
 // regression risk and get guarded here.
@@ -198,14 +201,28 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 // frontmatter `title:` and `metaTitle:` in src/data feed the template. openGraph
 // and JSON-LD schema titles legitimately keep the brand and are NOT scanned.
 const BRAND = "Waypoint Franchise Advisors";
+const BRAND_SHORT = "Waypoint";
+const SUFFIX = ` | ${BRAND_SHORT}`;
+// Google renders roughly 60 characters of a title. Anything past that is
+// truncated, so the budget is the suffix plus the page's own words.
+const TITLE_BUDGET = 60;
+const hardCodesBrand = (line) => line.includes(BRAND) || line.includes(SUFFIX);
 const brandDupes = [];
+const longTitles = [];
 
 // (a) article frontmatter titles
 for (const f of files) {
   const { fm } = splitFM(fs.readFileSync(path.join(DIR, f), "utf8"));
   const titleLine = fm.split("\n").find((l) => /^\s*title:/.test(l));
-  if (titleLine && titleLine.includes(BRAND)) {
+  if (titleLine && hardCodesBrand(titleLine)) {
     brandDupes.push(`content/articles/${f} (frontmatter title)`);
+  }
+  if (titleLine) {
+    const bare = titleLine.replace(/^\s*title:\s*/, "").replace(/^["']|["']$/g, "").trim();
+    const rendered = bare.length + SUFFIX.length;
+    if (rendered > TITLE_BUDGET) {
+      longTitles.push({ file: `content/articles/${f}`, rendered, bare });
+    }
   }
 }
 
@@ -219,17 +236,29 @@ for (const f of dataFiles) {
   fs.readFileSync(path.join(DATA_DIR, f), "utf8")
     .split("\n")
     .forEach((line, i) => {
-      if (/metaTitle:/.test(line) && line.includes(BRAND)) {
+      if (/metaTitle:/.test(line) && hardCodesBrand(line)) {
         brandDupes.push(`src/data/${f}:${i + 1} (metaTitle)`);
       }
     });
 }
 
+// Advisory, not a gate. Google truncates past ~60 characters, but a long title
+// is a content judgement rather than a defect: the keyword sits at the FRONT, so
+// truncation costs the brand rather than the match, and rewriting a title on a
+// page that already ranks is a real risk. Failing here would force exactly that
+// rushed rewrite. Reported loudly so it cannot rot unseen.
+longTitles.sort((a, b) => b.rendered - a.rendered);
+console.log(`\nTitles over ${TITLE_BUDGET} chars once "${SUFFIX}" is applied (advisory): ${longTitles.length}/${files.length}`);
+for (const t of longTitles.slice(0, 5)) {
+  console.log(`  ${String(t.rendered).padStart(3)}  ${t.bare}`);
+}
+if (longTitles.length > 5) console.log(`  ...and ${longTitles.length - 5} more`);
+
 console.log(`\nBrand duplication in template-fed titles (banned): ${brandDupes.length}`);
 for (const d of brandDupes) console.log(`  ${d}`);
 
 if (brandDupes.length > 0) {
-  console.log(`\nFAIL: ${brandDupes.length} title source(s) hard-code "${BRAND}". The root layout's title.template already appends it, so these render the brand twice. Remove the brand from the metaTitle/frontmatter title and let the template add it once.`);
+  console.log(`\nFAIL: ${brandDupes.length} title source(s) hard-code the brand. The root layout's title.template already appends "${SUFFIX}", so these render it twice. Remove the brand and let the template add it once.`);
   process.exitCode = 1;
 } else {
   console.log(`PASS: no brand duplication in template-fed titles.`);
