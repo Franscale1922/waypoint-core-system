@@ -1,4 +1,7 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import ts from "typescript";
 import {
   SITE_URL,
   toWww,
@@ -307,6 +310,15 @@ describe("videoObjectSchema", () => {
    * 01:57:41" and `duration` 204, as normalized by that page's own
    * toVideoUploadDate/secondsToISO8601 helpers. This is the regression fixture
    * for the only VideoObject actually on the site.
+   *
+   * `contentUrl` is ABSENT here because the about page no longer sends one, and
+   * this fixture is only worth having if it keeps matching what that page really
+   * passes. It used to be "https://vimeo.com/1174270863", the Vimeo WATCH page:
+   * Google reads contentUrl as a direct link to the video file's content bytes
+   * and explicitly rules out the page the video lives on. Vimeo hands out no
+   * stable direct-file URL, so the property was dropped rather than corrected.
+   * Do NOT reintroduce it here to make an assertion convenient; that would put
+   * the fixture back out of step with production, which is the one job it has.
    */
   const LIVE = {
     name: "Kelsey Stuart on what honest franchise consulting actually looks like",
@@ -316,7 +328,6 @@ describe("videoObjectSchema", () => {
     uploadDate: "2026-03-17T01:57:41Z",
     duration: "PT3M24S",
     embedUrl: "https://player.vimeo.com/video/1174270863",
-    contentUrl: "https://vimeo.com/1174270863",
   };
 
   type VideoInput = Parameters<typeof videoObjectSchema>[0];
@@ -331,11 +342,29 @@ describe("videoObjectSchema", () => {
       uploadDate: LIVE.uploadDate,
       duration: LIVE.duration,
       embedUrl: LIVE.embedUrl,
-      contentUrl: LIVE.contentUrl,
     });
     // thumbnailUrl is emitted as an ARRAY, and the query string survives intact.
     expect(node?.thumbnailUrl).toEqual([LIVE.thumbnailUrl]);
     expect(node?.publisher["@id"]).toBe(`${SITE_URL}/#business`);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The emitted node carries no contentUrl. Asserted on its own rather than as a
+   * `contentUrl: undefined` entry in the toMatchObject above, which would have
+   * been an expectation that passes whatever happens: this file exists to catch
+   * checks that quietly stop checking.
+   *
+   * Absence is the CORRECT output here, not a gap. See the LIVE doc comment and
+   * the addOptional("contentUrl") comment in structured-data.ts.
+   */
+  it("emits no contentUrl, because the about page deliberately sends none", () => {
+    const warn = silenceWarn();
+    // Non-vacuous: the input genuinely lacks the key, so a rename or a fixture
+    // edit that put it back cannot let the assertion below pass hollow.
+    expect(LIVE).not.toHaveProperty("contentUrl");
+    expect(videoObjectSchema(LIVE, "ctx")).not.toHaveProperty("contentUrl");
+    // Omitting an optional property is normal input, not an authoring mistake.
     expect(warn).not.toHaveBeenCalled();
   });
 
@@ -584,5 +613,101 @@ describe("videoObjectSchema", () => {
   ])("rejects a malformed duration (%s)", (_label, bad) => {
     silenceWarn();
     expect(videoObjectSchema({ ...LIVE, duration: bad }, "ctx")).not.toHaveProperty("duration");
+  });
+});
+
+/**
+ * Everything above tests the FACTORY, which still accepts contentUrl on purpose:
+ * a caller holding a genuine direct media URL should be able to send one. That
+ * leaves the actual defect unguarded, because it was never a factory bug. The
+ * about page passed `https://vimeo.com/${VIDEO_ID}`, the Vimeo WATCH page, where
+ * Google requires a URL serving the video file's content bytes. Every factory
+ * test passed the whole time, and it took an external reviewer to notice.
+ *
+ * So the guard belongs at the call site. It is a SOURCE check because no runtime
+ * assertion can reach it: the value is built inside an async server component
+ * from a live oEmbed fetch.
+ *
+ * Parsed with the TypeScript compiler rather than scanned as text, for a reason
+ * that is not stylistic: the comment the about page now carries explaining why
+ * there is no contentUrl CONTAINS the word "contentUrl", so a substring or regex
+ * check would match the very warning against the bug and fail forever. The AST
+ * sees properties, not prose. Same move as aeo-audit.mjs, which parses rather
+ * than regexes for the same class of reason.
+ */
+describe("about page videoObjectSchema call site", () => {
+  const ABOUT_PAGE = join(process.cwd(), "src", "app", "(marketing)", "about", "page.tsx");
+
+  /** Property name as written, for identifier, quoted and shorthand keys alike. */
+  function propertyNameOf(property: ts.ObjectLiteralElementLike): string | null {
+    const name = property.name;
+    if (!name) return null;
+    if (ts.isIdentifier(name) || ts.isStringLiteral(name) || ts.isNoSubstitutionTemplateLiteral(name)) {
+      return name.text;
+    }
+    return null; // computed key; unresolvable, and handled by the spread/computed check below
+  }
+
+  /** Every object literal passed as the first argument to videoObjectSchema(). */
+  function videoObjectSchemaArguments(): ts.ObjectLiteralExpression[] {
+    const source = ts.createSourceFile(
+      ABOUT_PAGE,
+      readFileSync(ABOUT_PAGE, "utf8"),
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TSX,
+    );
+    const found: ts.ObjectLiteralExpression[] = [];
+    const visit = (node: ts.Node) => {
+      if (
+        ts.isCallExpression(node) &&
+        ts.isIdentifier(node.expression) &&
+        node.expression.text === "videoObjectSchema"
+      ) {
+        const [first] = node.arguments;
+        if (first && ts.isObjectLiteralExpression(first)) found.push(first);
+      }
+      ts.forEachChild(node, visit);
+    };
+    ts.forEachChild(source, visit);
+    return found;
+  }
+
+  /**
+   * The locator has to fail loudly rather than find nothing quietly. If the page
+   * is renamed, the call is refactored behind a variable, or the import is
+   * aliased, this test goes red and someone re-points the guard. Without it the
+   * contentUrl assertion below would pass over an empty list forever.
+   */
+  it("finds the videoObjectSchema call it is guarding", () => {
+    expect(
+      videoObjectSchemaArguments(),
+      `No videoObjectSchema({...}) call found in ${ABOUT_PAGE}. This guard locates the call by ` +
+        `name, so a rename, an aliased import, or hoisting the argument into a variable makes it ` +
+        `blind. Re-point it at the new shape rather than deleting it.`,
+    ).not.toHaveLength(0);
+  });
+
+  it("passes no contentUrl, which would otherwise ship a watch page as the media file", () => {
+    for (const argument of videoObjectSchemaArguments()) {
+      // A spread could smuggle the property in past a property-name check, and a
+      // computed key is unresolvable at parse time. Either one defeats the guard,
+      // so neither is allowed to pass silently.
+      expect(
+        argument.properties.filter((p) => ts.isSpreadAssignment(p) || (p.name && ts.isComputedPropertyName(p.name))),
+        `The videoObjectSchema argument in ${ABOUT_PAGE} uses a spread or a computed key, so this ` +
+          `guard can no longer prove what it passes. Write the properties out literally, or teach ` +
+          `the guard to resolve them.`,
+      ).toHaveLength(0);
+
+      expect(
+        argument.properties.map(propertyNameOf),
+        `The about page passes contentUrl to videoObjectSchema again. Google reads contentUrl as a ` +
+          `direct link to the video file's actual content bytes and rules out the page the video ` +
+          `lives on, so https://vimeo.com/<id> is exactly the wrong value. Vimeo exposes no stable ` +
+          `public direct-file URL, and embedUrl already carries the node's eligibility. Remove it, ` +
+          `unless you have a verified URL that serves the video bytes themselves.`,
+      ).not.toContain("contentUrl");
+    }
   });
 });
