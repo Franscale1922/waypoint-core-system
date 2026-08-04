@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | Waypoint",
   },
   description:
-    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners find and start the right franchise. Book a free discovery call.",
+    "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners find and start the right franchise. Book a free call.",
   keywords: [
     "franchise consultant",
     "franchise advisor",

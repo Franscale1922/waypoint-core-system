@@ -267,7 +267,7 @@ export function buildChecklistEmail(params: {
 
   <!-- FOOTER -->
   <tr><td class="mpad" style="background-color:#0c1929;padding:22px 40px 26px;border-radius:0 0 8px 8px;">
-    <p style="margin:0 0 4px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:600;color:rgba(250,248,244,0.65);">Kelsey Stuart &mdash; Waypoint Franchise Advisors</p>
+    <p style="margin:0 0 4px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:12px;font-weight:600;color:rgba(250,248,244,0.65);">Kelsey Stuart, Waypoint Franchise Advisors</p>
     <p style="margin:0 0 14px;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:rgba(250,248,244,0.35);">P.O. Box 3421, Whitefish, MT 59937 &bull; waypointfranchise.com</p>
     <p style="margin:0;font-family:'Helvetica Neue',Arial,sans-serif;font-size:11px;color:rgba(250,248,244,0.3);line-height:1.6;">
       You received this because you requested a franchise readiness checklist.<br>

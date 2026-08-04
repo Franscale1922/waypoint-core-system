@@ -19,6 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `https://www.waypointfranchise.com/franchise-financing/${method}`;
   return {
     title: guide.metaTitle,
+    // aeo-desc-dynamic: comes straight from src/data/financing.ts, whose
+    // metaDescription values aeo-audit now length-checks directly.
     description: guide.metaDescription,
     alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {

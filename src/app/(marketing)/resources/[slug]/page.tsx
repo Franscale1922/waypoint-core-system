@@ -26,6 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   return {
     title: article.meta.title,
+    // aeo-desc-dynamic: this is the article's own excerpt, which aeo-audit
+    // already measures per article against the same 150-160 window.
     description: article.meta.excerpt,
     alternates: {
       canonical: `https://www.waypointfranchise.com/resources/${slug}`,
