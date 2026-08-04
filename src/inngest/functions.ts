@@ -1393,27 +1393,30 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 1: Load all articles ─────────────────────────────────────────
         //
-        // Both step IDs below carry a `-v2` suffix because this change altered what they return:
-        // step 1 now yields `{articles, skipped}` instead of a bare array, and step 2's input is
-        // therefore different too. Inngest memoizes by step ID, so REUSING the old IDs would make
-        // the two deployments trade incompatible cached values in both directions. A run that
-        // began before this deployed would replay an array into code expecting an object, and
-        // (the direction a defensive shape-check cannot fix, because the old code is what runs)
-        // a ROLLBACK would replay this object into `articles.filter(...)` and take out the batch
-        // before it commits or notifies anything.
+        // This step keeps its ID and its ARRAY shape, and the new skip list is returned by a
+        // separate step alongside it, rather than widening this one to `{articles, skipped}`.
         //
-        // A new ID simply is not in an old run's cache, so each deployment re-runs discovery with
-        // its own code and reads its own shape. That is cheap here: the step only re-reads the
-        // articles directory. It also means no cached article predating this change can reach the
-        // rest of the function, which is what the identity invariant below would otherwise have to
-        // catch after the fact.
-        const { articles, skipped: discoverySkips } = await step.run(
-            "load-all-articles-v2",
-            async () => discoverArticles(),
-        );
+        // Changing a step's return shape is what forces a version bump, and bumping the ID here
+        // turned out to be worse than the problem. Inngest memoizes per step ID within a run, so
+        // a fresh ID makes a resumed run re-read the corpus while `refresh-<slug>`,
+        // `commit-to-github` and `send-refresh-summary` all still replay from their old IDs: a
+        // mixed-vintage run where discovery reflects the current files and the model output being
+        // committed does not. Versioning the whole chain instead only trades that for re-running
+        // paid model calls and re-committing an already-committed batch.
+        //
+        // Keeping the shape sidesteps the choice. An old run resuming gets the array it expects,
+        // a rollback replays an array into code that wants an array, and `discovery-skips` is
+        // simply a step the old code never asks for, so its cached value is ignored rather than
+        // misread. Nothing in the chain below needs a new ID.
+        const articles = await step.run("load-all-articles", async () => {
+            return discoverArticles().articles;
+        });
+        const discoverySkips = await step.run("discovery-skips", async () => {
+            return discoverArticles().skipped;
+        });
 
         // ── Step 2: Identify stale articles ───────────────────────────────────
-        const staleArticles = await step.run("identify-stale-v2", async () => {
+        const staleArticles = await step.run("identify-stale", async () => {
             return articles.filter((a) => isStale(a, force));
         });
 
@@ -1437,13 +1440,16 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
-            // Re-assert the identity invariant rather than trusting that discovery established it.
-            // The `-v2` step IDs above mean no article predating this change can reach here, so
-            // this is defence in depth and not the load-bearing guard it would be without them.
-            // It stays because it is the invariant the COMMIT depends on, stated positively and
-            // close to nothing: whatever produced this article, the path it will be written to has
-            // to be the file it was read from. Checked before the model call, so a violation costs
-            // no OpenAI spend.
+            // Re-assert the identity invariant rather than trusting that discovery established it,
+            // because this run may not be the one that established it. `load-all-articles` keeps
+            // its ID deliberately (see above), so a run that began before this deployed replays
+            // its OLD cached result: articles carrying the frontmatter-derived slug that discovery
+            // would now refuse, with discovery's own check bypassed because discovery never runs
+            // again. This is the guard for exactly that window.
+            //
+            // Stated as a positive invariant rather than a repeat of the discovery rule, so it
+            // holds whatever produced the article, and checked before the model call so a
+            // violation costs no OpenAI spend.
             if (!articleIdentityMatchesFile(article)) {
                 failed.push({
                     slug: article.slug,
@@ -1635,12 +1641,31 @@ export const contentRefreshFunction = inngest.createFunction(
                 `⏭ Skipped (strategic/not due): ${articles.length - staleArticles.length} articles`,
             ];
 
-            await client.emails.send({
+            // Resend reports a rejected send in the RESULT, not by throwing: a revoked key, a
+            // rejected sender or an outage all come back as `{ error }` from a call that resolves
+            // normally. src/app/api/contact/route.ts already reads that contract; discarding it
+            // here would have left the absent-key branch above guarding one way to lose a failure
+            // report while the likelier one, a key that exists and no longer works, still returned
+            // success and reported Complete.
+            const sendResult = await client.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: [NOTIFY_EMAIL],
                 subject: `Content Refresh: ${refreshed.length} articles updated, ${today}`,
                 text: bodyLines.join("\n"),
             });
+
+            if (sendResult.error) {
+                const detail = JSON.stringify(sendResult.error);
+                // Same asymmetry as the missing key: an undelivered all-clear is a tolerable loss,
+                // an undelivered failure list is the silent month this whole path exists to stop.
+                if (failed.length > 0) {
+                    throw new Error(
+                        `Content refresh had ${failed.length} failure(s) and the summary email was ` +
+                            `rejected (${detail}): ${failed.map((f) => `${f.slug} (${f.reason})`).join("; ")}`,
+                    );
+                }
+                console.error("[content-refresh] Resend summary error:", detail);
+            }
         });
 
         return {
