@@ -7,7 +7,14 @@ import { useState } from "react";
  *
  * Designed to be injected into the reading flow of resource articles.
  * Specifically promotes the "Corporate Escape Kit".
- * On submit, posts to /api/capture-email.
+ * On submit, posts to /api/escape-kit.
+ *
+ * It used to post to /api/capture-email with `source: "escape_kit_inline"`, but
+ * that handler picks its attachment from `checklistSlug` and ignores `source`
+ * entirely. With no slug supplied, everyone who filled in this form was sent
+ * the Universal readiness checklist while the copy above promised them the
+ * Escape Kit. /api/escape-kit is the endpoint that actually owns this magnet,
+ * and it is what the standalone EscapeKitCaptureForm has always used.
  */
 export default function InlineCapture() {
   const [email, setEmail] = useState("");
@@ -20,11 +27,10 @@ export default function InlineCapture() {
     setStatus("loading");
 
     try {
-      const res = await fetch("/api/capture-email", {
+      const res = await fetch("/api/escape-kit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // Identifying as the escape kit capture source
-        body: JSON.stringify({ email, name, source: "escape_kit_inline" }),
+        body: JSON.stringify({ email, name, articleSlug: "escape_kit_inline" }),
       });
       if (res.ok) {
         setStatus("success");

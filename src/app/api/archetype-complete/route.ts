@@ -5,6 +5,9 @@ import { Resend } from "resend";
 import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { ArchetypeSchema } from "@/app/lib/schemas";
+import { buildUnsubscribeLink } from "@/lib/nurture-emails";
+import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // FROM uses the verified mail.waypointfranchise.com subdomain (apex is reserved for Google Workspace receiving).
@@ -23,7 +26,18 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, archetype, archetypeName, strongFits, weakFits } = parsed.data;
+    const { name, archetype, archetypeName, strongFits, weakFits } = parsed.data;
+
+    // Rate limits and address normalization. No idempotency key: a retake can
+    // yield a different archetype, and that result is what the visitor is
+    // waiting to read. The per-address limit is what bounds abuse here.
+    const guard = await guardCapture({
+      req,
+      route: "archetype-complete",
+      email: parsed.data.email,
+    });
+    if (!guard.proceed) return guard.response;
+    const email = guard.email;
 
     // ── 1. Upsert lead in DB ──────────────────────────────────────────────────
     const existing = await prisma.lead.findFirst({ where: { email } });
@@ -85,7 +99,6 @@ export async function POST(req: Request) {
           archetypeName,
           strongFits,
           weakFits,
-          nurtureStep: 1,
         },
       });
 
@@ -102,6 +115,13 @@ export async function POST(req: Request) {
       const submissionId = submission.id;
       afterResponse("[archetype-complete] Nurture trigger", async () => {
         try {
+          // An opt-out on ANY list belongs to this person and stops the sequence
+          // before it starts. The confirmation email above still goes out.
+          if (await isEmailSuppressedFailClosed(email)) {
+            console.log("[archetype-complete] address is suppressed; releasing the submission row");
+            await submissions.delete({ where: { id: submissionId } });
+            return;
+          }
           await inngest.send({
             name: "nurture/archetype.complete",
             data: { submissionId, email, name, archetype },
@@ -130,24 +150,18 @@ export async function POST(req: Request) {
     const strongFitsText = strongFits.join(", ");
     const weakFitsText = weakFits.join(", ");
 
-    const unsubscribeUrl = (() => {
-      const secret = process.env.UNSUBSCRIBE_SECRET;
-      if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
-      const crypto = require("crypto");
-      const token = crypto.createHmac("sha256", secret).update(submission.id).digest("hex");
-      const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
-      return `${base}/api/archetype-unsubscribe?id=${submission.id}&token=${token}`;
-    })();
+    // Was a local IIFE whose no-secret branch returned `/unsubscribe`, a path
+    // with no handler. The shared builder degrades to a mailto instead, so the
+    // opt-out in this email always resolves to something that works.
+    const unsub = buildUnsubscribeLink(submission.id, "archetype");
+    const unsubscribeUrl = unsub.url;
 
-    await resend.emails.send({
+    const deliveryResult = await resend.emails.send({
       from: FROM,
       replyTo: REPLY_TO,
       to: email,
       subject: `Your Franchise Archetype: ${archetypeName}`,
-      headers: {
-        "List-Unsubscribe": `<${unsubscribeUrl}>`,
-        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-      },
+      headers: unsub.headers,
       html: `
         <div style="font-family: Georgia, serif; max-width: 560px; margin: 0 auto; color: #1a1a1a;">
           <p style="font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Your Franchise Archetype</p>
@@ -172,6 +186,11 @@ export async function POST(req: Request) {
       text: `Your Franchise Archetype: ${archetypeName}\n\n${name.split(" ")[0]},\n\nBased on how you answered, your franchise archetype is ${archetypeName}.\n\nIndustries that tend to fit you: ${strongFitsText}\nIndustries that often don't align: ${weakFitsText}\n\nI'll follow up over the next week with a few more notes specific to your archetype. If you want to skip ahead, book a free call at waypointfranchise.com/book.\n\nKelsey\nWaypoint Franchise Advisors\n\n---\nWaypoint Franchise Advisors\nP.O. Box 3421, Whitefish, MT 59937\nTo stop receiving these notes: ${unsubscribeUrl}`,
       tags: [{ name: "sequence", value: "archetype-email-1" }],
     });
+
+    // The Resend SDK resolves with { data, error } rather than rejecting, so an
+    // unchecked await reported success for a message that never left.
+    if (resendFailed("[archetype-complete] delivery", deliveryResult)) return deliveryFailed();
+    await markDelivered("archetypeSubmission", submission.id, "[archetype-complete]");
 
     return NextResponse.json({
       success: true,

@@ -19,9 +19,13 @@ import type { MockInstance } from "vitest";
 const h = vi.hoisted(() => {
   const model = () => ({
     findFirst: vi.fn(),
+    findUnique: vi.fn(),
     create: vi.fn(),
     update: vi.fn(),
+    updateMany: vi.fn(),
     delete: vi.fn(),
+    deleteMany: vi.fn(),
+    upsert: vi.fn(),
   });
   return {
     afterShouldThrow: { value: false },
@@ -34,6 +38,10 @@ const h = vi.hoisted(() => {
       aiFddReaderDownload: model(),
       scorecardSubmission: model(),
       archetypeSubmission: model(),
+      // Backs the rate limiter every capture route now runs before it does
+      // anything. Without it the guard sees an undefined model, fails closed,
+      // and every route returns 503 — which is the limiter working, not a bug.
+      rateLimitBucket: model(),
     },
     sendEvent: vi.fn(),
     emailSend: vi.fn(),
@@ -135,10 +143,17 @@ beforeEach(() => {
   h.afterShouldThrow.value = false;
   h.scheduled.length = 0;
   for (const m of Object.values(h.db)) {
+    // null = no prior delivery and no opt-out on record: the ordinary first-time
+    // submission. Individual tests override it to assert the other branches.
     m.findFirst.mockReset().mockResolvedValue(null);
+    m.findUnique.mockReset().mockResolvedValue(null);
     m.create.mockReset().mockResolvedValue({ id: ID });
     m.update.mockReset().mockResolvedValue({ id: ID });
+    m.updateMany.mockReset().mockResolvedValue({ count: 0 });
     m.delete.mockReset().mockResolvedValue({ id: ID });
+    m.deleteMany.mockReset().mockResolvedValue({ count: 0 });
+    // count 1 = first hit of a fresh window, comfortably inside every limit.
+    m.upsert.mockReset().mockResolvedValue({ count: 1 });
   }
   h.sendEvent.mockReset().mockResolvedValue({ ids: ["evt_1"] });
   h.emailSend.mockReset().mockResolvedValue({ id: "re_1" });

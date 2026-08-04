@@ -7,6 +7,8 @@ import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
 import { ScorecardSchema } from "@/app/lib/schemas";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
+import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // FROM uses the verified mail.waypointfranchise.com subdomain (apex is reserved for Google Workspace receiving).
@@ -26,7 +28,20 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, score, primaryDriver, biggestFear } = parsed.data;
+    const { name, score, primaryDriver, biggestFear } = parsed.data;
+
+    // Rate limits and address normalization. No idempotency key here: a retake
+    // produces a genuinely different score, so suppressing the repeat would
+    // swallow a result the visitor is waiting on. The per-address limit is what
+    // bounds abuse of this route.
+    const guard = await guardCapture({
+      req,
+      route: "scorecard-complete",
+      email: parsed.data.email,
+    });
+    if (!guard.proceed) return guard.response;
+    const email = guard.email;
+
     const firstName = name.split(" ")[0];
 
     // ── 1. Upsert lead in DB ──────────────────────────────────────────────────
@@ -103,7 +118,6 @@ export async function POST(req: Request) {
           score,
           primaryDriver: primaryDriver ?? null,
           biggestFear: biggestFear ?? null,
-          nurtureStep: 1,
         },
       });
 
@@ -120,6 +134,14 @@ export async function POST(req: Request) {
       const submissionId = submission.id;
       afterResponse("[scorecard-complete] Nurture trigger", async () => {
         try {
+          // An opt-out recorded on ANY list belongs to this person and stops the
+          // sequence before it starts. The results email above still goes out:
+          // they just asked for it.
+          if (await isEmailSuppressedFailClosed(email)) {
+            console.log("[scorecard-complete] address is suppressed; releasing the submission row");
+            await submissions.delete({ where: { id: submissionId } });
+            return;
+          }
           await inngest.send({
             name: "nurture/scorecard.complete",
             data: { submissionId, email, name, score },
@@ -143,7 +165,7 @@ export async function POST(req: Request) {
     }
 
     // ── 3. Send Email 1 immediately (scorecard results), always sent ─────────
-    await resend.emails.send({
+    const deliveryResult = await resend.emails.send({
       from: FROM,
       replyTo: REPLY_TO,
       to: email,
@@ -152,6 +174,11 @@ export async function POST(req: Request) {
       text: scoreResultsText({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
       tags: [{ name: "sequence", value: "scorecard-email-1" }],
     });
+
+    // The Resend SDK resolves with { data, error } rather than rejecting, so an
+    // unchecked await reported success for a message that never left.
+    if (resendFailed("[scorecard-complete] delivery", deliveryResult)) return deliveryFailed();
+    await markDelivered("scorecardSubmission", submission.id, "[scorecard-complete]");
 
     // ── 4. Alert Kelsey for high-score submissions ────────────────────────────
     if (score >= HIGH_SCORE_THRESHOLD) {

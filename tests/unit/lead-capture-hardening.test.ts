@@ -1,0 +1,317 @@
+import { describe, it, expect, vi, beforeEach } from "vitest";
+
+/**
+ * Guards the abuse, delivery and opt-out contract of the public capture routes.
+ *
+ * Each test here fails against the code as it stood before: the routes discarded
+ * Resend's `{ data, error }` result and answered `{ success: true }` for mail
+ * that never left; nothing counted requests, so one POST in a loop delivered a
+ * message to a stranger every iteration; and an unsubscribe was recorded against
+ * a single row, so the next submission wrote a fresh row with the flag cleared
+ * and the sequence resumed.
+ */
+
+const h = vi.hoisted(() => {
+  const model = () => ({
+    findFirst: vi.fn(),
+    findUnique: vi.fn(),
+    create: vi.fn(),
+    update: vi.fn(),
+    updateMany: vi.fn(),
+    delete: vi.fn(),
+    deleteMany: vi.fn(),
+    upsert: vi.fn(),
+  });
+  return {
+    scheduled: [] as Array<() => unknown>,
+    db: {
+      lead: model(),
+      checklistDownload: model(),
+      escapeKitDownload: model(),
+      pitchDecoderDownload: model(),
+      aiFddReaderDownload: model(),
+      scorecardSubmission: model(),
+      archetypeSubmission: model(),
+      rateLimitBucket: model(),
+    },
+    sendEvent: vi.fn(),
+    emailSend: vi.fn(),
+    notifyCrm: vi.fn(),
+    subscribeToBeehiiv: vi.fn(),
+  };
+});
+
+vi.mock("next/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next/server")>();
+  return { ...actual, after: (cb: () => unknown) => void h.scheduled.push(cb) };
+});
+vi.mock("@/lib/prisma", () => ({ default: h.db }));
+vi.mock("@/inngest/client", () => ({ inngest: { send: h.sendEvent } }));
+vi.mock("resend", () => ({ Resend: class { emails = { send: h.emailSend }; } }));
+vi.mock("@/lib/crm", () => ({ notifyCrm: h.notifyCrm }));
+vi.mock("@/lib/beehiiv", () => ({ subscribeToBeehiiv: h.subscribeToBeehiiv }));
+
+const SECRET = "test-unsubscribe-secret";
+process.env.UNSUBSCRIBE_SECRET = SECRET;
+process.env.NEXT_PUBLIC_SITE_URL = "https://test.waypointfranchise.com";
+
+const ID = "rec_test_1";
+const EMAIL = "prospect@example.com";
+
+function post(body: unknown, headers: Record<string, string> = {}) {
+  return new Request("http://localhost/api/x", {
+    method: "POST",
+    headers: { "content-type": "application/json", ...headers },
+    body: JSON.stringify(body),
+  });
+}
+
+async function runScheduled() {
+  for (const cb of h.scheduled) await cb();
+}
+
+/** A Resend failure as the SDK actually reports it: resolved, not thrown. */
+const RESEND_ERROR = { data: null, error: { name: "validation_error", message: "invalid recipient" } };
+const RESEND_OK = { data: { id: "re_1" }, error: null };
+
+beforeEach(() => {
+  h.scheduled.length = 0;
+  for (const m of Object.values(h.db)) {
+    m.findFirst.mockReset().mockResolvedValue(null);
+    m.findUnique.mockReset().mockResolvedValue(null);
+    m.create.mockReset().mockResolvedValue({ id: ID });
+    m.update.mockReset().mockResolvedValue({ id: ID });
+    m.updateMany.mockReset().mockResolvedValue({ count: 0 });
+    m.delete.mockReset().mockResolvedValue({ id: ID });
+    m.deleteMany.mockReset().mockResolvedValue({ count: 0 });
+    m.upsert.mockReset().mockResolvedValue({ count: 1 });
+  }
+  h.sendEvent.mockReset().mockResolvedValue({ ids: ["evt_1"] });
+  h.emailSend.mockReset().mockResolvedValue(RESEND_OK);
+  h.notifyCrm.mockReset().mockResolvedValue(undefined);
+  h.subscribeToBeehiiv.mockReset().mockResolvedValue(undefined);
+});
+
+// ── Resend results are not optional reading ─────────────────────────────────
+
+describe("a failed subscriber send is reported to the visitor", () => {
+  it("returns 500 when the checklist send fails", async () => {
+    // First send is Kelsey's notification, second is the subscriber's copy.
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL, name: "Test Prospect" }));
+
+    expect(res.status).toBe(500);
+    await expect(res.json()).resolves.toMatchObject({ error: expect.any(String) });
+  });
+
+  it("starts no nurture sequence and records no delivery when the send fails", async () => {
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.sendEvent).not.toHaveBeenCalled();
+    // Leaving nurtureStep at 0 is what lets the visitor's retry through.
+    expect(h.db.checklistDownload.update).not.toHaveBeenCalled();
+  });
+
+  it("still succeeds when only Kelsey's internal notification fails", async () => {
+    // Best-effort by design: the visitor is not the right person to fail for it.
+    h.emailSend.mockResolvedValueOnce(RESEND_ERROR).mockResolvedValueOnce(RESEND_OK);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({ success: true });
+  });
+
+  it("marks the delivery only once the subscriber send succeeded", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+
+    expect(h.db.checklistDownload.update).toHaveBeenCalledWith({
+      where: { id: ID },
+      data: { nurtureStep: 1 },
+    });
+  });
+});
+
+// ── Rate limiting and idempotency ───────────────────────────────────────────
+
+describe("repeat submissions cannot be used to bomb an inbox", () => {
+  it("suppresses every side effect for a duplicate inside the window", async () => {
+    h.db.checklistDownload.findFirst.mockResolvedValue({ id: "already_delivered" });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(res.status).toBe(200);
+    await expect(res.json()).resolves.toMatchObject({ deduplicated: true });
+    expect(h.emailSend).not.toHaveBeenCalled();
+    expect(h.db.checklistDownload.create).not.toHaveBeenCalled();
+    expect(h.notifyCrm).not.toHaveBeenCalled();
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+    expect(h.sendEvent).not.toHaveBeenCalled();
+  });
+
+  it("returns 429 with Retry-After once the address is over its limit", async () => {
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(429);
+    expect(Number(res.headers.get("Retry-After"))).toBeGreaterThan(0);
+    expect(h.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("counts the client address when a proxy header identifies one", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }, { "x-real-ip": "203.0.113.9" }));
+
+    const scopes = h.db.rateLimitBucket.upsert.mock.calls.map(
+      (c) => (c[0] as { create: { scope: string; key: string } }).create
+    );
+    expect(scopes).toContainEqual(expect.objectContaining({ scope: "ip", key: "203.0.113.9" }));
+    expect(scopes).toContainEqual(expect.objectContaining({ scope: "email", key: EMAIL }));
+  });
+
+  it("refuses rather than sending when the limiter itself is unreachable", async () => {
+    // Fail closed: the same outage hides the row write, the unsubscribe token and
+    // the nurture, so failing open would only email a stranger something we hold
+    // no record of and they cannot opt out of.
+    h.db.rateLimitBucket.upsert.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(503);
+    expect(h.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("collapses an unrecognised checklist slug so it cannot mint fresh dedup keys", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL, checklistSlug: "not-a-real-slug" }));
+
+    expect(h.db.checklistDownload.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ checklistType: "universal" }) })
+    );
+  });
+
+  it("rejects a body with no usable address before doing any work", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: "not-an-email" }));
+
+    expect(res.status).toBe(400);
+    expect(h.db.rateLimitBucket.upsert).not.toHaveBeenCalled();
+    expect(h.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("stores the address normalized so later lookups agree with each other", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: "  Prospect@Example.COM " }));
+
+    expect(h.db.checklistDownload.create).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ email: EMAIL }) })
+    );
+  });
+});
+
+// ── Suppression is a property of the address ────────────────────────────────
+
+describe("an opt-out recorded anywhere stops a new sequence", () => {
+  /** Answers the suppression query only; the dedup query still sees nothing. */
+  function suppressOn(model: { findFirst: ReturnType<typeof vi.fn> }) {
+    model.findFirst.mockImplementation(async (args: { where?: Record<string, unknown> }) =>
+      args?.where?.unsubscribed === true ? { id: "opted_out" } : null
+    );
+  }
+
+  it("delivers what was asked for but starts no drip", async () => {
+    // A form filled in seconds ago is a direct request, so the download still
+    // goes out. What an opt-out withholds is the sequence that follows it.
+    suppressOn(h.db.escapeKitDownload);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(res.status).toBe(200);
+    expect(h.emailSend).toHaveBeenCalledTimes(2);
+    // The opt-out lives on a DIFFERENT list, which the old per-record check
+    // could not see at all.
+    expect(h.sendEvent).not.toHaveBeenCalled();
+  });
+
+  it("starts the sequence when nothing is suppressed", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.sendEvent).toHaveBeenCalledTimes(1);
+  });
+
+  it("treats an unanswerable suppression lookup as suppressed", async () => {
+    h.db.archetypeSubmission.findFirst.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.sendEvent).not.toHaveBeenCalled();
+  });
+});
+
+// ── Unsubscribe links have to point at their own list ───────────────────────
+
+describe("unsubscribe links resolve to a handler that can find the record", () => {
+  function headersOfLastSend(): Record<string, string> {
+    const calls = h.emailSend.mock.calls;
+    return (calls[calls.length - 1]![0] as { headers?: Record<string, string> }).headers ?? {};
+  }
+
+  it("sends Escape Kit recipients to the Escape Kit endpoint", async () => {
+    // The bug: this route built its link with a helper hardcoded to
+    // /api/unsubscribe, which looks ids up in the CHECKLIST table. An Escape Kit
+    // id can never be there, so every click reported "already removed" and
+    // unsubscribed nobody.
+    const { POST } = await import("@/app/api/escape-kit/route");
+
+    await POST(post({ email: EMAIL }));
+
+    expect(headersOfLastSend()["List-Unsubscribe"]).toContain("/api/escape-kit-unsubscribe");
+  });
+
+  it("sends checklist recipients to the checklist endpoint", async () => {
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+
+    expect(headersOfLastSend()["List-Unsubscribe"]).toContain("/api/unsubscribe");
+  });
+
+  it("falls back to a working mailto when no signed link can be built", async () => {
+    // The old fallback was `${site}/unsubscribe`, a path with no handler, so the
+    // one email guaranteed to go out during an outage carried a dead opt-out.
+    h.db.checklistDownload.create.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+
+    const headers = headersOfLastSend();
+    expect(headers["List-Unsubscribe"]).toContain("mailto:");
+    // One-click is a promise a mailto cannot keep, so it must not be asserted.
+    expect(headers["List-Unsubscribe-Post"]).toBeUndefined();
+  });
+});

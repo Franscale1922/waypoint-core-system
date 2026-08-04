@@ -44,6 +44,17 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   "ai-fdd-reader/route.ts": "Public site lead-magnet capture.",
   "newsletter-subscribe/route.ts": "Public site newsletter capture.",
   "contact/route.ts": "Public site contact form.",
+  // The opt-out endpoints. POST is the RFC 8058 one-click target, so it is sent
+  // by the recipient's MAIL PROVIDER and can carry no admin session by
+  // definition. The control is the HMAC in the URL, verified fail-closed before
+  // anything is written; POST holds the mutation precisely so that a GET from a
+  // scanner or link prefetcher cannot unsubscribe anyone.
+  "unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "escape-kit-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "scorecard-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "archetype-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
 };
 
 function walk(dir: string): string[] {

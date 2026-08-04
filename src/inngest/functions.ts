@@ -1,5 +1,6 @@
 import { inngest } from "./client";
 import prisma from "@/lib/prisma";
+import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 export const leadHunterProcess = inngest.createFunction(
@@ -2128,7 +2129,7 @@ export const checklistNurtureProcess = inngest.createFunction(
         };
 
         const firstName = name ? name.split(" ")[0] : "there";
-        const unsubscribeUrl = buildUnsubscribeUrl(downloadId);
+        const unsubscribeUrl = buildUnsubscribeUrl(downloadId, "checklist");
         const footer = buildNurtureFooter(unsubscribeUrl);
 
         // Helper: check all suppression conditions before each send
@@ -2141,6 +2142,11 @@ export const checklistNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             }) as any;
             if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // The row above is only this sequence's own copy of the flag. An opt-out
+            // recorded against any OTHER list belongs to the same person and stops this
+            // sequence too. Checking only the local row is how a later download used to
+            // hand someone a fresh record and quietly resume mailing them.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             // Check if the lead booked a call or replied
             const lead = await prisma.lead.findFirst({
@@ -2303,10 +2309,10 @@ export const scorecardNurtureProcess = inngest.createFunction(
 
         // Reuse the HMAC token helper: we pass submissionId as the identifier.
         // The unsubscribe endpoint at /api/scorecard-unsubscribe validates this same token.
-        const unsubscribeUrl = buildScorecardUnsubscribeUrl(submissionId).replace(
-            "/api/unsubscribe?",
-            "/api/scorecard-unsubscribe?"
-        );
+        // The route used to be patched in afterwards with a string replace on the
+        // built URL; the builder takes the list directly now, so the endpoint is
+        // chosen rather than corrected.
+        const unsubscribeUrl = buildScorecardUnsubscribeUrl(submissionId, "scorecard");
 
         const unsubscribeHeaders = {
             "List-Unsubscribe": `<${unsubscribeUrl}>`,
@@ -2330,6 +2336,8 @@ export const scorecardNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // See above: suppression is a property of the ADDRESS, not of one row.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             // 2. Lead booked a call (TidyCal sync writes bookedAt)
             // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
@@ -2567,6 +2575,11 @@ export const escapeKitNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             });
             if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // The row above is only this sequence's own copy of the flag. An opt-out
+            // recorded against any OTHER list belongs to the same person and stops this
+            // sequence too. Checking only the local row is how a later download used to
+            // hand someone a fresh record and quietly resume mailing them.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -2762,6 +2775,11 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             });
             if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // The row above is only this sequence's own copy of the flag. An opt-out
+            // recorded against any OTHER list belongs to the same person and stops this
+            // sequence too. Checking only the local row is how a later download used to
+            // hand someone a fresh record and quietly resume mailing them.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -2902,6 +2920,11 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             });
             if (record?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // The row above is only this sequence's own copy of the flag. An opt-out
+            // recorded against any OTHER list belongs to the same person and stops this
+            // sequence too. Checking only the local row is how a later download used to
+            // hand someone a fresh record and quietly resume mailing them.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3063,6 +3086,8 @@ export const archetypeNurtureProcess = inngest.createFunction(
                 select: { unsubscribed: true },
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
+            // See above: suppression is a property of the ADDRESS, not of one row.
+            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },

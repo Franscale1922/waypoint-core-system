@@ -127,6 +127,13 @@ model ScorecardSubmission {
   nurtureCompletedAt DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
 }
 
 // ── Archetype Quiz Submissions ─────────────────────────────────────────────
@@ -148,6 +155,13 @@ model ArchetypeSubmission {
   nurtureCompletedAt DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
 }
 
 // ── Checklist Downloads ─────────────────────────────────────────────────────
@@ -165,6 +179,13 @@ model ChecklistDownload {
   unsubscribedAt     DateTime?
   nurtureStep        Int       @default(0) // last email sent: 0=none, 1=delivery, 2–5=sequence
   nurtureCompletedAt DateTime?
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
 }
 
 // ── Corporate Escape Kit Downloads ─────────────────────────────────────────
@@ -182,6 +203,13 @@ model EscapeKitDownload {
   nurtureCompletedAt DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
 }
 
 // ─── Pitch Decoder Download ─────────────────────────────────────────────────
@@ -198,6 +226,13 @@ model PitchDecoderDownload {
   nurtureCompletedAt DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
 }
 
 // ─── AI Paperwork Reader Download ───────────────────────────────────────────
@@ -214,6 +249,46 @@ model AiFddReaderDownload {
   nurtureCompletedAt DateTime?
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  // Serves the exact-match lookup on the NORMALIZED address that backs capture
+  // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
+  // suppression sweep, which matches case-insensitively to catch legacy rows
+  // stored before addresses were normalized on write — Postgres cannot answer
+  // that from a plain btree. Correctness wins there; the lists are small.
+  @@index([email])
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ABUSE CONTROL
+// ═══════════════════════════════════════════════════════════════════════════════
+
+// ── Rate-limit counters ─────────────────────────────────────────────────────
+// Backs the public lead-magnet endpoints' rate limiter (src/lib/rate-limit.ts).
+//
+// WHY A TABLE. These routes are serverless. A process-local counter is scoped to
+// one warm invocation, so a burst spread across instances passes every check —
+// which is to say an in-memory limiter on this platform is not a weaker control,
+// it is close to no control at all. The limiter needs state the instances share,
+// and Postgres is the only such store this app already has.
+//
+// SHAPE. One row per (scope, key, window), not one row per request: a request is
+// an `upsert` that increments `count`, so a thousand hits from one address are a
+// single row rather than a thousand. `@@unique` is what makes that atomic — two
+// concurrent upserts serialize on the constraint instead of racing to insert.
+// Rows are pruned by `bucket` once their window is long past; see pruneRateLimitBuckets.
+model RateLimitBucket {
+  id        String   @id @default(uuid())
+  scope     String // what `key` is counting: "ip" | "email"
+  key       String // the client IP, or the normalized email address
+  bucket    DateTime // start of the fixed window this count covers
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  // Serves the limiter's read AND makes the increment atomic under concurrency.
+  @@unique([scope, key, bucket])
+  // Serves the prune sweep only.
+  @@index([bucket])
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
