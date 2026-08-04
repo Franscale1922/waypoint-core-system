@@ -18,6 +18,8 @@ export function generateStaticParams() {
   return allGlossaryEntries.map((e) => ({ slug: e.slug }));
 }
 
+// aeo-desc-dynamic: bounded by construction. This truncates at 155 characters,
+// inside the 160 the audit enforces everywhere else.
 function metaDesc(def: string): string {
   const clean = def.replace(/\s+/g, " ").trim();
   if (clean.length <= 155) return clean;

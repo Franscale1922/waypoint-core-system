@@ -19,6 +19,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `https://www.waypointfranchise.com/industries/${slug}`;
   return {
     title: industry.metaTitle,
+    // aeo-desc-dynamic: comes straight from src/data/industries.ts, whose
+    // metaDescription values aeo-audit now length-checks directly.
     description: industry.metaDescription,
     alternates: {
       canonical: url,

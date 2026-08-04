@@ -71,7 +71,7 @@ export const industries: Industry[] = [
     navLabel: "Senior Care",
     metaTitle: "Senior Care Franchises: Is the Category Right for You?",
     metaDescription:
-      "What senior care franchises actually involve: non-medical home care vs. other models, who the category fits, the emotional and staffing realities, and questions to ask.",
+      "What senior care franchises actually involve: non-medical home care vs. other models, who the category fits, and the emotional and staffing realities.",
     heroTagline: "Backed by a clear demographic tailwind and mission-driven, with real caregiving and compliance demands.",
     intro:
       "Senior care sits on one of the clearest demographic tailwinds in business: an aging population that increasingly wants to stay at home. Most franchises in this space provide non-medical in-home care (companionship, help with daily living, transportation), though some operate in placement, home health, or facilities.",
@@ -179,7 +179,7 @@ export const industries: Industry[] = [
     navLabel: "B2B Services",
     metaTitle: "B2B Service Franchises: Why Corporate Professionals Consider Them",
     metaDescription:
-      "Why B2B service franchises appeal to many corporate professionals (business-hours operations, recurring contracts, lower overhead), and what to scrutinize before committing.",
+      "Why B2B service franchises appeal to corporate professionals: business-hours operations, recurring contracts, lower overhead, and what to scrutinize first.",
     heroTagline: "Business-hours operations and recurring contracts, often a natural fit for corporate backgrounds.",
     intro:
       "B2B service franchises (commercial cleaning, IT and managed services, signage, staffing, business coaching, and the like) are frequently the most natural fit for corporate professionals. The work happens during business hours, the customers are other businesses, and revenue often comes from recurring contracts rather than one-off transactions.",
@@ -217,7 +217,7 @@ export const industries: Industry[] = [
     navLabel: "Restoration",
     metaTitle: "Restoration Franchises: The Disaster-Recovery Business",
     metaDescription:
-      "What restoration franchises (water, fire, mold, storm damage) actually involve: insurance-driven demand, 24/7 response, who the category fits, and what to scrutinize.",
+      "What restoration franchises (water, fire, mold, storm damage) actually involve: insurance-driven demand, 24/7 response, and who the category really fits.",
     heroTagline: "Non-discretionary, insurance-funded demand, with on-call response and certification demands.",
     intro:
       "Restoration covers the cleanup and rebuild work after water, fire, mold, and storm damage. It is one of the more recession-resistant categories because the demand is non-discretionary: when a basement floods or a kitchen burns, the work has to happen, and an insurer usually foots much of the bill. That insulation from consumer spending is the category's defining trait.",
@@ -251,7 +251,7 @@ export const industries: Industry[] = [
     navLabel: "Pet Care",
     metaTitle: "Pet Care Franchises: Built on Steady, Repeat Demand",
     metaDescription:
-      "What pet care franchises (grooming, boarding, daycare, walking, supplies) actually involve: repeat demand, who the category fits, and what to examine before committing.",
+      "What pet care franchises (grooming, boarding, daycare, walking) actually involve: repeat demand, who the category fits, and what to examine before you commit.",
     heroTagline: "Repeat, relationship-driven demand from devoted owners, with staffing and facility realities.",
     intro:
       "Pet care spans grooming, boarding, daycare, walking, training, and supplies. Owners treat pets like family and tend to keep spending on them through downturns, which gives the category steady, repeat demand. The work is service- and relationship-heavy, and trust is the currency: people are handing you a family member.",

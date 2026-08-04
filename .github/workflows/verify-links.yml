@@ -20,13 +20,25 @@ jobs:
       # only slows the job down.
       - name: Install dependencies
         run: npm ci --ignore-scripts
-      # Runs only the verify-links unit tests, not the whole `unit` project:
+      # Runs only the named unit tests, not the whole `unit` project:
       # tests/unit/brand-map-drift.test.ts compares against a registry that lives
       # in a different repository and fails hard when it is absent, which is
-      # correct locally and wrong here.
+      # correct locally and wrong here. Each new test file that guards a content
+      # gate has to be listed here explicitly, or it runs in the pre-push hook and
+      # silently never runs in CI.
       - name: Verify Links (unit tests)
         run: npx vitest run --project unit tests/unit/verify-links.test.ts
+      - name: Content audit (unit tests)
+        run: npx vitest run --project unit tests/unit/aeo-audit.test.ts
       - name: Verify Links
         run: node scripts/verify-links.mjs
+      # Frontmatter dates. This job is the ONLY gate that sees them on some
+      # commits: src/lib/githubArticleCommit.ts writes articles straight through
+      # the GitHub API, so those commits never touch .githooks/pre-push. Same
+      # narrow test selection as above, for the same brand-map-registry reason.
+      - name: Verify Dates (unit tests)
+        run: npx vitest run --project unit tests/unit/verify-dates.test.ts
+      - name: Verify Dates
+        run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)
         run: node scripts/aeo-audit.mjs

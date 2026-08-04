@@ -1,24 +1,21 @@
 #!/bin/sh
-# Pre-push guard: enforce CONTENT-STANDARDS §11 (no em dashes) and the unit
-# suites before every push.
-#
-# A free-plan private repo cannot set required status checks / branch protection,
-# so a failing workflow cannot block a merge. This local hook is the real gate.
-# (Corrected 2026-07-27: this comment previously said GitHub Actions was
-# billing-disabled. It is not. The "Verify Internal Links" workflow does run on
-# every PR and on main, and it runs scripts/aeo-audit.mjs too. It just cannot be
-# made blocking on this plan.) Auto-installed via the package.json postinstall
+# Pre-push guard: enforce CONTENT-STANDARDS §11 (no em dashes) before every push.
+# A free-plan private repo cannot set required status checks / branch protection, so a
+# failing workflow cannot block a merge. This local hook is the real gate.
+# (Corrected 2026-07-27: this comment previously said GitHub Actions was billing-disabled.
+# It is not. The "Verify Internal Links" workflow does run on every PR and on main, and it
+# runs scripts/aeo-audit.mjs too. It just cannot be made blocking on this plan.) Auto-installed via the package.json postinstall
 # (core.hooksPath=.githooks). Bypass in an emergency with: git push --no-verify
 #
 # ---------------------------------------------------------------------------
 # Corrected 2026-08-04: this hook used to check the MUTABLE WORKING TREE.
 #
-# All three checks read the filesystem, and the hook never read its stdin, so it
+# Every check read the filesystem, and the hook never read its stdin, so it
 # could not know which commits were in flight. Reproduced end-to-end: commit an
-# em dash, remove it in the working tree WITHOUT committing, push. The audit read
-# the clean working copy, printed "PASS Section 11: 0 em dashes", exited 0, and
-# git pushed the bad blob. The gate reported green on content that was not what
-# was being pushed. Found by a Codex round-2 adversarial review 2026-08-03.
+# em dash, remove it in the working tree WITHOUT committing, push. The audit
+# read the clean working copy, printed "PASS Section 11: 0 em dashes", exited 0,
+# and git pushed the bad blob. The gate reported green on content that was not
+# what was being pushed. Found by a Codex round-2 adversarial review 2026-08-03.
 #
 # The checks now run against each pushed commit's own tree, extracted into a
 # temp dir by scripts/verify-pushed-tree.mjs. Deliberately NOT `git stash`: a
@@ -61,10 +58,19 @@ fi
 # The zero OID is computed rather than hardcoded (git's own idiom, from
 # pre-push.sample) so this stays correct under SHA-256 repositories.
 #
-# Deletions carry the zero OID and have no tree to check. Only the TIP of each
-# ref is verified: for a brand-new branch the remote OID is all zeros, so a
-# range would have no lower bound and would degenerate to the entire history.
-# That is a reasoned limit, not a shortcut.
+# Deletions carry the zero OID and have no tree to check.
+#
+# What is passed on is each ref TIP; the orchestrator expands that into every
+# commit the push would add (`git rev-list <oid> --not --remotes`) and content
+# checks each one, running the test suites once on the tip.
+#
+# (Corrected 2026-08-04, twice. The first draft verified tips only, justified by
+# the claim that a brand-new ref gives no lower bound for a range because its
+# remote OID is all zeros. That is wrong: --remotes bounds against every
+# remote-tracking ref regardless of stdin. The gap was real, not theoretical --
+# commit A with an em dash plus commit B repairing it pushed clean, and A's bad
+# blob landed on the remote. Same failure this hook exists to stop, so it is
+# closed rather than documented.)
 ZERO=$(git hash-object --stdin </dev/null | tr '0-9a-f' '0')
 SHAS=""
 COUNT=0
@@ -87,6 +93,14 @@ if [ "$COUNT" -eq 0 ]; then
   exit 0
 fi
 
+if [ "$SKIP_ARCHIVE_VERIFY" != "1" ] && [ -f "$VERIFIER" ]; then
+  # Word splitting on $SHAS is intentional: it is a space-separated list of hex
+  # object names, each passed as its own argument.
+  # shellcheck disable=SC2086
+  node "$VERIFIER" $SHAS
+  exit $?
+fi
+
 # ---------------------------------------------------------------------------
 # Degraded path. Reached when the orchestrator is absent (a checkout whose
 # branch predates it) or when it is switched off deliberately.
@@ -96,68 +110,99 @@ fi
 # --no-verify, so there would be no way out. It is loud so it cannot be mistaken
 # for a clean run.
 # ---------------------------------------------------------------------------
-if [ "$SKIP_ARCHIVE_VERIFY" = "1" ] || [ ! -f "$VERIFIER" ]; then
-  echo "###########################################################"
-  echo "# pre-push: DEGRADED MODE                                 #"
-  echo "# Checking the WORKING TREE, not the commits being pushed. #"
-  echo "# A violation that is COMMITTED but fixed in your working  #"
-  echo "# tree will NOT be caught.                                 #"
-  echo "###########################################################"
-  if [ "$SKIP_ARCHIVE_VERIFY" != "1" ]; then
-    echo "Reason: $VERIFIER not found."
-  fi
-
-  if ! node scripts/aeo-audit.mjs; then
-    echo ""
-    echo "PUSH BLOCKED: content audit failed (see details above). Common causes:"
-    echo "  - em dashes (CONTENT-STANDARDS section 11): remove them, or mark a"
-    echo "    genuinely-functional one with the token: emdash-allow"
-    echo "  - a metaTitle / article frontmatter title that hard-codes the brand"
-    echo "    (the title template already appends it): remove the brand suffix"
-    exit 1
-  fi
-
-  # SKIP_BIP_DRIFT is tested for exactly "1", the documented form, because the
-  # drift test tests for exactly "1" too. This used to be `-z`, so
-  # SKIP_BIP_DRIFT=0 disabled the push guard while the test still ran it: one
-  # variable, two meanings, and the value that reads like "off" turned it off.
-  if [ "$SKIP_BIP_DRIFT" != "1" ]; then
-    drift_output=$(node scripts/build-brand-map.mjs --check 2>&1)
-    if [ $? -ne 0 ]; then
-      echo "$drift_output"
-      echo ""
-      echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
-      echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
-      echo "  Genuinely need to skip?          SKIP_BIP_DRIFT=1 git push"
-      exit 1
-    fi
-    # Green, but green-because-skipped has to be visible or the skip is a lie.
-    case "$drift_output" in
-      *BRAND_MAP_DRIFT_SKIPPED*) echo "$drift_output" ;;
-    esac
-  fi
-
-  # Corrected 2026-08-04: this was `[ -z "$SKIP_UNIT_TESTS" ]`, so
-  # SKIP_UNIT_TESTS=0 silently disabled the suites. Exactly the bug already
-  # fixed for SKIP_BIP_DRIFT above, left behind when that one was corrected.
-  # Both now test for exactly "1".
-  if [ "$SKIP_UNIT_TESTS" != "1" ]; then
-    if [ -x "node_modules/.bin/vitest" ]; then
-      if ! node_modules/.bin/vitest run --project unit --project auth; then
-        echo ""
-        echo "PUSH BLOCKED: unit tests failed (see above)."
-        echo "  Run them directly:  npm run test:unit && npm run test:auth"
-        echo "  Genuinely need to skip?  SKIP_UNIT_TESTS=1 git push"
-        exit 1
-      fi
-    else
-      echo "NOTE: vitest not installed, skipping unit suites. Run 'npm install' to enable them."
-    fi
-  fi
-  exit 0
+# On stderr, not stdout: this warning has to survive `git push >log`, or the
+# one run that silently reverted to the old behaviour is the one nobody sees.
+echo "###########################################################" >&2
+echo "# pre-push: DEGRADED MODE                                 #" >&2
+echo "# Checking the WORKING TREE, not the commits being pushed. #" >&2
+echo "# A violation that is COMMITTED but fixed in your working  #" >&2
+echo "# tree will NOT be caught.                                 #" >&2
+echo "###########################################################" >&2
+if [ "$SKIP_ARCHIVE_VERIFY" != "1" ]; then
+  echo "Reason: $VERIFIER not found." >&2
 fi
 
-# Word splitting on $SHAS is intentional: it is a space-separated list of hex
-# object names, each passed as its own argument.
-# shellcheck disable=SC2086
-node "$VERIFIER" $SHAS
+if ! node scripts/aeo-audit.mjs; then
+  echo ""
+  echo "PUSH BLOCKED: content audit failed (see details above). Common causes:"
+  echo "  - em dashes (CONTENT-STANDARDS section 11): remove them, or mark a"
+  echo "    genuinely-functional one with the token: emdash-allow"
+  echo "  - a metaTitle / article frontmatter title that hard-codes the brand"
+  echo "    (the title template already appends it): remove the brand suffix"
+  exit 1
+fi
+
+# Article frontmatter dates. Separate from the unit suites below on purpose: those run
+# against temp-directory fixtures and prove the CHECKER works, while this runs the checker
+# against the real content/articles corpus and is the only thing that proves the ARTICLES
+# are clean. A date that is missing, unquoted, or not a real calendar day fails here.
+#
+# Unquoted is a failure even when the day is valid, because js-yaml resolves a bare
+# YYYY-MM-DD into a Date and silently rolls over impossible days before any app code runs
+# (2026-02-30 becomes March 2). By then the authored value is gone, so this is the last
+# point at which the mistake is still visible.
+if ! node scripts/verify-dates.mjs; then
+  echo ""
+  echo "PUSH BLOCKED: an article frontmatter date is missing, unquoted, or not a real day."
+  echo "  Quote it:  date: \"2026-02-28\"   (single quotes are fine too)"
+  echo "  Re-check:  npm run verify-dates"
+  exit 1
+fi
+
+# Brand-identity map drift. The map is generated from a registry in the brand-intelligence-pipeline
+# repo, so the realistic failure is that the registry moves and the committed artifact does not,
+# after which imports refuse brands that genuinely exist. Skipped, loudly, when that repo is not
+# checked out on this machine, since it is a sibling repo and not every clone will have it.
+#
+# That skip lives in the script (`registryAvailability`), not here, so this hook and the drift test
+# cannot drift apart. --check exits 0 with a BRAND_MAP_DRIFT_SKIPPED warning in exactly the
+# absent-repo case, and 1 for a stale map, a moved registry, or a bad BIP_REGISTRY_PATH.
+# (Corrected 2026-08-02: this comment claimed the skip already existed. It did not. --check exited
+# 1 whenever the registry was unreadable, so every push from a machine without the sibling repo was
+# blocked.)
+#
+# SKIP_BIP_DRIFT is tested for exactly "1", the documented form, because the drift test tests for
+# exactly "1" too. This used to be `-z`, so SKIP_BIP_DRIFT=0 disabled the push guard while the test
+# still ran it: one variable, two meanings, and the value that reads like "off" turned it off.
+#
+# Output is captured rather than discarded. The routine "in sync" line is noise on every green push,
+# but on a failure it carries the registry version and hashes, which is the fastest way to tell
+# whether the registry moved forward or the map went backward. Quiet when green, everything when not.
+if [ "$SKIP_BIP_DRIFT" != "1" ]; then
+  drift_output=$(node scripts/build-brand-map.mjs --check 2>&1)
+  drift_status=$?
+  if [ "$drift_status" -ne 0 ]; then
+    echo "$drift_output"
+    echo ""
+    echo "PUSH BLOCKED: the committed brand-identity map is stale or unverifiable."
+    echo "  Regenerate and review the diff:  node scripts/build-brand-map.mjs"
+    echo "  Genuinely need to skip?          SKIP_BIP_DRIFT=1 git push"
+    exit 1
+  fi
+  # Green, but green-because-skipped has to be visible or the skip is a lie.
+  case "$drift_output" in
+    *BRAND_MAP_DRIFT_SKIPPED*) echo "$drift_output" ;;
+  esac
+fi
+
+# Fast unit suites (no database, no network). These were previously run by nothing:
+# CI executes only verify-links + aeo-audit, and npm test was two .mjs verifiers, so
+# the route/background-work and auth-coverage guards could rot unnoticed. Skipped,
+# loudly, when vitest is not installed, since a fresh clone has no node_modules yet.
+#
+# Corrected 2026-08-04: this was `[ -z "$SKIP_UNIT_TESTS" ]`, so SKIP_UNIT_TESTS=0
+# silently disabled the suites. Exactly the bug already fixed for SKIP_BIP_DRIFT
+# above, left behind when that one was corrected. Both now test for exactly "1".
+if [ "$SKIP_UNIT_TESTS" != "1" ]; then
+  if [ -x "node_modules/.bin/vitest" ]; then
+    if ! node_modules/.bin/vitest run --project unit --project auth; then
+      echo ""
+      echo "PUSH BLOCKED: unit tests failed (see above)."
+      echo "  Run them directly:  npm run test:unit && npm run test:auth"
+      echo "  Genuinely need to skip?  SKIP_UNIT_TESTS=1 git push"
+      exit 1
+    fi
+  else
+    echo "NOTE: vitest not installed, skipping unit suites. Run 'npm install' to enable them."
+  fi
+fi

@@ -256,6 +256,51 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: the pushed commit, not the working
   );
 });
 
+describe.skipIf(!IN_GIT_REPO)("pre-push gate: reads stdin, and covers the whole push", () => {
+  it(
+    "blocks a violation in an INTERMEDIATE commit, not just the tip",
+    () => {
+      resetToSeed();
+      // A introduces the violation, B repairs it. A tip-only gate reports green
+      // and A's bad blob lands on the remote anyway: the original bug wearing a
+      // different hat, and the common case, since most branches have >1 commit.
+      writeFileSync(join(repo, ARTICLE), article(`Intermediate ${EMDASH} violation.`));
+      commitAll("A: introduce an em dash");
+      writeFileSync(join(repo, ARTICLE), article("Repaired in the next commit."));
+      commitAll("B: repair it");
+
+      const r = pushThrough(NEW_HOOK_DIR, "range", { SKIP_UNIT_TESTS: "1" });
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain("FAIL Section 11");
+      expect(emDashesOnRemote("range")).toBeNull();
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "verifies the SHA it is given, not whatever HEAD happens to be",
+    () => {
+      resetToSeed();
+      // Every other case pushes HEAD, so all of them would still pass against a
+      // hook that ignored stdin and ran `git rev-parse HEAD`. That is the whole
+      // mechanism, so it needs a case where the two differ: push an older commit
+      // explicitly while HEAD sits on a clean one.
+      writeFileSync(join(repo, ARTICLE), article(`Bad ${EMDASH} commit.`));
+      commitAll("bad commit");
+      const badSha = git(["rev-parse", "HEAD"]).stdout.trim();
+      writeFileSync(join(repo, ARTICLE), article("Clean tip."));
+      commitAll("clean commit on top");
+
+      git(["config", "core.hooksPath", NEW_HOOK_DIR]);
+      const r = git(["push", "origin", `${badSha}:refs/heads/explicit-sha`], { SKIP_UNIT_TESTS: "1" });
+      const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
+      expect(r.status).not.toBe(0);
+      expect(out).toContain("FAIL Section 11");
+    },
+    TIMEOUT,
+  );
+});
+
 describe.skipIf(!IN_GIT_REPO)("pre-push gate: refuses to pass vacuously", () => {
   it(
     "blocks when the extraction is incomplete rather than reporting green",
@@ -275,6 +320,30 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: refuses to pass vacuously", () => 
       // The specific failure must be the count guard, not a downstream check
       // that happened to notice. If this ever reads "PASS", the guard is dead.
       expect(r.out).not.toContain("PASS Section 11");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "blocks a commit that redirects a checked path outside the tree",
+    () => {
+      resetToSeed();
+      // Both other guards are blind to this. git ls-tree counts a symlink blob
+      // as one entry, so the count still balances, and existsSync FOLLOWS the
+      // link, so the floor check is satisfied by a directory somewhere else on
+      // the machine. Measured before the fix: committing content/articles as a
+      // symlink held the count at 419 = 419 and passed the floor check, leaving
+      // the audit reading content no clone would ever have.
+      const decoy = join(base, "decoy-articles");
+      mkdirSync(decoy, { recursive: true });
+      writeFileSync(join(decoy, "ok.md"), article("Clean decoy content."));
+      git(["rm", "-rq", "content/articles"]);
+      symlinkSync(decoy, join(repo, "content", "articles"), "dir");
+      commitAll("point content/articles outside the tree");
+
+      const r = pushThrough(NEW_HOOK_DIR, "symlink", { SKIP_UNIT_TESTS: "1" });
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain("symlinks pointing outside the tree");
     },
     TIMEOUT,
   );

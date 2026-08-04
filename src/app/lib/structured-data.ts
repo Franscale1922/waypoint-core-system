@@ -1,13 +1,188 @@
 export const SITE_URL = "https://www.waypointfranchise.com";
 
 /**
+ * Match our scheme + host at the START of a URL, and ONLY when the authority
+ * ends right there: the lookahead requires the next character to be a path,
+ * query or fragment delimiter, or end-of-string.
+ *
+ * That bound is the whole point. Without it the pattern matches any host merely
+ * PREFIXED by ours, so three classes of lookalike were rewritten into something
+ * that reads like the canonical site (schemes omitted below on purpose, see the
+ * note after the list):
+ *
+ *   waypointfranchise.com.evil.example/a  ->  www.waypointfranchise.com.evil.example/a
+ *   waypointfranchise.com@evil.example/a  ->  www.waypointfranchise.com@evil.example/a  (host is STILL evil.example)
+ *   waypointfranchise.competitor.com/x    ->  www.waypointfranchise.competitor.com/x
+ *
+ * Excluding ":" also declines a port, which is not the canonical host either.
+ *
+ * Those examples carry no "https://" prefix because the non-www guard in
+ * scripts/verify-schema.mjs scans source TEXT and cannot tell an illustration
+ * from a real URL, so spelling them out in full would fail the build. The live
+ * cases are covered properly in tests/unit/structured-data.test.ts, which the
+ * guard does not scan.
+ */
+const SAME_SITE_PREFIX = /^https?:\/\/(?:www\.)?waypointfranchise\.com(?=[/?#]|$)/i;
+const CANONICAL_HOSTS = ["waypointfranchise.com", "www.waypointfranchise.com"];
+
+/**
  * Normalize any same-site URL to the canonical www host. The bare apex
  * (waypointfranchise.com) 301-redirects to www, so JSON-LD must always use www;
  * otherwise @id references and `url`/`item` values point at a redirecting host
  * and don't deduplicate against the rest of the entity graph.
+ *
+ * Fail-closed: anything that is not unambiguously ours is returned untouched.
+ * Callers currently pass internal constants only, so this is hardening rather
+ * than a reachable bug, but a rewritten lookalike would be emitted as a
+ * first-party URL in JSON-LD, which is worth making structurally impossible.
  */
 export function toWww(url: string): string {
-  return url.replace(/^https?:\/\/(www\.)?waypointfranchise\.com/i, SITE_URL);
+  const match = SAME_SITE_PREFIX.exec(url);
+  if (!match) return url;
+  // Second gate: make the WHATWG parser agree the host is ours, so a string the
+  // regex reads one way and a browser or crawler reads another cannot slip
+  // through. Belt and braces against exotic Unicode/IDN forms.
+  try {
+    if (!CANONICAL_HOSTS.includes(new URL(url).hostname.toLowerCase())) return url;
+  } catch {
+    return url;
+  }
+  // Rewrite ONLY the matched scheme+host prefix, leaving the remainder of the
+  // string byte-identical. Rebuilding from the parsed URL would append a
+  // trailing slash to the bare origin, which would change the homepage node's
+  // `url` and break the `canonical === SITE_URL` test in fragmentId() below.
+  return SITE_URL + url.slice(match[0].length);
+}
+
+/**
+ * Accept a schema.org Date/DateTime, rejecting anything that would ship as
+ * invalid structured data. Two gates, because neither alone is enough:
+ *
+ *  - Shape, because Date.parse is far more permissive than ISO 8601:
+ *    "2026-8-3", "August 3, 2026" and even "2026" all parse happily.
+ *  - Calendar round-trip for the date-only form, because JS does NOT reject an
+ *    out-of-range day. `new Date("2026-02-30")` silently becomes March 2, and
+ *    "2026-02-29" in a non-leap year becomes March 1.
+ *
+ * The calendar round-trip applies to BOTH forms. An earlier version checked only
+ * the date-only form on the theory that an offset datetime legitimately lands on
+ * another UTC day. That reasoning was wrong: the offset shifts the INSTANT, not
+ * the day named in the string, and "2026-02-30T12:00:00Z" rolls over to March 2
+ * exactly as the bare date does. Validating the named Y-M-D separately from the
+ * time keeps both correct.
+ */
+const ISO_DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/**
+ * Build the datetime pattern once, with the trailing timezone designator either
+ * optional or required. Two callers need the identical Y-M-D capture shape and
+ * differ ONLY in whether that offset may be omitted:
+ *
+ *   isValidSchemaDate   optional, because a schema.org Date/DateTime accepts both
+ *   isVideoUploadDate   required, because Google reads VideoObject.uploadDate as
+ *                       an instant and flags a value with no timezone
+ *
+ * Written as one source rather than two literals differing by a single "?": a
+ * later fix applied to one copy and not the other is exactly the drift this
+ * avoids, and it would be invisible until a date shipped wrong.
+ */
+function isoDateTimePattern(timezone: "required" | "optional"): RegExp {
+  const tz = `(?:Z|[+-]\\d{2}:\\d{2})${timezone === "optional" ? "?" : ""}`;
+  return new RegExp(`^(\\d{4})-(\\d{2})-(\\d{2})T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?${tz}$`);
+}
+
+const ISO_DATE_TIME = isoDateTimePattern("optional");
+const ISO_DATE_TIME_TZ = isoDateTimePattern("required");
+
+/** True when Y-M-D name a real calendar day, catching the silent rollover. */
+function isRealCalendarDay(year: string, month: string, day: string): boolean {
+  const parsed = new Date(`${year}-${month}-${day}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return false;
+  return (
+    parsed.getUTCFullYear() === Number(year) &&
+    parsed.getUTCMonth() + 1 === Number(month) &&
+    parsed.getUTCDate() === Number(day)
+  );
+}
+
+/**
+ * Both gates a matched datetime still has to clear. `new Date()` DOES reject an
+ * out-of-range time (25:00, 12:60) but silently rolls over an out-of-range DAY,
+ * so neither check alone is sufficient.
+ */
+function isRealDateTime(match: RegExpExecArray, value: string): boolean {
+  return (
+    !Number.isNaN(new Date(value).getTime()) &&
+    isRealCalendarDay(match[1], match[2], match[3])
+  );
+}
+
+function isValidSchemaDate(value: string): boolean {
+  const dateOnly = ISO_DATE_ONLY.exec(value);
+  if (dateOnly) return isRealCalendarDay(dateOnly[1], dateOnly[2], dateOnly[3]);
+  const dateTime = ISO_DATE_TIME.exec(value);
+  if (dateTime) return isRealDateTime(dateTime, value);
+  return false;
+}
+
+/**
+ * Validate a date destined for JSON-LD. Returns the value to emit, or undefined
+ * to omit the property.
+ *
+ * Exported because most date-bearing nodes are hand-rolled at the page rather
+ * than built by the factories here: resources/[slug] and the 2026 report both
+ * assemble their own Article node. The article path is also the ONLY one fed by
+ * unvalidated input (markdown frontmatter), so a validator the factories keep to
+ * themselves would miss the single case that actually matters.
+ *
+ * Omit-and-warn rather than throw ON PURPOSE: that same article path is rendered
+ * per-request, so throwing would take a live page down over one frontmatter typo.
+ * Dropping the property keeps the markup valid and the page up, and the warning
+ * makes the bad value loud in the build log.
+ */
+export function schemaDate(
+  value: unknown,
+  context: string,
+  { required = false }: { required?: boolean } = {},
+): string | undefined {
+  if (value === undefined || value === null) {
+    // Absence is normal for an OPTIONAL date (most pages are evergreen and carry
+    // no dateModified), so staying silent there keeps the build log usable. A
+    // required date is a different event and must not be silent: an Article
+    // missing datePublished loses rich-result eligibility with no other signal.
+    if (required) {
+      console.warn(
+        `[structured-data] Missing REQUIRED date for ${context}. The node ships without it, ` +
+          `which costs rich-result eligibility. Add the date to the source frontmatter.`,
+      );
+    }
+    return undefined;
+  }
+  if (typeof value === "string" && isValidSchemaDate(value)) return value;
+
+  // A Date here means the YAML frontmatter date was UNQUOTED, and it is
+  // deliberately REJECTED rather than normalized. js-yaml has already applied
+  // its own rollover by this point: unquoted 2026-02-30 arrives as March 2 and
+  // 2026-13-01 as January 2027, with the authored value unrecoverable. Accepting
+  // it would launder a corrupted date into published metadata, silently and with
+  // no way to detect it downstream. Rejecting costs nothing today (every article
+  // quotes its dates) and the fix is one keystroke.
+  if (value instanceof Date) {
+    console.warn(
+      `[structured-data] Dropped an UNQUOTED frontmatter date for ${context}. YAML parsed it ` +
+        `into a Date and already rolled over any impossible day (2026-02-30 becomes March 2), ` +
+        `so the authored value cannot be recovered or checked. Quote the date in frontmatter, ` +
+        `e.g. date: "2026-02-28".`,
+    );
+    return undefined;
+  }
+
+  console.warn(
+    `[structured-data] Dropped invalid date ${JSON.stringify(String(value))} for ` +
+      `${context}. Expected ISO 8601 (YYYY-MM-DD or a full datetime). Emitting it would ` +
+      `ship invalid structured data, so the property was omitted.`,
+  );
+  return undefined;
 }
 
 export const localBusinessSchema = {
@@ -27,12 +202,12 @@ export const localBusinessSchema = {
   ],
   email: "kelsey@waypointfranchise.com",
   telephone: "+1-214-995-1062",
-  founder: {
-    "@type": "Person",
-    name: "Kelsey Stuart",
-    jobTitle: "Franchise Advisor",
-    url: `${SITE_URL}/about`,
-  },
+  // Reference the Person node by @id instead of inlining a second Kelsey. A `url`
+  // does NOT establish node identity, so an inline Person is an anonymous node:
+  // the founder relationship would never resolve to the authoritative
+  // /about#kelsey Person that carries worksFor, sameAs and knowsAbout. Same
+  // reference-by-@id idiom as worksFor, brand and publisher below.
+  founder: { "@id": `${SITE_URL}/about#kelsey` },
   address: {
     "@type": "PostalAddress",
     addressLocality: "Whitefish",
@@ -66,10 +241,16 @@ export const localBusinessSchema = {
   // permit self-serving review markup on a business's own LocalBusiness/Organization
   // entity (it is ignored for rich results and can trigger a Search Console flag).
   // Testimonials live as on-page content instead.
+  // sameAs is IDENTITY EVIDENCE, so #business and #kelsey carry DISJOINT sets.
+  // These lists were previously identical, which told crawlers that two
+  // deliberately distinct @id nodes were the same entity. Waypoint-branded
+  // channels belong here; Kelsey's personal profiles belong on the Person.
+  // Do not re-merge them.
+  //
+  // Note: there is no Waypoint-branded Facebook page, so the business
+  // intentionally carries no Facebook signal. facebook.com/kelsey.stuart.94 is a
+  // personal profile and is not identity evidence for the business.
   sameAs: [
-    "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
-    "https://www.franchoice.com/kelsey-stuart",
-    "https://www.facebook.com/kelsey.stuart.94",
     "https://www.instagram.com/franchise_match_maker/",
     "https://x.com/__Waypoint",
     "https://www.youtube.com/@Waypoint-Franchise",
@@ -89,6 +270,9 @@ export const personSchema = {
   description:
     "Former Bloomin' Blinds franchisor who helped grow a $40M franchise system with 200+ locations, and former franchisee who learned from failure firsthand. Based in Whitefish, Montana. Now helping corporate professionals and career changers find the right franchise through Waypoint Franchise Advisors, a free consulting service.",
   url: `${SITE_URL}/about`,
+  // Portrait: gives the Person node a visual entity anchor. Folded in from the
+  // duplicate Person that /about used to hand-roll under this same @id.
+  image: `${SITE_URL}/images/kelsey-trail-selfie.jpg`,
   email: "kelsey@waypointfranchise.com",
   telephone: "+1-214-995-1062",
   address: {
@@ -102,15 +286,13 @@ export const personSchema = {
     { "@type": "Organization", name: "FranChoice" },
     { "@type": "Organization", name: "International Franchise Association (IFA)" }
   ],
+  // Kelsey's PERSONAL profiles only. The Waypoint-branded channels live on
+  // #business. See the note on localBusinessSchema.sameAs: these two lists are
+  // deliberately disjoint and must not be re-merged.
   sameAs: [
     "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
     "https://www.facebook.com/kelsey.stuart.94",
-    "https://www.instagram.com/franchise_match_maker/",
-    "https://x.com/__Waypoint",
-    "https://www.youtube.com/@Waypoint-Franchise",
-    "https://www.tiktok.com/@waypoint007",
-    "https://www.pinterest.com/waypointfranchise/",
     "https://www.crunchbase.com/person/kelsey-stuart-7ebb",
   ],
   knowsAbout: [
@@ -122,6 +304,7 @@ export const personSchema = {
     "home services franchises",
     "restoration franchises",
     "semi-absentee franchise ownership",
+    "SBA franchise financing",
   ],
 };
 
@@ -159,11 +342,10 @@ export const franchiseConsultingServiceSchema = {
     "Free, personalized franchise consulting for corporate professionals and career changers. Kelsey Stuart evaluates your capital, goals, and life situation, then curates 3–4 franchise concepts that fit. No pitch, no pressure. Brands pay the referral fee; candidates pay nothing.",
   url: `${SITE_URL}/process`,
   serviceType: "Franchise Consulting",
-  provider: {
-    "@type": "Person",
-    "@id": `${SITE_URL}/about#kelsey`,
-    name: "Kelsey Stuart",
-  },
+  // Reference-by-@id only, matching `brand` below and `founder` on #business.
+  // Re-stating @type/name here was harmless (it merged cleanly) but it is one
+  // more place a future edit could let the Person's details drift.
+  provider: { "@id": `${SITE_URL}/about#kelsey` },
   // Reference the business by @id only (no explicit @type). The `brand` property
   // accepts an Organization, and #business is a LocalBusiness (⊂ Organization), so
   // this stays valid WITHOUT re-typing #business as a Brand, which would otherwise
@@ -216,45 +398,222 @@ export const franchiseConsultingServiceSchema = {
 };
 
 /**
- * VideoObject schema factory.
+ * Accept ONLY a timezone-qualified ISO 8601 datetime, for VideoObject.uploadDate.
+ *
+ * schemaDate is deliberately NOT reused here even though it validates dates: it
+ * also accepts a bare YYYY-MM-DD, which is a perfectly good schema.org Date but
+ * the wrong thing for a video. Google reads uploadDate as an instant and flags a
+ * value carrying no time and no timezone, so a date-only value silently costs
+ * the rich result the property was added to earn. Otherwise the gates are the
+ * same two isValidSchemaDate applies.
+ */
+function isVideoUploadDate(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const match = ISO_DATE_TIME_TZ.exec(value);
+  return match !== null && isRealDateTime(match, value);
+}
+
+/**
+ * Return an absolute http(s) URL in its normalized form, or undefined.
+ *
+ * Parsed with the WHATWG URL parser rather than pattern-matched, for two
+ * reasons. A regex tight enough to be meaningful rejects legitimate URLs: the
+ * live Vimeo thumbnail this site depends on carries a "?region=us" query string,
+ * and refusing it would take the only VideoObject on the site off the page. And
+ * the parser is what actually settles the scheme, so a "javascript:" URL and a
+ * bare relative path are both refused by the same gate rather than by extra
+ * special cases.
+ *
+ * It returns the parsed `href` rather than a boolean because the parser is
+ * LENIENT about things it then fixes: it strips surrounding whitespace and
+ * percent-encodes a literal space, so `" https://cdn.example/thumb 1.jpg "`
+ * validates as a URL whose href is clean. Answering only yes/no and then
+ * emitting the caller's original string would ship exactly the raw, unencoded
+ * value the check just approved. Emit what was validated, not what was passed.
+ * The three live URLs round-trip through this byte-identically.
+ */
+function absoluteHttpUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return undefined;
+    return parsed.href;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * True for an ISO 8601 duration, the form schema.org expects for
+ * VideoObject.duration (e.g. PT3M30S).
+ *
+ * The two (?!$) lookaheads carry the whole weight of this pattern. Every
+ * component group is optional, so without them a bare "P" or "PT" matches and
+ * ships as a duration with no duration in it.
+ *
+ * The week form is a separate ALTERNATIVE, not another optional group. ISO 8601
+ * does not allow PnW to combine with calendar or time components, so folding it
+ * into the sequence accepts "P1W1D", which no consumer is obliged to parse.
+ *
+ * Minutes are deliberately NOT capped at 59: a 90-minute video is legitimately
+ * PT90M0S, which is exactly what the about page's own secondsToISO8601 emits.
+ * Lowercase is rejected rather than upcased, matching how schemaDate treats an
+ * unquoted date. Normalizing input here would hide the authoring mistake instead
+ * of reporting it.
+ */
+const ISO_DURATION =
+  /^P(?:\d+W|(?!$)(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?!$)(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?)$/;
+
+function iso8601Duration(value: unknown): string | undefined {
+  return typeof value === "string" && ISO_DURATION.test(value) ? value : undefined;
+}
+
+/** A required string property is only satisfied by actual, non-blank text. */
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+/** The normalizer form of isNonEmptyString, for the optional-property table. */
+function nonEmptyText(value: unknown): string | undefined {
+  return isNonEmptyString(value) ? value : undefined;
+}
+
+/**
+ * Describe a bad value in a warning without dumping a whole transcript into the
+ * build log. A Date is called out by name because it means something specific:
+ * the YAML frontmatter was UNQUOTED, so js-yaml already rolled over any
+ * impossible day and the authored value is unrecoverable, exactly as in
+ * schemaDate.
+ */
+function describeBadValue(value: unknown): string {
+  if (value === undefined) return "missing";
+  if (value instanceof Date) return "an UNQUOTED frontmatter date (quote it, e.g. uploadDate: \"2026-03-17T01:57:41Z\")";
+  const asText = typeof value === "string" ? value : String(value);
+  return JSON.stringify(asText.length > 80 ? `${asText.slice(0, 80)}...` : asText);
+}
+
+/**
+ * VideoObject schema factory. Returns the node, or undefined when the video
+ * cannot be described validly.
  *
  * Google requires `name`, `description`, `thumbnailUrl`, and `uploadDate` for a
- * video to be eligible for video rich results and AI/Ask-YouTube surfacing.
+ * video to be eligible for video rich results and AI/Ask-YouTube surfacing. Any
+ * one of those being invalid drops the WHOLE node: a VideoObject missing a
+ * required field earns no rich result anyway, so emitting a partial one adds
+ * invalid markup to the page and buys nothing. An invalid OPTIONAL field drops
+ * only that property, because the rest of the node is still eligible.
+ *
+ * Every field is re-checked at runtime despite the types below, because the
+ * article path reaches here through an `as ArticleVideo` cast over markdown
+ * frontmatter (src/lib/articles.ts). The declared types are a compile-time
+ * convenience for well-typed callers, not a guarantee about what arrives.
+ *
+ * Omit-and-warn rather than throw, for the same reason as schemaDate. The
+ * article route is statically generated, so a warning lands in the build log
+ * where it is seen; the about page revalidates hourly against the Vimeo API, so
+ * throwing would break an ISR revalidation over a third-party hiccup.
  *
  * IMPORTANT: pass `transcript` ONLY when a real, verified transcript of the
  * spoken content is available. Never fabricate spoken words; an inaccurate
  * transcript misrepresents what was said and breaks trust/E-E-A-T.
  */
-export function videoObjectSchema({
-  name,
-  description,
-  thumbnailUrl,
-  uploadDate,
-  duration,
-  embedUrl,
-  contentUrl,
-  transcript,
-}: {
-  name: string;
-  description: string;
-  thumbnailUrl: string;
-  uploadDate: string;
-  duration?: string;
-  embedUrl?: string;
-  contentUrl?: string;
-  transcript?: string;
-}) {
+export function videoObjectSchema(
+  {
+    name,
+    description,
+    thumbnailUrl,
+    uploadDate,
+    duration,
+    embedUrl,
+    contentUrl,
+    transcript,
+  }: {
+    name: string;
+    description: string;
+    thumbnailUrl: string;
+    uploadDate: string;
+    duration?: string;
+    embedUrl?: string;
+    contentUrl?: string;
+    transcript?: string;
+  },
+  context = "an unnamed page",
+) {
+  // Collect every required failure before warning, so one bad frontmatter block
+  // produces one actionable warning naming all of them rather than a drip of
+  // four that each look like a separate problem.
+  const required: string[] = [];
+  const normalizedThumbnail = absoluteHttpUrl(thumbnailUrl);
+  if (!isNonEmptyString(name)) required.push(`name: ${describeBadValue(name)}`);
+  if (!isNonEmptyString(description)) required.push(`description: ${describeBadValue(description)}`);
+  if (normalizedThumbnail === undefined) {
+    required.push(`thumbnailUrl: ${describeBadValue(thumbnailUrl)} (need an absolute http(s) URL)`);
+  }
+  if (!isVideoUploadDate(uploadDate)) {
+    required.push(
+      `uploadDate: ${describeBadValue(uploadDate)} (need a timezone-qualified ISO 8601 ` +
+        `datetime, e.g. 2026-03-17T01:57:41Z; a bare date is not enough)`,
+    );
+  }
+  if (required.length > 0) {
+    console.warn(
+      `[structured-data] Dropped the entire VideoObject for ${context}. Google requires name, ` +
+        `description, thumbnailUrl and uploadDate, and these are invalid: ${required.join("; ")}. ` +
+        `A partial VideoObject earns no rich result, so the node was omitted rather than ` +
+        `shipped invalid.`,
+    );
+    return undefined;
+  }
+  // Unreachable: an undefined thumbnail always populates `required` above. It is
+  // restated because TypeScript cannot infer that from the length check, and the
+  // emitted node must use the NORMALIZED url rather than the raw argument.
+  if (normalizedThumbnail === undefined) return undefined;
+
+  // Optional properties degrade one at a time: an unusable duration should not
+  // cost the video its eligibility, but it should not ship as garbage either.
+  // Typed with explicit optional keys rather than Record<string, string>: an
+  // index signature would spread into the returned literal and collide with
+  // `thumbnailUrl`, which is a string ARRAY.
+  const optional: {
+    duration?: string;
+    embedUrl?: string;
+    contentUrl?: string;
+    transcript?: string;
+  } = {};
+  // Every checker is a NORMALIZER rather than a predicate, so what gets emitted
+  // is always the value that was validated. See absoluteHttpUrl: answering
+  // yes/no and then emitting the caller's original string would ship raw,
+  // unencoded input that the check had silently cleaned up before approving.
+  const addOptional = (
+    key: "duration" | "embedUrl" | "contentUrl" | "transcript",
+    value: unknown,
+    normalize: (candidate: unknown) => string | undefined,
+    expectation: string,
+  ) => {
+    if (value === undefined || value === null) return;
+    const normalized = normalize(value);
+    if (normalized !== undefined) {
+      optional[key] = normalized;
+      return;
+    }
+    console.warn(
+      `[structured-data] Dropped the optional VideoObject property "${key}" for ${context}: ` +
+        `${describeBadValue(value)} is not ${expectation}. The rest of the node still ships.`,
+    );
+  };
+  addOptional("duration", duration, iso8601Duration, "an ISO 8601 duration (e.g. PT3M30S)");
+  addOptional("embedUrl", embedUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("contentUrl", contentUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("transcript", transcript, nonEmptyText, "non-empty text");
+
   return {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name,
     description,
-    thumbnailUrl: [thumbnailUrl],
+    thumbnailUrl: [normalizedThumbnail],
     uploadDate,
-    ...(duration ? { duration } : {}),
-    ...(embedUrl ? { embedUrl } : {}),
-    ...(contentUrl ? { contentUrl } : {}),
-    ...(transcript ? { transcript } : {}),
+    ...optional,
     publisher: {
       "@type": "Organization",
       "@id": `${SITE_URL}/#business`,
@@ -291,11 +650,19 @@ type JsonLdNode = Record<string, unknown>;
  * per-node `@context` (the wrapper carries the one authoritative context), so
  * existing schemas that include `@context` and new builder nodes that don't can
  * be mixed freely. Emit the result in a single <script type="application/ld+json">.
+ *
+ * Nullish nodes are ACCEPTED and filtered out. Node factories that validate
+ * their input return undefined when the input cannot be described validly
+ * (videoObjectSchema does), and destructuring that undefined here would turn one
+ * bad optional field into a page or build failure. Callers used to guard at
+ * every call site instead, which works only for as long as every future caller
+ * remembers to. Dropping silently is right because the factory has already
+ * warned about the specific field it rejected.
  */
-export function jsonLdGraph(...nodes: JsonLdNode[]) {
+export function jsonLdGraph(...nodes: (JsonLdNode | null | undefined)[]) {
   return {
     "@context": "https://schema.org",
-    "@graph": nodes.map((node) => {
+    "@graph": nodes.filter((node): node is JsonLdNode => node != null).map((node) => {
       const { "@context": _ctx, ...rest } = node as JsonLdNode & { "@context"?: unknown };
       return rest;
     }),
@@ -358,6 +725,7 @@ export function webPageSchema({
   dateModified?: string;
 }) {
   const canonical = toWww(url);
+  const validDateModified = schemaDate(dateModified, canonical);
   return {
     "@type": "WebPage",
     "@id": fragmentId(canonical, "#webpage"),
@@ -366,7 +734,7 @@ export function webPageSchema({
     description,
     isPartOf: { "@id": `${SITE_URL}/#website` },
     inLanguage: "en-US",
-    ...(dateModified ? { dateModified } : {}),
+    ...(validDateModified ? { dateModified: validDateModified } : {}),
     ...(primaryImage ? { primaryImageOfPage: toWww(primaryImage) } : {}),
     ...(mainEntityId ? { mainEntity: { "@id": mainEntityId } } : {}),
     ...(breadcrumb ? { breadcrumb } : {}),

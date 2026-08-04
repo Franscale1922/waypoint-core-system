@@ -12,8 +12,8 @@
  * "PASS Section 11: 0 em dashes", exited 0, and git pushed the bad blob. The
  * gate reported green on content that was not what was being pushed. The hook
  * never read its stdin at all, so it could not have known which commits were
- * in flight; this is a property of the hook, and it applied to all three
- * checks equally.
+ * in flight; this is a property of the hook, and it applied to every
+ * check equally.
  *
  * Shape: for each pushed tip, extract that commit's tree into a temp dir and
  * run the checks there. Deliberately NOT `git stash` -- a stash that fails
@@ -49,20 +49,37 @@ const EXCLUDED_TOP = "brands";
 // handler cannot fire on SIGKILL, so garbage is possible and must be bounded.
 const STALE_MS = 6 * 60 * 60 * 1000;
 
+// Upper bound on how many newly-added commits get verified individually. A
+// stale remote-tracking ref can make an ordinary push look like it introduces
+// hundreds of commits; past this the tip alone is checked and that is said out
+// loud rather than assumed.
+const MAX_RANGE = 25;
+
 // Inputs every check needs, asserted present BEFORE any check runs.
 //
-// This is the guard that makes a vacuous pass impossible, and it is not
-// hypothetical: three of aeo-audit's four checks degrade SILENTLY to PASS when
-// their input directory is absent (existsSync guards at aeo-audit.mjs:110, 153
-// and 238). Measured: extracting only content/ and running the audit prints
-// "PASS Section 11: 0 em dashes in articles or src/" across 0 files, exit 0.
-// This repo has already shipped that exact failure once, in verify-links.
+// Why this still earns its place, stated accurately as of 2026-08-04. It was
+// written when aeo-audit degraded SILENTLY to PASS on a missing input
+// directory: extracting only content/ printed "PASS Section 11: 0 em dashes"
+// across 0 files and exited 0. PR #23 (40f4087) fixed that in the audit itself,
+// which now reports "FAIL: N audit input path(s) missing" and exits 1
+// (re-measured here, not assumed).
+//
+// So this list is no longer the only thing standing between us and that
+// particular vacuous pass. It is kept because it covers what the audit does not
+// (tests/unit, tests/auth, prisma/schema.prisma, vitest.config.ts,
+// package.json), because it fails before any checker runs rather than relying
+// on each one to police its own inputs, and because it turns an old commit that
+// predates these paths into a clear message instead of a stack trace. Two
+// overlapping guards on the failure mode this repo has already shipped once
+// (verify-links) is the intended amount, not an accident.
 const REQUIRED_PATHS = [
   "content/articles",
   "src/app",
   "src/data",
   "src/lib/match-workspace",
-  "scripts",
+  "scripts/aeo-audit.mjs",
+  "scripts/verify-dates.mjs",
+  "scripts/build-brand-map.mjs",
   "tests/unit",
   "tests/auth",
   "prisma/schema.prisma",
@@ -151,6 +168,32 @@ function sweepStaleWorkdirs() {
   }
 }
 
+/**
+ * Symlinks in the extracted tree whose target escapes the extraction root.
+ *
+ * Directory entries are classified with lstat semantics, so a symlink to a
+ * directory is never descended into and this cannot loop. Links that stay
+ * inside the tree are left alone: they describe the pushed content honestly.
+ */
+function escapingSymlinks(root) {
+  const escaping = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isSymbolicLink()) {
+        const target = path.resolve(dir, fs.readlinkSync(full));
+        if (target !== root && !target.startsWith(root + path.sep)) {
+          escaping.push(path.relative(root, full));
+        }
+      } else if (entry.isDirectory()) {
+        walk(full);
+      }
+    }
+  };
+  walk(root);
+  return escaping;
+}
+
 /** Count regular files and symlinks, matching what `git ls-tree -r` enumerates. */
 function countEntries(dir) {
   let n = 0;
@@ -179,10 +222,51 @@ function expectedEntryCount(sha, cwd) {
     .filter((p) => p !== EXCLUDED_TOP && !p.startsWith(EXCLUDED_TOP + "/")).length;
 }
 
+/**
+ * The node_modules to lend the extracted tree.
+ *
+ * Keyed on the directory existing, NOT on vitest being in it. The content
+ * checks need gray-matter and typescript whether or not a test runner is
+ * present, so keying on vitest would refuse to link a perfectly usable
+ * node_modules and fail those checks with a module-resolution error that looks
+ * nothing like the real problem. Vitest is probed separately, where it matters.
+ */
+/**
+ * Every commit this push would ADD to the remote, oldest first.
+ *
+ * Checking only the tip is not enough, and the reason is the original bug in a
+ * different costume: commit A introduces an em dash, commit B repairs it, push
+ * the branch, and a tip-only gate reports green while A's bad blob lands on the
+ * remote. Measured, not theorised.
+ *
+ * `--not --remotes` is the lower bound. An earlier draft of this file claimed a
+ * brand-new branch has none, because its remote OID on stdin is all zeros. That
+ * was wrong: --remotes bounds against every remote-tracking ref regardless of
+ * what stdin says, and on a never-pushed branch it returns exactly the new
+ * commits.
+ *
+ * Returns [tip] when the range is empty (a re-push of something already on the
+ * remote still deserves one check) or when it is implausibly long, since a
+ * stale remote-tracking ref would otherwise re-verify half the history.
+ */
+function commitsToVerify(tip, cwd) {
+  const r = capture("git", ["rev-list", "--reverse", tip, "--not", "--remotes"], { cwd });
+  if (!succeeded(r)) return [tip];
+  const commits = r.stdout.split("\n").filter(Boolean);
+  if (commits.length === 0) return [tip];
+  if (commits.length > MAX_RANGE) {
+    console.log(
+      `  ${commits.length} new commits exceeds the ${MAX_RANGE}-commit range cap; verifying the tip only.`,
+    );
+    return [tip];
+  }
+  return commits;
+}
+
 function locateNodeModules(cwd) {
   for (const base of [INSTALLED_ROOT, cwd]) {
     const dir = path.join(base, "node_modules");
-    if (fs.existsSync(path.join(dir, ".bin", "vitest"))) return dir;
+    if (fs.existsSync(dir)) return dir;
   }
   return null;
 }
@@ -239,11 +323,43 @@ function extractTree(sha, work, cwd) {
     return null;
   }
 
-  const missing = REQUIRED_PATHS.filter((rel) => !fs.existsSync(path.join(tree, rel)));
-  if (missing.length > 0) {
+  // Symlinks that point outside the extraction root would let a commit redirect
+  // the checks at content it does not actually contain. Both guards above are
+  // blind to it: git ls-tree counts a symlink blob as one entry, so the count
+  // still balances, and existsSync FOLLOWS the link, so a required path can be
+  // satisfied by a directory somewhere else on the machine. Verified: committing
+  // content/articles as a symlink kept the count at 419 = 419 and passed the
+  // floor check, leaving the audit reading a directory that no clone would have.
+  const escaping = escapingSymlinks(tree);
+  if (escaping.length > 0) {
+    blocked([
+      `${sha} contains symlinks pointing outside the tree: ${escaping.join(", ")}`,
+      "The checks would read content this commit does not contain, so a clone",
+      "would not have what was verified. Refusing rather than reporting green.",
+    ]);
+    return null;
+  }
+
+  // lstat, not existsSync: existsSync follows symlinks, which is exactly the
+  // hole above. A required directory has to BE a directory in the pushed tree.
+  const missing = [];
+  const notReal = [];
+  for (const rel of REQUIRED_PATHS) {
+    const full = path.join(tree, rel);
+    let stat;
+    try {
+      stat = fs.lstatSync(full);
+    } catch {
+      missing.push(rel);
+      continue;
+    }
+    if (stat.isSymbolicLink()) notReal.push(rel);
+  }
+  if (missing.length > 0 || notReal.length > 0) {
     blocked([
       `${sha} does not contain everything the checks need.`,
-      `Missing: ${missing.join(", ")}`,
+      ...(missing.length > 0 ? [`Missing: ${missing.join(", ")}`] : []),
+      ...(notReal.length > 0 ? [`Present but a symlink, not real content: ${notReal.join(", ")}`] : []),
       "This usually means an old commit predating these paths is being pushed.",
       "The checks cannot judge it, and silently passing it would be a false green.",
       "Push it with SKIP_ARCHIVE_VERIFY=1 if you have verified it another way.",
@@ -256,14 +372,26 @@ function extractTree(sha, work, cwd) {
   return tree;
 }
 
-/** Run the three checks inside an extracted tree. Returns true when all pass. */
-function runChecks(tree, cwd) {
+/** Run the four checks inside an extracted tree. Returns true when all pass. */
+function runChecks(tree, cwd, runTests) {
   const env = { ...process.env };
 
-  // 1. Content audit. aeo-audit.mjs resolves every path from CWD (content/
-  //    articles at :19, src/app at :124, src at :150, src/data at :237) and has
-  //    no npm dependencies, so the extracted copy run from the extracted tree
-  //    audits exactly that tree.
+  // node_modules must be in place BEFORE any check, not just before vitest.
+  //
+  // Every checker now resolves its paths from its own location rather than from
+  // CWD (aeo-audit.mjs REPO_ROOT at :41, verify-dates.mjs at :88,
+  // build-brand-map.mjs at :56), which is precisely why the EXTRACTED copies are
+  // the ones invoked: their roots then point at the extracted tree. But two of
+  // them also import npm packages (gray-matter, typescript), and Node resolves a
+  // bare specifier upward from the SCRIPT's directory, so an extracted copy with
+  // no node_modules beside it dies with ERR_MODULE_NOT_FOUND before it audits
+  // anything. Linking only before the test suites left the content checks broken
+  // on every push; caught when main gained those imports in PR #23 (40f4087).
+  const nodeModules = locateNodeModules(cwd);
+  const link = path.join(tree, "node_modules");
+  if (nodeModules !== null && !fs.existsSync(link)) fs.symlinkSync(nodeModules, link, "dir");
+
+  // 1. Content audit.
   const audit = stream("node", [path.join(tree, "scripts", "aeo-audit.mjs")], { cwd: tree, env });
   if (!succeeded(audit)) {
     return blocked([
@@ -272,18 +400,29 @@ function runChecks(tree, cwd) {
       "  genuinely-functional one with the token: emdash-allow",
       "a metaTitle / article frontmatter title that hard-codes the brand",
       "  (the title template already appends it): remove the brand suffix",
+      ...(nodeModules === null ? ["dependencies are not installed: run npm install"] : []),
       "",
       "Note these are read from the COMMIT, not your working tree. Fixing the",
       "file without committing the fix will not clear this.",
     ]);
   }
 
-  // 2. Brand-identity map drift. Unlike aeo-audit, build-brand-map.mjs derives
-  //    its root from its own location (:56), so changing directory does NOT
-  //    redirect it. The extracted copy must be the one invoked, or it would
-  //    compare the INSTALLED repo's map and silently validate the wrong tree.
-  //    Its registry source is an absolute homedir()/BIP_REGISTRY_PATH path to a
-  //    sibling repo, correctly unaffected by any of this.
+  // 2. Article frontmatter dates. Runs the checker against the pushed corpus,
+  //    which is the only thing that proves the ARTICLES are clean; the unit
+  //    suites only prove the CHECKER works, against temp fixtures.
+  const dates = stream("node", [path.join(tree, "scripts", "verify-dates.mjs")], { cwd: tree, env });
+  if (!succeeded(dates)) {
+    return blocked([
+      `an article frontmatter date is missing, unquoted, or not a real day (${describeFailure(dates)}).`,
+      'Quote it:  date: "2026-02-28"   (single quotes are fine too)',
+      "Re-check:  npm run verify-dates",
+    ]);
+  }
+
+  // 3. Brand-identity map drift. The extracted copy must be the one invoked, or
+  //    it would compare the INSTALLED repo's map and silently validate the wrong
+  //    tree. Its registry source is an absolute homedir()/BIP_REGISTRY_PATH path
+  //    to a sibling repo, correctly unaffected by any of this.
   if (env.SKIP_BIP_DRIFT !== "1") {
     const drift = capture("node", [path.join(tree, "scripts", "build-brand-map.mjs"), "--check"], {
       cwd: tree,
@@ -303,22 +442,23 @@ function runChecks(tree, cwd) {
     if (driftOutput.includes("BRAND_MAP_DRIFT_SKIPPED")) process.stdout.write(driftOutput);
   }
 
-  // 3. Fast unit suites. The only check needing node_modules, which a bare
-  //    extraction has none of, so the installed repo's is symlinked in. Vitest
-  //    writes one results.json into that shared cache (a rerun-ordering hint,
-  //    not correctness state, regenerated when malformed); nothing else in the
-  //    real repo is touched.
-  if (env.SKIP_UNIT_TESTS === "1") return true;
+  // 4. Fast unit suites. Vitest writes one results.json into the shared cache
+  //    linked above (a rerun-ordering hint, not correctness state, regenerated
+  //    when malformed); nothing else in the real repo is touched.
+  if (!runTests || env.SKIP_UNIT_TESTS === "1") return true;
 
-  const nodeModules = locateNodeModules(cwd);
-  if (nodeModules === null) {
-    console.log("NOTE: vitest not installed, skipping unit suites. Run 'npm install' to enable them.");
+  const vitestBin = nodeModules === null ? null : path.join(nodeModules, ".bin", "vitest");
+  if (vitestBin === null || !fs.existsSync(vitestBin)) {
+    // Preserves the long-standing behaviour for a fresh clone, but says plainly
+    // that verification was incomplete. A quiet "NOTE" next to an exit 0 reads
+    // like a clean run, which is the whole failure mode this file exists to end.
+    console.log("");
+    console.log("NOT VERIFIED: vitest is not installed, so the unit suites did not run.");
+    console.log("  This push was allowed without them. Run 'npm install' to enable them.");
     return true;
   }
-  const link = path.join(tree, "node_modules");
-  if (!fs.existsSync(link)) fs.symlinkSync(nodeModules, link, "dir");
 
-  const tests = stream(path.join(nodeModules, ".bin", "vitest"), ["run", "--project", "unit", "--project", "auth"], {
+  const tests = stream(vitestBin, ["run", "--project", "unit", "--project", "auth"], {
     cwd: tree,
     env,
   });
@@ -337,7 +477,7 @@ function runChecks(tree, cwd) {
 // exactly the one we just created.
 let activeWorkdir = null;
 
-function verifyOne(sha, cwd) {
+function verifyOne(sha, cwd, runTests) {
   let work;
   try {
     // realpath FIRST: on macOS tmpdir() is /var/..., a symlink to /private/var,
@@ -351,7 +491,7 @@ function verifyOne(sha, cwd) {
   try {
     const tree = extractTree(sha, work, cwd);
     if (tree === null) return false;
-    return runChecks(tree, cwd);
+    return runChecks(tree, cwd, runTests);
   } finally {
     removeWorkdir(work);
     activeWorkdir = null;
@@ -377,8 +517,18 @@ function main() {
   console.log(`Verifying ${shas.length} pushed ${plural} against ${shas.length === 1 ? "its" : "their"} own tree.`);
 
   for (const sha of shas) {
-    console.log(`\n[${sha.slice(0, 12)}]`);
-    if (!verifyOne(sha, cwd)) process.exit(1);
+    const commits = commitsToVerify(sha, cwd);
+    if (commits.length > 1) {
+      console.log(`\n[${sha.slice(0, 12)}] ${commits.length} new commits; content checked on each.`);
+    }
+    // Content is judged per commit, because a violation in an intermediate
+    // commit still lands on the remote. The test suites describe the code's
+    // behaviour and are run once, on the tip, which is the state that ships.
+    for (const commit of commits) {
+      const isTip = commit === commits[commits.length - 1];
+      console.log(`\n[${commit.slice(0, 12)}]${isTip ? "" : " (intermediate)"}`);
+      if (!verifyOne(commit, cwd, isTip)) process.exit(1);
+    }
   }
   process.exit(0);
 }
