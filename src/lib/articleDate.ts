@@ -130,11 +130,60 @@ export function formatArticleDate(
  * isStale requires a full cadence to have passed, but the manual
  * `{ force: true }` run bypasses that check. Both values are YYYY-MM-DD, so a
  * string compare is a date compare, matching how verify-dates orders them.
+ *
+ * publicationDate is calendar-validated, not just type-checked. A merely
+ * `typeof === "string"` check would let a syntactically YYYY-MM-DD but
+ * impossible day (e.g. "2026-13-01") through the comparison below and echo it
+ * straight into `updatedAt` verbatim, since the comparison is a plain string
+ * compare that never inspects whether the value names a real day. Reproduced:
+ * `"2026-08-04" < "2026-13-01"` is true lexicographically, so the malformed
+ * value would have been returned unchanged. An invalid publicationDate falls
+ * back to `today`, the same fallback used when it is missing entirely.
+ *
+ * A publicationDate that IS a real calendar day but still in the future
+ * relative to `today` is a separate, narrower case this does not resolve: the
+ * ordering invariant above forces a choice between `updatedAt` before `date`
+ * (a verify-dates build failure) or `updatedAt` naming a day that has not
+ * happened yet. This function keeps the existing behavior (returns
+ * publicationDate, preserving the ordering invariant) rather than deciding
+ * that policy question here. It is reachable only when a content-authoring mistake
+ * (a post-dated article, which verify-dates does not reject: it checks that a
+ * day exists, not that it is in the past) meets a manual `{ force: true }`
+ * refresh of that specific article. Tracked as a follow-up, not fixed inline,
+ * because the correct fix is to refuse the refresh entirely rather than
+ * choose which invariant to violate, and that is a caller-level decision.
  */
 export function revisionUpdatedAt(publicationDate: unknown, today: string): string {
-  return typeof publicationDate === "string" && today < publicationDate
-    ? publicationDate
-    : today;
+  if (typeof publicationDate !== "string" || !isRealCalendarDay(publicationDate)) {
+    return today;
+  }
+  return today < publicationDate ? publicationDate : today;
+}
+
+/**
+ * Whole calendar days between an article's date and `now`, or null when the
+ * date cannot be validated.
+ *
+ * Deliberately NOT `articleDateObject`-based. That helper anchors to LOCAL
+ * noon, which is correct for display (it keeps the rendered day equal to the
+ * authored day) but wrong for age math: comparing two noon-anchored instants
+ * by elapsed milliseconds makes the result depend on the SERVER's ambient
+ * timezone and on what time of day the cron happens to fire. An article
+ * touched exactly 365 days ago by the calendar can read as 364 days and
+ * change if the run lands a few hours before the anchor, silently deferring
+ * it to the next scheduled run.
+ *
+ * This computes both sides as UTC calendar-date boundaries instead, so the
+ * result is an exact integer day count independent of the process's TZ
+ * environment variable or the time of day `now` carries.
+ */
+export function daysSinceArticleDate(value: unknown, now: Date): number | null {
+  const iso = articleDateISO(value);
+  if (iso === null) return null;
+  const [year, month, day] = iso.split("-").map(Number);
+  const articleUTC = Date.UTC(year, month - 1, day);
+  const nowUTC = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+  return Math.round((nowUTC - articleUTC) / (1000 * 60 * 60 * 24));
 }
 
 /**

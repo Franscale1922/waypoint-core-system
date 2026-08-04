@@ -9,7 +9,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
-import { articleDateObject, revisionUpdatedAt } from "./articleDate";
+import { daysSinceArticleDate, revisionUpdatedAt } from "./articleDate";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -129,20 +129,21 @@ export function isStale(article: Article, force = false): boolean {
   // read has to prefer `updatedAt` or a refreshed article would stay
   // permanently stale and be rewritten on every single monthly run.
   //
-  // Anchored to local noon for the same reason every render site is: a bare
-  // `new Date("2026-03-22")` is UTC midnight, which is the previous day in any
-  // negative-offset zone, so ages drifted by a day depending on server region.
-  const lastTouched = articleDateObject(
+  // daysSinceArticleDate compares UTC calendar dates, not elapsed
+  // milliseconds from a local-noon anchor: a millisecond comparison made an
+  // article's eligibility depend on both the server's ambient TZ and what
+  // time of day the monthly cron happened to fire, so a real 365-day-old
+  // article could read as 364 days and change and get silently deferred to
+  // the NEXT month's run. Calendar-day arithmetic removes both variables.
+  const ageInDays = daysSinceArticleDate(
     article.frontmatter.updatedAt ?? article.frontmatter.date,
+    new Date(),
   );
 
   // An unvalidatable date cannot be aged. Treat it as NOT stale so the refresh
   // never rewrites an article whose frontmatter is already broken: that is a
   // job for verify-dates, which fails the build on exactly this.
-  if (lastTouched === null) return false;
-
-  const now = new Date();
-  const ageInDays = (now.getTime() - lastTouched.getTime()) / (1000 * 60 * 60 * 24);
+  if (ageInDays === null) return false;
 
   return ageInDays >= cadenceDays;
 }

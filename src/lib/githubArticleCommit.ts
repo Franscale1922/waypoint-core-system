@@ -14,6 +14,7 @@
 import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
 import { revisionUpdatedAt } from "./articleDate";
+import { isArticleSlug } from "./articles";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -128,6 +129,19 @@ export async function commitRefreshedArticles(
   // ── 3. Create blobs for each updated article ─────────────────────────────
   const blobs = await Promise.all(
     articles.map(async ({ slug, frontmatter, body }) => {
+      // Refuse to build a GitHub Tree API path from a slug that isn't a real
+      // article-slug shape. This is the write-side counterpart to the
+      // containment fix in src/lib/articles.ts: a malformed `slug` here would
+      // otherwise be interpolated straight into `content/articles/${slug}.md`
+      // with no check, and the Tree API accepts arbitrary path strings
+      // (including `../`), so a bad payload could target a file outside the
+      // articles directory instead of merely writing to the wrong slug.
+      if (!isArticleSlug(slug)) {
+        throw new Error(
+          `Refusing to commit "${slug}": not a valid article slug (lowercase ` +
+            `letters, digits, and single hyphens only).`,
+        );
+      }
       const content = serializeArticle(frontmatter, body);
       const encoded = Buffer.from(content, "utf-8").toString("base64");
 

@@ -31,16 +31,37 @@ export type ArticleVideo = {
 const articlesDir = nodePath.join(process.cwd(), "content", "articles");
 
 /**
+ * Real article slugs are lowercase, digits, and single hyphens between
+ * segments. Shared by discovery (getAllArticles) and resolution
+ * (resolveArticlePath) so the two can never disagree about what counts as a
+ * slug. Before this was shared, discovery accepted any `*.md` filename while
+ * resolution enforced this grammar, so a file saved as `new_guide.md` would
+ * be listed in every index, feed, and sitemap while
+ * `getArticleBySlug("new_guide")` returned null: every link to it was a 404
+ * that nothing caught until a reader clicked it.
+ */
+export function isArticleSlug(slug: string): boolean {
+  return /^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug);
+}
+
+/**
  * Resolves a requested slug to a real path under content/articles, or null.
  *
- * Two independent checks, because either one alone would be the wrong layer:
+ * Three independent checks, because any one alone would be the wrong layer:
  *
- * 1. A format allowlist (real article slugs are lowercase, digits, hyphens),
- *    rejected BEFORE anything touches the filesystem. This is what actually
- *    stops a traversal payload like "../CONTENT-CALENDAR": that string simply
- *    is not a slug shape, so it never reaches nodePath.join.
+ * 1. isArticleSlug(), rejected BEFORE anything touches the filesystem. This
+ *    is what actually stops a traversal payload like "../CONTENT-CALENDAR":
+ *    that string simply is not a slug shape, so it never reaches
+ *    nodePath.join.
  * 2. A resolved-path containment assertion as defense in depth, in case the
  *    format check is ever loosened without this being revisited.
+ * 3. A regular-file check (not a symlink) once something exists at the
+ *    resolved path. A symlink literally named `content/articles/<real
+ *    slug>.md` passes both checks above (its own name and location are
+ *    exactly right) while pointing anywhere else on disk; `readFileSync`
+ *    follows it silently. No article is symlinked today, so this is defense
+ *    in depth for a supply-chain path (a malicious or mistaken commit),
+ *    not a request-reachable hole.
  *
  * This is the one place both getArticleBySlug and getRelatedArticles route
  * through. articleMarkdown() in markdown-views.ts calls getArticleBySlug from
@@ -55,15 +76,32 @@ const articlesDir = nodePath.join(process.cwd(), "content", "articles");
  * glossary/[slug]/page.tsx, not a fix for a reachable hole.
  */
 function resolveArticlePath(slug: string): string | null {
-  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return null;
+  if (!isArticleSlug(slug)) return null;
   const resolved = nodePath.resolve(articlesDir, `${slug}.md`);
   const root = nodePath.resolve(articlesDir) + nodePath.sep;
   if (!resolved.startsWith(root)) return null;
+  if (!fs.existsSync(resolved)) return null;
+  if (fs.lstatSync(resolved).isSymbolicLink()) return null;
   return resolved;
 }
 
 export function getAllArticles(): Article[] {
-  const filenames = fs.readdirSync(articlesDir).filter((f) => f.endsWith(".md"));
+  const filenames = fs.readdirSync(articlesDir).filter((f) => {
+    if (!f.endsWith(".md")) return false;
+    const slug = f.replace(/\.md$/, "");
+    if (!isArticleSlug(slug)) {
+      // Discovery must never advertise a link that resolution will refuse.
+      // A file skipped here doesn't 404 quietly: it never appears in an
+      // index, feed, or sitemap in the first place. Rename the file to fix.
+      console.warn(
+        `[articles] Skipping "${f}": filename is not a valid article slug ` +
+          `(lowercase letters, digits, and single hyphens only). Rename the ` +
+          `file, or this article will never appear anywhere on the site.`,
+      );
+      return false;
+    }
+    return true;
+  });
   return filenames
     .map((filename) => {
       const slug = filename.replace(/\.md$/, "");
@@ -89,7 +127,7 @@ export function getAllArticles(): Article[] {
 
 export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[]; faqs?: { q: string; a: string }[]; video?: ArticleVideo } | null {
   const fullPath = resolveArticlePath(slug);
-  if (fullPath === null || !fs.existsSync(fullPath)) return null;
+  if (fullPath === null) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
     meta: { slug, title: data.title, date: data.date, updatedAt: data.updatedAt ?? undefined, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined, escapeKit: data.escapeKit ?? undefined },
@@ -115,7 +153,7 @@ export function getRelatedArticles(relatedSlugs: string[]): Article[] {
   return relatedSlugs
     .map((slug) => {
       const fullPath = resolveArticlePath(slug);
-      if (fullPath === null || !fs.existsSync(fullPath)) return null;
+      if (fullPath === null) return null;
       const { data } = matter(fs.readFileSync(fullPath, "utf8"));
       return {
         slug,
@@ -132,7 +170,12 @@ export function getRelatedArticles(relatedSlugs: string[]): Article[] {
 export function getArticlesByCategory(): Record<string, Article[]> {
   const articles = getAllArticles();
   const ORDER = ["Getting Started", "Going Deeper", "Industry Spotlights"];
-  const grouped: Record<string, Article[]> = {};
+  // Object.create(null) rather than {}: a plain object literal inherits
+  // Object.prototype, so a category value of "constructor" or "toString"
+  // would resolve `grouped[article.category]` to an inherited FUNCTION
+  // instead of undefined, and `.push()` on it throws, taking down every
+  // category-based index for one bad frontmatter value.
+  const grouped: Record<string, Article[]> = Object.create(null);
   for (const cat of ORDER) grouped[cat] = [];
   for (const article of articles) {
     if (!grouped[article.category]) grouped[article.category] = [];
