@@ -96,6 +96,20 @@ export const MODEL_OWNED_FIELDS = ["title", "excerpt", "faqs"] as const;
  * model output: typing it as the target shape would be a claim about bytes nobody has checked yet.
  * Validation happens downstream, against the serialized file, in `validateArticlePayload`.
  *
+ * WHAT THIS DOES NOT FIX: PRESERVATION IS OF THE PARSED VALUE, NOT THE AUTHORED TEXT
+ * ---------------------------------------------------------------------------------
+ * `original` reaches this function through an Inngest `step.run`, whose return value is memoized as
+ * JSON. js-yaml has already resolved an unquoted YAML timestamp into a Date, and JSON turns that
+ * Date into a string, so a preserved field carries what the parser produced rather than what the
+ * author typed. For an impossible date such as 2026-02-30 the rollover to March 2 happened before
+ * any of our code ran, and the refresh would commit that valid-looking but false value.
+ *
+ * That is a limitation of the load path, not of this merge, and it is not a regression: before the
+ * inversion an unpinned field was deleted from the article outright, so nothing survived to be
+ * normalized. No article on disk carries such a field today. Fixing it properly means carrying RAW
+ * frontmatter across the step boundary. tests/unit/write-path-fields.test.ts pins the current
+ * behaviour so a change to the load path shows up in a diff.
+ *
  * NO EM DASHES IN THIS FILE. It lives under src/, which scripts/aeo-audit.mjs scans, and one here
  * would fail the very push that adds it (CONTENT-STANDARDS Section 11).
  */

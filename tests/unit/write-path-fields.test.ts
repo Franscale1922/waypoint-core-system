@@ -717,6 +717,44 @@ describe("mergeRefreshedFrontmatter: fields nobody named survive a refresh", () 
   });
 });
 
+describe("what preservation does NOT fix: the Inngest step boundary", () => {
+  it("normalizes a Date-valued preserved field into an ISO string", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+
+    // CHARACTERIZATION TEST. This pins a known limitation so a future change to the load path is
+    // visible in a diff instead of silent. It documents current behaviour and does not endorse it.
+    //
+    // src/inngest/functions.ts loads articles inside step.run, and Inngest memoizes a step's return
+    // value as JSON. js-yaml resolves an unquoted YAML timestamp into a Date before any of our code
+    // runs (see the header of src/lib/frontmatterDates.mjs), and JSON turns that Date into a string,
+    // so by the time the merge sees it the authored text is already gone.
+    //
+    // Preserving a field therefore preserves the PARSED value, not the authored one. For an
+    // impossible date such as 2026-02-30, js-yaml has already rolled it over to March 2, and the
+    // refresh would commit that valid-looking but false value in place of the author's invalid one.
+    //
+    // This is NOT a regression from the inversion. Before it, an unpinned field was deleted from the
+    // article outright, so the block did not survive at all. Preserving it imperfectly is strictly
+    // better than destroying it, and no article on disk carries such a field today. Fixing it
+    // properly means carrying RAW frontmatter across the step boundary, which is a change to the
+    // load path rather than to field ownership.
+    const parsedFromDisk = { ...(originalOnDisk() as object) } as Record<string, unknown>;
+    parsedFromDisk.video = { uploadDate: new Date("2026-02-30T12:00:00Z") };
+
+    const acrossStepBoundary = JSON.parse(JSON.stringify(parsedFromDisk));
+    const merged = mergeRefreshedFrontmatter(acrossStepBoundary, modelOutput()) as Record<
+      string,
+      unknown
+    >;
+
+    // The block survives, which is the fix working.
+    expect(merged.video).toBeDefined();
+    // But as a normalized string, and rolled over to March. If this assertion ever starts failing,
+    // the load path changed and that is worth knowing.
+    expect((merged.video as Record<string, unknown>).uploadDate).toBe("2026-03-02T12:00:00.000Z");
+  });
+});
+
 describe("field ownership at the real commit boundary", () => {
   it("commits the CTA fields in the actual bytes, not just the object", async () => {
     const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
