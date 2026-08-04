@@ -379,11 +379,13 @@ This section sharpens Section 3 (Reader-First) and Section 4 (AEO). Those tell y
 
 **This is a hard rule, enforced by the pre-push audit.**
 
-The site's root layout applies a title template: `%s | Waypoint Franchise Advisors`. Every page and article title automatically gets the brand appended once. Do **not** add the brand yourself to any title that feeds this template, or it renders twice, e.g. `Franchise Glossary | Waypoint Franchise Advisors | Waypoint Franchise Advisors`. Duplicated branding wastes the title tag, looks like spam in search results, and lowers click-through.
+The site's root layout applies a title template: `%s | Waypoint`. Every page and article title automatically gets the brand appended once. Do **not** add the brand yourself to any title that feeds this template, or it renders twice, e.g. `Franchise Glossary | Waypoint | Waypoint`. Duplicated branding wastes the title tag, looks like spam in search results, and lowers click-through.
+
+The suffix was `| Waypoint Franchise Advisors` until 2026-08-03. It cost 30 of the roughly 60 characters Google renders, so half of every title went to the brand. `| Waypoint` costs 11 and leaves the rest for the words that actually match a query.
 
 ### The rule
 
-Never write `| Waypoint Franchise Advisors` (or any brand suffix) into a title that the template will brand for you. This applies to:
+Never write the word `Waypoint` into a title that the template will brand for you. The audit tests for the bare word, not for a particular suffix, because `Why Waypoint Works` and `Foo |Waypoint` render the brand twice just as surely as `Foo | Waypoint` does. This applies to:
 
 - **Article frontmatter `title:`** in `content/articles/*.md`
 - **`metaTitle:` fields** in the data layer (`src/data/*.ts`, e.g. `industries.ts`, `financing.ts`)

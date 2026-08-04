@@ -190,9 +190,16 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 // The root layout applies title.template "%s | Waypoint".
 // Any title fed into that %s that ALSO hard-codes the brand renders it twice,
 // e.g. "Foo | Waypoint | Waypoint".
-// Both the short suffix and the old long form are banned in a template-fed
-// title: the long form was the suffix until 2026-08-03 and still reads as
-// duplication now that the template appends the short one.
+//
+// The test is the bare word, not a fixed suffix. Testing for the exact long
+// name plus the exact " | Waypoint" string let real duplication through:
+// "Why Waypoint Works" and "Foo |Waypoint" both name the brand and both render
+// it twice once the template appends it, yet neither matched. The bare word
+// catches every spacing and phrasing variant, and subsumes the old long form
+// (which contains it), so the long form no longer needs its own constant.
+// Verified zero false positives when this was tightened on 2026-08-03: no
+// article frontmatter title and no metaTitle contained the word at all.
+//
 // Page-level metadata titles are visible in a page diff and caught in review;
 // the data-layer sources below are invisible there, so they are the real
 // regression risk and get guarded here.
@@ -200,13 +207,12 @@ if (totalCodeEmdash > 0 || articleEmdash > 0) {
 // Scope is deliberately narrow to avoid false positives: only article
 // frontmatter `title:` and `metaTitle:` in src/data feed the template. openGraph
 // and JSON-LD schema titles legitimately keep the brand and are NOT scanned.
-const BRAND = "Waypoint Franchise Advisors";
 const BRAND_SHORT = "Waypoint";
 const SUFFIX = ` | ${BRAND_SHORT}`;
 // Google renders roughly 60 characters of a title. Anything past that is
 // truncated, so the budget is the suffix plus the page's own words.
 const TITLE_BUDGET = 60;
-const hardCodesBrand = (line) => line.includes(BRAND) || line.includes(SUFFIX);
+const hardCodesBrand = (line) => line.includes(BRAND_SHORT);
 const brandDupes = [];
 const longTitles = [];
 
