@@ -674,6 +674,60 @@ describe("validFaqEntries", () => {
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
+  /**
+   * Raised by Codex against this diff. `trim()` strips only characters carrying
+   * the Unicode White_Space property, and U+200B ZERO WIDTH SPACE was removed
+   * from it, so a trim-based emptiness check called an invisible string "text".
+   * The result renders as a blank accordion button and a Question node whose
+   * name says nothing.
+   */
+  it.each([
+    ["zero width space U+200B", "​"],
+    ["zero width non-joiner U+200C", "‌"],
+    ["word joiner U+2060", "⁠"],
+    ["left-to-right mark U+200E", "‎"],
+    ["soft hyphen U+00AD", "­"],
+    ["mixed invisibles and ordinary space", " ​ ⁠ "],
+  ])("drops an entry whose q is only invisible characters (%s)", (_label, invisible) => {
+    const warn = silenceWarn();
+    // Non-vacuous, and the reason each row is here: trim() does NOT clear these,
+    // so the old check called every one of them "text". U+3000 and U+FEFF are
+    // deliberately NOT in this table because trim() already removed them, which
+    // this assertion would have wrongly claimed otherwise. It caught exactly
+    // that mistake when U+3000 was first listed here.
+    expect(invisible.trim().length).toBeGreaterThan(0);
+    expect(validFaqEntries(
+      [{ q: invisible, a: "A real answer." }] as unknown as { q: string; a: string }[],
+      "ctx",
+    )).toEqual([]);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["ideographic space U+3000", "　"],
+    ["byte order mark U+FEFF", "﻿"],
+    ["tab", "	"],
+  ])("still drops the blanks trim already handled (%s)", (_label, blank) => {
+    silenceWarn();
+    // The new guard must be a strict SUPERSET of the old one. These rows would
+    // have been rejected before the change too, and a regex that traded them
+    // away for the zero-width cases would be no better than what it replaced.
+    expect(blank.trim().length).toBe(0);
+    expect(validFaqEntries(
+      [{ q: blank, a: "A real answer." }] as unknown as { q: string; a: string }[],
+      "ctx",
+    )).toEqual([]);
+  });
+
+  it("still accepts visible text that merely contains an invisible character", () => {
+    const warn = silenceWarn();
+    // The guard must reject strings with NO visible characters, not strings that
+    // happen to carry one, or a legitimate question would be dropped.
+    const entry = { q: "Can I​finance this?", a: "Yes." };
+    expect(validFaqEntries([entry], "ctx")).toEqual([entry]);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
   it("describes a null entry as null, not as the word \"null\" in quotes", () => {
     const warn = silenceWarn();
     validFaqEntries([null] as unknown as { q: string; a: string }[], "ctx");

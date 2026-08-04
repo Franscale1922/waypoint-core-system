@@ -468,9 +468,27 @@ function iso8601Duration(value: unknown): string | undefined {
   return typeof value === "string" && ISO_DURATION.test(value) ? value : undefined;
 }
 
-/** A required string property is only satisfied by actual, non-blank text. */
+/**
+ * A required string property is only satisfied by actual, VISIBLE text.
+ *
+ * The character class covers everything that occupies no visible space: ordinary
+ * whitespace, Unicode space separators, and the format/control categories.
+ * `trim()` alone is NOT enough, because it strips only characters carrying the
+ * Unicode White_Space property, and U+200B ZERO WIDTH SPACE was removed from
+ * that property. A question consisting of nothing but U+200B passed a
+ * trim-based check and shipped as a blank accordion button plus a Question node
+ * with no meaningful name.
+ *
+ * The literal lives INSIDE the function deliberately. Hoisting it to a
+ * module-level `const` puts it in the temporal dead zone for `scorecardFaqSchema`
+ * above, which is itself a module-scope const that calls faqPageSchema at import
+ * time and therefore reaches this function before any later declaration is
+ * initialized. That throws "Cannot access ... before initialization" and takes
+ * every page down at import. Verified by doing exactly that and watching the
+ * suite fail.
+ */
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
+  return typeof value === "string" && value.replace(/[\s\p{Cf}\p{Cc}\p{Zs}]/gu, "").length > 0;
 }
 
 /** The normalizer form of isNonEmptyString, for the optional-property table. */
