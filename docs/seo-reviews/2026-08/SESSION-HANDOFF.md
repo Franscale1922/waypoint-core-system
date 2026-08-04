@@ -17,6 +17,8 @@ first. The PR #21 section that used to head this file is now history and is summ
 | `main` | `24530c1` — PRs #24 and #25 reviewed, merged, and deployed 2026-08-04 |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
+| `seo/structured-data-entity-graph` | `aad80e6` — pushed, **no PR**, 5 commits (entity graph + JSON-LD date validation) |
+| `claude/beautiful-napier-ede2fc` | `0614c7c` — **PR #26 open**, VideoObject validation, based on the branch above **not on `main`** |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
 ---
@@ -47,6 +49,59 @@ finding logged but not fixed, is in `ADVERSARIAL-REVIEW-2026-08-04.md` beside th
 validates only `relatedSlugs` frontmatter (not `.tsx` hrefs or inline markdown links). The
 investment fix is sound for that one page but is not structurally enforced. See "The gap worth
 acting on separately" in the review doc.
+
+---
+
+## 🟡 The open structured-data stack (added 2026-08-04, separate from everything above)
+
+Two branches sit in a stack that has **not** reached `main`. They are independent of the #24/#25
+work and were developed in parallel worktrees.
+
+```
+main (2d12432)
+ └─ seo/structured-data-entity-graph  aad80e6   pushed, NO PR
+     └─ claude/beautiful-napier-ede2fc 0614c7c  PR #26, base = the branch above
+```
+
+**Nothing merges until the base branch gets a PR.** PR #26 deliberately targets the base rather
+than `main` so its diff is only the VideoObject work; retargeting it at `main` would drag in five
+unrelated commits. Merge order is base first, then #26.
+
+**`seo/structured-data-entity-graph`** — makes `/about#kelsey` the one authoritative Person node,
+stops `toWww` rewriting lookalike hosts, and validates every date bound for JSON-LD (`schemaDate`,
+rejecting unquoted YAML dates rather than laundering an already-rolled-over value). Codex rounds 1
+to 3 ran on it; round 3's findings were acted on in `aad80e6`.
+
+**PR #26** — `videoObjectSchema` validated nothing, and the article path reaches it through an
+`as ArticleVideo` cast over frontmatter, so its `string` types were unenforced. Now: required field
+invalid drops the whole node with one warning, optional field invalid drops only that property,
+never throws. Codex round 1 returned 0 high / 3 medium / 2 low; three accepted, two declined with
+reasons in the commit. 98 tests in the file (was 40), 9 mutations each confirmed to turn the suite
+red. Findings are in `.codex-reviews/video-object/` (gitignored, so local to that machine only).
+
+Three things worth carrying forward regardless of what happens to these branches:
+
+1. **`schemaDate` is the wrong validator for `VideoObject.uploadDate`.** It accepts a bare
+   `YYYY-MM-DD`, which is a valid schema.org Date but is flagged on a video, because Google reads
+   `uploadDate` as an instant. The video path needs a mandatory timezone; both patterns are built
+   from one `isoDateTimePattern()` source so they cannot drift.
+2. **Validate URLs by parsing, never by regex.** The live Vimeo thumbnail carries a `?region=us`
+   query string, so a pattern tight enough to be useful removes the only VideoObject on the site.
+   And emit the parsed `href`, not the caller's string: `new URL` silently strips whitespace and
+   percent-encodes spaces, so a predicate approves a value the caller then ships raw. Codex found
+   that one.
+3. **`jsonLdGraph` now accepts and filters nullish nodes.** Any factory that validates its input can
+   return `undefined`, and the old version destructured unconditionally, so one bad optional field
+   became a build failure. Do not reintroduce per-call-site guards.
+
+### Known live defect, not fixed here
+
+**Article FAQ frontmatter is unvalidated**, exactly as the video block was, and unlike the video
+case it is **live**: all 45 articles carry `faqs:`, `faqPageSchema` destructures each entry blind,
+and a null entry throws during render. Found by the same Codex round and deliberately declined to
+keep PR #26 to one concern. A background session was started on it 2026-08-04; if that work did not
+land, this is the highest-value item left in this area. It depends on the stack above, so check what
+has merged before branching.
 
 ---
 
