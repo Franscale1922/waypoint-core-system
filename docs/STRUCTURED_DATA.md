@@ -84,10 +84,25 @@ out of the script element.
 
 ### Guardrail
 
-`scripts/verify-schema.mjs` (run via `npm test` and standalone
-`npm run verify-schema`) statically fails on: reintroduced review/rating markup,
-non-www host leakage in page/schema files, and raw ld+json `<script>` tags. Run
-it after any structured-data change.
+`scripts/verify-schema.mjs` statically fails on: reintroduced review/rating
+markup, non-www host leakage in page/schema files, raw ld+json `<script>` tags,
+and **FAQPage markup whose questions are not rendered on the page**. Run it after
+any structured-data change.
+
+It runs in `npm test`, in the `.githooks/pre-push` hook, and in the Verify
+Internal Links workflow. Standalone: `npm run verify-schema`, or
+`node scripts/verify-schema.mjs --verbose` to list each FAQ call site and where
+its questions are rendered.
+
+**The FAQ check** ([scripts/lib/faq-visibility.mjs](../scripts/lib/faq-visibility.mjs))
+requires every `faqPageSchema()` call to receive a *named* array (not an inline
+literal) that the page also maps in JSX, so the visible FAQ and the JSON-LD
+cannot drift apart. It exists because on 2026-08-04 `/investment` was found
+emitting four Q&As that appeared nowhere on the page. It proves the schema and
+the page share one array; it cannot prove every element reaches the DOM, since it
+does not render. If a FAQ genuinely renders somewhere static analysis cannot see
+(a child component, a hoisted variable), annotate the call with
+`// verify-schema: faq-visible <path>`.
 
 ## Recipe: add schema to a new page
 
@@ -123,7 +138,8 @@ import JsonLd from "../../components/JsonLd";
 
 ## Verifying changes
 
-- `npm run verify-schema` — static guardrails (fast, no server).
+- `npm run verify-schema` — static guardrails (fast, no server). Add `--verbose`
+  to see every FAQPage call site and the line that renders it.
 - `npm run build:check` — full `prisma generate && next build` (no DB push;
   pair with dummy `RESEND_API_KEY` / `POSTGRES_*` env if running keyless).
 - Render check — `npm run dev`, then curl a route and extract the

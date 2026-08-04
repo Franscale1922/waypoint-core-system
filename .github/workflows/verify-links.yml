@@ -52,3 +52,10 @@ jobs:
       # and this job is their only gate.
       - name: Verify Article FAQ blocks (unit tests)
         run: npx vitest run --project unit tests/unit/structured-data.test.ts
+      # Structured-data guardrails, including FAQ schema-vs-visible parity. Needs
+      # no dependencies of its own; it runs after the install step only because
+      # that step is already there for verify-links.
+      - name: Verify Structured Data (FAQ visibility, canonical hosts)
+        run: node scripts/verify-schema.mjs
+      - name: Verify Structured Data (unit tests)
+        run: npx vitest run --project unit tests/unit/faq-visibility.test.ts
