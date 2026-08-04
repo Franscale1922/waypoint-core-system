@@ -219,7 +219,7 @@ export default function InvestmentTierToggle({ tiers }: Props) {
           }}
         >
           <p className="mt-8 text-xs text-white/30 leading-relaxed">
-            Total investment ranges represent the full cost to open, per the franchisor&apos;s FDD Item 7 estimates. Plan for the top of any stated range.
+            Total investment ranges represent the full cost to open, per the franchisor&apos;s own published estimate in their franchise disclosure document. Plan for the top of any stated range.
           </p>
         </div>
 
