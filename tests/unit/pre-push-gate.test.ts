@@ -43,6 +43,8 @@ const NEW_HOOK_DIR = join(REPO_ROOT, ".githooks");
 const EMDASH = String.fromCharCode(0x2014);
 
 const ARTICLE = "content/articles/gate-probe.md";
+// vitest runs from a checkout that necessarily has one, which is how it is running.
+const NODE_MODULES = join(process.cwd(), "node_modules");
 const TIMEOUT = 180_000;
 
 /**
@@ -89,13 +91,13 @@ let seedSha: string;
 const WORKING_TREE_HOOK = "#!/bin/sh\nexec node scripts/aeo-audit.mjs\n";
 
 /**
- * A minimal but VALID article. The excerpt is not decorative: aeo-audit fails
- * any article whose excerpt it cannot parse ("1 unparseable"), so an article
- * without one would make every case in this file fail for the wrong reason and
- * the em-dash assertions would prove nothing.
+ * A minimal but VALID article. Neither field is decorative: aeo-audit fails an
+ * article whose excerpt it cannot parse, and verify-dates fails one with no
+ * quoted date. Either omission makes every case in this file fail for the wrong
+ * reason, and the em-dash assertions would then prove nothing.
  */
 function article(body: string) {
-  return `---\ntitle: "Gate Probe"\nexcerpt: "A short probe excerpt for the pre-push gate fixture."\n---\n\n${body}\n`;
+  return `---\ntitle: "Gate Probe"\nexcerpt: "A short probe excerpt for the pre-push gate fixture."\ndate: "2026-08-04"\n---\n\n${body}\n`;
 }
 
 /**
@@ -204,6 +206,15 @@ beforeAll(() => {
   // contents are the tarball just extracted.
   commitAll("seed");
   seedSha = git(["rev-parse", "HEAD"]).stdout.trim();
+
+  // Lend the fixture the real node_modules. Not a convenience: aeo-audit and
+  // verify-dates import gray-matter and typescript since PR #23, so without it
+  // even the working-tree control hook dies with ERR_MODULE_NOT_FOUND and the
+  // bidirectional comparison measures nothing. Ignored by the seeded .gitignore,
+  // so it never enters a commit.
+  if (existsSync(NODE_MODULES) && !existsSync(join(repo, "node_modules"))) {
+    symlinkSync(NODE_MODULES, join(repo, "node_modules"), "dir");
+  }
 }, TIMEOUT);
 
 afterAll(() => {
@@ -225,13 +236,14 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: the pushed commit, not the working
       // would pass even against a fixture that blocked everything.
       const before = pushThrough(oldHookDir, "control");
       expect(before.code).toBe(0);
-      expect(before.out).toContain("PASS Section 11");
+      // The unfakeable assertion: not that it printed something reassuring, but
+      // that the bad blob actually reached the remote.
       expect(emDashesOnRemote("control")).toBe(1);
 
       // The fix: same commit, same dirty working tree, blocked.
       const after = pushThrough(NEW_HOOK_DIR, "fixed", { SKIP_UNIT_TESTS: "1" });
       expect(after.code).not.toBe(0);
-      expect(after.out).toContain("FAIL Section 11");
+      expect(after.out).toContain("em dash");
       expect(emDashesOnRemote("fixed")).toBeNull();
     },
     TIMEOUT,
@@ -271,7 +283,7 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: reads stdin, and covers the whole 
 
       const r = pushThrough(NEW_HOOK_DIR, "range", { SKIP_UNIT_TESTS: "1" });
       expect(r.code).not.toBe(0);
-      expect(r.out).toContain("FAIL Section 11");
+      expect(r.out).toContain("em dash");
       expect(emDashesOnRemote("range")).toBeNull();
     },
     TIMEOUT,
@@ -295,7 +307,7 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: reads stdin, and covers the whole 
       const r = git(["push", "origin", `${badSha}:refs/heads/explicit-sha`], { SKIP_UNIT_TESTS: "1" });
       const out = `${r.stdout ?? ""}${r.stderr ?? ""}`;
       expect(r.status).not.toBe(0);
-      expect(out).toContain("FAIL Section 11");
+      expect(out).toContain("em dash");
     },
     TIMEOUT,
   );
@@ -319,7 +331,7 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: refuses to pass vacuously", () => 
       expect(r.out).toContain("extracted tree");
       // The specific failure must be the count guard, not a downstream check
       // that happened to notice. If this ever reads "PASS", the guard is dead.
-      expect(r.out).not.toContain("PASS Section 11");
+      expect(r.out).not.toContain("PASS");
     },
     TIMEOUT,
   );
@@ -461,8 +473,7 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: skip switches mean exactly \"1\"",
   // corrected to test for exactly "1" because `-z` meant SKIP_BIP_DRIFT=0
   // disabled the guard. SKIP_UNIT_TESTS was left on `-z` and had no test at
   // all, so the value that reads like "off" turned the suites off.
-  const nodeModules = join(process.cwd(), "node_modules");
-  const haveVitest = existsSync(join(nodeModules, ".bin", "vitest"));
+  const haveVitest = existsSync(join(NODE_MODULES, ".bin", "vitest"));
 
   function stageFailingSuite() {
     resetToSeed();
@@ -477,9 +488,6 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: skip switches mean exactly \"1\"",
     writeFileSync(join(repo, "tests", "unit", "sentinel.test.ts"), failing);
     writeFileSync(join(repo, "tests", "auth", "sentinel.test.ts"), passing);
     commitAll("replace the suites with a failing sentinel");
-    if (!existsSync(join(repo, "node_modules"))) {
-      symlinkSync(nodeModules, join(repo, "node_modules"), "dir");
-    }
   }
 
   it.runIf(haveVitest)(
