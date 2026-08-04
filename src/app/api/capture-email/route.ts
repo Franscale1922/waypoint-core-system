@@ -9,6 +9,7 @@ import { inngest } from "@/inngest/client";
 import { buildUnsubscribeUrl } from "@/lib/nurture-emails";
 import { parseChecklistMarkdown, buildChecklistEmail } from "@/lib/checklist-email";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
+import { resolveChecklistSlug, type ChecklistSlug } from "@/lib/checklists";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
@@ -17,8 +18,10 @@ const FROM = "Kelsey at Waypoint <noreply@mail.waypointfranchise.com>";
 /**
  * Maps a checklistSlug to its file in content/downloads/.
  * Add new entries here as new industry-specific checklists are created.
+ * The Record<ChecklistSlug, ...> keeps this map and CHECKLIST_SLUGS from
+ * drifting: adding a slug to one without the other is now a type error.
  */
-const CHECKLIST_FILES: Record<string, string> = {
+const CHECKLIST_FILES: Record<ChecklistSlug, string> = {
   "universal": "universal-franchise-readiness-checklist.md",
   "food-and-beverage": "food-franchise-readiness-checklist.md",
   "home-services": "home-services-franchise-readiness-checklist.md",
@@ -27,13 +30,12 @@ const CHECKLIST_FILES: Record<string, string> = {
   "b2b": "b2b-franchise-readiness-checklist.md",
 };
 
-function loadChecklist(slug: string): string {
-  const filename = CHECKLIST_FILES[slug] ?? CHECKLIST_FILES["universal"];
-  const filePath = path.join(process.cwd(), "content", "downloads", filename);
+function loadChecklist(slug: ChecklistSlug): string {
+  const filePath = path.join(process.cwd(), "content", "downloads", CHECKLIST_FILES[slug]);
   try {
     return fs.readFileSync(filePath, "utf8");
   } catch {
-    // Fallback to universal if file is missing
+    // Fallback to universal if the mapped file is missing on disk.
     const fallback = path.join(process.cwd(), "content", "downloads", CHECKLIST_FILES["universal"]);
     return fs.readFileSync(fallback, "utf8");
   }
@@ -42,7 +44,7 @@ function loadChecklist(slug: string): string {
 /**
  * Human-readable label for Kelsey's notification email.
  */
-const CHECKLIST_LABELS: Record<string, string> = {
+const CHECKLIST_LABELS: Record<ChecklistSlug, string> = {
   "universal": "Universal Franchise Readiness",
   "food-and-beverage": "Food & Beverage",
   "home-services": "Home Services",
@@ -59,10 +61,17 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Email is required." }, { status: 400 });
     }
 
-    const slug = checklistSlug || "universal";
+    // Resolved ONCE and reused for the file, the label, and what gets
+    // persisted. Previously an unknown non-empty slug (a typo, or a value a
+    // component sends that was never added to CHECKLIST_FILES) passed through
+    // untouched: the universal file was delivered under the fallback label
+    // "Franchise Readiness", while the raw bogus string was written to
+    // ChecklistDownload.checklistType, and the caller still saw success. The
+    // resolved slug is what all three downstream calls now agree on.
+    const slug = resolveChecklistSlug(checklistSlug);
     const firstName = name ? name.split(" ")[0] : "there";
     const checklistContent = loadChecklist(slug);
-    const checklistLabel = CHECKLIST_LABELS[slug] ?? "Franchise Readiness";
+    const checklistLabel = CHECKLIST_LABELS[slug];
 
     // Write a lead record. ChecklistDownload is separate from the cold-outreach Lead model
     let downloadId: string | null = null;

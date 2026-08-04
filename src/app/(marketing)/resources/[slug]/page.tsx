@@ -17,6 +17,14 @@ type Props = { params: Promise<{ slug: string }> };
 
 import InlineCapture from "../../../components/InlineCapture";
 
+// Only the articles generateStaticParams publishes are valid; any other slug
+// 404s rather than reaching the server at request time. Matches
+// glossary/[slug]/page.tsx, the only other route in src/ that sets this.
+// getArticleBySlug independently validates and contains the slug too, since
+// this alone cannot protect the catch-all markdown route (route handlers
+// ignore dynamicParams entirely).
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   return getAllArticles().map((a) => ({ slug: a.slug }));
 }

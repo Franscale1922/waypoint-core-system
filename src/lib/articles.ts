@@ -30,6 +30,38 @@ export type ArticleVideo = {
 
 const articlesDir = nodePath.join(process.cwd(), "content", "articles");
 
+/**
+ * Resolves a requested slug to a real path under content/articles, or null.
+ *
+ * Two independent checks, because either one alone would be the wrong layer:
+ *
+ * 1. A format allowlist (real article slugs are lowercase, digits, hyphens),
+ *    rejected BEFORE anything touches the filesystem. This is what actually
+ *    stops a traversal payload like "../CONTENT-CALENDAR": that string simply
+ *    is not a slug shape, so it never reaches nodePath.join.
+ * 2. A resolved-path containment assertion as defense in depth, in case the
+ *    format check is ever loosened without this being revisited.
+ *
+ * This is the one place both getArticleBySlug and getRelatedArticles route
+ * through. articleMarkdown() in markdown-views.ts calls getArticleBySlug from
+ * a catch-all ROUTE HANDLER (src/app/api/md/[...path]/route.ts), which ignores
+ * `dynamicParams` entirely, so containment has to live here rather than in
+ * page-level config.
+ *
+ * Probed against production (10+ encodings: raw, single- and double-encoded
+ * ../, backslash, ....//) before this change: none reached the filesystem:
+ * Next.js normalizes the slug segment before either route sees it. This is
+ * therefore defense in depth and an inconsistency closed to match
+ * glossary/[slug]/page.tsx, not a fix for a reachable hole.
+ */
+function resolveArticlePath(slug: string): string | null {
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) return null;
+  const resolved = nodePath.resolve(articlesDir, `${slug}.md`);
+  const root = nodePath.resolve(articlesDir) + nodePath.sep;
+  if (!resolved.startsWith(root)) return null;
+  return resolved;
+}
+
 export function getAllArticles(): Article[] {
   const filenames = fs.readdirSync(articlesDir).filter((f) => f.endsWith(".md"));
   return filenames
@@ -56,8 +88,8 @@ export function getAllArticles(): Article[] {
 }
 
 export function getArticleBySlug(slug: string): { meta: Article; content: string; relatedSlugs: string[]; faqs?: { q: string; a: string }[]; video?: ArticleVideo } | null {
-  const fullPath = nodePath.join(articlesDir, `${slug}.md`);
-  if (!fs.existsSync(fullPath)) return null;
+  const fullPath = resolveArticlePath(slug);
+  if (fullPath === null || !fs.existsSync(fullPath)) return null;
   const { data, content } = matter(fs.readFileSync(fullPath, "utf8"));
   return {
     meta: { slug, title: data.title, date: data.date, updatedAt: data.updatedAt ?? undefined, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined, escapeKit: data.escapeKit ?? undefined },
@@ -82,8 +114,8 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
 export function getRelatedArticles(relatedSlugs: string[]): Article[] {
   return relatedSlugs
     .map((slug) => {
-      const fullPath = nodePath.join(articlesDir, `${slug}.md`);
-      if (!fs.existsSync(fullPath)) return null;
+      const fullPath = resolveArticlePath(slug);
+      if (fullPath === null || !fs.existsSync(fullPath)) return null;
       const { data } = matter(fs.readFileSync(fullPath, "utf8"));
       return {
         slug,
