@@ -160,6 +160,45 @@ sits at 37.0 because it is genuinely competing, not because a junk query flatter
 `/glossary` alone draws 279 impressions at position 4.9 with a 0.4% click-through rate, more than
 every article combined (165 across 15 pages).
 
+### What `/glossary` is actually ranking for (added 2026-08-03 via the Search Console MCP)
+
+The report cannot answer this; it has no per-page query breakdown. `queries_for_page` can, and the
+answer changes how the number above should be read.
+
+**Only 35% of the page's impressions are attributable at all.** GSC names 93 queries totalling ~97
+impressions and withholds the other ~182 (65%) under its anonymised-query privacy threshold. Nobody
+can see those, so any statement about what this page ranks for covers barely a third of it.
+
+Of the 93 named:
+
+| | Queries | Impressions |
+|---|---|---|
+| Brand lookups and noise | 61 | ~59 |
+| Genuine definitional / how-to | 32 | ~38 |
+
+The brand lookups skew heavily to the **Indian and Pakistani markets** (`haldiram franchise cost`,
+`bhikharam chandmal franchise price`, `kidzee franchise cost`, `nadra e sahulat`, `meeseva center`),
+plus a few US ones. Waypoint cannot serve any of them. This is Google pattern-matching a glossary to
+"<brand> franchise cost", and it is not fixable by optimisation.
+
+**Two things follow, and both correct earlier claims in this file.**
+
+1. **The 0.4% CTR is not a snippet problem, and rewriting the description will not fix it.** Nearly
+   every named query has exactly one impression, so the rate is noise at this volume, and the
+   majority of the named traffic is people hunting a specific brand's fee who are right not to click
+   a glossary.
+
+2. **The index is outranking its own term pages, and that is the real finding.** Thirteen genuine
+   definitional queries sit at **position 1** on `/glossary` (`how do franchises work`, `what is a
+   fdd document`, `how to become a franchisee`, `piggyback franchise definition`,
+   `questions to ask a franchisor before buying`). `what does auv mean` lands on the index at
+   position 2 while the AUV term page exists and ranks 37 for its own cluster. The 99 term pages
+   should be catching these, not the 99-entry index.
+
+   This is the strongest argument yet for the term-page build-out, and it was invisible until the
+   MCP was working. Re-check next month whether the ten terms given FAQs on 2026-08-03 start taking
+   these queries off the index.
+
 ### Unintended keywords
 
 Real but not worth chasing. These are people looking for a specific brand's fee, and Waypoint has
