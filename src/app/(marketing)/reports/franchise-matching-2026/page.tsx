@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { jsonLdGraph, breadcrumbSchema } from "../../../lib/structured-data";
+import { jsonLdGraph, breadcrumbSchema, schemaDate } from "../../../lib/structured-data";
 import JsonLd from "../../../components/JsonLd";
 
 const SITE_URL = "https://www.waypointfranchise.com";
@@ -45,8 +45,10 @@ export default function FranchiseMatchingReport2026() {
             headline: "The Franchise Matching Report 2026",
             description:
               "Original first-party data from Waypoint Franchise Advisors on franchise matching: 250+ brands screened, 146+ owners matched across 35 states, and why roughly 7 in 10 candidates decide not to buy.",
-            datePublished: PUBLISHED,
-            dateModified: PUBLISHED,
+            // Validated like every other date entering JSON-LD, so a typo in the
+            // constant above cannot ship as invalid structured data.
+            datePublished: schemaDate(PUBLISHED, `${SITE_URL}${PATH}`),
+            dateModified: schemaDate(PUBLISHED, `${SITE_URL}${PATH}`),
             image: `${SITE_URL}/og_default_1773343895292.png`,
             author: { "@id": `${SITE_URL}/about#kelsey` },
             publisher: { "@id": `${SITE_URL}/#business` },
