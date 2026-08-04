@@ -98,15 +98,27 @@ operating margins" illustration that broke Section 1, and doubles inbound links 
 These were each stated confidently somewhere upstream and are wrong. Re-deriving them would waste a
 session or cause harm.
 
-1. **The glossary cannibalisation thesis does not hold.** The index does not outrank its own term
-   pages for definitional queries. For `auv meaning franchise` the **index ranks 83 while the AUV
-   term page ranks 37** — the term page is winning. `common franchise terms`, the query that
-   literally describes an index, ranks **97**. What the index actually ranks 1st–5th for is
-   brand-cost junk (`alfamart franchise fee`, `bojangles pronunciation`, `chris brown net worth`),
-   heavily India/Pakistan-skewed, plus AI-assistant prompt leakage. Its 792 impressions at
-   "position 5.5" are a vanity metric at 0.13% CTR. So thinning it would not help term pages, and
-   protecting it is not worth much either. Term pages' zero impressions are a demand/authority
-   problem, not cannibalisation.
+1. **The glossary cannibalisation thesis HOLDS. An earlier draft of this file said it did not; that
+   was wrong and was corrected the same session.** The full 205-row query pull confirms the
+   `glossary-index-cannibalisation` memory: roughly 26 definitional queries rank **position 1 to 3
+   on the index**, including `what does auv mean` at **2** while the AUV term page sits at 37, plus
+   `what is a fdd document`, `how to become a franchisee`, `turn key business`,
+   `what is franchise churning` and `piggyback franchise definition` all at **1**. Many are terms
+   that have their own glossary page.
+
+   **How the wrong version happened, because it will happen again:** a 40-row `queries_for_page`
+   pull returns queries a–c (see the alphabetical-truncation note below). That slice held two
+   unfavourable data points (`auv meaning franchise` at 83, `common franchise terms` at 97) and
+   little else definitional, so it read like a refutation. It was a sampling artifact. Never draw a
+   conclusion about "what this page ranks for" from a truncated pull.
+
+   Still true from that analysis, and worth keeping: the index's 792 impressions are mostly
+   worthless. The overwhelming majority of the 205 queries are brand-cost lookups skewed to India
+   and Pakistan (`haldiram`, `kidzee`, `monginis`, `khaadi franchise cost in pakistan`), plus junk
+   (`chris brown net worth`, `bojangles pronunciation`) and AI-assistant prompt leakage. At 0.13%
+   CTR the ranking converts nothing. So: cannibalisation is real AND the traffic being cannibalised
+   is low value. The standing decision (differentiate term pages, do not thin the index) is
+   unchanged and is now better supported, not weaker.
 2. **Retitling the 30 over-budget articles addresses ~34 impressions.** Title length is a CTR lever;
    CTR only operates on page 1. Only 6 of the 30 are on page 1 and they draw ~34 impressions
    between them in 90 days. 11 of the 30 have **zero** impressions, so the recorded reason ("risks
