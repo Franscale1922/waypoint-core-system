@@ -1392,18 +1392,28 @@ export const contentRefreshFunction = inngest.createFunction(
         const force = (event as any)?.data?.force === true;
 
         // ── Step 1: Load all articles ─────────────────────────────────────────
-        const discovery = await step.run("load-all-articles", async () => {
-            return discoverArticles();
-        });
-        // A cached result from before this step returned `{articles, skipped}` replays as a bare
-        // array, which would make `.articles` undefined and throw on the next line. Inngest
-        // memoizes by step ID, and the ID did not change, so the old shape is exactly what an
-        // in-flight run hands back.
-        const articles = Array.isArray(discovery) ? discovery : discovery.articles;
-        const discoverySkips = Array.isArray(discovery) ? [] : discovery.skipped;
+        //
+        // Both step IDs below carry a `-v2` suffix because this change altered what they return:
+        // step 1 now yields `{articles, skipped}` instead of a bare array, and step 2's input is
+        // therefore different too. Inngest memoizes by step ID, so REUSING the old IDs would make
+        // the two deployments trade incompatible cached values in both directions. A run that
+        // began before this deployed would replay an array into code expecting an object, and
+        // (the direction a defensive shape-check cannot fix, because the old code is what runs)
+        // a ROLLBACK would replay this object into `articles.filter(...)` and take out the batch
+        // before it commits or notifies anything.
+        //
+        // A new ID simply is not in an old run's cache, so each deployment re-runs discovery with
+        // its own code and reads its own shape. That is cheap here: the step only re-reads the
+        // articles directory. It also means no cached article predating this change can reach the
+        // rest of the function, which is what the identity invariant below would otherwise have to
+        // catch after the fact.
+        const { articles, skipped: discoverySkips } = await step.run(
+            "load-all-articles-v2",
+            async () => discoverArticles(),
+        );
 
         // ── Step 2: Identify stale articles ───────────────────────────────────
-        const staleArticles = await step.run("identify-stale", async () => {
+        const staleArticles = await step.run("identify-stale-v2", async () => {
             return articles.filter((a) => isStale(a, force));
         });
 
@@ -1427,13 +1437,13 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
-            // Re-assert the identity invariant discovery established, because this run may not be
-            // the one that established it. `load-all-articles` is memoized by step ID, so a run
-            // that began before this code deployed replays the OLD result: articles carrying a
-            // frontmatter-derived slug that discovery would now refuse. Checked here rather than
-            // at the commit, so a mismatch costs no OpenAI call, and stated as a positive
-            // invariant rather than a repeat of the discovery rule so it holds whatever produced
-            // the article.
+            // Re-assert the identity invariant rather than trusting that discovery established it.
+            // The `-v2` step IDs above mean no article predating this change can reach here, so
+            // this is defence in depth and not the load-bearing guard it would be without them.
+            // It stays because it is the invariant the COMMIT depends on, stated positively and
+            // close to nothing: whatever produced this article, the path it will be written to has
+            // to be the file it was read from. Checked before the model call, so a violation costs
+            // no OpenAI spend.
             if (!articleIdentityMatchesFile(article)) {
                 failed.push({
                     slug: article.slug,
@@ -1588,6 +1598,19 @@ export const contentRefreshFunction = inngest.createFunction(
             });
             const apiKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
             if (!apiKey) {
+                // An all-clear nobody receives is a tolerable loss. A FAILURE nobody receives is
+                // not: this email is the only place a skipped or refused article is reported, and
+                // on a run whose articles were all skipped it is the only output at all. Swallowing
+                // that leaves the function returning "Complete" while the operator hears nothing,
+                // which is indistinguishable from a healthy month. Throwing marks the Inngest run
+                // failed, which is itself monitored, so the degraded channel surfaces through a
+                // path that does not depend on the channel that is degraded.
+                if (failed.length > 0) {
+                    throw new Error(
+                        `Content refresh had ${failed.length} failure(s) and no Resend API key to ` +
+                            `report them: ${failed.map((f) => `${f.slug} (${f.reason})`).join("; ")}`,
+                    );
+                }
                 console.warn("[content-refresh] No Resend API key, skipping summary email");
                 return;
             }
