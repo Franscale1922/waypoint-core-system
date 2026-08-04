@@ -2,11 +2,23 @@
 /**
  * Ingestion guard for article frontmatter dates.
  *
- * Dates are also validated at RENDER time by `schemaDate` in
- * src/app/lib/structured-data.ts, but that validator can only warn: it drops the
- * bad value so invalid structured data never ships, then emits a console.warn
- * that surfaces as a build-log line nobody necessarily reads. This script is the
- * gate. It fails, so a bad date cannot reach main in the first place.
+ * ON THIS BRANCH THERE IS NO SECOND LINE OF DEFENCE. The resources page emits
+ * `datePublished: meta.date` and `dateModified: meta.updatedAt ?? meta.date`
+ * straight from frontmatter, unvalidated, and src/app/sitemap.ts takes the same
+ * value as lastModified. A render-time validator (`schemaDate`) exists only on
+ * the unmerged seo/structured-data-entity-graph branch, and even there it can
+ * only console.warn. So this script is not a redundant early check: until that
+ * branch lands, it is the ONLY thing standing between a corrupted date and
+ * production.
+ *
+ * KNOWN GAP, deliberately not closed here: src/lib/githubArticleCommit.ts
+ * commits AI-refreshed articles by PATCHing the branch ref through the GitHub
+ * API, against `main` by default. That path touches no local git, so
+ * .githooks/pre-push never runs, and the CI workflow cannot be made blocking on
+ * this plan. It overwrites `date` with today (always valid) but passes
+ * `updatedAt` through from model output untouched, so that field can still reach
+ * main unchecked. Closing it means validating inside the Inngest write path,
+ * which is a change to the content pipeline rather than to this guard.
  *
  * WHY THIS FILE DOES NOT USE gray-matter
  * --------------------------------------
@@ -27,9 +39,25 @@
  * one somebody meant to write. So every check below reads the RAW frontmatter
  * text. Parsing first would destroy the evidence this script is looking for.
  *
- * If you ever "simplify" this to use gray-matter, you will have reintroduced the
- * exact bug it was written to catch, and the tests will still pass, because the
- * fixtures would be laundered on the way in too.
+ * If you ever "simplify" this to read date VALUES through gray-matter, you will
+ * have reintroduced the exact bug it was written to catch, and the tests will
+ * still pass, because the fixtures would be laundered on the way in too.
+ *
+ * There is a SECOND stage that does call gray-matter, and the ordering is the
+ * whole point: raw checks run FIRST and are the only thing that ever produces a
+ * date value, then the parser is consulted purely to confirm it agrees. That
+ * catches frontmatter which is malformed in ways raw scanning cannot see, both
+ * of them verified against this repo's gray-matter:
+ *
+ *   date:"2026-08-04"     no space after the colon, so YAML reads the WHOLE
+ *                         block as one plain scalar and data.date is undefined.
+ *   "date": 2026-02-30    a quoted duplicate key, which js-yaml rejects outright
+ *                         with "duplicated mapping key" and the article then
+ *                         fails to load at all.
+ *
+ * In both cases the raw text looks reasonable while production gets nothing, so
+ * a guard that never consults the parser would report green on an article that
+ * is broken. Consulting it second, and only to disagree, keeps the evidence.
  *
  * QUOTE STYLE: BOTH ' AND " ARE VALID
  * -----------------------------------
@@ -47,6 +75,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+// Used ONLY for the second-stage cross-check below, never to read a date value.
+// See "WHY THIS FILE DOES NOT USE gray-matter" above before touching this.
+import matter from "gray-matter";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -106,8 +137,13 @@ export function extractFrontmatterBlock(raw) {
  */
 export function topLevelValues(blockLines, key) {
   const out = [];
+  // The colon must be followed by whitespace or end-of-line, because that is
+  // what YAML actually requires to read a line as a mapping. `date:"2026-08-04"`
+  // is NOT a key: js-yaml parses the entire frontmatter block as one plain
+  // scalar string and `data.date` comes back undefined. Matching it here would
+  // report a valid date for an article that reaches production with none at all.
   for (const line of blockLines) {
-    const match = new RegExp(`^${key}\\s*:(.*)$`).exec(line);
+    const match = new RegExp(`^${key}[ \\t]*:([ \\t].*|)$`).exec(line);
     if (match) out.push(match[1]);
   }
   return out;
@@ -243,7 +279,48 @@ export function checkDateField({ block, key, required, file }) {
     return { errors, checked: 1 };
   }
 
-  return { errors, checked: 1 };
+  return { errors, checked: 1, value: scalar.value };
+}
+
+/**
+ * Second stage: having established the dates by reading raw text, ask the real
+ * parser whether it agrees. Runs only for a file whose raw checks were clean, so
+ * the specific, actionable error always comes from the raw stage and this one
+ * reports the residue: frontmatter that raw scanning reads one way and js-yaml
+ * reads another, or refuses entirely.
+ *
+ * This never SUPPLIES a value, only contradicts one. That distinction is what
+ * keeps the unquoted-date detection intact.
+ */
+export function crossCheckAgainstParser({ raw, file, validated }) {
+  const errors = [];
+  let data;
+  try {
+    data = matter(raw).data;
+  } catch (error) {
+    errors.push(
+      `${file}: the frontmatter passes a raw read but js-yaml REFUSES to parse it ` +
+        `(${String(error.message).split("\n")[0]}). The article would fail to load entirely. ` +
+        `A duplicate key written two ways, such as date: and "date":, does this.`,
+    );
+    return errors;
+  }
+
+  for (const { key } of DATE_FIELDS) {
+    const expected = validated[key];
+    if (expected === undefined) continue;
+    const actual = data?.[key];
+    if (actual !== expected) {
+      errors.push(
+        `${file}: the raw frontmatter reads "${key}" as "${expected}", but the YAML parser ` +
+          `produces ${actual === undefined ? "no such key" : JSON.stringify(String(actual))}. ` +
+          `The line is not the mapping it looks like — YAML needs whitespace after the colon, ` +
+          `so ${key}:"value" is a plain string, not a key.`,
+      );
+    }
+  }
+
+  return errors;
 }
 
 /** Validate every article in `dir`. Returns { fileCount, checkedDates, errors }. */
@@ -268,11 +345,56 @@ export function verifyArticleDates(dir = DEFAULT_ARTICLES_DIR) {
       continue;
     }
 
+    const errorsBefore = errors.length;
+    const validated = {};
     for (const { key, required } of DATE_FIELDS) {
       const result = checkDateField({ block, key, required, file });
       errors.push(...result.errors);
       checkedDates += result.checked;
+      if (result.value !== undefined) validated[key] = result.value;
     }
+
+    // An updatedAt EARLIER than date is two individually-valid days in an
+    // impossible order. Nothing downstream notices: the Article node emits
+    // dateModified: (updatedAt ?? date) and the sitemap takes the same value as
+    // lastModified, so the page claims it was revised before it was published
+    // and reports its freshness as older than it is.
+    if (
+      validated.date &&
+      validated.updatedAt &&
+      validated.updatedAt < validated.date
+    ) {
+      errors.push(
+        `${file}: "updatedAt" (${validated.updatedAt}) is EARLIER than "date" ` +
+          `(${validated.date}). Both are real days, but an article cannot be revised before ` +
+          `it was published: this ships a dateModified preceding datePublished and backdates ` +
+          `the page in the sitemap. Fix whichever one is wrong.`,
+      );
+    }
+
+    if (errors.length === errorsBefore) {
+      errors.push(...crossCheckAgainstParser({ raw, file, validated }));
+    }
+  }
+
+  // Zero coverage is the failure this repo has already been burned by once: a
+  // checker that quietly stopped finding anything and printed a green pass for
+  // months (see scripts/verify-links.mjs). An empty corpus, a mistyped CLI
+  // directory, or a move away from .md would otherwise all report success here
+  // while validating nothing, so the absence of work is itself an error.
+  //
+  // Per-FILE coverage needs no separate assertion. `date` is required and that
+  // requirement is enforced above, so every file either raises an error or
+  // contributes a validated date: a clean run cannot examine fewer dates than
+  // files. An explicit `checkedDates < files.length` invariant was written here
+  // and removed once mutation testing showed it unreachable, and therefore
+  // untestable. If `date` ever becomes optional, it stops being unreachable and
+  // should come back with a test.
+  if (files.length === 0) {
+    errors.push(
+      `${dir}: no .md articles found. A guard that checks nothing must not report success — ` +
+        `if the content directory moved, point this script at the new one.`,
+    );
   }
 
   return { fileCount: files.length, checkedDates, errors };

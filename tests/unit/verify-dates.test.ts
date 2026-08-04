@@ -1,8 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 import matter from "gray-matter";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 import {
   verifyArticleDates,
   extractFrontmatterBlock,
@@ -278,6 +282,143 @@ describe("verifyArticleDates: quoting oddities", () => {
     const { errors } = verifyArticleDates(dir);
     expect(errors).toHaveLength(1);
     expect(errors[0]).toContain("after the closing quote");
+  });
+});
+
+/**
+ * Zero coverage must be an ERROR, not a pass. This repo has already shipped one
+ * guard that quietly stopped extracting anything and printed green for months,
+ * so "found nothing, therefore nothing is wrong" is the single most dangerous
+ * shape a checker here can take.
+ */
+describe("verifyArticleDates: refusing to pass when it checked nothing", () => {
+  it("fails on an empty directory instead of reporting a clean corpus", () => {
+    const { fileCount, checkedDates, errors } = verifyArticleDates(dir);
+    expect(fileCount).toBe(0);
+    expect(checkedDates).toBe(0);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("no .md articles found");
+  });
+
+  it("fails on a directory holding only non-markdown files", () => {
+    writeFileSync(join(dir, "notes.txt"), "not an article");
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("no .md articles found");
+  });
+});
+
+/**
+ * Two individually-valid days in an impossible order. Nothing downstream
+ * notices: page.tsx emits dateModified: (updatedAt ?? date) and sitemap.ts uses
+ * the same value as lastModified.
+ */
+describe("verifyArticleDates: updatedAt earlier than date", () => {
+  it("rejects a revision dated before publication", () => {
+    writeArticle("alpha.md", ['date: "2026-08-04"', 'updatedAt: "2025-01-01"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("EARLIER");
+  });
+
+  it("allows updatedAt equal to date, which is a same-day revision", () => {
+    writeArticle("alpha.md", ['date: "2026-08-04"', 'updatedAt: "2026-08-04"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toEqual([]);
+  });
+
+  it("allows a normal later revision", () => {
+    writeArticle("alpha.md", ['date: "2026-01-15"', 'updatedAt: "2026-08-04"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toEqual([]);
+  });
+
+  it("does not compare against a date it never validated", () => {
+    // date is unquoted, so it has no trusted value. The ordering check must not
+    // fire on top of that and report a second, misleading error.
+    writeArticle("alpha.md", ["date: 2026-08-04", 'updatedAt: "2025-01-01"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("UNQUOTED");
+  });
+});
+
+/**
+ * Frontmatter that reads fine as raw text but is not what YAML sees. Both cases
+ * were verified against this repo's gray-matter before being encoded here.
+ */
+describe("verifyArticleDates: raw text and the parser disagreeing", () => {
+  it("rejects a key with no whitespace after the colon, which YAML does not read as a key", () => {
+    // Verified: gray-matter parses this whole block as the plain string
+    // 'date:"2026-08-04"' and data.date is undefined, so production gets no date.
+    expect(matter('---\ndate:"2026-08-04"\n---\nB\n').data.date).toBeUndefined();
+    writeArticle("alpha.md", ['date:"2026-08-04"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("REQUIRED");
+  });
+
+  it("still accepts a space before the colon, which YAML does read as a key", () => {
+    expect(matter('---\ndate : "2026-08-04"\n---\nB\n').data.date).toBe("2026-08-04");
+    writeArticle("alpha.md", ['date : "2026-08-04"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toEqual([]);
+  });
+
+  it("fails an article js-yaml refuses to parse, rather than passing it", () => {
+    // A duplicate key spelled two ways. The raw scan sees one `date:` and would
+    // otherwise report success, while the article cannot load at all.
+    expect(() => matter('---\ndate: "2026-01-15"\n"date": 2026-02-30\n---\nB\n')).toThrow();
+    writeArticle("alpha.md", ['date: "2026-01-15"', '"date": 2026-02-30']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("REFUSES to parse");
+  });
+
+  it("reports the raw error, not the parser one, when both would fire", () => {
+    // The cross-check runs only on a clean file, so the actionable message wins.
+    writeArticle("alpha.md", ["date: 2026-02-30"]);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("UNQUOTED");
+  });
+});
+
+/**
+ * The CLI contract, exercised as a real subprocess.
+ *
+ * Every other test calls verifyArticleDates() directly, so all of them stay
+ * green if main() stops being reached or process.exit(1) is dropped. That is not
+ * hypothetical here: the script guards its own entry point with a realpathSync
+ * comparison precisely because the naive version silently fails to run under a
+ * symlinked path. Exit status is what CI and the pre-push hook actually consume,
+ * so it gets asserted directly.
+ */
+describe("verify-dates CLI: the exit status CI and the hook rely on", () => {
+  const script = join(__dirname, "..", "..", "scripts", "verify-dates.mjs");
+
+  function runCli(target: string): number {
+    const result = spawnSync(process.execPath, [script, target], { encoding: "utf8" });
+    return result.status ?? -1;
+  }
+
+  it("exits 0 on a valid corpus", () => {
+    writeArticle("alpha.md", VALID);
+    expect(runCli(dir)).toBe(0);
+  });
+
+  it("exits 1 on an invalid date", () => {
+    writeArticle("alpha.md", ['date: "2026-02-30"']);
+    expect(runCli(dir)).toBe(1);
+  });
+
+  it("exits 1 on an empty corpus rather than passing having checked nothing", () => {
+    expect(runCli(dir)).toBe(1);
+  });
+
+  it("exits 1 on an unquoted date", () => {
+    writeArticle("alpha.md", ["date: 2026-01-15"]);
+    expect(runCli(dir)).toBe(1);
   });
 });
 
