@@ -119,7 +119,20 @@ export default async function AboutPage() {
             uploadDate: vimeo.uploadDate,
             duration: vimeo.duration,
             embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
-            contentUrl: `https://vimeo.com/${VIDEO_ID}`,
+            // No contentUrl, deliberately. Google reads it as a direct link to
+            // the video file's actual content bytes and says in as many words not
+            // to link to the page the video lives on, which is precisely what
+            // https://vimeo.com/<id> is. We used to send exactly that, so the
+            // property could never do its job: Google fetched HTML where it
+            // expected video bytes.
+            //
+            // There is nothing correct to put here instead. getVimeoMeta reads
+            // oEmbed, which returns no media file URL, and a standard Vimeo
+            // account exposes no stable public direct-file URL. contentUrl is
+            // only RECOMMENDED, and embedUrl above already carries this node's
+            // rich-result eligibility on its own, so omitting it forfeits nothing
+            // the watch-page value was delivering. Do not add it back without a
+            // verified URL that serves the video bytes themselves.
             transcript: VIDEO_TRANSCRIPT,
           },
           "https://www.waypointfranchise.com/about",

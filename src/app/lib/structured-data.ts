@@ -624,6 +624,20 @@ export function videoObjectSchema(
   };
   addOptional("duration", duration, iso8601Duration, "an ISO 8601 duration (e.g. PT3M30S)");
   addOptional("embedUrl", embedUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  // contentUrl is checked for URL SYNTAX only, on purpose. Google requires it to
+  // serve the video file's actual content bytes, and no offline check can settle
+  // that: proving a URL serves media takes a network request, which a render-path
+  // factory has no business making. Both approximations were considered and
+  // rejected as worse than the gap. Requiring a video file EXTENSION rejects
+  // legitimate media URLs that have none (signed CDN links, /stream?id= style
+  // endpoints). Blocklisting known watch-page hosts (vimeo.com/<id>,
+  // youtube.com/watch) is precise only for the platforms someone thought of, and
+  // goes quietly blind the day a third one is used.
+  //
+  // So the real guard lives at the call site instead: the About page passes no
+  // contentUrl, and tests/unit/structured-data.test.ts parses that file and fails
+  // if one reappears. This factory keeps accepting the property because a caller
+  // with a genuine direct media URL should still be able to send one.
   addOptional("contentUrl", contentUrl, absoluteHttpUrl, "an absolute http(s) URL");
   addOptional("transcript", transcript, nonEmptyText, "non-empty text");
 
