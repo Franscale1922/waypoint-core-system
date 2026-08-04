@@ -10,10 +10,13 @@
  * It is intentionally a fast static check (no server, no deps). Deep @id-resolution
  * validation against rendered HTML is a separate, heavier concern.
  *
- * Run: node scripts/verify-schema.mjs   (wired into the `seo-review` npm script)
+ * Run: node scripts/verify-schema.mjs   (run by `npm test`, the .githooks/pre-push
+ * hook, and the Verify Internal Links workflow. The docstring previously claimed
+ * `seo-review` ran it; that was never true.)
  */
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
+import { checkFaqVisibility } from "./lib/faq-visibility.mjs";
 
 const ROOT = process.cwd();
 const APP_DIR = join(ROOT, "src", "app");
@@ -38,16 +41,17 @@ const errors = [];
 const warnings = [];
 
 function walk(dir) {
+  if (!existsSync(dir)) return [];
   const out = [];
   for (const entry of readdirSync(dir)) {
     const full = join(dir, entry);
     if (statSync(full).isDirectory()) out.push(...walk(full));
-    else if (/\.(tsx?|ts)$/.test(entry)) out.push(full);
+    else if (/\.tsx?$/.test(entry)) out.push(full);
   }
   return out;
 }
 
-const files = [...walk(APP_DIR), ...walk(DATA_DIR), MARKDOWN_VIEWS];
+const files = [...walk(APP_DIR), ...walk(DATA_DIR), ...(existsSync(MARKDOWN_VIEWS) ? [MARKDOWN_VIEWS] : [])];
 
 // 1) No self-serving review/rating markup reintroduced on the business entity.
 //    Match the property-assignment / typed-node FORM (not the word in a comment),
@@ -93,6 +97,28 @@ for (const file of files) {
   }
 }
 
+// 4) FAQPage markup must correspond to FAQ content that is visible on the page.
+//    Google ignores (and can penalise) FAQ markup whose Q&A is not rendered. On
+//    2026-08-04 /investment was found emitting four Q&As that appeared nowhere:
+//    the schema array and the on-page array were disjoint literals with zero
+//    overlap. This enforces the one-shared-array pattern that makes that class of
+//    drift impossible. See scripts/lib/faq-visibility.mjs for the rule and its
+//    documented limits.
+const faq = checkFaqVisibility({
+  files,
+  readFile: (f) => readFileSync(f, "utf8"),
+  root: ROOT,
+  relative: (f) => relative(ROOT, f),
+});
+errors.push(...faq.errors);
+warnings.push(...faq.warnings);
+
+if (process.argv.includes("--verbose")) {
+  for (const s of faq.sites) {
+    console.log(`  faq: ${s.file}:${s.line} ${s.root ?? "(directive)"} rendered at ${s.via}`);
+  }
+}
+
 if (warnings.length) {
   console.warn("\n⚠ verify-schema warnings:");
   for (const w of warnings) console.warn("  - " + w);
@@ -102,4 +128,10 @@ if (errors.length) {
   for (const e of errors) console.error("  - " + e);
   process.exit(1);
 }
-console.log(`✅ verify-schema passed (${files.length} files scanned, ${warnings.length} warning(s)).`);
+// The FAQ count is in the success line on purpose. A green line with no number
+// in it is indistinguishable from a checker that silently stopped checking,
+// which is exactly how verify-links.mjs passed while validating zero slugs.
+console.log(
+  `✅ verify-schema passed (${files.length} files scanned, ` +
+    `${faq.siteCount} FAQPage call site(s) verified visible, ${warnings.length} warning(s)).`,
+);

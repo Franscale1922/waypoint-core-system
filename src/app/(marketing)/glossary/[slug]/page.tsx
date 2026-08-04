@@ -62,6 +62,20 @@ export default async function GlossaryTermPage({
   if (!entry) notFound();
 
   const url = `${SITE_URL}/glossary/${entry.slug}`;
+
+  // ONE list, rendered on the page AND fed to the FAQ schema.
+  //
+  // The definition is restated as the first question because "what is <term>"
+  // is the query this page ranks for. It used to be typed twice: once inline in
+  // the faqPageSchema() call and once as a hand-written heading below, which is
+  // the parallel-construction pattern that let /investment drift into shipping
+  // four Q&As that rendered nowhere. Keeping it in this array is what makes the
+  // two provably identical, and it is what scripts/verify-schema.mjs checks.
+  const faqItems = [
+    { q: `What is ${entry.term} in franchising?`, a: entry.definition },
+    ...(entry.faqs ?? []),
+  ];
+
   const graph = jsonLdGraph(
     webPageSchema({
       url,
@@ -81,13 +95,7 @@ export default async function GlossaryTermPage({
       url,
       inDefinedTermSet: { "@id": `${SITE_URL}/glossary#glossary` },
     },
-    faqPageSchema(
-      [
-        { q: `What is ${entry.term} in franchising?`, a: entry.definition },
-        ...(entry.faqs ?? []),
-      ],
-      url,
-    ),
+    faqPageSchema(faqItems, url),
   );
 
   return (
@@ -111,16 +119,13 @@ export default async function GlossaryTermPage({
           {entry.term}
         </h1>
 
-        {/* Direct-answer block (AEO): answers "what is <term>" up top */}
-        <h2 className="font-playfair text-xl text-[#0c1929] mb-3">
-          What is {entry.term} in franchising?
-        </h2>
-        <p className="text-base text-[#3a3a2e] leading-relaxed">{entry.definition}</p>
-
-        {/* Extra question-format answers, where people search the term more than
-            one way. Headings stay questions so answer engines can extract them. */}
-        {entry.faqs?.map((faq) => (
-          <div key={faq.q} className="mt-8">
+        {/* Direct-answer block (AEO): the first item answers "what is <term>" up
+            top, and the rest are the extra question-format answers for terms
+            people search more than one way. Headings stay questions so answer
+            engines can extract them. Same faqItems array as the FAQPage JSON-LD
+            above, so the two cannot drift. */}
+        {faqItems.map((faq, i) => (
+          <div key={faq.q} className={i === 0 ? undefined : "mt-8"}>
             <h2 className="font-playfair text-xl text-[#0c1929] mb-3">{faq.q}</h2>
             <p className="text-base text-[#3a3a2e] leading-relaxed">{faq.a}</p>
           </div>
