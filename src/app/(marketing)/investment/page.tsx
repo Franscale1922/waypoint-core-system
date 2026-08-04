@@ -14,32 +14,82 @@ import JsonLd from "../../components/JsonLd";
 const LAST_REVIEWED = "2026-08-03";
 const LAST_REVIEWED_LABEL = "August 2026";
 
+// ONE list, rendered on the page AND fed to the FAQ schema.
+//
+// These were two separate arrays with ZERO overlap: the schema declared four
+// Q&As (cost, fee, royalty, liquid capital) that appeared nowhere on the page,
+// while the page showed four different ones the schema never mentioned. Google
+// requires FAQPage markup to be visible to the user, so the page was shipping
+// structured data for content that did not exist on it. Deriving both from one
+// array makes that class of drift impossible rather than merely fixed once.
+//
+// `link` is optional and is used only by the visible renderer; the schema takes
+// just q and a.
+const investmentFaqs: { q: string; a: string; link?: { href: string; label: string } }[] = [
+  {
+    q: "How much does it cost to buy a franchise?",
+    a: "The total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
+  },
+  {
+    // Google ranks this page 4.1 for "best franchises to own" (21 impressions in
+    // the 90 days to 2026-08-04) and roughly 90 for every cost query it was
+    // actually written for. It earns no clicks on either. The page never
+    // answered the selection question, so the one query it genuinely competes
+    // for had nothing to land on. The answer is deliberately brand-free:
+    // CONTENT-STANDARDS Section 2 bans named brands outright, so a ranked list
+    // of "best" franchises is not something this site can publish, and the
+    // honest answer to the query is that its premise is wrong.
+    q: "What are the best franchises to own?",
+    a: "There is no single best franchise. The same brand can be a strong fit for one owner and a poor one for another, because the variables that decide the outcome are personal: how much capital you can put at risk without straining your household, whether you want to run daily operations or manage a team that does, how much territory is still open near you, and whether the work suits how you actually like to spend a day. A brand topping a national ranking list may have no available territory in your market, or may expect an owner-operator role you do not want. Start from your own constraints and match brands to them, rather than starting from a list and hoping you fit.",
+    link: { href: "/process", label: "How the matching process works →" },
+  },
+  {
+    q: "What is a franchise fee?",
+    a: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
+  },
+  {
+    q: "What is a franchise royalty?",
+    a: "A royalty is an ongoing fee paid to the franchisor, typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
+  },
+  {
+    q: "How much liquid capital do I need to buy a franchise?",
+    a: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
+  },
+  {
+    q: "Is the franchise fee negotiable?",
+    a: "Rarely. The initial franchise fee is usually fixed across the system. If a franchisor negotiated it selectively, they would face equity and legal exposure with existing franchisees. What is occasionally negotiable: multi-unit discounts for buying multiple territories at once, and the timing of when the fee is due.",
+  },
+  {
+    // Replaces two near-duplicate questions that both named the disclosure
+    // item by number in visible copy. Section 10 bans item numbers outright and
+    // exempts exactly one article, which is not this page. Merged into a single
+    // question and reworded to the plain-language equivalent the standard
+    // prescribes.
+    q: "How reliable is the franchisor's published investment range?",
+    a: "Treat it as a starting point, not a quote. The franchise disclosure document the franchisor must give you before you sign includes their own estimated cost to open one location, broken into categories like build-out, equipment, opening inventory, and working capital, shown as a low-to-high range. That range reflects their experience across the whole system, not your market. Local real estate, labor, and permitting can all run higher. Plan against the top of the range, and add a 10% to 20% buffer if this is your first location.",
+  },
+  {
+    q: "Does the cost of a franchise affect what I pay when I sell it?",
+    a: "Indirectly. Franchises are typically sold as businesses, so the sale price usually reflects the operating performance of your specific location rather than what you originally paid in franchise fees. Your franchise agreement also governs who has to approve the transfer and what fees apply on the way out. This is worth understanding early, especially if you plan to build toward an eventual exit.",
+    link: { href: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate", label: "What's actually negotiable in a franchise agreement →" },
+  },
+];
+
 const investmentGuideSchema = faqPageSchema(
-  [
-    {
-      q: "How much does it cost to buy a franchise?",
-      a: "The total cost to buy a franchise typically ranges from $75,000 to $500,000+ depending on the business model. This includes the initial franchise fee ($20,000–$60,000), build-out or setup costs, equipment, working capital, and pre-opening expenses. Home-based and service franchises often fall in the $75,000–$200,000 range. Brick-and-mortar concepts typically run $200,000–$500,000 or more.",
-    },
-    {
-      q: "What is a franchise fee?",
-      a: "The initial franchise fee is a one-time payment to the franchisor granting you the right to operate under their brand, system, and territory. It typically ranges from $20,000 to $60,000 and is paid when you sign the franchise agreement. It covers initial training, onboarding, and territory rights. Not ongoing operations.",
-    },
-    {
-      q: "What is a franchise royalty?",
-      a: "A royalty is an ongoing fee paid to the franchisor, typically 4%–8% of gross revenue, in exchange for continued use of the brand, systems, and support. It is separate from the initial franchise fee and is paid monthly or weekly throughout the life of the franchise agreement.",
-    },
-    {
-      q: "How much liquid capital do I need to buy a franchise?",
-      a: "A practical minimum is $100,000 in liquid assets (cash, brokerage accounts, or 401k that can be rolled into a ROBS structure). This is not the total investment. It is the liquidity threshold that makes most solid options accessible. Before considering any loan, the right first step is to inventory what you have: liquid savings, home equity, and retirement account balances. For buyers who genuinely need additional capital beyond those sources, HELOC or SBA financing can supplement.",
-    },
-  ],
+  investmentFaqs.map(({ q, a }) => ({ q, a })),
   `${SITE_URL}/investment`,
 );
 
 export const metadata: Metadata = {
   title: "How Much Does a Franchise Cost?",
+  // Spans both intents on purpose. The title stays cost-first because that is
+  // what the page is, but the description also has to speak to the selection
+  // query this page actually ranks on page one for. A snippet that only talks
+  // about cost gives a reader searching "best franchises to own" no reason to
+  // click, which is the likeliest explanation for 21 impressions at position 4
+  // and zero clicks.
   description:
-    "How much does a franchise cost? Initial franchise fees run $20,000 to $60,000, plus total investment by category, royalties, and working capital needs.",
+    "What a franchise costs and how to tell which one fits you. Fees run $20,000 to $60,000, plus total investment, royalties, and working capital by category.",
   alternates: { canonical: "https://www.waypointfranchise.com/investment" },
   openGraph: {
     title: "Franchise Investment Guide | Waypoint Franchise Advisors",
@@ -109,7 +159,7 @@ const costComponents = [
   {
     component: "Equipment",
     typical: "$10,000 – $150,000",
-    notes: "Included in Item 7 of the Franchise Disclosure Document (FDD), the section that details your total estimated investment before opening day. Often purchased from approved vendors.",
+    notes: "Counted in the franchise disclosure document's estimate of your total investment before opening day. Often purchased from approved vendors.",
   },
   {
     component: "Working capital",
@@ -168,7 +218,12 @@ export default function InvestmentPage() {
             { stat: "$20K–$60K", label: "Initial franchise fee" },
             { stat: "4%–8%", label: "Typical royalty rate" },
             { stat: "$75K+", label: "Liquid capital minimum" },
-            { stat: "Item 7", label: "Where total costs live in the FDD" },
+            // Was a tile reading "Item 7", which Section 10 bans outright. The
+            // replacement deliberately is NOT the total-investment range: that
+            // number is already in the hero and in the tile beside this one, so
+            // repeating it put two "$75K" tiles side by side. This buffer figure
+            // is the one number on the page a buyer can act on immediately.
+            { stat: "10%–20%", label: "Buffer to add above the estimate" },
           ].map(({ stat, label }) => (
             <div key={label} className="bg-white border border-[#e2ddd2] rounded-lg py-5 px-4">
               <p className="text-xl sm:text-2xl font-black text-[#1b3a5f]">{stat}</p>
@@ -224,7 +279,7 @@ export default function InvestmentPage() {
         </div>
 
         <p className="mt-6 text-xs text-[#7a7a7a] leading-relaxed">
-          All figures are general ranges. Actual costs vary by brand, location, and market. The Franchise Disclosure Document (FDD) Item 7 contains the franchisor&apos;s own estimated investment range for their specific system.
+          All figures are general ranges. Actual costs vary by brand, location, and market. The franchise disclosure document the franchisor must give you before you sign contains their own estimated investment range for their specific system.
         </p>
       </section>
 
@@ -347,25 +402,7 @@ export default function InvestmentPage() {
           </p>
           <h2 className="font-playfair text-2xl sm:text-3xl mb-10">Franchise Investment FAQ</h2>
           <div className="space-y-6">
-            {[
-              {
-                q: "Is the franchise fee negotiable?",
-                a: "Rarely. The initial franchise fee is usually fixed across the system. If a franchisor negotiated it selectively, they would face equity and legal exposure with existing franchisees. What is occasionally negotiable: multi-unit discounts for buying multiple territories at once, and the timing of when the fee is due.",
-              },
-              {
-                q: "What does Item 7 of the FDD tell me?",
-                a: "Item 7 is the franchisor's own estimated total investment range to open one unit of their franchise. It breaks out each cost category, including build-out, equipment, initial inventory, working capital, and pre-opening costs, and shows low-to-high ranges. It is not a guarantee, and most experienced advisors recommend planning for the top of that range.",
-              },
-              {
-                q: "Should I plan beyond the FDD Item 7 estimate?",
-                a: "Yes. Item 7 reflects the franchisor's experience across their system. Your specific market may have higher real estate costs, labor costs, or regulatory requirements. A common rule of thumb is to add a 10% to 20% buffer above the top of the Item 7 range for first-time buyers.",
-              },
-              {
-                q: "Does the cost of a franchise affect what I pay when I sell it?",
-                a: "Indirectly. Franchises are typically sold as businesses, and the purchase price often reflects a multiple of revenue or EBITDA rather than the original franchise fee. Your franchise agreement will also govern who approves the transfer and what fees apply. This is worth understanding early, especially if you plan to build toward an eventual exit.",
-                link: { href: "/resources/the-franchise-agreement-what-you-can-and-cant-negotiate", label: "What's actually negotiable in a franchise agreement →" },
-              },
-            ].map(({ q, a, link }: { q: string; a: string; link?: { href: string; label: string } }) => (
+            {investmentFaqs.map(({ q, a, link }) => (
               <div key={q} className="bg-white rounded-xl p-6 border border-[#e8e0d0]">
                 <h3 className="font-playfair text-lg text-[#0c1929] mb-3">{q}</h3>
                 <p className="text-sm text-[#4a4a3e] leading-relaxed">{a}</p>
