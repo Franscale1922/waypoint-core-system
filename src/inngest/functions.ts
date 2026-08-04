@@ -544,7 +544,7 @@ First name: ${firstName}
 Title: ${lead.title || "Executive"}
 Company: ${lead.company || "their company"}
 Career Trigger Type: ${lead.careerTrigger || ""}
-Franchise Angle (internal context \u2014 do not reference directly): ${lead.franchiseAngle || ""}
+Franchise Angle (internal context, do not reference directly): ${lead.franchiseAngle || ""}
 
 Personalization Signal:
 Type: ${signalType}

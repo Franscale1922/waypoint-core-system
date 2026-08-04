@@ -22,7 +22,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const lower = industry.name.toLowerCase();
   return {
     title: `How Much Does a ${industry.name} Franchise Cost?`,
-    description: `What a ${lower} franchise actually costs: the typical investment range, what drives the cost, and the components to budget for. Educational ranges only; the brand-specific figure is in FDD Item 7.`,
+    // aeo-desc-dynamic: interpolates only `lower`, the industry name from
+    // src/data/industries.ts. Longest is "fitness & wellness" (18), which lands
+    // this at 154 characters. Adding a longer industry name would push it over
+    // 160, so keep the fixed part at or under 142.
+    description: `What a ${lower} franchise actually costs: the typical investment range, what drives it, and what to budget for. Exact figures are in FDD Item 7.`,
     alternates: { canonical: url, types: { "text/markdown": `${url}.md` } },
     openGraph: {
       title: `How Much Does a ${industry.name} Franchise Cost?`,

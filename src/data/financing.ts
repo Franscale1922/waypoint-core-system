@@ -107,7 +107,7 @@ export const financingGuides: FinancingGuide[] = [
     name: "ROBS (401k Rollover)",
     metaTitle: "ROBS: Using 401(k) Funds to Buy a Franchise (Penalty-Free)",
     metaDescription:
-      "How ROBS (Rollover for Business Startups) lets you fund a franchise with retirement savings without an early-withdrawal penalty: how it works, who it fits, and the compliance to know.",
+      "How ROBS lets you fund a franchise with retirement savings and no early-withdrawal penalty: how it works, who it fits, and the compliance rules to know.",
     heroTagline: "Fund the business with retirement savings (penalty-free, tax-deferred, debt-free) via an IRS-recognized rollover.",
     intro:
       "ROBS (Rollover for Business Startups) lets you use eligible retirement funds to capitalize a franchise without triggering an early-withdrawal penalty or income tax. Because it is structured as a rollover rather than a distribution, the money moves into the business as equity, not debt, which is why people who want to avoid or reduce a loan often reach for it.",

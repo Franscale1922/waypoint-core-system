@@ -14,9 +14,12 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `24530c1` — PRs #24 and #25 reviewed, merged, and deployed 2026-08-04 |
+| `main` | `18bf899` — PRs #22 and #26 **merged and deployed green 2026-08-04**; #24/#25 before them |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
+| `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`), deployed green. Safe to delete the remote branch now that #26 is off it |
+| `claude/beautiful-napier-ede2fc` | **merged as #26** (`18bf899`), deployed green, after a rebase onto `main` |
+| `claude/competent-easley-9eec18` | **PR #23 open**, aeo-audit gate hardening, base `main`, checks green. Merging is a go-live |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
 ---
@@ -42,11 +45,99 @@ finding logged but not fixed, is in `ADVERSARIAL-REVIEW-2026-08-04.md` beside th
    `--round` alone (`scripts/codex-review.mjs:229`), so same-round runs overwrite one another. Do not
    raise `--round` instead: the round selects the reviewer persona, so it changes what gets reviewed.
 
-**The defect class that started all this is still unguarded.** Verified: `aeo-audit.mjs` never reads
-`src/`, `verify-schema.mjs` never compares schema against visible copy, and `verify-links.mjs`
-validates only `relatedSlugs` frontmatter (not `.tsx` hrefs or inline markdown links). The
-investment fix is sound for that one page but is not structurally enforced. See "The gap worth
-acting on separately" in the review doc.
+**The defect class that started all this is still unguarded.** `verify-schema.mjs` never compares
+schema against visible copy, and `verify-links.mjs` validates only `relatedSlugs` frontmatter (not
+`.tsx` hrefs or inline markdown links). The investment fix is sound for that one page but is not
+structurally enforced. See "The gap worth acting on separately" in the review doc.
+
+> **Correction (2026-08-04, PR #23):** this paragraph originally opened "`aeo-audit.mjs` never reads
+> `src/`". That was wrong even when written — `CODE_DIRS = ["src"]` has driven the Section 11 em-dash
+> walk for as long as that gate has existed. It now also reads route metadata and `src/data`
+> descriptions and titles. The true statement is the narrower one left above: nothing compares
+> **schema against rendered copy**. Do not plan around the deleted sentence.
+
+---
+
+## ✅ The structured-data stack is CLOSED (2026-08-04)
+
+Both branches reached `main` and deployed green. Nothing is left open here.
+
+```
+main (18bf899)
+ ├─ #22  seo/structured-data-entity-graph   entity graph + date validation   MERGED, deployed
+ └─ #26  claude/beautiful-napier-ede2fc     VideoObject validation           MERGED, deployed
+```
+
+**One trap worth carrying forward, because it will recur on every stacked branch in this repo.**
+
+The plan here originally said "merge base first, then #26", which assumed the base would merge with
+its SHAs intact. It did not: **this repo squash-merges PRs** (see the `(#21)`/`(#24)`/`(#25)`
+suffixes in `main`), so #22 collapsed five commits into one NEW SHA. The originals then existed
+nowhere in `main`, and retargeting #26 at `main` would have replayed all five against the squashed
+copy already there.
+
+A squash-merged base needs a **rebase**, not a retarget:
+
+```bash
+git rebase --onto origin/main <old-base-tip> <stacked-branch>
+```
+
+Here that dropped the five merged commits and kept only #26's own two. It was clean (the two
+branches touched disjoint parts of the file), then force-push with `--force-with-lease`, retarget,
+verify, merge. **Stack a branch on another in this repo only if you are ready to do this**, or base
+it on `main` from the start and accept the noisier diff.
+
+Two safeguards that made it recoverable, worth repeating: the remote base branch was left
+**undeleted** until the stacked PR was off it, so #26 was never broken in the interim; and the
+rebase waited until the background session owning that branch had **ended**, because force-pushing
+a branch another session holds is how work gets silently destroyed.
+
+**`seo/structured-data-entity-graph` (shipped as #22)** — makes `/about#kelsey` the one
+authoritative Person node, stops `toWww` rewriting lookalike hosts, and validates every date bound
+for JSON-LD (`schemaDate`, rejecting unquoted YAML dates rather than laundering an already-rolled-over
+value). Codex rounds 1 to 3 ran on it; round 3's findings were acted on in `aad80e6`.
+
+Verified against the **live site** after deploy, not just in CI: the homepage graph emits
+`founder -> {"@id": ".../about#kelsey"}`, business `sameAs` 7 and Person `sameAs` 4 with **0
+overlap**, and `/about` now serves exactly **one** Person node with one description (it served two,
+under the same `@id`, with conflicting descriptions). All 45 articles keep both dates under the
+stricter validator, so nothing regressed.
+
+Two corrections to the review that raised this, worth keeping because the numbers were quoted
+around: the two `sameAs` lists shared **8** URLs, not seven, and `toWww` had a **third** unbounded
+class the review missed (`waypointfranchise.competitor.com`, a plain prefix match, alongside the
+`.evil.example` and `@evil.example` forms).
+
+**PR #26** — `videoObjectSchema` validated nothing, and the article path reaches it through an
+`as ArticleVideo` cast over frontmatter, so its `string` types were unenforced. Now: required field
+invalid drops the whole node with one warning, optional field invalid drops only that property,
+never throws. Codex round 1 returned 0 high / 3 medium / 2 low; three accepted, two declined with
+reasons in the commit. 98 tests in the file (was 40), 9 mutations each confirmed to turn the suite
+red. Findings are in `.codex-reviews/video-object/` (gitignored, so local to that machine only).
+
+Three things worth carrying forward regardless of what happens to these branches:
+
+1. **`schemaDate` is the wrong validator for `VideoObject.uploadDate`.** It accepts a bare
+   `YYYY-MM-DD`, which is a valid schema.org Date but is flagged on a video, because Google reads
+   `uploadDate` as an instant. The video path needs a mandatory timezone; both patterns are built
+   from one `isoDateTimePattern()` source so they cannot drift.
+2. **Validate URLs by parsing, never by regex.** The live Vimeo thumbnail carries a `?region=us`
+   query string, so a pattern tight enough to be useful removes the only VideoObject on the site.
+   And emit the parsed `href`, not the caller's string: `new URL` silently strips whitespace and
+   percent-encodes spaces, so a predicate approves a value the caller then ships raw. Codex found
+   that one.
+3. **`jsonLdGraph` now accepts and filters nullish nodes.** Any factory that validates its input can
+   return `undefined`, and the old version destructured unconditionally, so one bad optional field
+   became a build failure. Do not reintroduce per-call-site guards.
+
+### Known live defect, not fixed here
+
+**Article FAQ frontmatter is unvalidated**, exactly as the video block was, and unlike the video
+case it is **live**: all 45 articles carry `faqs:`, `faqPageSchema` destructures each entry blind,
+and a null entry throws during render. Found by the same Codex round and deliberately declined to
+keep PR #26 to one concern. A background session was started on it 2026-08-04; if that work did not
+land, this is the highest-value item left in this area. It depends on the stack above, so check what
+has merged before branching.
 
 ---
 
@@ -134,6 +225,12 @@ session or cause harm.
 
 ## Open work, ranked
 
+> Two items that headed this list are now closed and are **not** repeated below: the PR #21 Codex
+> review (done, merged), and the `aeo-audit.mjs` parsing-robustness follow-up it produced (done,
+> **PR #23**, see "The aeo-audit follow-up" further down). The glossary-differentiation, Piggyback
+> and payroll/freight items from the earlier revision of this list were dropped in the 2026-08-04
+> rewrite, not completed; re-derive them from Search Console rather than trusting either list.
+
 1. **A schema-vs-visible parity gate**, plus the pre-existing defects the review logged and did not
    fix (nested `<main>` landmarks, which likely affect every marketing page; the `InvestmentTierToggle`
    accessibility set; overlapping tier intervals). All verified real and enumerated in
@@ -170,6 +267,49 @@ Two background sessions were started 2026-08-04 from task chips and may have lan
 
 Neither branch here touches those files, so there should be no conflict, but `git fetch` and check
 before assuming.
+
+---
+
+## The aeo-audit follow-up — done 2026-08-04, PR #23
+
+Branch `claude/competent-easley-9eec18`, HEAD `fa7524b`, two commits. **Open, mergeable, all checks
+green. Merging is a go-live**: it changes visitor-facing copy (contact hero, site-wide description,
+five industry/financing descriptions, the cost pages, two email footers).
+
+The deferred round-1 findings are all closed. Two were **live defects**, not theory:
+
+- **Section 11 counted only the literal em dash**, so copy that *renders* one was invisible.
+  `&mdash;` twice in the public contact hero, `&mdash;` in both email footers, and `—` in the
+  outreach prompt were all shipping while the gate printed `PASS Section 11: 0 em dashes`.
+- **The description gate reported `31/31` and `PASS`** while seven descriptions were over 160:
+  `layout.tsx` (168, the site-wide default), five `src/data` values (166-183), and the cost-page
+  template (196-206 rendered). It only ever opened `page.tsx`.
+
+Codex's stated symptom for the second was **wrong** (it claimed the gate could report `0/0`; it
+reported `31/31`). The hole underneath was real and larger than described. Reproduce before fixing.
+
+**Metadata is now read from the TypeScript AST.** The hand-rolled scanner leaked nine fail-open
+paths — spreads, quoted keys, shorthand, computed keys, arrow-exported `generateMetadata`,
+re-exports, `page.jsx`, string concatenation — each of which read as "absent" and exempted the
+route. Front matter is parsed with `gray-matter`. Both mean the script now needs `node_modules`; it
+no longer runs on a fresh clone before `npm install`. CI installs first, the hook is always local.
+
+Round 2 on the result returned **0 high** (from 3). Four new mediums it found are fixed too.
+
+### Do not reverse these
+
+- **The over-60-char title report stays an advisory.** Unchanged from the decision above, but now
+  `tests/unit/aeo-audit.test.ts` asserts an over-budget title still exits 0. If that test goes red,
+  someone has turned it into a gate.
+- **`aeo-desc-dynamic:` needs a reason, in a comment.** A bare token, or the token inside a string,
+  deliberately does not silence the gate. Five dynamic routes carry real reasons.
+- **Declined, and tracked separately:** the pre-push hook audits the *working tree*, not the commits
+  being pushed, so an uncommitted fix can let a bad commit through. True of all three checks in that
+  hook. The safe fix reads the pushed tree; a stash-based one risks losing uncommitted work.
+
+91 tests, each paired with the mutation that must break it. One of them originally passed by
+construction and was rewritten — worth remembering that a green test proves nothing until you have
+watched it go red.
 
 ---
 

@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
-import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema } from "../../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema, schemaDate } from "../../../lib/structured-data";
 import JsonLd from "../../../components/JsonLd";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
@@ -26,6 +26,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!article) return {};
   return {
     title: article.meta.title,
+    // aeo-desc-dynamic: this is the article's own excerpt, which aeo-audit
+    // already measures per article against the same 150-160 window.
     description: article.meta.excerpt,
     alternates: {
       canonical: `https://www.waypointfranchise.com/resources/${slug}`,
@@ -50,6 +52,17 @@ export default async function ArticlePage({ params }: Props) {
   const related = getRelatedArticles(relatedSlugs);
   const pillar = pillarForArticle(slug);
   const articleUrl = `${SITE_URL}/resources/${slug}`;
+  // Both dates come from markdown frontmatter, which nothing validates, so they
+  // go through schemaDate: a typo is dropped with a build warning rather than
+  // shipped as invalid structured data. Computed once so a bad value warns once.
+  // datePublished is required for Article rich results, so its absence warns.
+  const datePublished = schemaDate(meta.date, articleUrl, { required: true });
+  const dateModified = schemaDate(meta.updatedAt ?? meta.date, articleUrl, { required: true });
+  // Same story for the optional video block: it is an `as ArticleVideo` cast over
+  // frontmatter, so videoObjectSchema re-checks every field and returns undefined
+  // when the video cannot be described validly. jsonLdGraph filters nullish nodes,
+  // so that undefined can be passed straight through.
+  const videoNode = video ? videoObjectSchema(video, articleUrl) : undefined;
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
   const articleGraph = jsonLdGraph(
@@ -59,8 +72,8 @@ export default async function ArticlePage({ params }: Props) {
       url: articleUrl,
       headline: meta.title,
       description: meta.excerpt,
-      datePublished: meta.date,
-      dateModified: meta.updatedAt ?? meta.date,
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
       image: `${SITE_URL}/og_default_1773343895292.png`,
       author: { "@id": `${SITE_URL}/about#kelsey` },
       publisher: { "@id": `${SITE_URL}/#business` },
@@ -81,9 +94,7 @@ export default async function ArticlePage({ params }: Props) {
       ]),
     },
     ...(faqs && faqs.length > 0 ? [faqPageSchema(faqs, articleUrl)] : []),
-    ...(video?.name && video?.thumbnailUrl && video?.uploadDate
-      ? [videoObjectSchema(video)]
-      : []),
+    videoNode,
   );
   return (
     <main className="bg-[#FAF8F4] text-[#0c1929]">

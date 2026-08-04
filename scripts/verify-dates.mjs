@@ -2,14 +2,19 @@
 /**
  * Ingestion guard for article frontmatter dates.
  *
- * ON THIS BRANCH THERE IS NO SECOND LINE OF DEFENCE. The resources page emits
- * `datePublished: meta.date` and `dateModified: meta.updatedAt ?? meta.date`
- * straight from frontmatter, unvalidated, and src/app/sitemap.ts takes the same
- * value as lastModified. A render-time validator (`schemaDate`) exists only on
- * the unmerged seo/structured-data-entity-graph branch, and even there it can
- * only console.warn. So this script is not a redundant early check: until that
- * branch lands, it is the ONLY thing standing between a corrupted date and
- * production.
+ * There IS a render-time validator, and it is not enough on its own. The
+ * resources page runs both dates through `schemaDate`, which drops a bad value
+ * so invalid structured data never ships, then emits a console.warn: a build-log
+ * line nobody necessarily reads. Two things still get past it. A missing
+ * REQUIRED date only warns, so an article merged without one ships with no
+ * publication metadata. And src/app/sitemap.ts reads `updatedAt ?? date`
+ * directly, never through schemaDate, so a malformed value still reaches
+ * lastModified.
+ *
+ * More to the point, schemaDate cannot recover an unquoted date at all — by the
+ * time it runs, the damage below has already happened. This script is the
+ * ingestion gate that makes the mistake impossible rather than survivable, and
+ * it fails instead of warning.
  *
  * KNOWN GAP, deliberately not closed here: src/lib/githubArticleCommit.ts
  * commits AI-refreshed articles by PATCHing the branch ref through the GitHub

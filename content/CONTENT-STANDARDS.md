@@ -102,7 +102,8 @@ All articles must be written to perform in both traditional search (SEO) and ans
 - **One clear primary keyword or phrase per article.** It should appear naturally in the title, the opening paragraph, and at least one subheading. Do not stuff — one well-placed instance per section is sufficient.
 - **Title format:** Plain, descriptive, no punctuation tricks. The title should match what a person would actually search for.
 - **Subheadings (H2s) are questions or clear descriptors.** Subheadings like "What Actually Matters in an FDD" outperform vague ones like "Key Considerations."
-- **Excerpt is search-snippet-ready.** The excerpt field (used in metadata) should be a self-contained 1–2 sentence answer. If someone sees only the excerpt, they should get value from it.
+- **Excerpt is search-snippet-ready.** The excerpt field (used in metadata) should be a self-contained 1–2 sentence answer. If someone sees only the excerpt, they should get value from it. Target **150–160 characters** (the figure comes from the seo-review workflow, `.agents/workflows/seo-review.md` Step 3). Over 160 is a hard failure in the pre-push audit, because the excerpt feeds the meta description, the OpenGraph description and the Article JSON-LD, so an over-long one truncates mid-sentence in all three. Under 150 is reported but not enforced; it only wastes snippet space.
+- **The same 160 limit applies to every other description that reaches a search result**, not just article excerpts: the top-level `description` in any `src/app/**/page.tsx` or `layout.tsx` metadata export, and every `metaDescription` in `src/data/*.ts`. Where a route builds its description at request time (`generateMetadata`, a spread, an interpolated template, a variable), the audit cannot measure it, so that file must carry an `aeo-desc-dynamic:` comment **naming what bounds the length**. The reason is required, not just the token. The gate fails on an unresolvable description with no such note, rather than skipping it silently.
 - **Internal links.** Every article links to at least one other resource page via the `relatedSlugs` system. Body copy CTAs link to `/book`. No orphaned articles.
 - **No keyword cannibalization.** Before writing a new article, check the existing pool. Do not write a piece that targets the same primary keyword as an existing article — expand or differentiate instead.
 
@@ -294,9 +295,32 @@ Em dashes create sentence structures that are harder to parse, harder for AI sys
 - ❌ "The decision is straightforward — start with fit, then model the financials."
 - ✅ "The decision is straightforward: start with fit, then model the financials."
 
+### Encoded forms count
+
+An em dash that a reader sees is a violation whether or not the source file contains the character. These all render one and are all caught:
+
+- HTML entities: `&mdash;`, `&#8212;`, `&#x2014;`
+- JavaScript escapes: `—`, `\u{2014}`
+- CSS escapes: `content: "\2014"` (checked in `.css` only, where it actually renders)
+- Runtime construction: `String.fromCharCode(0x2014)`
+
+The scan covers every text-bearing file under `src/`, not just the ones the UI is written in: `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css` and `.json`. Copy reaches readers from data files too.
+
+This is not hypothetical. The gate counted only the literal character until 2026-08-03, and in that time `&mdash;` reached the public contact page and two email footers, and a `—` reached a live prompt, while the audit reported "0 em dashes".
+
+### The one exception: functional em dashes in code
+
+Section 11 governs **copy**. A few places need the character as data rather than prose: a banned-character detector, or a sanitizer's search pattern. Those lines carry the token `emdash-allow` plus a reason, and the audit skips that line:
+
+```ts
+.replace(/—/g, ", ")   // emdash-allow: the literal em dash is the pattern this sanitizer matches
+```
+
+Use it only for non-copy code. If a human or a model will read the text, it is copy and the rule applies.
+
 ### Verification
 
-Before committing any article, run: `grep -c "—" filename.md` and confirm the result is 0.
+The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push on any em dash in `content/articles/` front matter or body, or anywhere in `src/`. To check one file by hand, remember that `grep -c "—"` finds only the literal character and will miss every encoded form above.
 
 ---
 
@@ -407,11 +431,19 @@ If a page genuinely needs a custom title with no brand appended at all, use `tit
 
 ### Verification
 
-The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains `Waypoint Franchise Advisors`. To check manually before committing:
+The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains the bare word `Waypoint`. To check manually before committing:
 
-`grep -rn "Waypoint Franchise Advisors" content/articles src/data`
+`grep -rn "Waypoint" content/articles src/data`
 
 and confirm no `title:` or `metaTitle:` line appears in the results.
+
+The test is the bare word, not the `| Waypoint` suffix. `Why Waypoint Works` and `Foo |Waypoint` render the brand twice just as surely as `Foo | Waypoint` does, and a suffix test matched none of them.
+
+### Title length is reported, not enforced
+
+The audit also prints every title that exceeds 60 rendered characters once the suffix is applied. That is an **advisory and deliberately not a gate**. Keywords sit at the front of these titles, so truncation costs the brand rather than the match, and rewriting a title on a page that already ranks risks real traffic for a modest gain. Failing the push would force exactly that rushed rewrite across the ~30 titles still over budget.
+
+Aim under 60 on **new** titles. Do not bulk-rewrite existing ones to clear the report, and do not promote the advisory to a gate; `tests/unit/aeo-audit.test.ts` asserts that an over-budget title still exits 0.
 
 ---
 

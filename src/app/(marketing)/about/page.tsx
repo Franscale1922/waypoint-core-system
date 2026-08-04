@@ -103,61 +103,38 @@ export default async function AboutPage() {
     "Waypoint Franchise Advisors founder Kelsey Stuart explains, in about three minutes, what honest, no-pitch franchise consulting actually looks like and how he helps people decide whether franchise ownership fits their life.";
   // Only emit VideoObject schema when Vimeo gives us a real upload date and
   // thumbnail (both required by schema.org). Never fabricate these values.
+  //
+  // videoObjectSchema validates all of this and returns undefined on a bad
+  // value, so this pre-check is no longer what keeps invalid markup off the
+  // page. It stays because a failed oEmbed fetch returns {} (see the catch in
+  // getVimeoMeta), and that is an expected third-party outage rather than an
+  // authoring mistake: warning about it hourly would be noise, not signal.
   const videoSchema =
     vimeo.uploadDate && (thumbnailUrl)
-      ? videoObjectSchema({
-          name: videoName,
-          description: videoDescription,
-          thumbnailUrl: thumbnailUrl,
-          uploadDate: vimeo.uploadDate,
-          duration: vimeo.duration,
-          embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
-          contentUrl: `https://vimeo.com/${VIDEO_ID}`,
-          transcript: VIDEO_TRANSCRIPT,
-        })
+      ? videoObjectSchema(
+          {
+            name: videoName,
+            description: videoDescription,
+            thumbnailUrl: thumbnailUrl,
+            uploadDate: vimeo.uploadDate,
+            duration: vimeo.duration,
+            embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
+            contentUrl: `https://vimeo.com/${VIDEO_ID}`,
+            transcript: VIDEO_TRANSCRIPT,
+          },
+          "https://www.waypointfranchise.com/about",
+        )
       : null;
   return (
     <>
       {videoSchema && <JsonLd data={videoSchema} />}
-      <JsonLd
-        data={{
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "@id": "https://www.waypointfranchise.com/about#kelsey",
-            "name": "Kelsey Stuart",
-            "url": "https://www.waypointfranchise.com/about",
-            "jobTitle": "Franchise Advisor",
-            "description": "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life.",
-            "image": "https://www.waypointfranchise.com/images/kelsey-trail-selfie.jpg",
-            "worksFor": {
-              "@type": "Organization",
-              "@id": "https://www.waypointfranchise.com/#business",
-              "name": "Waypoint Franchise Advisors",
-              "url": "https://www.waypointfranchise.com"
-            },
-            "sameAs": [
-              "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
-              "https://www.franchoice.com/kelsey-stuart",
-              "https://www.facebook.com/kelsey.stuart.94",
-              "https://www.instagram.com/franchise_match_maker/",
-              "https://x.com/__Waypoint",
-              "https://www.youtube.com/@Waypoint-Franchise",
-              "https://www.tiktok.com/@waypoint007",
-              "https://www.pinterest.com/waypointfranchise/"
-            ],
-            "knowsAbout": [
-              "franchise consulting",
-              "franchise ownership",
-              "franchise due diligence",
-              "Franchise Disclosure Document (FDD)",
-              "franchise investment evaluation",
-              "home services franchises",
-              "restoration franchises",
-              "semi-absentee franchise ownership",
-              "SBA franchise financing"
-            ]
-        }}
-      />
+      {/* No Person node here on purpose. The root layout emits `personSchema`
+          (the authoritative /about#kelsey Person) on EVERY page. This page used
+          to hand-roll a second Person under that same @id, which merged into one
+          node carrying two conflicting descriptions and its own stale copy of
+          the sameAs list. Its unique content (the portrait image and the "SBA
+          franchise financing" topic) now lives on personSchema in
+          lib/structured-data.ts. Do not reintroduce a page-scoped copy. */}
       {/* Hero */}
       <section className="relative pt-10 pb-36 sm:py-20 md:py-24 overflow-hidden">
         <Image
