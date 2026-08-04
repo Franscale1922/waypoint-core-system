@@ -58,7 +58,25 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
     const res = await fetch(
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
-      { next: { revalidate: 3600 } }
+      {
+        next: { revalidate: 3600 },
+        // Bound the wait. A Vimeo connection that is accepted and then stalls
+        // before headers throws nothing, so the catch below cannot help and this
+        // server component blocks until Vercel kills the function -- 300s by
+        // default, and nothing in this repo overrides it. That is a stalled
+        // /about for a real visitor. AbortSignal.timeout rejects the fetch with a
+        // TimeoutError, which the catch turns into the same empty-meta fallback a
+        // Vimeo outage already produces. 5s is ~10x the slowest healthy oEmbed
+        // response measured (0.20-0.52s), so it costs a healthy fetch nothing.
+        //
+        // `signal` does not weaken the revalidate cache above: Next builds the
+        // fetch cache key from a field allowlist that has no `signal` in it, and
+        // its cache opt-out keys only off `cache`/`fetchCache`. Next does drop
+        // `signal` when it revalidates an already-cached stale entry, so this
+        // deadline covers the cache-miss render -- which is the render a visitor
+        // actually waits on.
+        signal: AbortSignal.timeout(5000),
+      }
     );
     if (!res.ok) return {};
     const data = await res.json();
