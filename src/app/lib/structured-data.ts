@@ -487,6 +487,9 @@ function nonEmptyText(value: unknown): string | undefined {
  */
 function describeBadValue(value: unknown): string {
   if (value === undefined) return "missing";
+  // Unquoted, because String(null) followed by JSON.stringify renders the null
+  // VALUE as the string "null", which reads like the author typed that word.
+  if (value === null) return "null";
   if (value instanceof Date) return "an UNQUOTED frontmatter date (quote it, e.g. uploadDate: \"2026-03-17T01:57:41Z\")";
   const asText = typeof value === "string" ? value : String(value);
   return JSON.stringify(asText.length > 80 ? `${asText.slice(0, 80)}...` : asText);
