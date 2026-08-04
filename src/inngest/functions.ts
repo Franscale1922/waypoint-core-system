@@ -1533,8 +1533,12 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 4: Commit all refreshed articles to GitHub (single atomic commit) ──
         if (toCommit.length > 0) {
+            // The outcome is returned into the step, not swallowed. This function retries once, so
+            // this step can run twice against a HEAD that already carries the work; the status is
+            // how somebody reading the run history tells "committed" from "the retry found its own
+            // batch already on main and stood down". See src/lib/githubArticleCommit.ts.
             await step.run("commit-to-github", async () => {
-                await commitRefreshedArticles(toCommit);
+                return await commitRefreshedArticles(toCommit);
             });
         }
 

@@ -11,6 +11,20 @@
  * created. See src/lib/frontmatterDates.mjs for the date rules and src/lib/frontmatterFields.mjs
  * for the required-field rules.
  *
+ * The other thing this module has to survive is being run TWICE. `contentRefreshFunction` is
+ * configured with `retries: 1`, so any throw from here runs the whole batch again against a HEAD
+ * that may already contain the work, and a second identical commit is not free: every push to
+ * `main` that touches content triggers a Vercel build, and every build runs `prisma db push`
+ * against the PRODUCTION database. Three things keep the second run honest:
+ *
+ *   1. The commit message carries a `Refresh-Batch:` trailer derived from the exact bytes being
+ *      committed, and a run checks the recent history for its own trailer before creating a single
+ *      blob. This is what recognises already-applied work when the commit SHA is not to hand.
+ *   2. If the tree that would be committed is identical to the tree already at HEAD, there is
+ *      nothing to say and no commit is created.
+ *   3. An ambiguous failure of the ref PATCH, one where GitHub may have applied the update and
+ *      lost the reply, is resolved by re-reading the ref rather than assumed to be a failure.
+ *
  * Required env vars:
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
  *   GITHUB_REPO_OWNER: e.g. "Franscale1922"
@@ -19,6 +33,7 @@
  *                      needing URL-encoding is rejected at startup. See getConfig.
  */
 
+import { createHash } from "crypto";
 import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
 import { validateFrontmatterDates, utcDayString } from "./frontmatterDates.mjs";
@@ -38,6 +53,29 @@ interface GitHubConfig {
   owner: string;
   repo: string;
   branch: string;
+}
+
+/**
+ * What a call to `commitRefreshedArticles` actually did.
+ *
+ * Returned rather than logged because the caller wraps this in an Inngest step: the outcome lands
+ * in the run history, which is where somebody looking at a retried run needs to be able to tell
+ * "it committed twice" from "the retry recognised its own work and stood down".
+ */
+export interface CommitOutcome {
+  status:
+    /** A new commit was created and the branch now points at it. */
+    | "committed"
+    /** This exact batch was already on the branch, from an earlier attempt. Nothing was written. */
+    | "already-applied"
+    /** The branch already contains these bytes, so committing would have been a no-op. */
+    | "no-changes"
+    /** There were no articles to commit. */
+    | "nothing-to-do";
+  batchId: string | null;
+  /** The commit carrying this batch: the new one, the one found, or HEAD. */
+  commitSha: string | null;
+  articles: number;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -142,28 +180,98 @@ function getConfig(): GitHubConfig {
   return { token, owner, repo, branch };
 }
 
+function describeCause(cause: unknown): string {
+  return cause instanceof Error ? cause.message : String(cause);
+}
+
+/**
+ * A failed GitHub call that knows whether its own outcome is KNOWN.
+ *
+ * `ambiguous` does NOT mean "probably fine". It means the failure carries no information about
+ * whether the request was applied, so the caller must go and look rather than assume either way.
+ * Nothing is ever treated as success because it was ambiguous. The flag only decides whether it
+ * is worth spending a request to find the evidence. Success still requires the evidence itself:
+ * the branch actually pointing at the commit we created.
+ */
+export class GitHubRequestError extends Error {
+  readonly status?: number;
+  readonly ambiguous: boolean;
+
+  constructor(message: string, options: { status?: number; ambiguous: boolean; cause?: unknown }) {
+    super(message, options.cause !== undefined ? { cause: options.cause } : undefined);
+    this.name = "GitHubRequestError";
+    this.status = options.status;
+    this.ambiguous = options.ambiguous;
+  }
+}
+
+/**
+ * Which HTTP statuses leave the outcome of a write UNKNOWN.
+ *
+ * 5xx: the request reached GitHub and something failed downstream of that, possibly after the
+ * write was durable. 408: GitHub gave up on the request mid-flight. Everything else is a DECISION,
+ * and a decision is information: 404 (no such ref), 422 (not a fast-forward), 403/429 (refused),
+ * 401 (bad token). GitHub chose not to apply those, will choose the same on a retry, and they must
+ * keep failing. Widening this list into "errors are probably fine" would be a worse bug than the
+ * double-commit it is here to prevent.
+ */
+function isAmbiguousStatus(status: number): boolean {
+  return status >= 500 || status === 408;
+}
+
 async function githubRequest<T>(
   path: string,
   config: GitHubConfig,
   options: RequestInit = {}
 ): Promise<T> {
-  const res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Bearer ${config.token}`,
-      Accept: "application/vnd.github+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-      "Content-Type": "application/json",
-      ...(options.headers ?? {}),
-    },
-  });
+  let res: Response;
 
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`GitHub API error ${res.status} on ${path}: ${body}`);
+  try {
+    res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}${path}`, {
+      ...options,
+      headers: {
+        Authorization: `Bearer ${config.token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+        ...(options.headers ?? {}),
+      },
+    });
+  } catch (cause) {
+    // No response at all: DNS, TLS, a dropped socket, a client-side timeout. For a read this is
+    // just a failure. For the ref PATCH it is the case this module exists to survive, because the
+    // request may well have been applied and only the reply lost.
+    throw new GitHubRequestError(
+      `GitHub API request to ${path} failed before any response was received: ${describeCause(cause)}`,
+      { ambiguous: true, cause }
+    );
   }
 
-  return res.json() as T;
+  if (!res.ok) {
+    let body: string;
+    try {
+      body = await res.text();
+    } catch (cause) {
+      // The status is what classifies this, so a body we could not read costs nothing but detail.
+      body = `<response body unreadable: ${describeCause(cause)}>`;
+    }
+    throw new GitHubRequestError(`GitHub API error ${res.status} on ${path}: ${body}`, {
+      status: res.status,
+      ambiguous: isAmbiguousStatus(res.status),
+    });
+  }
+
+  try {
+    return (await res.json()) as T;
+  } catch (cause) {
+    // GitHub accepted the request, the status says so, and the connection died while the reply
+    // was being read. For a write, the write landed; only our copy of the answer did not.
+    throw new GitHubRequestError(
+      `GitHub API returned ${res.status} on ${path} but the response body could not be read: ` +
+        describeCause(cause),
+      { status: res.status, ambiguous: true, cause }
+    );
+  }
 }
 
 // ─── Serialize article to .md string ─────────────────────────────────────────
@@ -263,6 +371,122 @@ export function validateArticlePayload(
   return { errors: [...dateErrors, ...fieldErrors], content };
 }
 
+// ─── Batch identity ──────────────────────────────────────────────────────────
+
+const BATCH_TRAILER_KEY = "Refresh-Batch";
+
+/**
+ * How many commits back to look for a previous attempt's trailer.
+ *
+ * The window only has to span whatever landed on the branch between a lost reply and the retry
+ * that follows it, which is seconds. Fifteen is generous for that and still one API call.
+ */
+const BATCH_LOOKBACK = 15;
+
+/** The commit-message line that marks a commit as carrying a given batch. */
+export function batchTrailer(batchId: string): string {
+  return `${BATCH_TRAILER_KEY}: ${batchId}`;
+}
+
+/**
+ * Does this commit message claim to carry `batchId`?
+ *
+ * A whole LINE has to match, not a substring anywhere in the message. The difference matters
+ * because a false positive here is silent: the run decides the work is already published, returns
+ * success, and the articles never land. Matching a line means prose that merely quotes a trailer,
+ * including this module's own error messages when somebody pastes one into a commit, cannot be
+ * mistaken for the trailer itself.
+ */
+function carriesBatch(message: string, batchId: string): boolean {
+  const trailer = batchTrailer(batchId);
+  return message.split("\n").some((line) => line.trim() === trailer);
+}
+
+/**
+ * A stable name for one exact set of article bytes.
+ *
+ * Stable is the whole requirement: a retry re-derives it from the same payload (Inngest replays
+ * the memoized per-article steps, so the model output is identical) and recognises its own work
+ * in the history without needing the commit SHA it never received. So this hashes content, not a
+ * clock and not a counter.
+ *
+ * Entries are length-prefixed rather than delimiter-joined so no slug or body can impersonate a
+ * different batch by containing the delimiter, and sorted by slug so batch order does not change
+ * the name. Sorting is by code unit, not `localeCompare`, which is locale-dependent and would make
+ * the identifier depend on the machine.
+ *
+ * One caveat worth naming: `content` carries the stamped date, so a retry that crosses midnight UTC
+ * derives a different id and will not match. That is correct rather than unfortunate, since the
+ * bytes really are different at that point, but it does mean the midnight retry falls through to
+ * the tree comparison in `commitRefreshedArticles` rather than being caught here.
+ */
+export function computeBatchId(prepared: { slug: string; content: string }[]): string {
+  const hash = createHash("sha256");
+  const ordered = [...prepared].sort((a, b) => (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : 0));
+
+  for (const { slug, content } of ordered) {
+    hash.update(`${slug.length}:${slug}\n${content.length}:${content}\n`);
+  }
+
+  return hash.digest("hex").slice(0, 16);
+}
+
+/**
+ * Resolve an ambiguous failure of the ref PATCH by looking at what the branch actually points at.
+ *
+ * Returns normally only when the branch is at `expectedSha`, that is, when the update demonstrably
+ * landed and only the reply was lost. Every other outcome throws, including "we could not find
+ * out", because an unknown outcome is not a success.
+ *
+ * `readPath` is passed in rather than rebuilt from `config.branch`, so this reads back the same
+ * encoded ref the PATCH just wrote to. Building it a second time here would be the one place the
+ * encoding could drift, and it would drift silently: a re-read of a DIFFERENT branch that happens
+ * to be at the expected SHA would report the update as landed.
+ */
+async function confirmRefAdvanced(
+  config: GitHubConfig,
+  readPath: string,
+  expectedSha: string,
+  batchId: string,
+  original: GitHubRequestError,
+): Promise<void> {
+  let head: string;
+
+  try {
+    const after = await githubRequest<{ object: { sha: string } }>(readPath, config);
+    head = after.object.sha;
+  } catch (cause) {
+    throw new Error(
+      `The ${config.branch} ref update for content-refresh batch ${batchId} failed ambiguously, ` +
+        `and re-reading the ref to find out whether it landed also failed. Commit ${expectedSha} ` +
+        `may or may not be on ${config.branch}. A retry is safe: it looks for ` +
+        `"${batchTrailer(batchId)}" in the last ${BATCH_LOOKBACK} commits and will not commit ` +
+        `this batch a second time.\n` +
+        `  ref update failed: ${original.message}\n` +
+        `  re-read failed: ${describeCause(cause)}`,
+      { cause: original }
+    );
+  }
+
+  if (head !== expectedSha) {
+    // Two shapes end up here. Either the update genuinely did not land (the ordinary case, and a
+    // real failure), or it landed and something else has already moved the branch past it, which
+    // is rare and cannot be told apart from the first without walking history. Failing is right for
+    // both: the retry's trailer check resolves the second one without committing twice.
+    throw new Error(
+      `The ${config.branch} ref update for content-refresh batch ${batchId} failed and the branch ` +
+        `is at ${head}, not the commit that was created (${expectedSha}). Treating this as a ` +
+        `failure. If ${expectedSha} did land and was then superseded, a retry will find ` +
+        `"${batchTrailer(batchId)}" in recent history and stand down rather than commit again.\n` +
+        `  ref update failed: ${original.message}`,
+      { cause: original }
+    );
+  }
+
+  // head === expectedSha. GitHub applied the update and lost the reply on the way back. The work
+  // is published; the only thing that failed was our knowledge of it.
+}
+
 // ─── Single-commit batch push ─────────────────────────────────────────────────
 
 /**
@@ -275,8 +499,22 @@ export function validateArticlePayload(
 export async function commitRefreshedArticles(
   articles: ArticleCommitPayload[],
   commitMessage?: string
-): Promise<void> {
-  if (articles.length === 0) return;
+): Promise<CommitOutcome> {
+  if (articles.length === 0) {
+    return { status: "nothing-to-do", batchId: null, commitSha: null, articles: 0 };
+  }
+
+  // The trailer is how a retry identifies its own work, so a caller does not get to write one. A
+  // message carrying a forged or copied `Refresh-Batch:` line would let one batch answer for
+  // another, and the failure it produces is the quiet kind: a later batch decides it is already
+  // published and returns success having written nothing. Refused here, before any request.
+  if (commitMessage?.includes(`${BATCH_TRAILER_KEY}:`)) {
+    throw new Error(
+      `Refusing a commit message containing a "${BATCH_TRAILER_KEY}:" line. That trailer is how a ` +
+        `retry recognises work it already published, and it is derived from the article bytes ` +
+        `rather than supplied. Pass a summary without it; the trailer is appended automatically.`,
+    );
+  }
 
   const config = getConfig();
 
@@ -285,6 +523,11 @@ export async function commitRefreshedArticles(
   // point at which a bad article can be stopped. There is no gate after it: this function PATCHes
   // the branch ref directly (step 6), so nothing here touches local git, .githooks/pre-push never
   // runs, and the CI workflow only ever reports after the commit already exists on `main`.
+  //
+  // It also stays first, ahead of every idempotency check below, because it is DETERMINISTIC: the
+  // same payload fails it the same way on every retry. There is nothing for a retry to recover
+  // here and nothing it could have half-applied, so there is no reason to spend a request before
+  // refusing.
   //
   // One `today` for the whole batch, so a run spanning midnight cannot stamp two different days
   // into one atomic commit.
@@ -304,6 +547,10 @@ export async function commitRefreshedArticles(
     );
   }
 
+  const batchId = computeBatchId(
+    prepared.map(({ article, content }) => ({ slug: article.slug, content }))
+  );
+
   // ── 1. Get current HEAD commit SHA ───────────────────────────────────────
   const refPaths = branchRefPaths(config.branch);
   const refData = await githubRequest<{ object: { sha: string } }>(
@@ -311,6 +558,28 @@ export async function commitRefreshedArticles(
     config
   );
   const latestCommitSha = refData.object.sha;
+
+  // ── 1a. Did an earlier attempt already publish this exact batch? ──────────
+  // The case this covers is the one where the SHA is not to hand: a previous run advanced the ref,
+  // lost the reply, and could not re-read it either, so it threw and Inngest retried. That retry is
+  // here, holding the same bytes and no memory of the commit they went into. The trailer is the
+  // only handle it has, and looking for it BEFORE creating a blob means an already-applied batch
+  // costs one GET rather than a duplicate commit and the production deploy behind it.
+  const recentCommits = await githubRequest<{ sha: string; commit: { message: string } }[]>(
+    `/commits?sha=${encodeURIComponent(latestCommitSha)}&per_page=${BATCH_LOOKBACK}`,
+    config
+  );
+  const alreadyApplied = recentCommits.find((entry) =>
+    carriesBatch(entry.commit.message, batchId)
+  );
+  if (alreadyApplied) {
+    return {
+      status: "already-applied",
+      batchId,
+      commitSha: alreadyApplied.sha,
+      articles: articles.length,
+    };
+  }
 
   // ── 2. Get the tree SHA of that commit ───────────────────────────────────
   const commitData = await githubRequest<{ tree: { sha: string } }>(
@@ -354,12 +623,28 @@ export async function commitRefreshedArticles(
     }
   );
 
+  // ── 4a. Would this commit change anything? ────────────────────────────────
+  // Git trees are content-addressed, so laying these blobs over the base tree returns the base
+  // tree's own SHA when every one of them is already there. That makes this a second, independent
+  // read on "has this work already landed": it does not depend on the trailer, and so it still
+  // fires for the retry that crossed midnight and derived a different batch id.
+  //
+  // Committing anyway would produce a commit with no file changes, which is not an audit trail of
+  // anything and still costs a production deploy plus the `prisma db push` that rides along with
+  // it. Blobs created above are unreferenced and GitHub collects them.
+  if (newTree.sha === baseTreeSha) {
+    return { status: "no-changes", batchId, commitSha: latestCommitSha, articles: articles.length };
+  }
+
   // ── 5. Create the commit ──────────────────────────────────────────────────
   const commitDate = new Date().toLocaleDateString("en-US", {
     month: "short", day: "numeric", year: "numeric",
   });
-  const message = commitMessage
+  const summary = commitMessage
     ?? `chore: content refresh, ${articles.length} article(s) updated (${commitDate})`;
+  // The trailer goes on every commit this function makes, including one with a caller-supplied
+  // message, because step 1a of the NEXT attempt is the only thing that can see it.
+  const message = `${summary}\n\n${batchTrailer(batchId)}\n`;
 
   const newCommit = await githubRequest<{ sha: string }>(
     "/git/commits",
@@ -375,12 +660,26 @@ export async function commitRefreshedArticles(
   );
 
   // ── 6. Advance the branch ref to the new commit ───────────────────────────
-  await githubRequest(
-    refPaths.update,
-    config,
-    {
-      method: "PATCH",
-      body: JSON.stringify({ sha: newCommit.sha }),
-    }
-  );
+  // The one write in this function whose failure is worth interpreting. Everything above creates
+  // Git objects, which are content-addressed and unreachable until something points at them: a
+  // failed blob or tree leaves garbage GitHub collects, and a retry recreates it at the same SHA.
+  // This call is what makes the batch real, so a failure that carries no information about whether
+  // it was applied gets checked instead of believed.
+  try {
+    await githubRequest(
+      refPaths.update,
+      config,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ sha: newCommit.sha }),
+      }
+    );
+  } catch (error) {
+    // A definite failure stays a failure and is rethrown untouched: 422 (not a fast-forward), 404
+    // (no such branch), 403 (refused). Only an ambiguous one is worth a request to resolve.
+    if (!(error instanceof GitHubRequestError) || !error.ambiguous) throw error;
+    await confirmRefAdvanced(config, refPaths.read, newCommit.sha, batchId, error);
+  }
+
+  return { status: "committed", batchId, commitSha: newCommit.sha, articles: articles.length };
 }

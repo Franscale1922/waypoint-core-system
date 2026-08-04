@@ -441,10 +441,19 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
     process.env.GITHUB_REPO_NAME = "waypoint-core-system";
     process.env.GITHUB_BRANCH = "main";
 
-    fetchMock = vi.fn(async () =>
+    // One shape answers ref, commit, blob, tree and the ref PATCH, because none of the assertions
+    // in this file care which. `/commits` is the exception: the commit path scans it for a previous
+    // attempt's `Refresh-Batch:` trailer, so it has to be a LIST. Returning the catch-all object
+    // there fails as `recentCommits.find is not a function`, which says nothing about the batch
+    // this file is really testing. Every other test here refuses before any request, so this only
+    // matters for the one below that lets a valid batch through.
+    fetchMock = vi.fn(async (url: unknown) =>
       ({
         ok: true,
-        json: async () => ({ object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" }),
+        json: async () =>
+          new URL(String(url)).pathname.endsWith("/commits")
+            ? []
+            : { object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" },
         text: async () => "",
       }) as unknown as Response,
     );

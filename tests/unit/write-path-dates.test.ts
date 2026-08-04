@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { createHash } from "crypto";
 import matter from "gray-matter";
 
 import { addUtcDays, validateFrontmatterDates } from "@/lib/frontmatterDates.mjs";
@@ -23,6 +24,13 @@ import { addUtcDays, validateFrontmatterDates } from "@/lib/frontmatterDates.mjs
  * Because (1) works, (2) cannot fire through the public API — which is the point of a backstop, and
  * also why the fail-closed test at the bottom forces the branch rather than waiting for an input
  * that can never arrive. See the comment there.
+ *
+ * The last three blocks cover the OTHER thing that path has to survive: running twice. The refresh
+ * function retries once, so a lost reply to the ref update used to produce a second commit with
+ * identical content — a misleading history and a second production deploy, each of which runs
+ * `prisma db push` against the production database. Those tests drive a fake Git Data API rather
+ * than a flat stub, because the property at stake ("the retry does not commit again") is only
+ * meaningful against a server that REMEMBERS the first attempt.
  *
  * These tests drive the REAL serializeArticle rather than hand-written fixture strings wherever the
  * question is "what gets committed", because the whole class of bug here lives in the gap between
@@ -294,39 +302,184 @@ describe("branchRefPaths", () => {
   });
 });
 
-describe("commitRefreshedArticles: nothing is written when validation fails", () => {
+// ─── A fake Git Data API ──────────────────────────────────────────────────────
+
+const OWNER = "Franscale1922";
+const REPO = "waypoint-core-system";
+
+function shortHash(input: string): string {
+  return createHash("sha256").update(input).digest("hex").slice(0, 12);
+}
+
+function jsonResponse(status: number, payload: unknown): Response {
+  return {
+    ok: status >= 200 && status < 300,
+    status,
+    json: async () => payload,
+    text: async () => JSON.stringify(payload),
+  } as unknown as Response;
+}
+
+/**
+ * A small, STATEFUL stand-in for the Git Data API.
+ *
+ * A flat stub cannot express the thing under test. The double-commit bug is a property of two runs
+ * against one server: attempt one advances the branch, attempt two has to notice. So this keeps
+ * real state — blobs, trees, commits, a branch pointer — and, critically, addresses trees BY
+ * CONTENT the way Git does, so laying a blob that is already present over a base tree returns the
+ * base tree's own SHA. That is what the production code's "would this commit change anything"
+ * check reads, and modelling it here is what makes that test mean something.
+ *
+ * Commit SHAs are a counter, not a content hash, deliberately: a real second commit of identical
+ * content gets a different SHA (its timestamp and parent differ), and the counter reproduces that.
+ * `createdCommits` is therefore the number the retry tests are really about.
+ */
+function createFakeGitHub(initialFiles: Record<string, string> = {}) {
+  const blobs = new Map<string, string>();
+  const trees = new Map<string, Record<string, string>>();
+  const commits = new Map<string, { tree: string; message: string; parents: string[] }>();
+
+  const treeShaOf = (entries: Record<string, string>) =>
+    `tree-${shortHash(Object.keys(entries).sort().map((p) => `${p}:${entries[p]}`).join("\n"))}`;
+
+  const baseEntries: Record<string, string> = {};
+  for (const [path, content] of Object.entries(initialFiles)) {
+    const sha = `blob-${shortHash(content)}`;
+    blobs.set(sha, content);
+    baseEntries[path] = sha;
+  }
+  const baseTree = treeShaOf(baseEntries);
+  trees.set(baseTree, baseEntries);
+  commits.set("commit-base", { tree: baseTree, message: "base commit", parents: [] });
+
+  let head = "commit-base";
+  let commitSeq = 0;
+
+  async function handle(url: string | URL, init: RequestInit = {}): Promise<Response> {
+    const parsed = new URL(String(url));
+    const path = parsed.pathname.replace(`/repos/${OWNER}/${REPO}`, "");
+    const method = init.method ?? "GET";
+    const body = init.body ? JSON.parse(String(init.body)) : undefined;
+
+    if (method === "GET" && path.startsWith("/git/ref/heads/")) {
+      return jsonResponse(200, { object: { sha: head } });
+    }
+
+    if (method === "GET" && path === "/commits") {
+      const from = parsed.searchParams.get("sha") ?? head;
+      const limit = Number(parsed.searchParams.get("per_page") ?? "30");
+      const out: { sha: string; commit: { message: string } }[] = [];
+      let cursor: string | undefined = from;
+      while (cursor && out.length < limit) {
+        const commit: { tree: string; message: string; parents: string[] } | undefined =
+          commits.get(cursor);
+        if (!commit) break;
+        out.push({ sha: cursor, commit: { message: commit.message } });
+        cursor = commit.parents[0];
+      }
+      return jsonResponse(200, out);
+    }
+
+    if (method === "GET" && path.startsWith("/git/commits/")) {
+      const sha = path.slice("/git/commits/".length);
+      const commit = commits.get(sha);
+      if (!commit) return jsonResponse(404, { message: "Not Found" });
+      return jsonResponse(200, { sha, tree: { sha: commit.tree } });
+    }
+
+    if (method === "POST" && path === "/git/blobs") {
+      const content = Buffer.from(body.content, "base64").toString("utf-8");
+      const sha = `blob-${shortHash(content)}`;
+      blobs.set(sha, content);
+      return jsonResponse(201, { sha });
+    }
+
+    if (method === "POST" && path === "/git/trees") {
+      const entries = { ...(trees.get(body.base_tree) ?? {}) };
+      for (const entry of body.tree) entries[entry.path] = entry.sha;
+      const sha = treeShaOf(entries);
+      trees.set(sha, entries);
+      return jsonResponse(201, { sha });
+    }
+
+    if (method === "POST" && path === "/git/commits") {
+      const sha = `commit-${++commitSeq}`;
+      commits.set(sha, { tree: body.tree, message: body.message, parents: body.parents });
+      return jsonResponse(201, { sha });
+    }
+
+    if (method === "PATCH" && path.startsWith("/git/refs/heads/")) {
+      head = body.sha;
+      return jsonResponse(200, { object: { sha: head } });
+    }
+
+    throw new Error(`fake GitHub: unhandled ${method} ${path}`);
+  }
+
+  return {
+    handle,
+    get head() { return head; },
+    /** How many commit OBJECTS were created. The retry tests exist to keep this at 1. */
+    get createdCommits() { return commitSeq; },
+    messageOf: (sha: string) => commits.get(sha)?.message,
+    fileAt: (commitSha: string, path: string) => {
+      const commit = commits.get(commitSha);
+      const entries = commit ? trees.get(commit.tree) ?? {} : {};
+      const blobSha = entries[path];
+      return blobSha === undefined ? undefined : blobs.get(blobSha);
+    },
+  };
+}
+
+type FakeGitHub = ReturnType<typeof createFakeGitHub>;
+
+const methodOf = (init?: RequestInit) => init?.method ?? "GET";
+const pathOf = (url: unknown) => new URL(String(url)).pathname;
+
+/** Shared env + module hygiene for every block that drives commitRefreshedArticles. */
+function useGitHubEnv() {
   const ORIGINAL_ENV = { ...process.env };
-  let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
     process.env.GITHUB_TOKEN = "test-token";
-    process.env.GITHUB_REPO_OWNER = "Franscale1922";
-    process.env.GITHUB_REPO_NAME = "waypoint-core-system";
+    process.env.GITHUB_REPO_OWNER = OWNER;
+    process.env.GITHUB_REPO_NAME = REPO;
     process.env.GITHUB_BRANCH = "main";
-
-    // Minimal Git Data API: ref -> commit -> blob -> tree -> commit -> ref PATCH.
-    fetchMock = vi.fn(async () =>
-      ({
-        ok: true,
-        json: async () => ({ object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" }),
-        text: async () => "",
-      }) as unknown as Response,
-    );
-    vi.stubGlobal("fetch", fetchMock);
+    // The stamped date is part of the committed bytes and therefore part of the batch identifier.
+    // Pinning the clock is what lets a test assert that two runs derive the SAME id — the real
+    // property, which a test straddling midnight would flake on.
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(`${TODAY}T12:00:00.000Z`));
   });
 
   afterEach(() => {
     process.env = { ...ORIGINAL_ENV };
+    vi.useRealTimers();
     vi.unstubAllGlobals();
     vi.resetModules();
     vi.doUnmock("@/lib/frontmatterDates.mjs");
   });
+}
+
+const alphaArticle = () => ({ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY });
+
+describe("commitRefreshedArticles: nothing is written when validation fails", () => {
+  useGitHubEnv();
+
+  let gh: FakeGitHub;
+  let fetchMock: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    gh = createFakeGitHub();
+    fetchMock = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
+    vi.stubGlobal("fetch", fetchMock);
+  });
 
   it("commits the exact bytes it validated", async () => {
     const { commitRefreshedArticles, serializeArticle } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = alphaArticle();
 
-    await commitRefreshedArticles([article]);
+    const outcome = await commitRefreshedArticles([article]);
 
     const blobCall = fetchMock.mock.calls.find(([url]) => String(url).endsWith("/git/blobs"));
     expect(blobCall).toBeDefined();
@@ -336,8 +489,11 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     // that crosses midnight.
     expect(sent).toBe(serializeArticle(article.frontmatter, article.body));
 
-    // And the ref really was advanced, so the negative assertion below means something.
-    expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
+    // And the ref really was advanced, so the negative assertion below means something. Asserted
+    // against the server's own state rather than "a PATCH was issued", which is a weaker claim.
+    expect(outcome.status).toBe("committed");
+    expect(gh.head).toBe(outcome.commitSha);
+    expect(gh.fileAt(gh.head, "content/articles/alpha.md")).toBe(sent);
   });
 
   /**
@@ -363,11 +519,42 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     });
 
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = alphaArticle();
 
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/not a real calendar day/);
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/main was not\s+advanced/);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The date guard is DETERMINISTIC, and has to stay that way.
+   *
+   * Everything else added to this module is about making a second attempt behave differently from
+   * the first. This is the one thing that must not: a batch rejected for a bad date is rejected the
+   * same way every time, having touched nothing, because there is no half-applied state to recover
+   * and no reason to spend a request before refusing. The two calls above already assert the same
+   * message twice; this asserts the part that would rot silently — that neither call reached the
+   * network, so no idempotency check was consulted ahead of the guard.
+   */
+  it("fails identically on a retry, without ever reaching GitHub", async () => {
+    vi.doMock("@/lib/frontmatterDates.mjs", async () => {
+      const actual = await vi.importActual<Record<string, unknown>>("@/lib/frontmatterDates.mjs");
+      return {
+        ...actual,
+        validateFrontmatterDates: () => ({ errors: ["alpha.md: FUTURE"], checked: 1 }),
+      };
+    });
+
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+
+    const first = await commitRefreshedArticles([article]).catch((error: Error) => error.message);
+    const second = await commitRefreshedArticles([article]).catch((error: Error) => error.message);
+
+    expect(first).toBe(second);
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(gh.createdCommits).toBe(0);
+    expect(gh.head).toBe("commit-base");
   });
 
   /**
@@ -469,15 +656,19 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
     const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
 
+    // Resolving is the claim; the value is asserted on rather than required to be undefined,
+    // because the function now reports what it did. The repeats below deliberately do not pin a
+    // status: the fake server is stateful, so the first call commits the batch and the rest
+    // recognise it as already applied. Accepting the branch name is what is under test here.
     delete process.env.GITHUB_BRANCH; // the documented default
-    await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+    await expect(commitRefreshedArticles(batch)).resolves.toMatchObject({ articles: 1 });
     expect(fetchMock.mock.calls.map(([url]) => String(url))).toContain(
       "https://api.github.com/repos/Franscale1922/waypoint-core-system/git/ref/heads/main",
     );
 
     for (const branch of ["main", "feature/JIRA-12_v2.1", "v2.0.x", "_staging"]) {
       process.env.GITHUB_BRANCH = branch;
-      await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+      await expect(commitRefreshedArticles(batch)).resolves.toMatchObject({ articles: 1 });
     }
   });
 
@@ -542,5 +733,360 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     // problem it is refusing is a date.
     await expect(commitRefreshedArticles(batch)).rejects.toThrow(/3 frontmatter problem/);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * The ref update is the one call in this module whose failure carries a question.
+ *
+ * Everything before it creates Git objects, which are unreachable until something points at them.
+ * This is the call that publishes. When it fails in a way that says nothing about whether it was
+ * applied, the module has to go and look; when it fails in a way that DOES say, it must not.
+ */
+describe("commitRefreshedArticles: an ambiguous ref update is resolved, not assumed", () => {
+  useGitHubEnv();
+
+  let gh: FakeGitHub;
+
+  beforeEach(() => {
+    gh = createFakeGitHub();
+  });
+
+  /** GitHub applied the update and the reply never made it back. */
+  const dropReplyToPatch = () => {
+    const spy = vi.fn(async (url: unknown, init?: RequestInit) => {
+      const res = await gh.handle(String(url), init);
+      if (methodOf(init) === "PATCH") throw new TypeError("fetch failed");
+      return res;
+    });
+    vi.stubGlobal("fetch", spy);
+    return spy;
+  };
+
+  it("treats a dropped connection whose update landed as success", async () => {
+    dropReplyToPatch();
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    const outcome = await commitRefreshedArticles([alphaArticle()]);
+
+    expect(outcome.status).toBe("committed");
+    expect(gh.head).toBe(outcome.commitSha);
+    expect(gh.createdCommits).toBe(1);
+  });
+
+  it("treats a 5xx whose update landed as success", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      const res = await gh.handle(String(url), init);
+      if (methodOf(init) === "PATCH") return jsonResponse(502, { message: "Bad gateway" });
+      return res;
+    }));
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    const outcome = await commitRefreshedArticles([alphaArticle()]);
+
+    expect(outcome.status).toBe("committed");
+    expect(gh.head).toBe(outcome.commitSha);
+  });
+
+  /**
+   * The counterweight, and the reason this is not "treat errors as success": the SAME ambiguous
+   * status, on an update that did not land, still fails. Ambiguity only buys a look at the ref —
+   * the branch pointing at our commit is what buys success.
+   */
+  it("still fails when the ambiguous update did NOT land", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      // Intercepted BEFORE the fake sees it, so the ref is genuinely untouched.
+      if (methodOf(init) === "PATCH") return jsonResponse(500, { message: "Internal Server Error" });
+      return gh.handle(String(url), init);
+    }));
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    await expect(commitRefreshedArticles([alphaArticle()])).rejects.toThrow(
+      /branch is at commit-base, not the commit that was created \(commit-1\)/,
+    );
+    expect(gh.head).toBe("commit-base");
+  });
+
+  it("surfaces the batch id when it cannot find out either way", async () => {
+    let refReads = 0;
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      if (methodOf(init) === "GET" && pathOf(url).endsWith("/git/ref/heads/main") && ++refReads === 2) {
+        throw new TypeError("fetch failed");
+      }
+      const res = await gh.handle(String(url), init);
+      if (methodOf(init) === "PATCH") throw new TypeError("fetch failed");
+      return res;
+    }));
+    const { commitRefreshedArticles, batchTrailer, computeBatchId, serializeArticle } =
+      await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+    const expectedId = computeBatchId([
+      { slug: article.slug, content: serializeArticle(article.frontmatter, article.body) },
+    ]);
+
+    const message = await commitRefreshedArticles([article]).catch((e: Error) => e.message);
+
+    expect(message).toMatch(/may or may not be on main/);
+    // A run that ended not knowing still hands the operator the exact string to grep history for,
+    // and it is the string really sitting in the commit that landed — not a plausible-looking one.
+    expect(message).toContain(batchTrailer(expectedId));
+    expect(gh.messageOf("commit-1")).toContain(batchTrailer(expectedId));
+  });
+
+  it.each([
+    [422, "Update is not a fast forward"],
+    [404, "Branch not found"],
+    [403, "Resource not accessible by personal access token"],
+  ])("rethrows a definite %i without re-reading the ref", async (status, detail) => {
+    let refReads = 0;
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      if (methodOf(init) === "GET" && pathOf(url).endsWith("/git/ref/heads/main")) refReads++;
+      if (methodOf(init) === "PATCH") return jsonResponse(status, { message: detail });
+      return gh.handle(String(url), init);
+    }));
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    await expect(commitRefreshedArticles([alphaArticle()])).rejects.toThrow(
+      new RegExp(`GitHub API error ${status}`),
+    );
+    // Exactly the one read at the top of the run. GitHub already answered the question, so no
+    // request is spent asking it again — and, more to the point, no path exists by which a refused
+    // write could be talked into looking like a successful one.
+    expect(refReads).toBe(1);
+    expect(gh.head).toBe("commit-base");
+  });
+});
+
+/**
+ * The headline: the same batch, run twice, produces one commit.
+ *
+ * Before this, a lost reply to the ref update threw, the function retried against a HEAD that
+ * already contained the work, and committed it again — a second commit with identical content, a
+ * misleading history, and a second production deploy carrying `prisma db push` against production.
+ */
+describe("commitRefreshedArticles: a retry does not commit the same batch twice", () => {
+  useGitHubEnv();
+
+  let gh: FakeGitHub;
+
+  beforeEach(() => {
+    gh = createFakeGitHub();
+  });
+
+  it("recognises its own already-applied work when the reply AND the re-read were both lost", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+
+    // ── Attempt 1: the PATCH is applied, its reply is lost, and the confirming re-read is lost
+    // too — so the run ends knowing nothing, which is precisely when the SHA is not to hand.
+    let refReads = 0;
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      if (methodOf(init) === "GET" && pathOf(url).endsWith("/git/ref/heads/main") && ++refReads === 2) {
+        throw new TypeError("fetch failed");
+      }
+      const res = await gh.handle(String(url), init);
+      if (methodOf(init) === "PATCH") throw new TypeError("fetch failed");
+      return res;
+    }));
+
+    await expect(commitRefreshedArticles([article])).rejects.toThrow(/outcome is unknown|may or may not/);
+
+    // The work really did land, which is what makes the retry dangerous.
+    expect(gh.head).toBe("commit-1");
+    expect(gh.createdCommits).toBe(1);
+
+    // ── Attempt 2: what Inngest runs next. Same payload — the per-article steps are memoized, so
+    // the retry holds identical bytes — and no memory whatsoever of commit-1.
+    const retryFetch = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
+    vi.stubGlobal("fetch", retryFetch);
+
+    const outcome = await commitRefreshedArticles([article]);
+
+    expect(outcome.status).toBe("already-applied");
+    expect(outcome.commitSha).toBe("commit-1");
+    // The assertion the whole change exists for. This was 2.
+    expect(gh.createdCommits).toBe(1);
+    expect(gh.head).toBe("commit-1");
+    expect(retryFetch.mock.calls.some(([, init]) => methodOf(init as RequestInit) === "PATCH")).toBe(false);
+  });
+
+  it("stands down before creating a single blob", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+
+    vi.stubGlobal("fetch", vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init)));
+    await commitRefreshedArticles([article]);
+
+    const retryFetch = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
+    vi.stubGlobal("fetch", retryFetch);
+    await commitRefreshedArticles([article]);
+
+    // Cheap as well as correct: an already-applied batch costs two GETs, not a blob upload per
+    // article followed by a tree and a commit.
+    const written = retryFetch.mock.calls.filter(([, init]) => methodOf(init as RequestInit) !== "GET");
+    expect(written).toHaveLength(0);
+  });
+
+  it("carries the batch id in the commit message, which is what the retry reads", async () => {
+    const { commitRefreshedArticles, batchTrailer } = await import("@/lib/githubArticleCommit");
+    vi.stubGlobal("fetch", vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init)));
+
+    const outcome = await commitRefreshedArticles([alphaArticle()]);
+
+    expect(outcome.batchId).toMatch(/^[0-9a-f]{16}$/);
+    const message = gh.messageOf(outcome.commitSha!)!;
+    // A trailer on its own line, below the summary a human reads.
+    expect(message.split("\n")[0]).toMatch(/^chore: content refresh/);
+    expect(message).toContain(`\n${batchTrailer(outcome.batchId!)}`);
+  });
+
+  it("keeps the trailer on a caller-supplied message, since that is the only handle a retry has", async () => {
+    const { commitRefreshedArticles, batchTrailer } = await import("@/lib/githubArticleCommit");
+    vi.stubGlobal("fetch", vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init)));
+
+    const outcome = await commitRefreshedArticles([alphaArticle()], "docs: hand-written subject");
+    const message = gh.messageOf(outcome.commitSha!)!;
+
+    expect(message.split("\n")[0]).toBe("docs: hand-written subject");
+    expect(message).toContain(batchTrailer(outcome.batchId!));
+  });
+
+  /**
+   * A caller does not get to author batch identity.
+   *
+   * The trailer is derived from the article bytes precisely so it cannot be claimed, and the
+   * failure a forged one produces is the quiet kind: some later batch reads it, decides it is
+   * already published, and returns success having written nothing at all.
+   */
+  it("refuses a caller-supplied message that forges the trailer, before any request", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const spy = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
+    vi.stubGlobal("fetch", spy);
+
+    await expect(
+      commitRefreshedArticles([alphaArticle()], "chore: refresh\n\nRefresh-Batch: deadbeefdeadbeef"),
+    ).rejects.toThrow(/Refusing a commit message containing a "Refresh-Batch:" line/);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(gh.createdCommits).toBe(0);
+  });
+
+  /**
+   * The trailer has to be a LINE, not a substring.
+   *
+   * Prose that merely quotes one must not answer for it. This module's own "could not find out"
+   * error quotes the trailer, so a message that pasted that error in would otherwise be read as
+   * proof the batch had landed, and the real articles would never be published.
+   */
+  it("does not accept a trailer quoted inside prose as proof the batch landed", async () => {
+    const { commitRefreshedArticles, computeBatchId, serializeArticle } =
+      await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+    const batchId = computeBatchId([
+      { slug: article.slug, content: serializeArticle(article.frontmatter, article.body) },
+    ]);
+
+    // A commit that talks ABOUT the batch without carrying it.
+    const decoy = createFakeGitHub();
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      const res = await decoy.handle(String(url), init);
+      if (methodOf(init) === "GET" && pathOf(url).endsWith("/commits")) {
+        return jsonResponse(200, [
+          { sha: "commit-base", commit: { message: `chore: retry notes (Refresh-Batch: ${batchId}) still unresolved` } },
+        ]);
+      }
+      return res;
+    }));
+
+    const outcome = await commitRefreshedArticles([article]);
+
+    // Not fooled: it went ahead and published.
+    expect(outcome.status).toBe("committed");
+    expect(decoy.createdCommits).toBe(1);
+  });
+
+  /**
+   * The second, independent read on "already landed", and the one that still works when the batch
+   * id does not — a retry that crossed midnight UTC re-stamps the date, derives a different id, and
+   * would sail past the trailer check. The tree comparison catches it because the bytes, not the
+   * name, are what it looks at.
+   */
+  it("creates nothing when the branch already holds these exact bytes", async () => {
+    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+    const already = createFakeGitHub({
+      "content/articles/alpha.md": serializeArticle(article.frontmatter, article.body),
+    });
+
+    const spy = vi.fn((url: unknown, init?: RequestInit) => already.handle(String(url), init));
+    vi.stubGlobal("fetch", spy);
+
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const outcome = await commitRefreshedArticles([article]);
+
+    expect(outcome.status).toBe("no-changes");
+    expect(outcome.commitSha).toBe("commit-base");
+    expect(already.createdCommits).toBe(0);
+    expect(already.head).toBe("commit-base");
+    expect(spy.mock.calls.some(([, init]) => methodOf(init as RequestInit) === "PATCH")).toBe(false);
+  });
+
+  it("returns nothing-to-do for an empty batch without reading config or the network", async () => {
+    const spy = vi.fn();
+    vi.stubGlobal("fetch", spy);
+    delete process.env.GITHUB_TOKEN;
+
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    expect(await commitRefreshedArticles([])).toEqual({
+      status: "nothing-to-do",
+      batchId: null,
+      commitSha: null,
+      articles: 0,
+    });
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+/**
+ * The identifier has one job: be the same on the retry as it was on the attempt that failed.
+ */
+describe("computeBatchId", () => {
+  const entry = (slug: string, content: string) => ({ slug, content });
+
+  it("is stable across calls with the same bytes", async () => {
+    const { computeBatchId } = await import("@/lib/githubArticleCommit");
+    const batch = [entry("alpha", "one"), entry("beta", "two")];
+
+    expect(computeBatchId(batch)).toBe(computeBatchId([...batch]));
+    expect(computeBatchId(batch)).toMatch(/^[0-9a-f]{16}$/);
+  });
+
+  it("does not depend on the order articles arrive in", async () => {
+    const { computeBatchId } = await import("@/lib/githubArticleCommit");
+    const a = entry("alpha", "one");
+    const b = entry("beta", "two");
+
+    expect(computeBatchId([a, b])).toBe(computeBatchId([b, a]));
+  });
+
+  it("changes when any byte of any article changes", async () => {
+    const { computeBatchId } = await import("@/lib/githubArticleCommit");
+    const base = computeBatchId([entry("alpha", "one"), entry("beta", "two")]);
+
+    expect(computeBatchId([entry("alpha", "one!"), entry("beta", "two")])).not.toBe(base);
+    expect(computeBatchId([entry("alpha", "one"), entry("gamma", "two")])).not.toBe(base);
+    expect(computeBatchId([entry("alpha", "one")])).not.toBe(base);
+  });
+
+  /**
+   * Length-prefixing, proven rather than asserted in a comment. Joined on a delimiter these two
+   * batches would hash the same, and one batch could then be mistaken for the other in history.
+   */
+  it("cannot be spoofed by a slug or body containing the delimiter", async () => {
+    const { computeBatchId } = await import("@/lib/githubArticleCommit");
+
+    expect(computeBatchId([entry("alpha", "one\nbeta"), entry("x", "two")]))
+      .not.toBe(computeBatchId([entry("alpha", "one"), entry("beta\nx", "two")]));
   });
 });
