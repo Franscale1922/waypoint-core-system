@@ -103,7 +103,7 @@ All articles must be written to perform in both traditional search (SEO) and ans
 - **Title format:** Plain, descriptive, no punctuation tricks. The title should match what a person would actually search for.
 - **Subheadings (H2s) are questions or clear descriptors.** Subheadings like "What Actually Matters in an FDD" outperform vague ones like "Key Considerations."
 - **Excerpt is search-snippet-ready.** The excerpt field (used in metadata) should be a self-contained 1–2 sentence answer. If someone sees only the excerpt, they should get value from it. Target **150–160 characters** (the figure comes from the seo-review workflow, `.agents/workflows/seo-review.md` Step 3). Over 160 is a hard failure in the pre-push audit, because the excerpt feeds the meta description, the OpenGraph description and the Article JSON-LD, so an over-long one truncates mid-sentence in all three. Under 150 is reported but not enforced; it only wastes snippet space.
-- **The same 160 limit applies to every other description that reaches a search result**, not just article excerpts: the top-level `description` in any `src/app/**/page.tsx` or `layout.tsx` metadata export, and every `metaDescription` in `src/data/*.ts`. Where a route builds its description at request time (`generateMetadata`), the audit cannot measure it, so that file must carry an `aeo-desc-dynamic:` comment naming what bounds the length. The gate fails on an unresolvable description that has no such note, rather than skipping it silently.
+- **The same 160 limit applies to every other description that reaches a search result**, not just article excerpts: the top-level `description` in any `src/app/**/page.tsx` or `layout.tsx` metadata export, and every `metaDescription` in `src/data/*.ts`. Where a route builds its description at request time (`generateMetadata`, a spread, an interpolated template, a variable), the audit cannot measure it, so that file must carry an `aeo-desc-dynamic:` comment **naming what bounds the length**. The reason is required, not just the token. The gate fails on an unresolvable description with no such note, rather than skipping it silently.
 - **Internal links.** Every article links to at least one other resource page via the `relatedSlugs` system. Body copy CTAs link to `/book`. No orphaned articles.
 - **No keyword cannibalization.** Before writing a new article, check the existing pool. Do not write a piece that targets the same primary keyword as an existing article — expand or differentiate instead.
 
@@ -301,7 +301,10 @@ An em dash that a reader sees is a violation whether or not the source file cont
 
 - HTML entities: `&mdash;`, `&#8212;`, `&#x2014;`
 - JavaScript escapes: `—`, `\u{2014}`
+- CSS escapes: `content: "\2014"` (checked in `.css` only, where it actually renders)
 - Runtime construction: `String.fromCharCode(0x2014)`
+
+The scan covers every text-bearing file under `src/`, not just the ones the UI is written in: `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css` and `.json`. Copy reaches readers from data files too.
 
 This is not hypothetical. The gate counted only the literal character until 2026-08-03, and in that time `&mdash;` reached the public contact page and two email footers, and a `—` reached a live prompt, while the audit reported "0 em dashes".
 

@@ -7,12 +7,11 @@ import {
   auditAll,
   classifyMetaDescription,
   collectDataDescriptions,
+  collectDataTitles,
   countRenderedEmDashes,
-  readStaticString,
+  hardCodesBrand,
   scanCodeEmDashes,
   stripCodeFences,
-  stripTypeDeclarations,
-  findTopLevelKey,
   EXCERPT_MAX,
   TITLE_BUDGET,
 } from "../../scripts/aeo-audit.mjs";
@@ -224,6 +223,20 @@ describe("em dash detection covers every rendering form", () => {
     expect(countRenderedEmDashes("5\u20130 range, well-known")).toBe(0);
   });
 
+  it.each([
+    ["&MDASH;", "HTML5 named references are case-sensitive, so this is literal text"],
+    ["\\U2014", "\\U is not a JavaScript escape; this renders U2014"],
+  ])("does not fire on %s (%s)", (form) => {
+    // A gate that fails on a string containing no em dash cannot be satisfied by
+    // rewording, which makes a false positive here worse than useless.
+    expect(countRenderedEmDashes(`copy ${form} more copy`)).toBe(0);
+  });
+
+  it("still accepts the case variants that genuinely render", () => {
+    expect(countRenderedEmDashes("a &#X2014; b")).toBe(1);
+    expect(countRenderedEmDashes("a String.fromCharCode(0X2014) b")).toBe(1);
+  });
+
   it("finds an em dash in front matter, not only in the body", () => {
     // Section 11 names front matter explicitly; the old scan read `body` only.
     const raw = ["---", `title: "Alpha &mdash; Beta"`, 'excerpt: "e"', "---", "", "Clean body.\n"].join("\n");
@@ -251,15 +264,36 @@ describe("em dash detection covers every rendering form", () => {
     expect(hits[0].count).toBe(1);
   });
 
-  it("scans .ts, .tsx and .css but ignores everything else", () => {
+  it("scans every text-bearing extension under src, not just tsx and css", () => {
+    // .mjs, .js, .jsx and .json were silently exempt, and src/ contains data
+    // files of exactly those kinds.
     const { codeDirs } = repo();
-    writeFileSync(join(codeDirs[0], "a.tsx"), "const x = <p>a &mdash; b</p>;");
-    writeFileSync(join(codeDirs[0], "b.css"), `/* a ${EMDASH} b */`);
-    writeFileSync(join(codeDirs[0], "c.md"), "a &mdash; b");
+    for (const [name, body] of [
+      ["a.tsx", "const x = <p>a &mdash; b</p>;"],
+      ["b.css", `/* a ${EMDASH} b */`],
+      ["c.mjs", "export const s = 'a &mdash; b';"],
+      ["d.json", '{"s": "a &mdash; b"}'],
+      ["e.jsx", "const y = 'a &mdash; b';"],
+      ["f.md", "a &mdash; b"], // markdown is handled by the article scan, not here
+    ] as const) {
+      writeFileSync(join(codeDirs[0], name), body);
+    }
 
     const files: string[] = scanCodeEmDashes(codeDirs).map((r: { f: string }) => r.f);
-    expect(files).toHaveLength(2);
-    expect(files.some((f: string) => f.endsWith("c.md"))).toBe(false);
+    expect(files).toHaveLength(5);
+    expect(files.some((f: string) => f.endsWith("f.md"))).toBe(false);
+  });
+
+  it("decodes a CSS hex escape, and only in CSS", () => {
+    // `content: "\2014"` renders an em dash. The same characters in TypeScript
+    // are not one, so applying the CSS rule everywhere would be a false positive.
+    const { codeDirs } = repo();
+    writeFileSync(join(codeDirs[0], "a.css"), 'a::after { content: "\\2014"; }');
+    writeFileSync(join(codeDirs[0], "b.ts"), 'const octalish = "\\2014";');
+
+    const hits = scanCodeEmDashes(codeDirs);
+    expect(hits).toHaveLength(1);
+    expect(hits[0].f.endsWith("a.css")).toBe(true);
   });
 });
 
@@ -287,6 +321,38 @@ describe("markdown structure ignores fenced code blocks", () => {
   it("handles tilde fences and longer backtick runs", () => {
     const body = ["~~~", "## hidden", "~~~", "````", "## also hidden", "````", "## Visible?"].join("\n");
     expect(auditArticle(article({ body }), "a.md").h2).toBe(1);
+  });
+
+  it("does not let a fence line with an info string close the block", () => {
+    // CommonMark: a closing fence carries no info string. Treating ```not-a-close
+    // as a close ends the block early, counts the sample heading after it, AND
+    // shifts the real closing fence into an opening one, which then swallows the
+    // genuine headings.
+    //
+    // The counts must differ between correct and broken behaviour or this test
+    // proves nothing: correct gives 2 (both real headings), broken gives 1
+    // (the sample heading, with the real ones hidden inside a phantom fence).
+    const fence = "```";
+    const body = [
+      `${fence}js`,
+      "## hidden one",
+      `${fence}not-a-close`,
+      "## hidden two",
+      fence,
+      "## Visible one?",
+      "## Visible two?",
+    ].join("\n");
+
+    const row = auditArticle(article({ body }), "a.md");
+    expect(row.h2).toBe(2);
+    expect(row.h2q).toBe(2);
+  });
+
+  it("counts an indented heading, which CommonMark allows", () => {
+    const body = ["  ## Indented question?", "text"].join("\n");
+    const row = auditArticle(article({ body }), "a.md");
+    expect(row.h2).toBe(1);
+    expect(row.h2q).toBe(1);
   });
 
   it("leaves ordinary prose untouched", () => {
@@ -384,13 +450,121 @@ describe("meta description classification", () => {
     });
   });
 
+  it("does not wave through a metadata export that is not an object literal", () => {
+    // `export const metadata = buildMetadata(...)` still ships a description.
+    // Classifying it "absent" would silently exempt the whole route, which is
+    // the same fail-open shape as the page.tsx-only walker this replaced.
+    for (const src of [
+      "export const metadata = buildMetadata({ slug });",
+      "export const metadata: Metadata = SHARED_METADATA;",
+    ]) {
+      expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved", acknowledged: false });
+    }
+  });
+
+  it("does not let a spread hide or overwrite the description", () => {
+    // `{ ...shared }` was classified absent, exempting the route entirely; and
+    // `{ description: "short", ...shared }` measured 5 even though the spread can
+    // replace it with 200. Both are unknowable from this file, so both must be
+    // unresolved rather than quietly accepted.
+    for (const src of [
+      "export const metadata = { ...shared };",
+      `export const metadata = { description: "short", ...shared };`,
+    ]) {
+      expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+    }
+  });
+
+  it("does not treat a shorthand description as absent", () => {
+    // `const description = "..."; export const metadata = { description };`
+    // ships a real description from a variable. Reading it as absent exempted
+    // the entire route.
+    const src = `const description = "x";\nexport const metadata = { description };`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+  });
+
+  it("does not treat a computed property name as absent", () => {
+    const src = `export const metadata = { ["desc" + suffix]: "x" };`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+  });
+
+  it("sees generateMetadata exported as an arrow function", () => {
+    const src = "export const generateMetadata = async () => ({ description: LONG });";
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+  });
+
+  it("sees a re-exported metadata binding", () => {
+    const src = `const metadata = { description: "x" };\nexport { metadata };`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+  });
+
+  it("reads a quoted description key", () => {
+    const src = `export const metadata = { "description": "${"z".repeat(200)}" };`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "resolved", len: 200 });
+  });
+
+  it("is not fooled by a commented-out generateMetadata", () => {
+    // Source-text matching fired on this and blocked a push over a comment.
+    const src = `// export function generateMetadata() {}\nexport const metadata = { description: "ok" };`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "resolved", len: 2 });
+  });
+
+  it("accepts a static value followed by a comment", () => {
+    const src = `export const metadata = {\n  description: "fine" /* rationale */,\n};`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "resolved", len: 4 });
+  });
+
+  it("refuses to measure a concatenated description instead of under-counting it", () => {
+    // Reading only the first operand reports 5 characters for a description
+    // that renders far longer, so an over-limit value would pass. Must be
+    // unresolved, not resolved-at-the-wrong-length.
+    const src = `export const metadata = {\n  description: "short" + LONG_TAIL,\n};`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved" });
+  });
+
   it("records the aeo-desc-dynamic acknowledgement", () => {
     const src = `// aeo-desc-dynamic: bounded upstream\nexport async function generateMetadata() { return {}; }`;
     expect(classifyMetaDescription(src)).toMatchObject({ state: "unresolved", acknowledged: true });
   });
+
+  it.each([
+    ["aeo-desc-dynamic", "bare token, no colon"],
+    ["aeo-desc-dynamic:", "colon but no reason"],
+    ["aeo-desc-dynamic:   ", "colon and whitespace only"],
+  ])("does not accept %s as an acknowledgement (%s)", (token) => {
+    // An escape hatch that costs nothing to invoke becomes the default. The note
+    // has to actually say what bounds the length.
+    const src = `// ${token}\nexport async function generateMetadata() { return {}; }`;
+    expect(classifyMetaDescription(src)).toMatchObject({ acknowledged: false });
+  });
+
+  it("only accepts the waiver when it is written as a comment", () => {
+    // Regexing raw source meant a string mentioning the token, including docs
+    // about the token itself, waived an unrelated unbounded description.
+    const inString = `const help = "aeo-desc-dynamic: how to use this";\nexport async function generateMetadata() { return {}; }`;
+    expect(classifyMetaDescription(inString)).toMatchObject({ acknowledged: false });
+
+    const inComment = `/* aeo-desc-dynamic: truncated upstream at 155 */\nexport async function generateMetadata() { return {}; }`;
+    expect(classifyMetaDescription(inComment)).toMatchObject({ acknowledged: true });
+  });
 });
 
 describe("the description gate fails closed", () => {
+  it("discovers a page.jsx route, not just .tsx", () => {
+    // Next.js accepts .js/.jsx/.ts/.tsx. Matching only .tsx let a jsx route with
+    // an overlong description through while the surrounding .tsx routes kept
+    // every anti-vacuity count healthy.
+    const dirs = repoWithArticle();
+    writeFileSync(
+      join(dirs.appDir, "page.jsx"),
+      `export const metadata = {\n  description: "${"x".repeat(EXCERPT_MAX + 40)}",\n};`,
+    );
+
+    const result = auditAll(dirs);
+    expect(result.resolved).toHaveLength(1);
+    expect(result.routeTooLong).toHaveLength(1);
+  });
+
   it("measures layout.tsx, not only page.tsx", () => {
     // This is the exact live defect: a 168-character site-wide description in
     // src/app/layout.tsx that the page.tsx-only walker never opened.
@@ -479,9 +653,60 @@ describe("data-layer metaDescription lengths", () => {
     expect(found[0].len).toBe(151);
   });
 
-  it("keeps reported line numbers accurate after stripping declarations", () => {
-    const src = ["export type T = {", "  a: string;", "};", 'const x = "v";'].join("\n");
-    expect(stripTypeDeclarations(src).split("\n")).toHaveLength(4);
+  it("marks a concatenated metaDescription unreadable rather than under-measuring it", () => {
+    const { dataDir } = repo();
+    writeFileSync(
+      join(dataDir, "industries.ts"),
+      ["export const all = [", `  { metaDescription: "short" + TAIL },`, "];"].join("\n"),
+    );
+
+    const found = collectDataDescriptions(dataDir);
+    expect(found).toHaveLength(1);
+    expect(found[0].len).toBeNull();
+  });
+
+  it("fails the run on an unreadable data metaDescription", () => {
+    const dirs = repoWithArticle();
+    writeFileSync(
+      join(dirs.dataDir, "industries.ts"),
+      ["export const all = [", `  { metaDescription: "short" + TAIL },`, "];"].join("\n"),
+    );
+
+    const result = auditAll(dirs);
+    expect(result.dataUnreadable).toHaveLength(1);
+    expect(result.failures.join(" ")).toContain("unreadable");
+  });
+
+  it("reports the line the value is actually on", () => {
+    const { dataDir } = repo();
+    writeFileSync(
+      join(dataDir, "industries.ts"),
+      ["export type I = {", "  metaDescription: string;", "};", "export const all = [", `  { metaDescription: "v" },`, "];"].join(
+        "\n",
+      ),
+    );
+
+    const found = collectDataDescriptions(dataDir);
+    expect(found).toHaveLength(1);
+    expect(found[0].line).toBe(5);
+  });
+
+  it("records a shorthand metaDescription as unreadable, not as absent", () => {
+    const { dataDir } = repo();
+    writeFileSync(join(dataDir, "d.ts"), "export const all = [{ metaDescription }];");
+
+    const found = collectDataDescriptions(dataDir);
+    expect(found).toHaveLength(1);
+    expect(found[0].len).toBeNull();
+  });
+
+  it("collects a quoted metaDescription key", () => {
+    const { dataDir } = repo();
+    writeFileSync(join(dataDir, "d.ts"), `export const all = [{ "metaDescription": "${"x".repeat(170)}" }];`);
+
+    const found = collectDataDescriptions(dataDir);
+    expect(found).toHaveLength(1);
+    expect(found[0].len).toBe(170);
   });
 });
 
@@ -513,25 +738,112 @@ describe("the over-budget title report is an advisory, not a gate", () => {
   });
 });
 
-// ─── Static literal reading ─────────────────────────────────────────────────
+// ─── Length is the RENDERED length ──────────────────────────────────────────
 
-describe("readStaticString measures rendered length", () => {
-  it("collapses escapes to one character each", () => {
-    expect(readStaticString('"a\\"b"', 0)).toBe('a"b');
-    expect(readStaticString('"a\\u2014b"', 0)).toBe(`a${EMDASH}b`);
-    expect(readStaticString('"a\\nb"', 0)).toBe("a\nb");
+describe("measured length is what a search engine would render", () => {
+  it.each([
+    ['"a\\"b"', 3, "escaped quote is one character"],
+    ['"a\\u2014b"', 3, "unicode escape is one character"],
+    ['"a\\nb"', 3, "newline escape is one character"],
+    ["`plain`", 5, "non-interpolated template literal"],
+  ])("%s measures %i (%s)", (literal, expected) => {
+    const src = `export const metadata = {\n  description: ${literal},\n};`;
+    expect(classifyMetaDescription(src)).toMatchObject({ state: "resolved", len: expected });
+  });
+});
+
+// ─── Section 14: the brand test is a whole word, any case ───────────────────
+
+describe("brand detection", () => {
+  it.each(["Waypoint", "waypoint", "WAYPOINT", "Why Waypoint Works", "Foo |Waypoint"])(
+    "flags %s",
+    (title) => {
+      // A case-sensitive substring test let WHY WAYPOINT WORKS through, and it
+      // would have received a second " | Waypoint" from the layout template.
+      expect(hardCodesBrand(title)).toBe(true);
+    },
+  );
+
+  it.each(["Waypointing Through Franchises", "Waypoints on the Journey", "A Wayward Point"])(
+    "does not flag %s",
+    (title) => {
+      // These do not name the brand; blocking them would be a false gate failure.
+      expect(hardCodesBrand(title)).toBe(false);
+    },
+  );
+
+  it("flags a page-level metadata title that hard-codes the brand", () => {
+    const dirs = repoWithArticle();
+    writeFileSync(join(dirs.appDir, "page.tsx"), `export const metadata = { title: "About | Waypoint" };`);
+
+    const result = auditAll(dirs);
+    expect(result.brandDupes).toHaveLength(1);
+    expect(result.failures.join(" ")).toContain("hard-code the brand");
   });
 
-  it("returns null for an interpolated template literal", () => {
-    expect(readStaticString("`a ${x} b`", 0)).toBeNull();
+  it("leaves the root layout's title.default and template alone", () => {
+    // Section 14 explicitly allows the brand in title.default, title.template
+    // and title.absolute. Only a plain string title feeds the %s slot.
+    const dirs = repoWithArticle();
+    writeFileSync(
+      join(dirs.appDir, "layout.tsx"),
+      [
+        "export const metadata = {",
+        '  title: { default: "Guidance | Waypoint", template: "%s | Waypoint" },',
+        `  description: "${"x".repeat(155)}",`,
+        "};",
+      ].join("\n"),
+    );
+
+    const result = auditAll(dirs);
+    expect(result.brandDupes).toEqual([]);
+    expect(result.resolved).toHaveLength(1); // it did read the file
+    expect(result.failures).toEqual([]);
   });
 
-  it("reads a non-interpolated template literal", () => {
-    expect(readStaticString("`plain`", 0)).toBe("plain");
+  it("does not reach into openGraph titles, where the brand is allowed", () => {
+    const dirs = repoWithArticle();
+    writeFileSync(
+      join(dirs.appDir, "page.tsx"),
+      [
+        "export const metadata = {",
+        '  title: "About Us",',
+        '  openGraph: { title: "About Us | Waypoint Franchise Advisors" },',
+        "};",
+      ].join("\n"),
+    );
+
+    expect(auditAll(dirs).brandDupes).toEqual([]);
   });
 
-  it("returns null when the key is absent", () => {
-    expect(findTopLevelKey('{ title: "x" }'.slice(1), 0, "description")).toBeNull();
+  it("fails a metaTitle it cannot statically read rather than skipping it", () => {
+    const dirs = repoWithArticle();
+    writeFileSync(join(dirs.dataDir, "d.ts"), "export const all = [{ metaTitle: buildTitle(slug) }];");
+
+    const titles = collectDataTitles(dirs.dataDir);
+    expect(titles).toHaveLength(1);
+    expect(titles[0].value).toBeNull();
+
+    const result = auditAll(dirs);
+    expect(result.brandUnreadable).toHaveLength(1);
+    expect(result.failures.join(" ")).toContain("not statically readable");
+  });
+});
+
+// ─── Anti-vacuity: a moved input path must fail, not pass ───────────────────
+
+describe("missing audit inputs fail closed", () => {
+  it("fails when an input directory has moved", () => {
+    const dirs = repoWithArticle();
+    const result = auditAll({ ...dirs, appDir: join(dir, "does-not-exist") });
+    expect(result.failures.join(" ")).toContain("missing");
+  });
+
+  it("fails when the article directory is empty", () => {
+    // Zero articles must read as "extraction is broken", never as "clean".
+    const dirs = repo();
+    const result = auditAll(dirs);
+    expect(result.failures.join(" ")).toContain("found 0 articles");
   });
 });
 

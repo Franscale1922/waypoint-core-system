@@ -34,6 +34,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
+import ts from "typescript";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +63,12 @@ export const TITLE_BUDGET = 60;
 export const BRAND_SHORT = "Waypoint";
 export const SUFFIX = ` | ${BRAND_SHORT}`;
 
+// Whole word, any case. A plain `includes("Waypoint")` was wrong in both
+// directions: `WHY WAYPOINT WORKS` sailed through and got the brand appended a
+// second time, while `Waypointing` was blocked despite not naming the brand.
+const BRAND_RE = new RegExp(`\\b${BRAND_SHORT}\\b`, "i");
+export const hardCodesBrand = (text) => BRAND_RE.test(text);
+
 // Escape hatch: a line containing this token is skipped by the em-dash gate,
 // for the rare legitimately-functional em dash (the literal em dash inside a
 // banned-character detector, or a sanitizer's search pattern). Non-copy code
@@ -73,9 +80,33 @@ export const EMDASH_ALLOW = "emdash-allow";
 // variable) must name itself with this token plus a reason. The gate fails
 // closed without it, so a NEW unparseable page cannot be silently dropped the
 // way layout.tsx was for the life of the previous implementation.
+//
+// The reason is required, not decorative: a bare token would let anyone silence
+// the gate with six characters and no argument, which is how an escape hatch
+// becomes the default. The regex demands "aeo-desc-dynamic:" followed by actual
+// words, so the file has to say what bounds the length.
 export const DESC_DYNAMIC_ALLOW = "aeo-desc-dynamic";
+// The reason must be on the SAME line as the token. `\s*` here would span the
+// newline and match the next line of code, so a bare `aeo-desc-dynamic:` would
+// have satisfied the very requirement this regex exists to impose.
+const DESC_DYNAMIC_RE = /aeo-desc-dynamic:[ \t]*\S+/;
 
-const CODE_EXT = /\.(tsx?|css)$/;
+/**
+ * A waiver counts only when it is written as a comment. Matching raw source text
+ * meant any string that happened to contain the token, including documentation
+ * about the token itself, silently waived an unrelated unbounded description.
+ */
+export function hasDynamicWaiver(src) {
+  return src
+    .split("\n")
+    .some((line) => /^\s*(\/\/|\/\*|\*)/.test(line) && DESC_DYNAMIC_RE.test(line));
+}
+
+// Section 11 covers copy wherever it lives, so this is every text-bearing
+// extension under src/, not just the ones the UI happens to be written in. The
+// previous tsx?|css list silently exempted .mjs, .js, .jsx and .json, and src/
+// contains data files of both kinds today.
+const CODE_EXT = /\.(tsx?|jsx?|mjs|cjs|css|json)$/;
 
 // ─── Em dash detection ──────────────────────────────────────────────────────
 // Section 11 bans em dashes in all public-facing and agent-generated copy. The
@@ -85,23 +116,39 @@ const CODE_EXT = /\.(tsx?|css)$/;
 // live prompt template literal, all passed while the gate printed
 // "PASS Section 11: 0 em dashes". Normalize every rendering form to the
 // character, then count.
+// Case sensitivity here is not fussiness, it is accuracy. Only forms that
+// genuinely RENDER an em dash count. HTML5 named character references are
+// case-sensitive, so `&MDASH;` renders literal text, not a dash. `\U2014` is not
+// a JavaScript escape at all (it renders "U2014"). Flagging either would fail a
+// push over a string that contains no em dash and cannot be fixed by rewording,
+// which is worse than useless in a gate. Numeric escapes DO accept either case
+// on the `x`, so those keep it.
 const EMDASH = String.fromCharCode(0x2014); // avoid a literal em dash in this file
 const EMDASH_ESCAPES = [
-  /&mdash;/gi, // HTML named entity
+  /&mdash;/g, // HTML named entity
   /&#0*8212;/g, // HTML decimal entity
-  /&#x0*2014;/gi, // HTML hex entity
-  /\\u0*2014/gi, // JS escape inside a string or template literal
-  /\\u\{0*2014\}/gi, // ES6 code-point escape
-  /String\.from(?:CharCode|CodePoint)\(\s*(?:0x0*2014|8212)\s*\)/gi,
+  /&#[xX]0*2014;/g, // HTML hex entity
+  /\\u0*2014/g, // JS escape inside a string or template literal
+  /\\u\{0*2014\}/g, // ES6 code-point escape
+  /String\.from(?:CharCode|CodePoint)\(\s*(?:0[xX]0*2014|8212)\s*\)/g,
 ];
+
+// CSS has its own escape syntax: `content: "\2014"` renders an em dash with no
+// `u` and an optional single trailing space that terminates the hex run. It is
+// applied to .css only, because the same characters in TypeScript are not an em
+// dash (`"\2014"` there is a legacy octal escape, and a syntax error in a module).
+const CSS_EMDASH = /\\0*2014[ ]?/g;
 
 /**
  * Count em dashes a reader or model would actually see in this text, counting
- * escaped and entity-encoded forms as the character they render to.
+ * escaped and entity-encoded forms as the character they render to. Pass the
+ * filename so language-specific escapes are only applied to the language that
+ * actually has them.
  */
-export function countRenderedEmDashes(text) {
+export function countRenderedEmDashes(text, fileName = "") {
   let normalized = String(text);
   for (const re of EMDASH_ESCAPES) normalized = normalized.replace(re, EMDASH);
+  if (fileName.endsWith(".css")) normalized = normalized.replace(CSS_EMDASH, EMDASH);
   return normalized.split(EMDASH).length - 1;
 }
 
@@ -122,9 +169,13 @@ export function stripCodeFences(body) {
   const out = [];
   let fence = null;
   for (const line of body.split("\n")) {
-    const m = line.match(/^\s{0,3}(`{3,}|~{3,})/);
+    const m = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/);
     if (fence) {
-      if (m && m[1][0] === fence[0] && m[1].length >= fence.length) fence = null;
+      // A closing fence uses the same character, is at least as long, and carries
+      // no info string. Without that last rule ```` ```not-a-close ```` ended the
+      // block early and the sample headings after it counted as article structure.
+      const closes = m && m[1][0] === fence[0] && m[1].length >= fence.length && m[2].trim() === "";
+      if (closes) fence = null;
       continue; // drop the fenced content and both fence lines
     }
     if (m) {
@@ -170,7 +221,8 @@ export function auditArticle(raw, file) {
   const relCount = Array.isArray(rel) ? rel.length : 0;
 
   const prose = stripCodeFences(body);
-  const h2s = prose.match(/^##\s+.+$/gm) || [];
+  // CommonMark allows up to three leading spaces on an ATX heading.
+  const h2s = prose.match(/^ {0,3}##\s+.+$/gm) || [];
   const h2q = h2s.filter((h) => h.trim().endsWith("?")).length;
 
   const words = body.replace(/[#>*`\-]/g, " ").split(/\s+/).filter(Boolean).length;
@@ -219,169 +271,126 @@ export function auditArticles(dir) {
   return { files, rows };
 }
 
-// ─── Static JS/TS literal resolution ────────────────────────────────────────
-// A real scanner, not a regex. The previous implementation keyed off a two-space
-// indent and a double quote, which happened to match all 31 static pages but
-// could not see anything else, and reported nothing at all rather than reporting
-// that it could not tell.
+// ─── Metadata resolution via the TypeScript AST ─────────────────────────────
+// Parsed, not scanned. A hand-rolled scanner kept leaving fail-open holes that
+// each looked like an edge case and were all the same bug: it could not tell a
+// description it had MEASURED from one it had never seen. A round-1 adversarial
+// review found four in one pass, every one of which let an over-length or
+// unknown description through as "absent":
+//
+//   export const metadata = { ...shared }                  // spread, never seen
+//   export const metadata = { description: "s", ...shared } // spread can overwrite
+//   export const generateMetadata = async () => ({ ... })   // arrow form, never seen
+//   export const metadata = { "description": "..." }        // quoted key, never seen
+//
+// plus two false positives that would have blocked a push over compliant code:
+// a commented-out `// export function generateMetadata()`, and a trailing
+// `/* comment */` after an otherwise static value.
+//
+// The compiler already answers all of this correctly, and `typescript` is
+// already a devDependency here. Escape decoding comes free too: `node.text` on a
+// string literal is the RENDERED value, which is exactly what a search engine
+// measures. This is the same move as parsing front matter with gray-matter
+// rather than regexing it.
 
-/** Skip a string or template literal starting at `i`. Returns { end, interpolated }. */
-function skipLiteral(src, i) {
-  const quote = src[i];
-  let interpolated = false;
-  let j = i + 1;
-  while (j < src.length) {
-    const ch = src[j];
-    if (ch === "\\") {
-      j += 2;
-      continue;
-    }
-    if (quote === "`" && ch === "$" && src[j + 1] === "{") {
-      interpolated = true;
-      let depth = 1;
-      j += 2;
-      while (j < src.length && depth > 0) {
-        if (src[j] === "{") depth++;
-        else if (src[j] === "}") depth--;
-        else if (src[j] === '"' || src[j] === "'" || src[j] === "`") {
-          j = skipLiteral(src, j).end - 1;
-        }
-        j++;
-      }
-      continue;
-    }
-    if (ch === quote) return { end: j + 1, interpolated };
-    j++;
-  }
-  return { end: src.length, interpolated };
+/** Property name as written, for Identifier and quoted-string keys alike. */
+function propertyNameOf(node) {
+  const name = node.name;
+  if (!name) return null;
+  if (ts.isIdentifier(name)) return name.text;
+  if (ts.isStringLiteral(name) || ts.isNoSubstitutionTemplateLiteral(name)) return name.text;
+  return null; // computed key; deliberately unmatchable so it reads as unresolved
 }
 
-/**
- * Read a static string literal at `i`, returning its RENDERED value, or null if
- * the literal is interpolated or unterminated. Escape sequences collapse to one
- * character so the measured length is the length a search engine sees.
- */
-export function readStaticString(src, i) {
-  const quote = src[i];
-  if (quote !== '"' && quote !== "'" && quote !== "`") return null;
-  let value = "";
-  let j = i + 1;
-  while (j < src.length) {
-    const ch = src[j];
-    if (ch === "\\") {
-      const next = src[j + 1];
-      if (next === "u" && src[j + 2] === "{") {
-        const close = src.indexOf("}", j + 3);
-        if (close < 0) return null;
-        value += String.fromCodePoint(parseInt(src.slice(j + 3, close), 16) || 0);
-        j = close + 1;
-        continue;
-      }
-      if (next === "u") {
-        value += String.fromCharCode(parseInt(src.slice(j + 2, j + 6), 16) || 0);
-        j += 6;
-        continue;
-      }
-      if (next === "x") {
-        value += String.fromCharCode(parseInt(src.slice(j + 2, j + 4), 16) || 0);
-        j += 4;
-        continue;
-      }
-      if (next === "\n") {
-        j += 2; // line continuation contributes nothing
-        continue;
-      }
-      const simple = { n: "\n", t: "\t", r: "\r", b: "\b", f: "\f", v: "\v", "0": "\0" };
-      value += simple[next] ?? next;
-      j += 2;
-      continue;
-    }
-    if (quote === "`" && ch === "$" && src[j + 1] === "{") return null; // interpolated
-    if (ch === quote) return value;
-    value += ch;
-    j++;
-  }
+/** The rendered string a literal produces, or null if it is not a static string. */
+function staticStringOf(node) {
+  if (!node) return null;
+  if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
   return null;
 }
 
-/**
- * Find the value position of a TOP-LEVEL `key` inside the object whose interior
- * begins at `start`. Depth-aware, so a `description` nested in openGraph or
- * twitter is correctly ignored without relying on indentation.
- */
-export function findTopLevelKey(src, start, key) {
-  let depth = 0;
-  let i = start;
-  while (i < src.length) {
-    const ch = src[i];
-    if (ch === "/" && src[i + 1] === "/") {
-      const nl = src.indexOf("\n", i);
-      if (nl < 0) break;
-      i = nl + 1;
-      continue;
-    }
-    if (ch === "/" && src[i + 1] === "*") {
-      const close = src.indexOf("*/", i + 2);
-      i = close < 0 ? src.length : close + 2;
-      continue;
-    }
-    if (ch === '"' || ch === "'" || ch === "`") {
-      i = skipLiteral(src, i).end;
-      continue;
-    }
-    if (ch === "{" || ch === "[" || ch === "(") {
-      depth++;
-      i++;
-      continue;
-    }
-    if (ch === "}" || ch === "]" || ch === ")") {
-      if (depth === 0) return null; // closed the metadata object without a hit
-      depth--;
-      i++;
-      continue;
-    }
-    if (depth === 0 && src.startsWith(key, i)) {
-      const before = src[i - 1] ?? " ";
-      const after = src[i + key.length] ?? " ";
-      if (!/[A-Za-z0-9_$]/.test(before) && !/[A-Za-z0-9_$]/.test(after)) {
-        let j = i + key.length;
-        while (j < src.length && /\s/.test(src[j])) j++;
-        if (src[j] === ":") {
-          j++;
-          while (j < src.length && /\s/.test(src[j])) j++;
-          return j;
+function parseSource(src, fileName) {
+  const kind = fileName.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
+  return ts.createSourceFile(fileName, src, ts.ScriptTarget.Latest, true, kind);
+}
+
+const isExported = (node) =>
+  (ts.getCombinedModifierFlags(node) & ts.ModifierFlags.Export) !== 0 ||
+  (node.parent?.parent && (ts.getCombinedModifierFlags(node.parent.parent) & ts.ModifierFlags.Export) !== 0);
+
+/** The initializer of an exported `const <name>`, plus whether the name is exported at all. */
+function findExportedBinding(sourceFile, wanted) {
+  let found = null;
+  for (const stmt of sourceFile.statements) {
+    if (ts.isVariableStatement(stmt)) {
+      const exported = (ts.getCombinedModifierFlags(stmt.declarationList.declarations[0] ?? stmt) & ts.ModifierFlags.Export) !== 0;
+      for (const decl of stmt.declarationList.declarations) {
+        if (ts.isIdentifier(decl.name) && decl.name.text === wanted && exported) {
+          found = { kind: "variable", initializer: decl.initializer };
         }
       }
+    } else if ((ts.isFunctionDeclaration(stmt) || ts.isClassDeclaration(stmt)) && stmt.name?.text === wanted) {
+      if (isExported(stmt)) found = { kind: "function", initializer: null };
+    } else if (ts.isExportDeclaration(stmt) && stmt.exportClause && ts.isNamedExports(stmt.exportClause)) {
+      // `export { metadata }` / `export { x as metadata }`: the value lives
+      // elsewhere in the module or in another file, so it cannot be measured here.
+      for (const spec of stmt.exportClause.elements) {
+        if (spec.name.text === wanted) found = { kind: "reexport", initializer: null };
+      }
     }
-    i++;
   }
-  return null;
+  return found;
 }
 
 /**
  * Classify a route module's meta description into resolved / unresolved / absent.
  *
- * absent      no metadata export at all (admin pages) - not a violation, the
- *             route inherits the layout default.
- * unresolved  a description exists but cannot be measured statically
- *             (generateMetadata, interpolation, a variable). FAILS unless the
- *             file carries DESC_DYNAMIC_ALLOW.
+ * absent      no metadata export at all (admin pages), or metadata that declares
+ *             no description. Not a violation: the route inherits the layout default.
+ * unresolved  a description exists, or could exist, but cannot be measured
+ *             statically. FAILS unless the file carries a DESC_DYNAMIC_ALLOW note.
  * resolved    a static literal; its rendered length is measured.
  */
-export function classifyMetaDescription(src) {
-  const acknowledged = src.includes(DESC_DYNAMIC_ALLOW);
+export function classifyMetaDescription(src, fileName = "route.tsx") {
+  const acknowledged = hasDynamicWaiver(src);
+  const sourceFile = parseSource(src, fileName);
 
-  if (/export\s+(?:async\s+)?function\s+generateMetadata\b/.test(src)) {
+  // generateMetadata in any exported form: function declaration, arrow, or
+  // re-export. Matching source text instead used to fire on a commented-out one.
+  if (findExportedBinding(sourceFile, "generateMetadata")) {
     return { state: "unresolved", reason: "generateMetadata computes it at request time", acknowledged };
   }
 
-  const start = src.match(/export\s+const\s+metadata[^=]*=\s*\{/);
-  if (!start) return { state: "absent", acknowledged };
+  const metadata = findExportedBinding(sourceFile, "metadata");
+  if (!metadata) return { state: "absent", acknowledged };
 
-  const valueAt = findTopLevelKey(src, start.index + start[0].length, "description");
-  if (valueAt === null) return { state: "absent", acknowledged };
+  const init = metadata.initializer;
+  if (!init || !ts.isObjectLiteralExpression(init)) {
+    return { state: "unresolved", reason: "metadata is not an object literal", acknowledged };
+  }
 
-  const value = readStaticString(src, valueAt);
+  // A spread can supply a description, or silently overwrite one declared before
+  // it. Either way the object's real description is not knowable from this file.
+  if (init.properties.some((p) => ts.isSpreadAssignment(p))) {
+    return { state: "unresolved", reason: "metadata spreads another object", acknowledged };
+  }
+
+  // `{ description }` is a real description whose value lives in a variable, and
+  // `{ ["desc" + x]: v }` might be one. Both used to read as "absent", which
+  // exempted the whole route. Anything we cannot rule out has to be unresolved.
+  if (init.properties.some((p) => ts.isShorthandPropertyAssignment(p) && p.name.text === "description")) {
+    return { state: "unresolved", reason: "description is shorthand for a variable", acknowledged };
+  }
+  if (init.properties.some((p) => p.name && ts.isComputedPropertyName(p.name))) {
+    return { state: "unresolved", reason: "metadata has a computed property name", acknowledged };
+  }
+
+  const prop = init.properties.find(
+    (p) => ts.isPropertyAssignment(p) && propertyNameOf(p) === "description",
+  );
+  if (!prop) return { state: "absent", acknowledged };
+
+  const value = staticStringOf(prop.initializer);
   if (value === null) {
     return { state: "unresolved", reason: "description is not a static string literal", acknowledged };
   }
@@ -403,82 +412,93 @@ function walk(dir, acc = []) {
  * layout.tsx is included: filtering to page.tsx alone is why the 168-character
  * site-wide default in src/app/layout.tsx was never measured.
  */
+// Next.js accepts .js/.jsx/.ts/.tsx (and .mjs) for a route module, so matching
+// only .tsx would let a page.jsx carrying a 200-character description through
+// while every anti-vacuity count stayed healthy from the .tsx routes around it.
+const ROUTE_FILE = /(?:^|[\\/])(page|layout)\.(tsx|ts|jsx|js|mjs)$/;
+
 export function collectRouteDescriptions(dir) {
   return walk(dir)
-    .filter((f) => /(?:^|[\\/])(page|layout)\.tsx$/.test(f))
+    .filter((f) => ROUTE_FILE.test(f))
     .sort()
-    .map((f) => ({ f, ...classifyMetaDescription(fs.readFileSync(f, "utf8")) }));
+    .map((f) => ({ f, ...classifyMetaDescription(fs.readFileSync(f, "utf8"), f) }));
 }
 
 /**
- * Blank out `type X = { ... }` and `interface X { ... }` bodies, preserving line
- * numbers. Without this, the TS shape declarations in src/data (`metaDescription:
- * string;`) are indistinguishable from real values and get reported as unreadable
- * -- a false failure that would have blocked every push.
+ * Top-level `title` values in route metadata that are plain strings.
+ *
+ * Only strings are returned, which is exactly the Section 14 scope: a `title`
+ * written as an object is the `default` / `template` / `absolute` form, and
+ * CONTENT-STANDARDS explicitly allows the brand there. openGraph and twitter
+ * titles are nested, so the top-level walk never reaches them.
  */
-export function stripTypeDeclarations(src) {
-  let out = src;
-  const re = /\b(?:type|interface)\s+\w+[^{;]*\{/g;
-  let m;
-  while ((m = re.exec(out)) !== null) {
-    const open = m.index + m[0].length - 1;
-    let depth = 0;
-    let i = open;
-    while (i < out.length) {
-      const ch = out[i];
-      if (ch === '"' || ch === "'" || ch === "`") {
-        i = skipLiteral(out, i).end;
-        continue;
-      }
-      if (ch === "{") depth++;
-      else if (ch === "}") {
-        depth--;
-        if (depth === 0) break;
-      }
-      i++;
+export function collectRouteTitles(dir) {
+  const out = [];
+  for (const f of walk(dir).filter((n) => ROUTE_FILE.test(n)).sort()) {
+    const src = fs.readFileSync(f, "utf8");
+    const sourceFile = parseSource(src, f);
+    const metadata = findExportedBinding(sourceFile, "metadata");
+    const init = metadata?.initializer;
+    if (!init || !ts.isObjectLiteralExpression(init)) continue;
+    for (const p of init.properties) {
+      if (!ts.isPropertyAssignment(p) || propertyNameOf(p) !== "title") continue;
+      const value = staticStringOf(p.initializer);
+      if (value === null) continue; // object form: default/template/absolute
+      const { line } = sourceFile.getLineAndCharacterOfPosition(p.getStart(sourceFile));
+      out.push({ f, line: line + 1, value });
     }
-    const body = out.slice(open, i);
-    // Keep newlines so reported line numbers stay accurate.
-    out = out.slice(0, open) + body.replace(/[^\n]/g, " ") + out.slice(i);
-    re.lastIndex = i;
   }
   return out;
 }
 
 /**
- * metaDescription values in the data layer. These feed industries/[slug] and
- * franchise-financing/[method] through generateMetadata, so they are invisible
- * to any scan of src/app and were never length-checked.
+ * Collect every value assigned to `key` across the data layer, with its line.
+ * Walking the AST means a TypeScript shape declaration (`metaDescription: string;`
+ * in a type alias) is a PropertySignature, not a PropertyAssignment, and is
+ * skipped by construction rather than by blanking type bodies first.
+ * `value` is null when the assignment is not a static string, which the callers
+ * treat as a failure rather than as a pass.
  */
-export function collectDataDescriptions(dir) {
+export function collectDataValues(dir, key) {
   if (!fs.existsSync(dir)) return [];
   const out = [];
-  for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".ts")).sort()) {
-    const full = path.join(dir, f);
-    const src = stripTypeDeclarations(fs.readFileSync(full, "utf8"));
-    const re = /\bmetaDescription\s*:\s*/g;
-    let m;
-    while ((m = re.exec(src)) !== null) {
-      const at = m.index + m[0].length;
-      const value = readStaticString(src, at);
-      const line = src.slice(0, m.index).split("\n").length;
-      out.push({ f: path.join(path.basename(dir), f), line, len: value === null ? null : value.length });
-    }
+  for (const name of fs.readdirSync(dir).filter((n) => n.endsWith(".ts")).sort()) {
+    const full = path.join(dir, name);
+    const src = fs.readFileSync(full, "utf8");
+    const sourceFile = parseSource(src, full);
+    const visit = (node) => {
+      // Shorthand (`{ metaDescription }`) is a real assignment whose value lives
+      // in a variable. It is recorded with a null value so it reads as unreadable
+      // and fails, rather than being skipped as if the key were not there.
+      const isMatch =
+        (ts.isPropertyAssignment(node) && propertyNameOf(node) === key) ||
+        (ts.isShorthandPropertyAssignment(node) && node.name.text === key);
+      if (isMatch) {
+        const { line } = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile));
+        out.push({
+          f: path.join(path.basename(dir), name),
+          line: line + 1,
+          value: ts.isPropertyAssignment(node) ? staticStringOf(node.initializer) : null,
+        });
+      }
+      ts.forEachChild(node, visit);
+    };
+    ts.forEachChild(sourceFile, visit);
   }
   return out;
+}
+
+/** metaDescription values in the data layer, which feed the dynamic route metadata. */
+export function collectDataDescriptions(dir) {
+  return collectDataValues(dir, "metaDescription").map((d) => ({
+    ...d,
+    len: d.value === null ? null : d.value.length,
+  }));
 }
 
 /** metaTitle values in the data layer, for the brand gate. */
 export function collectDataTitles(dir) {
-  if (!fs.existsSync(dir)) return [];
-  const out = [];
-  for (const f of fs.readdirSync(dir).filter((n) => n.endsWith(".ts")).sort()) {
-    const src = fs.readFileSync(path.join(dir, f), "utf8");
-    src.split("\n").forEach((line, i) => {
-      if (/metaTitle:/.test(line)) out.push({ f: path.join(path.basename(dir), f), line: i + 1, text: line });
-    });
-  }
-  return out;
+  return collectDataValues(dir, "metaTitle");
 }
 
 /** Em dashes in code, counting rendered forms, honouring the per-line opt-out. */
@@ -492,7 +512,7 @@ export function scanCodeEmDashes(dirs) {
         .readFileSync(f, "utf8")
         .split("\n")
         .filter((line) => !line.includes(EMDASH_ALLOW))
-        .reduce((s, line) => s + countRenderedEmDashes(line), 0);
+        .reduce((s, line) => s + countRenderedEmDashes(line, f), 0);
       return { f, count };
     })
     .filter((r) => r.count > 0)
@@ -512,8 +532,28 @@ export function auditAll({
   dataDir = DEFAULT_DATA_DIR,
   codeDirs = DEFAULT_CODE_DIRS,
 } = {}) {
-  const { files, rows } = auditArticles(articlesDir);
   const failures = [];
+
+  // Anti-vacuity, the lesson verify-links.mjs paid for: an input path that has
+  // moved makes every check below scan nothing and report clean. collectDataDescriptions
+  // and the walkers all guard with existsSync, so a renamed src/app would turn the
+  // description gate into a no-op that still printed PASS. A missing input is a
+  // failure, never an empty result.
+  const missingInputs = [
+    ["content/articles", articlesDir],
+    ["src/app", appDir],
+    ["src/data", dataDir],
+    ...codeDirs.map((d) => ["code dir", d]),
+  ].filter(([, p]) => !fs.existsSync(p));
+
+  const { files, rows } = fs.existsSync(articlesDir) ? auditArticles(articlesDir) : { files: [], rows: [] };
+
+  if (missingInputs.length) {
+    failures.push(`${missingInputs.length} audit input path(s) missing: ${missingInputs.map(([l]) => l).join(", ")}`);
+  }
+  if (fs.existsSync(articlesDir) && files.length === 0) {
+    failures.push(`found 0 articles in ${articlesDir}; extraction is broken, not the content`);
+  }
 
   const parseErrors = rows.filter((r) => r.parseError);
   const malformedFaqs = rows.filter((r) => r.faqsMalformed);
@@ -543,7 +583,7 @@ export function auditAll({
 
   const brandDupes = [];
   const longTitles = [];
-  const hardCodesBrand = (text) => text.includes(BRAND_SHORT);
+  const brandUnreadable = [];
   for (const r of rows) {
     if (r.title === null) continue;
     if (hardCodesBrand(r.title)) brandDupes.push(`content/articles/${r.f}.md (frontmatter title)`);
@@ -551,7 +591,17 @@ export function auditAll({
     if (rendered > TITLE_BUDGET) longTitles.push({ file: `content/articles/${r.f}.md`, rendered, bare: r.title });
   }
   for (const t of collectDataTitles(dataDir)) {
-    if (hardCodesBrand(t.text)) brandDupes.push(`${t.f}:${t.line} (metaTitle)`);
+    // A metaTitle that is not a static string cannot be brand-checked. Skipping
+    // it silently is how a computed title would evade Section 14 entirely.
+    if (t.value === null) brandUnreadable.push(`${t.f}:${t.line} (metaTitle)`);
+    else if (hardCodesBrand(t.value)) brandDupes.push(`${t.f}:${t.line} (metaTitle)`);
+  }
+  // Page-level metadata titles feed the same template. The original scope note
+  // argued they are caught in review because they show up in a page diff; that
+  // is a weaker guarantee than a check, and the AST can now tell a plain string
+  // title (in scope) from the default/template/absolute object form (allowed).
+  for (const t of collectRouteTitles(appDir)) {
+    if (hardCodesBrand(t.value)) brandDupes.push(`${path.relative(REPO_ROOT, t.f)}:${t.line} (metadata title)`);
   }
   longTitles.sort((a, b) => b.rendered - a.rendered);
 
@@ -568,6 +618,7 @@ export function auditAll({
   if (totalCodeEmdash || articleEmdash) failures.push(`${totalCodeEmdash + articleEmdash} em dash(es)`);
   if (asOfPlaceholders.length) failures.push(`${asOfPlaceholders.length} unfilled "as of [year]" placeholder(s)`);
   if (brandDupes.length) failures.push(`${brandDupes.length} title source(s) hard-code the brand`);
+  if (brandUnreadable.length) failures.push(`${brandUnreadable.length} metaTitle(s) not statically readable`);
 
   return {
     files,
@@ -591,6 +642,7 @@ export function auditAll({
     articleEmdash,
     asOfPlaceholders,
     brandDupes,
+    brandUnreadable,
     longTitles,
     failures,
   };
@@ -693,6 +745,10 @@ function main() {
 
   console.log(`\nBrand duplication in template-fed titles (banned): ${a.brandDupes.length}`);
   for (const d of a.brandDupes) console.log(`  ${d}`);
+  if (a.brandUnreadable.length) {
+    console.log(`  metaTitle(s) not statically readable, so not brand-checkable: ${a.brandUnreadable.length}`);
+    for (const d of a.brandUnreadable) console.log(`    ${d}`);
+  }
 
   if (a.failures.length) {
     console.log(`\nFAIL: ${a.failures.join("; ")}.`);
