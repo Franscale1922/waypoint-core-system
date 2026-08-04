@@ -1,13 +1,118 @@
 export const SITE_URL = "https://www.waypointfranchise.com";
 
 /**
+ * Match our scheme + host at the START of a URL, and ONLY when the authority
+ * ends right there: the lookahead requires the next character to be a path,
+ * query or fragment delimiter, or end-of-string.
+ *
+ * That bound is the whole point. Without it the pattern matches any host merely
+ * PREFIXED by ours, so three classes of lookalike were rewritten into something
+ * that reads like the canonical site (schemes omitted below on purpose, see the
+ * note after the list):
+ *
+ *   waypointfranchise.com.evil.example/a  ->  www.waypointfranchise.com.evil.example/a
+ *   waypointfranchise.com@evil.example/a  ->  www.waypointfranchise.com@evil.example/a  (host is STILL evil.example)
+ *   waypointfranchise.competitor.com/x    ->  www.waypointfranchise.competitor.com/x
+ *
+ * Excluding ":" also declines a port, which is not the canonical host either.
+ *
+ * Those examples carry no "https://" prefix because the non-www guard in
+ * scripts/verify-schema.mjs scans source TEXT and cannot tell an illustration
+ * from a real URL, so spelling them out in full would fail the build. The live
+ * cases are covered properly in tests/unit/structured-data.test.ts, which the
+ * guard does not scan.
+ */
+const SAME_SITE_PREFIX = /^https?:\/\/(?:www\.)?waypointfranchise\.com(?=[/?#]|$)/i;
+const CANONICAL_HOSTS = ["waypointfranchise.com", "www.waypointfranchise.com"];
+
+/**
  * Normalize any same-site URL to the canonical www host. The bare apex
  * (waypointfranchise.com) 301-redirects to www, so JSON-LD must always use www;
  * otherwise @id references and `url`/`item` values point at a redirecting host
  * and don't deduplicate against the rest of the entity graph.
+ *
+ * Fail-closed: anything that is not unambiguously ours is returned untouched.
+ * Callers currently pass internal constants only, so this is hardening rather
+ * than a reachable bug, but a rewritten lookalike would be emitted as a
+ * first-party URL in JSON-LD, which is worth making structurally impossible.
  */
 export function toWww(url: string): string {
-  return url.replace(/^https?:\/\/(www\.)?waypointfranchise\.com/i, SITE_URL);
+  const match = SAME_SITE_PREFIX.exec(url);
+  if (!match) return url;
+  // Second gate: make the WHATWG parser agree the host is ours, so a string the
+  // regex reads one way and a browser or crawler reads another cannot slip
+  // through. Belt and braces against exotic Unicode/IDN forms.
+  try {
+    if (!CANONICAL_HOSTS.includes(new URL(url).hostname.toLowerCase())) return url;
+  } catch {
+    return url;
+  }
+  // Rewrite ONLY the matched scheme+host prefix, leaving the remainder of the
+  // string byte-identical. Rebuilding from the parsed URL would append a
+  // trailing slash to the bare origin, which would change the homepage node's
+  // `url` and break the `canonical === SITE_URL` test in fragmentId() below.
+  return SITE_URL + url.slice(match[0].length);
+}
+
+/**
+ * Accept a schema.org Date/DateTime, rejecting anything that would ship as
+ * invalid structured data. Two gates, because neither alone is enough:
+ *
+ *  - Shape, because Date.parse is far more permissive than ISO 8601:
+ *    "2026-8-3", "August 3, 2026" and even "2026" all parse happily.
+ *  - Calendar round-trip for the date-only form, because JS does NOT reject an
+ *    out-of-range day. `new Date("2026-02-30")` silently becomes March 2, and
+ *    "2026-02-29" in a non-leap year becomes March 1.
+ *
+ * The round-trip is applied only to the date-only form: a datetime carrying a
+ * UTC offset legitimately lands on a different UTC calendar day.
+ */
+const ISO_DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
+const ISO_DATE_TIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
+
+function isValidSchemaDate(value: string): boolean {
+  const dateOnly = ISO_DATE_ONLY.exec(value);
+  if (dateOnly) {
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return false;
+    // A bare YYYY-MM-DD parses as UTC midnight, so the UTC components must
+    // round-trip exactly. They do not when the day rolled over.
+    return (
+      parsed.getUTCFullYear() === Number(dateOnly[1]) &&
+      parsed.getUTCMonth() + 1 === Number(dateOnly[2]) &&
+      parsed.getUTCDate() === Number(dateOnly[3])
+    );
+  }
+  if (ISO_DATE_TIME.test(value)) return !Number.isNaN(new Date(value).getTime());
+  return false;
+}
+
+/**
+ * Validate a date destined for JSON-LD. Returns the value to emit, or undefined
+ * to omit the property.
+ *
+ * Omit-and-warn rather than throw ON PURPOSE: one caller feeds this straight
+ * from markdown frontmatter (resources/[slug] passes `meta.updatedAt`, which
+ * nothing validates), so throwing would take a live article page down over a
+ * typo. Dropping the property keeps the markup valid and the page up, and the
+ * warning makes the bad value loud in the build log.
+ */
+function validSchemaDate(value: unknown, pageUrl: string): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  // gray-matter turns an UNQUOTED frontmatter date into a Date object, so this
+  // can arrive as a Date despite the declared string type (articles.ts casts
+  // with `as string`). Normalize it rather than dropping a legitimate date.
+  if (value instanceof Date) {
+    if (!Number.isNaN(value.getTime())) return value.toISOString();
+  } else if (typeof value === "string" && isValidSchemaDate(value)) {
+    return value;
+  }
+  console.warn(
+    `[structured-data] Dropped invalid dateModified ${JSON.stringify(String(value))} for ` +
+      `${pageUrl}. Expected ISO 8601 (YYYY-MM-DD or a full datetime). Emitting it would ` +
+      `ship invalid structured data, so the property was omitted.`,
+  );
+  return undefined;
 }
 
 export const localBusinessSchema = {
@@ -365,6 +470,7 @@ export function webPageSchema({
   dateModified?: string;
 }) {
   const canonical = toWww(url);
+  const validDateModified = validSchemaDate(dateModified, canonical);
   return {
     "@type": "WebPage",
     "@id": fragmentId(canonical, "#webpage"),
@@ -373,7 +479,7 @@ export function webPageSchema({
     description,
     isPartOf: { "@id": `${SITE_URL}/#website` },
     inLanguage: "en-US",
-    ...(dateModified ? { dateModified } : {}),
+    ...(validDateModified ? { dateModified: validDateModified } : {}),
     ...(primaryImage ? { primaryImageOfPage: toWww(primaryImage) } : {}),
     ...(mainEntityId ? { mainEntity: { "@id": mainEntityId } } : {}),
     ...(breadcrumb ? { breadcrumb } : {}),
