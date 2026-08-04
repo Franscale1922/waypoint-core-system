@@ -25,6 +25,11 @@
  *   3. An ambiguous failure of the ref PATCH, one where GitHub may have applied the update and
  *      lost the reply, is resolved by re-reading the ref rather than assumed to be a failure.
  *
+ * Two things are checked, because a commit is two decisions: WHAT is written (the serialized bytes,
+ * whose dates are stamped and then validated) and WHERE it is written (the slug, which becomes the
+ * path of a tree entry and is validated against SLUG_PATTERN, bound to the frontmatter slug, and
+ * checked for collisions across the batch).
+ *
  * Required env vars:
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
  *   GITHUB_REPO_OWNER: e.g. "Franscale1922"
@@ -76,6 +81,119 @@ export interface CommitOutcome {
   /** The commit carrying this batch: the new one, the one found, or HEAD. */
   commitSha: string | null;
   articles: number;
+}
+
+// ─── Slug: the destination path, not a label ─────────────────────────────────
+
+/**
+ * The one shape an article slug may take.
+ *
+ * `commitRefreshedArticles` turns a slug into the `path` of a tree entry, and that tree is
+ * committed by PATCHing the branch ref, which defaults to `main`. So the slug is not a label on
+ * this path: it is the choice of which file in the repository the run overwrites. Nothing
+ * downstream re-checks it, because by the time it is downstream it is already a path in a tree
+ * GitHub has accepted.
+ *
+ * Anchored, lowercase, hyphen-separated, which excludes exactly the characters that would let a
+ * slug mean something other than one article: `/` and `..` (write anywhere in the repo, including
+ * .github/workflows/), `.` (a different extension), and whitespace or control characters. Single
+ * interior hyphens only, so the pattern also matches how every existing slug is actually written.
+ *
+ * Confirmed against all 45 articles in content/articles/ before being enforced, so the first
+ * automated refresh cannot fail on an article that was always fine.
+ * tests/unit/write-path-slug.test.ts re-checks the corpus on every run, which is what keeps the
+ * format and the articles from drifting apart as articles are added.
+ *
+ * This is defense in depth, not a live hole. The slug reaching this file today is the basename of
+ * an article already committed to this repository, and is never model output: src/inngest/
+ * functions.ts derives it from the source file's own path and discards the model's slug before
+ * building the payload. The check is here anyway because that provenance is a property of one
+ * caller, and this function is exported.
+ */
+export const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * Upper bound on slug length, so a slug cannot be used to build a pathological tree entry. The
+ * longest article slug today is 59 characters, so this leaves real headroom for normal titles.
+ */
+export const SLUG_MAX_LENGTH = 80;
+
+const ARTICLES_DIR = "content/articles";
+
+/**
+ * The single place a slug becomes a destination path, so the duplicate check below and the tree
+ * entry it is protecting cannot drift apart.
+ */
+function articlePath(slug: string): string {
+  return `${ARTICLES_DIR}/${slug}.md`;
+}
+
+/** Quote a rejected value for an error message, capped so a hostile value cannot flood the log. */
+function show(value: string): string {
+  return JSON.stringify(value.length > 120 ? `${value.slice(0, 120)}[truncated]` : value);
+}
+
+function slugFormatErrors(value: unknown, field: string): string[] {
+  if (typeof value !== "string") {
+    return [
+      `automated content refresh: ${field} must be a string, got ` +
+        `${value === null ? "null" : typeof value}.`,
+    ];
+  }
+  if (value.length > SLUG_MAX_LENGTH) {
+    return [
+      `automated content refresh: ${field} is ${value.length} characters, over the ` +
+        `${SLUG_MAX_LENGTH}-character limit: ${show(value)}`,
+    ];
+  }
+  if (!SLUG_PATTERN.test(value)) {
+    return [
+      `automated content refresh: ${field} is not a valid article slug: ${show(value)}. ` +
+        `Expected lowercase letters, digits and single interior hyphens ` +
+        `(${SLUG_PATTERN.source}). The slug becomes the committed file path, so any other ` +
+        `character could write outside ${ARTICLES_DIR}/.`,
+    ];
+  }
+  return [];
+}
+
+/**
+ * Bind the file that gets overwritten to the article that is being published.
+ *
+ * Two different slugs travel in one payload and they are used for two different things: the
+ * payload slug picks the file to overwrite, and the frontmatter slug is what the site routes on
+ * once that file is built. Nothing before this made them agree, so a payload could have replaced
+ * one article's file with another article's content, leaving the original stale and the new copy
+ * unreachable at its own URL.
+ *
+ * This check is only worth anything while the two values have INDEPENDENT origins. The refresh
+ * derives the payload slug from the source file's own path for exactly that reason: taking it from
+ * frontmatter instead, as `getAllArticles` does for its own `slug` field, would have this comparing
+ * a value against itself and agreeing every time. If a caller is ever added that populates both
+ * from one source, this stops being a check and becomes decoration.
+ *
+ * Note the consequence for authoring: an article whose frontmatter carries no `slug:` reaches this
+ * check as `undefined` and is dropped from the refresh rather than committed to a guessed path.
+ * All 45 articles currently carry one, and the corpus test asserts it stays that way.
+ */
+function slugErrors(article: ArticleCommitPayload): string[] {
+  const formatProblems = [
+    ...slugFormatErrors(article.slug, "payload slug"),
+    ...slugFormatErrors(article.frontmatter?.slug, "frontmatter slug"),
+  ];
+  // A mismatch message stacked on top of a malformed value is noise: the malformed value is the
+  // problem to fix, and the two cannot be meaningfully compared until it is.
+  if (formatProblems.length > 0) return formatProblems;
+
+  if (article.slug !== article.frontmatter.slug) {
+    return [
+      `automated content refresh: payload slug ${show(article.slug)} does not match the ` +
+        `frontmatter slug ${show(article.frontmatter.slug)}. The payload slug chooses the file ` +
+        `that is overwritten and the frontmatter slug is what the site routes on, so committing ` +
+        `a mismatch would replace one article's file with another article's content.`,
+    ];
+  }
+  return [];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -300,7 +418,8 @@ export function serializeArticle(
 /**
  * Serialize an article and validate the result against the same rules the pre-push hook and CI
  * apply to hand-written articles: the date rules in src/lib/frontmatterDates.mjs and the
- * required-field rules in src/lib/frontmatterFields.mjs.
+ * required-field rules in src/lib/frontmatterFields.mjs. Plus the one rule that is about neither
+ * the bytes nor the fields: the SLUG, which decides which file those bytes replace.
  *
  * Returns the serialized content alongside the errors so callers reuse it rather than serializing a
  * second time.
@@ -323,6 +442,13 @@ export function serializeArticle(
  * Both are checked against the SERIALIZED BYTES rather than the frontmatter object, because the
  * bytes are what gets committed and what production later parses. Validating the object would
  * check something adjacent to the artifact instead of the artifact.
+ *
+ * The SLUG half is the one check that is not about the bytes at all. Those two halves both ask
+ * whether this article is fit to publish; the slug asks which file publishing it overwrites, which
+ * no amount of inspecting the content can answer. It is a backstop like the dates rather than
+ * load-bearing like the fields, for the same reason: the refresh derives the slug from a file
+ * already committed to this repository, so a malformed one cannot arrive on the live path. It is
+ * checked because this function is exported and its result is a path in a tree.
  */
 export function validateArticlePayload(
   article: ArticleCommitPayload,
@@ -344,12 +470,21 @@ export function validateArticlePayload(
   // is precisely the batch-wide failure the caller drops individual articles to avoid. So a
   // serialization failure is reported as an article-level error like any other, and that article is
   // skipped.
+  // The destination, checked independently of the bytes and reported alongside them. An article can
+  // be perfectly well-formed and still name the wrong file, and no inspection of its content would
+  // notice.
+  const slugProblems = slugErrors(article);
+
   let content: string;
   try {
     content = serializeArticle(article.frontmatter, article.body, today);
   } catch (error) {
     return {
+      // Slug problems survive this path rather than being lost to it: a payload can easily be both
+      // unserializable and pointed at the wrong file, and reporting one problem per article per run
+      // would take a month to surface the second.
       errors: [
+        ...slugProblems,
         `${label}: the frontmatter could not be serialized to YAML at all ` +
           `(${String(error instanceof Error ? error.message : error).split("\n")[0]}). A key ` +
           `whose value is explicitly undefined does this. The article cannot be written and is ` +
@@ -368,7 +503,7 @@ export function validateArticlePayload(
     faqEntryFilter: (entries) => validFaqEntries(entries as { q: string; a: string }[], label),
   });
 
-  return { errors: [...dateErrors, ...fieldErrors], content };
+  return { errors: [...slugProblems, ...dateErrors, ...fieldErrors], content };
 }
 
 // ─── Batch identity ──────────────────────────────────────────────────────────
@@ -534,19 +669,48 @@ export async function commitRefreshedArticles(
   const today = utcDayString();
   const prepared = articles.map((article) => ({
     article,
+    path: articlePath(article.slug),
     ...validateArticlePayload(article, { today }),
   }));
 
   const problems = prepared.flatMap((entry) => entry.errors);
   if (problems.length > 0) {
     throw new Error(
-      `Refusing to commit ${problems.length} frontmatter problem(s) from the automated ` +
-        `content refresh. Nothing was written: no blobs were created and ${config.branch} was not ` +
-        `advanced.\n` +
+      // Not "frontmatter problem(s)": the slug is not a frontmatter field, and a run refused for a
+      // bad destination should not be described as having bad frontmatter.
+      `Refusing to commit ${problems.length} problem(s) from the automated content refresh. ` +
+        `Nothing was written: no blobs were created and ${config.branch} was not advanced.\n` +
         problems.map((problem) => `  - ${problem}`).join("\n"),
     );
   }
 
+  // ── 0b. No two payloads may claim the same file ──────────────────────────
+  // This is a property of the batch, not of any one payload, so it cannot live in the per-article
+  // validation above. A tree cannot carry two entries for one path: GitHub keeps whichever is
+  // listed last and discards the other silently, with a successful commit and no warning anywhere.
+  // The batch would look like it refreshed N articles while one of them was thrown away.
+  //
+  // Because every slug is now validated as lowercase, exact string comparison is the whole check:
+  // there is no case-folding collision left for GitHub's filesystem to resolve differently.
+  const byPath = new Map<string, string[]>();
+  for (const { path, article } of prepared) {
+    byPath.set(path, [...(byPath.get(path) ?? []), article.slug]);
+  }
+  const collisions = [...byPath.entries()].filter(([, slugs]) => slugs.length > 1);
+  if (collisions.length > 0) {
+    throw new Error(
+      `Refusing to commit ${collisions.length} duplicate destination(s) from the automated ` +
+        `content refresh: two payloads resolve to the same file, and a commit would keep only ` +
+        `one of them. Nothing was written: no blobs were created and ${config.branch} was not ` +
+        `advanced.\n` +
+        collisions
+          .map(([path, slugs]) => `  - ${path} claimed by ${slugs.length} payloads`)
+          .join("\n"),
+    );
+  }
+
+  // Computed only once the batch is known to name distinct files, so the identity of a batch is
+  // never derived from one that would have been refused anyway.
   const batchId = computeBatchId(
     prepared.map(({ article, content }) => ({ slug: article.slug, content }))
   );
@@ -590,9 +754,11 @@ export async function commitRefreshedArticles(
 
   // ── 3. Create blobs for each updated article ─────────────────────────────
   // Uses the content validated in step 0, never a re-serialization of it: serializing twice would
-  // mean the bytes that were checked are not necessarily the bytes that get committed.
+  // mean the bytes that were checked are not necessarily the bytes that get committed. Same
+  // reasoning for `path`, which is the one built and checked for collisions in step 0b rather than
+  // a second interpolation of the slug.
   const blobs = await Promise.all(
-    prepared.map(async ({ article: { slug }, content }) => {
+    prepared.map(async ({ path, content }) => {
       const encoded = Buffer.from(content, "utf-8").toString("base64");
 
       const blob = await githubRequest<{ sha: string }>(
@@ -605,7 +771,7 @@ export async function commitRefreshedArticles(
       );
 
       return {
-        path: `content/articles/${slug}.md`,
+        path,
         mode: "100644" as const,
         type: "blob" as const,
         sha: blob.sha,

@@ -41,11 +41,18 @@ const BODY = "Refreshed body copy.\n";
 /** Exactly 160 characters: the last excerpt length that is allowed through. */
 const EXCERPT_AT_LIMIT = "x".repeat(EXCERPT_MAX);
 
-/** A valid article as the pipeline would hand it to the commit boundary. */
+/**
+ * A valid article as the pipeline would hand it to the commit boundary.
+ *
+ * The slug is "alpha" to match the payloads below rather than to describe the article: the commit
+ * boundary requires the payload slug and the frontmatter slug to agree
+ * (tests/unit/write-path-slug.test.ts), so a fixture whose two slugs disagreed would fail the slug
+ * guard before any field rule was reached. Use `at()` for a payload under a different name.
+ */
 function validFrontmatter(extra: Record<string, unknown> = {}) {
   return {
     title: "How Franchise Financing Works",
-    slug: "how-franchise-financing-works",
+    slug: "alpha",
     date: "2026-01-15",
     category: "Getting Started",
     tier: 1,
@@ -70,6 +77,19 @@ function withoutField(field: string) {
   delete fm[field];
   return fm as never;
 }
+
+/**
+ * A payload published under `slug`, with the frontmatter re-pointed to match.
+ *
+ * The commit boundary refuses a payload whose two slugs disagree, so naming an article "beta" means
+ * saying so in both places. Without this the fixture would fail the slug guard rather than the
+ * field rule it was written to exercise.
+ */
+const at = (slug: string, frontmatter: unknown) => ({
+  slug,
+  frontmatter: { ...(frontmatter as object), slug } as never,
+  body: BODY,
+});
 
 /** Run the shared rules over the bytes matter.stringify really emits, never a hand-written string. */
 const check = (fm: Record<string, unknown>) =>
@@ -490,7 +510,7 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
     await expect(
       commitRefreshedArticles([
         { slug: "alpha", frontmatter: validFrontmatter(), body: BODY },
-        { slug: "beta", frontmatter: makeFrontmatter(), body: BODY },
+        at("beta", makeFrontmatter()),
       ]),
     ).rejects.toThrow(/Refusing to commit/);
 
@@ -502,7 +522,7 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
   it("names the offending article, so the failure is traceable to a slug", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
     await expect(
-      commitRefreshedArticles([{ slug: "beta", frontmatter: withoutField("faqs"), body: BODY }]),
+      commitRefreshedArticles([at("beta", withoutField("faqs"))]),
     ).rejects.toThrow(/content\/articles\/beta\.md/);
   });
 
