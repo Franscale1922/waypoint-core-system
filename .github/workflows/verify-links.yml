@@ -32,12 +32,17 @@ jobs:
         run: npx vitest run --project unit tests/unit/aeo-audit.test.ts
       - name: Verify Links
         run: node scripts/verify-links.mjs
-      # Frontmatter dates. This job is the ONLY gate that sees them on some
-      # commits: src/lib/githubArticleCommit.ts writes articles straight through
-      # the GitHub API, so those commits never touch .githooks/pre-push. Same
-      # narrow test selection as above, for the same brand-map-registry reason.
+      # Frontmatter dates. src/lib/githubArticleCommit.ts writes articles straight
+      # through the GitHub API, so those commits never touch .githooks/pre-push
+      # and this job used to be the only thing that saw them, after the fact. That
+      # path now stamps both dates and validates its own serialized output before
+      # it advances the ref, so the two suites below cover the two write paths:
+      # verify-dates for the corpus on disk, write-path-dates for the bot commits.
+      # Same narrow test selection as above, for the same brand-map-registry reason.
       - name: Verify Dates (unit tests)
         run: npx vitest run --project unit tests/unit/verify-dates.test.ts
+      - name: Verify Dates, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-dates.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

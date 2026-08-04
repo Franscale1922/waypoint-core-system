@@ -7,14 +7,16 @@ import { spawnSync } from "node:child_process";
 import matter from "gray-matter";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+// The corpus walk and the CLI live in the script; the rules themselves live in the shared module,
+// because the AI content-refresh write path applies the same ones without ever running this script.
+// See tests/unit/write-path-dates.test.ts for that side.
+import { verifyArticleDates, DEFAULT_ARTICLES_DIR } from "../../scripts/verify-dates.mjs";
 import {
-  verifyArticleDates,
   extractFrontmatterBlock,
   topLevelValues,
   parseScalar,
   isRealCalendarDay,
-  DEFAULT_ARTICLES_DIR,
-} from "../../scripts/verify-dates.mjs";
+} from "@/lib/frontmatterDates.mjs";
 
 /**
  * verify-dates.mjs guards a corruption that destroys its own evidence.

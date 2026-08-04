@@ -480,8 +480,22 @@ Once the rollover has happened the authored value is gone, and a rolled-over dat
 
 A malformed date costs more than it looks: it removes the article's publication metadata from search results, and it sorts as `NaN` in the resources listing.
 
+### No future dates, and no scheduled publishing
+
+A date may be at most **one day ahead of today**, and that one day exists only to absorb the timezone gap: dates are stamped in UTC while articles are written in Mountain time, so an evening edit on the 4th is already the 5th in UTC. Anything further ahead is rejected.
+
+- ❌ `updatedAt: "9999-12-31"` — real day, valid YAML, and still wrong
+
+This site does not schedule or future-date publishing, and the rule assumes it never will. A future date reaches the sitemap as a `lastModified` for a day that has not happened, and the sitemap reads `updatedAt ?? date` directly rather than through the structured-data validator, so nothing downstream catches it. If scheduled publishing is ever wanted, this rule is what has to change first.
+
+`updatedAt` must also not be **earlier** than `date`. Both can be real days and still be in an impossible order, which ships a `dateModified` preceding `datePublished` and backdates the page's freshness.
+
+### Machine-written articles
+
+The monthly AI content refresh does not get to author either date. `serializeArticle` in `src/lib/githubArticleCommit.ts` stamps both to today, and the commit is validated against every rule in this section before it is written. Those commits reach `main` through the GitHub API without touching local git, so the pre-push hook cannot see them — the guard at that boundary is what covers them instead.
+
 ### Verification
 
-The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, or not a real calendar day. The same check runs in CI and in `npm test`. To check manually:
+The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, not a real calendar day, out of order, or in the future. The same check runs in CI and in `npm test`. To check manually:
 
 `npm run verify-dates`

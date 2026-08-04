@@ -1368,7 +1368,7 @@ import {
     passesComplianceCheck,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
-import { commitRefreshedArticles, ArticleCommitPayload } from "@/lib/githubArticleCommit";
+import { commitRefreshedArticles, validateArticlePayload, ArticleCommitPayload } from "@/lib/githubArticleCommit";
 
 const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 
@@ -1443,6 +1443,26 @@ export const contentRefreshFunction = inngest.createFunction(
                     return {
                         success: false as const,
                         reason: `Compliance violations found: ${violations.join(", ")}`,
+                        frontmatter: null,
+                        body: null,
+                    };
+                }
+
+                // Frontmatter dates, checked against the exact bytes the commit would write.
+                // commitRefreshedArticles refuses the WHOLE batch if anything invalid reaches it,
+                // which is the right behaviour at the write boundary and the wrong one here: a
+                // single bad article would take the month's other refreshes down with it, and the
+                // summary email below would never send. So the article is dropped instead, the same
+                // way a compliance violation is, and it shows up under "Failed" in that email.
+                const dateErrors = validateArticlePayload({
+                    slug: article.slug,
+                    frontmatter: newFrontmatter,
+                    body: newBody,
+                }).errors;
+                if (dateErrors.length > 0) {
+                    return {
+                        success: false as const,
+                        reason: `Invalid frontmatter dates: ${dateErrors.join(" | ")}`,
                         frontmatter: null,
                         body: null,
                     };
