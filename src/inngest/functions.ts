@@ -1408,15 +1408,23 @@ export const contentRefreshFunction = inngest.createFunction(
         // a rollback replays an array into code that wants an array, and `discovery-skips` is
         // simply a step the old code never asks for, so its cached value is ignored rather than
         // misread. Nothing in the chain below needs a new ID.
-        // ONE read feeding both steps. Calling discoverArticles() inside each would let them
-        // execute at different times, which is not hypothetical: Inngest re-enters the function
-        // body between steps and retries individual steps, so the second read can see a corpus the
-        // first one did not. The two would then describe different versions of the directory, and
-        // a file could be reported as both refreshed and skipped in the same summary.
+        // ONE read feeding both steps, rather than calling discoverArticles() inside each. That
+        // removes the common way they would disagree: Inngest re-enters the function body between
+        // steps, so two separate reads execute at different times and can see different corpora,
+        // and a file could then be reported as both refreshed and skipped in the same summary.
         //
-        // On a resumed run this call re-executes and its result is discarded, because both steps
-        // replay from cache. That is the correct outcome and costs one directory read: the cached
-        // pair still comes from whichever single call produced them originally.
+        // This is NOT a durable snapshot, and the distinction matters. Once both steps have
+        // completed they replay together from cache, and this call's result is recomputed and
+        // discarded. But a run interrupted BETWEEN them resumes with `load-all-articles` cached
+        // and `discovery-skips` not, so the skip list is then built from a fresh read. The window
+        // is one gap with no I/O in it, and the blast radius is the accuracy of the skip list in
+        // that summary, not what gets written: every article is re-checked against its own file
+        // below, and the commit refuses anything that does not match.
+        //
+        // Making it genuinely atomic means one step returning both, which is the shape change that
+        // forces a step-ID version bump, which is what produced a far worse mixed-vintage failure
+        // (see the note on why these IDs are unchanged). Reporting accuracy in a narrow window is
+        // the cheaper thing to give up.
         const discovery = discoverArticles();
         const articles = await step.run("load-all-articles", async () => discovery.articles);
         const discoverySkips = await step.run("discovery-skips", async () => discovery.skipped);

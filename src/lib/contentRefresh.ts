@@ -13,6 +13,7 @@ import {
   REVIEW_CADENCES,
   REVIEW_CADENCE_FIELD,
   isReviewCadence,
+  validateReviewCadence,
 } from "./reviewCadence.mjs";
 
 /**
@@ -146,6 +147,22 @@ export function discoverArticles(): ArticleDiscovery {
         `The filename is authoritative. Fix the frontmatter, or rename the file.`;
       console.warn(`[contentRefresh] Skipping "${file}": ${reason}`);
       skipped.push({ file, reason });
+      return [];
+    }
+
+    // An unusable reviewCadence is refused here for the same reason, and it is the more
+    // dangerous of the two because it fails QUIETLY. getRefreshCadenceDays falls back to the
+    // slug guess on a value it does not recognise, and the refresh then pins the typo back
+    // into the committed file: the article silently keeps the cadence the author wrote the
+    // field to change, reports a clean refresh, and re-commits the broken value so the next
+    // run does it again. Skipping turns that into one visible line in the summary email.
+    //
+    // scripts/aeo-audit.mjs fails the push on the same rule, and the model cannot author this
+    // field at all, so reaching here means the gate was bypassed.
+    const cadenceError = validateReviewCadence(data[REVIEW_CADENCE_FIELD], { label: file });
+    if (cadenceError) {
+      console.warn(`[contentRefresh] Skipping "${file}": ${cadenceError}`);
+      skipped.push({ file, reason: cadenceError });
       return [];
     }
 

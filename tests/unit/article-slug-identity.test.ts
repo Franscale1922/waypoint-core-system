@@ -129,6 +129,33 @@ describe("contentRefresh identity comes from the filename", () => {
     expect(skipped[0].reason).toContain("renamed-guide");
   });
 
+  it("SKIPS an article whose reviewCadence is not a cadence", () => {
+    // The more dangerous of the two skips, because it fails quietly. Without this, cadence
+    // inference falls back to the slug guess, the refresh pins the typo back into the committed
+    // file, and the run reports a clean success: the article keeps the cadence the author wrote
+    // the field to change, and re-commits the broken value so the next run repeats it.
+    withArticleFiles({
+      "guide.md": frontmatter({ slug: "guide", title: "Guide", reviewCadence: "stategic" }),
+    });
+
+    const { articles, skipped } = discoverArticles();
+
+    expect(articles).toEqual([]);
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].reason).toContain("stategic");
+  });
+
+  it("accepts a valid reviewCadence during discovery", () => {
+    withArticleFiles({
+      "guide.md": frontmatter({ slug: "guide", title: "Guide", reviewCadence: "strategic" }),
+    });
+
+    const { articles, skipped } = discoverArticles();
+
+    expect(articles).toHaveLength(1);
+    expect(skipped).toEqual([]);
+  });
+
   it("drops only the contradictory article, never the rest of the batch", () => {
     // Skipping rather than throwing is the contract the whole monthly run depends on: one bad file
     // must not take down the other refreshes and suppress the summary email. A throw here would
@@ -197,6 +224,15 @@ describe("articleIdentityMatchesFile re-checks what discovery established", () =
 
 // ─── Cadence precedence ─────────────────────────────────────────────────────
 
+/** The same article, with an explicit cost cadence declared in frontmatter. */
+function withDeclaredCadence(slug: string, category: string, tier: number): Article {
+  const a = articleFor(slug, category, tier);
+  return {
+    ...a,
+    frontmatter: { ...a.frontmatter, reviewCadence: "investment-and-cost" },
+  };
+}
+
 function articleFor(slug: string, category: string, tier: number): Article {
   return {
     slug,
@@ -253,6 +289,26 @@ describe("refresh cadence", () => {
     // The narrowing must not cost real matches: the corpus writes these both ways.
     expect(getRefreshCadenceDays(articleFor("franchise-fees-explained", "Going Deeper", 2))).toBe(365);
     expect(getRefreshCadenceDays(articleFor("startup-costs-by-brand", "Going Deeper", 2))).toBe(365);
+  });
+
+  it("matches the singular and the plural, and NOTHING else: the contract, not an accident", () => {
+    // Pinning the exact reach of the heuristic, because it has a real false-negative edge and the
+    // right response is to know where it is rather than to chase it. "costing" and "financed" are
+    // cost and financing copy that this does not match, where the old substring check did.
+    //
+    // Not fixed by stemming or by lengthening the keyword list. Substring matching over-matched
+    // ("fee" in "coffee"), token matching under-matches ("cost" in "costing"), and no refinement
+    // of a slug heuristic gets this right, because the signal is not in the slug: that is the
+    // whole reason reviewCadence exists, and CONTENT-STANDARDS tells authors to reach for it when
+    // the inference is wrong. Adding morphological forms would trade a known, documented edge for
+    // an unknown one.
+    expect(getRefreshCadenceDays(articleFor("franchise-cost-guide", "Going Deeper", 2))).toBe(365);
+    expect(getRefreshCadenceDays(articleFor("franchise-costs-guide", "Going Deeper", 2))).toBe(365);
+    // The documented gap. An author who wants 365 here declares it.
+    expect(getRefreshCadenceDays(articleFor("franchise-costing-guide", "Going Deeper", 2))).toBe(730);
+    expect(
+      getRefreshCadenceDays(withDeclaredCadence("franchise-costing-guide", "Going Deeper", 2)),
+    ).toBe(365);
   });
 
   it("still tokenizes a slug that is not kebab-case", () => {
