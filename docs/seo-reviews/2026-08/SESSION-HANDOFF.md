@@ -14,11 +14,11 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `24530c1` — PRs #24 and #25 reviewed, merged, and deployed 2026-08-04 |
+| `main` | `aaa8437` — PR #22 **merged and deployed green 2026-08-04**; #24/#25 before it |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
-| `seo/structured-data-entity-graph` | `aad80e6` — pushed, **no PR**, 5 commits (entity graph + JSON-LD date validation) |
-| `claude/beautiful-napier-ede2fc` | `0614c7c` — **PR #26 open**, VideoObject validation, based on the branch above **not on `main`** |
+| `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`). Remote branch `b3ad9b5` still exists on purpose: PR #26 is based on it |
+| `claude/beautiful-napier-ede2fc` | `0614c7c` — **PR #26 open**, VideoObject validation. **Needs a rebase, not a retarget — see below** |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
 ---
@@ -58,19 +58,52 @@ Two branches sit in a stack that has **not** reached `main`. They are independen
 work and were developed in parallel worktrees.
 
 ```
-main (2d12432)
- └─ seo/structured-data-entity-graph  aad80e6   pushed, NO PR
+main (aaa8437)  <- base branch MERGED here as #22, deployed green 2026-08-04
+ └─ seo/structured-data-entity-graph  b3ad9b5   merged as #22; branch kept alive for #26
      └─ claude/beautiful-napier-ede2fc 0614c7c  PR #26, base = the branch above
 ```
 
-**Nothing merges until the base branch gets a PR.** PR #26 deliberately targets the base rather
-than `main` so its diff is only the VideoObject work; retargeting it at `main` would drag in five
-unrelated commits. Merge order is base first, then #26.
+**The base merged as #22 on 2026-08-04. PR #26 now needs a REBASE, not a retarget.**
 
-**`seo/structured-data-entity-graph`** — makes `/about#kelsey` the one authoritative Person node,
-stops `toWww` rewriting lookalike hosts, and validates every date bound for JSON-LD (`schemaDate`,
-rejecting unquoted YAML dates rather than laundering an already-rolled-over value). Codex rounds 1
-to 3 ran on it; round 3's findings were acted on in `aad80e6`.
+The original plan here said "merge base first, then #26", which assumed the base would merge with
+its SHAs intact. It did not: this repo squash-merges PRs (see the `(#21)`/`(#24)`/`(#25)` suffixes
+in `main`), so #22 collapsed the five base commits into one NEW commit `aaa8437`. Those five SHAs
+now exist nowhere in `main`'s history, so simply retargeting #26 at `main` would replay all five as
+if they were unmerged, conflicting against the squashed copy already there.
+
+The fix is one command, run by whoever owns that branch:
+
+```bash
+git rebase --onto origin/main aad80e6 claude/beautiful-napier-ede2fc
+```
+
+That drops the five already-merged commits and keeps only #26's own two (`cad09e6`, `0614c7c`).
+Then retarget the PR to `main` and force-push the branch.
+
+**It was deliberately NOT done in the #22 session**, because it rewrites published history on a
+branch a background session may still hold, and force-pushing another session's branch silently is
+exactly the destructive move that needs a human decision first. The remote base branch
+`seo/structured-data-entity-graph` was therefore left undeleted, so #26 is not broken in the
+meantime: it still shows a clean 2-commit diff against its existing base.
+
+**Do not merge #26 into its current base.** That base is already in `main`; merging there would
+park the VideoObject work on a dead branch instead of shipping it.
+
+**`seo/structured-data-entity-graph` (shipped as #22)** — makes `/about#kelsey` the one
+authoritative Person node, stops `toWww` rewriting lookalike hosts, and validates every date bound
+for JSON-LD (`schemaDate`, rejecting unquoted YAML dates rather than laundering an already-rolled-over
+value). Codex rounds 1 to 3 ran on it; round 3's findings were acted on in `aad80e6`.
+
+Verified against the **live site** after deploy, not just in CI: the homepage graph emits
+`founder -> {"@id": ".../about#kelsey"}`, business `sameAs` 7 and Person `sameAs` 4 with **0
+overlap**, and `/about` now serves exactly **one** Person node with one description (it served two,
+under the same `@id`, with conflicting descriptions). All 45 articles keep both dates under the
+stricter validator, so nothing regressed.
+
+Two corrections to the review that raised this, worth keeping because the numbers were quoted
+around: the two `sameAs` lists shared **8** URLs, not seven, and `toWww` had a **third** unbounded
+class the review missed (`waypointfranchise.competitor.com`, a plain prefix match, alongside the
+`.evil.example` and `@evil.example` forms).
 
 **PR #26** — `videoObjectSchema` validated nothing, and the article path reaches it through an
 `as ArticleVideo` cast over frontmatter, so its `string` types were unenforced. Now: required field
