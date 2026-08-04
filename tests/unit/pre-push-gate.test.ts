@@ -31,7 +31,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -43,8 +43,34 @@ const NEW_HOOK_DIR = join(REPO_ROOT, ".githooks");
 const EMDASH = String.fromCharCode(0x2014);
 
 const ARTICLE = "content/articles/gate-probe.md";
-// vitest runs from a checkout that necessarily has one, which is how it is running.
-const NODE_MODULES = join(process.cwd(), "node_modules");
+
+/**
+ * The real install, found the way Node itself finds it.
+ *
+ * This used to be `join(process.cwd(), "node_modules")`, on the reasoning that vitest runs from a
+ * checkout that necessarily has one. A git worktree breaks that: it gets its own `node_modules/`
+ * containing nothing but Vitest's `.vite` cache, so the path existed, the fixture below was lent an
+ * empty directory, and the control hook died with ERR_MODULE_NOT_FOUND. Since the control asserts
+ * exit 0, the failure surfaced as an unrelated-looking assertion about a push that should have
+ * succeeded. (Reproduced 2026-08-04: 9 of these cases failed in a worktree, on main, with no source
+ * change involved.)
+ *
+ * Probing for a package rather than for the directory is the part that matters; walking up is what
+ * reaches the main checkout's install from a worktree several levels below it. scripts/
+ * verify-pushed-tree.mjs resolves it the same way, for the same reason.
+ */
+function locateNodeModules(start: string): string | null {
+  let dir = resolve(start);
+  for (;;) {
+    const candidate = join(dir, "node_modules");
+    if (existsSync(join(candidate, "gray-matter"))) return candidate;
+    const parent = dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
+const NODE_MODULES = locateNodeModules(process.cwd());
 const TIMEOUT = 180_000;
 
 /**
@@ -212,7 +238,7 @@ beforeAll(() => {
   // even the working-tree control hook dies with ERR_MODULE_NOT_FOUND and the
   // bidirectional comparison measures nothing. Ignored by the seeded .gitignore,
   // so it never enters a commit.
-  if (existsSync(NODE_MODULES) && !existsSync(join(repo, "node_modules"))) {
+  if (NODE_MODULES !== null && !existsSync(join(repo, "node_modules"))) {
     symlinkSync(NODE_MODULES, join(repo, "node_modules"), "dir");
   }
 }, TIMEOUT);
@@ -473,7 +499,7 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: skip switches mean exactly \"1\"",
   // corrected to test for exactly "1" because `-z` meant SKIP_BIP_DRIFT=0
   // disabled the guard. SKIP_UNIT_TESTS was left on `-z` and had no test at
   // all, so the value that reads like "off" turned the suites off.
-  const haveVitest = existsSync(join(NODE_MODULES, ".bin", "vitest"));
+  const haveVitest = NODE_MODULES !== null && existsSync(join(NODE_MODULES, ".bin", "vitest"));
 
   function stageFailingSuite() {
     resetToSeed();

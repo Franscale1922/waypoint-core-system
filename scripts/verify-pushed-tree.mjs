@@ -263,10 +263,36 @@ function commitsToVerify(tip, cwd) {
   return commits;
 }
 
+// A node_modules directory that EXISTS is not necessarily a node_modules directory that has
+// anything in it. Checking only for existence made every push from a git worktree fail: a worktree
+// gets its own `node_modules/` holding nothing but Vitest's `.vite` cache, that stub won the search
+// below, and the extracted tree was symlinked to it. Every checker then died with
+// ERR_MODULE_NOT_FOUND on gray-matter before auditing a thing. (Reproduced 2026-08-04 against
+// main's own commit, so it predates and is independent of whatever is being pushed.)
+//
+// Vitest and the CLI checkers are unaffected and give no warning of this, because they run from a
+// path INSIDE the repo and Node walks upward until it finds the real install. The extracted tree
+// lives in a temp dir with no such ancestor, so the symlink is its only route to a package.
+//
+// Probing for a package the checkers actually import is the check that matches what the symlink is
+// for. gray-matter is the right probe: aeo-audit.mjs, verify-dates.mjs and verify-links.mjs all
+// import it, so a node_modules without it cannot serve this gate regardless of what else it holds.
+// Searching UPWARD from each base, rather than only at it, is the other half of the same fix. A
+// worktree under .claude/worktrees/<name>/ has no install of its own; the real one is at the main
+// checkout several levels above. Walking up mirrors what Node's own resolver does from a path
+// inside the repo, which is precisely why nothing else here ever noticed.
+const PROBE_PACKAGE = "gray-matter";
+
 function locateNodeModules(cwd) {
   for (const base of [INSTALLED_ROOT, cwd]) {
-    const dir = path.join(base, "node_modules");
-    if (fs.existsSync(dir)) return dir;
+    let dir = path.resolve(base);
+    for (;;) {
+      const candidate = path.join(dir, "node_modules");
+      if (fs.existsSync(path.join(candidate, PROBE_PACKAGE))) return candidate;
+      const parent = path.dirname(dir);
+      if (parent === dir) break; // reached the filesystem root
+      dir = parent;
+    }
   }
   return null;
 }
