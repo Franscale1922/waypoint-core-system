@@ -407,8 +407,19 @@ If a page genuinely needs a custom title with no brand appended at all, use `tit
 
 ### Verification
 
-The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains `Waypoint Franchise Advisors`. To check manually before committing:
+The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains the bare word `Waypoint`.
 
-`grep -rn "Waypoint Franchise Advisors" content/articles src/data`
+(Corrected 2026-08-04: this paragraph said the audit tested for `Waypoint Franchise Advisors`, the suffix used before 2026-08-03. It tests the bare word, exactly as the rule above says. The two had disagreed since the suffix changed.)
 
-and confirm no `title:` or `metaTitle:` line appears in the results.
+**The hook reads the commits being pushed, not your working tree** (changed 2026-08-04). Two consequences worth knowing:
+
+- Editing a file without committing the edit will **not** clear a failure. The fix has to be committed.
+- A violation that exists only in your working tree will **not** block a push, so an unrelated edit in flight cannot stop you shipping something else.
+
+To check manually before committing:
+
+`grep -rn "Waypoint" content/articles src/data | grep -E "title:|metaTitle:"`
+
+To run exactly what the push will run, against a commit rather than your working copy:
+
+`node scripts/verify-pushed-tree.mjs $(git rev-parse HEAD)`
