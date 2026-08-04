@@ -4,11 +4,10 @@ import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
 import { videoObjectSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
+import { VIDEO_ID, VIMEO_FALLBACK, type VimeoMeta } from "./video-metadata";
 
 // Revalidate every hour: re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
-
-const VIDEO_ID = "1174270863";
 
 // Plain-text transcript of the About video (Kelsey's own words; timestamps and
 // speaker labels stripped, the speech-to-text glitch "Blumen Blinds" corrected
@@ -26,14 +25,6 @@ I get to do the service for you for free. The brands pay a commission when I pre
 The cool part is, I already have a franchise brand that I still own and my family still operates, so I don't have to do this from a financial perspective. I get to do it because I want to, because I love it. And I think that's a great scenario, because you are never going to catch me trying to push you or anyone else into something that may not be a good fit.
 
 I decided to just do a video instead of typing up an email or sending you to my website. In the long run, this is me, this is what I do, and I absolutely love it. So if you want someone with deep knowledge and lots of roots and history in the franchising space, I'm interested in getting to know you and seeing if I can be helpful. Okay, here's my elevator pitch. Hope you have a great day, and hope we get in contact. Bye.`;
-
-type VimeoMeta = {
-  thumbnailUrl?: string;
-  uploadDate?: string; // ISO 8601 date (required by schema.org VideoObject)
-  duration?: string; // ISO 8601 duration, e.g. PT3M12S
-  title?: string;
-  description?: string;
-};
 
 function secondsToISO8601(seconds: number): string {
   const m = Math.floor(seconds / 60);
@@ -60,6 +51,9 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
       { next: { revalidate: 3600 } }
     );
+    // {} here and in the catch below is "we learned nothing", NOT "this video has
+    // no metadata". The caller reads VIMEO_FALLBACK for anything left unset, so a
+    // Vimeo outage costs freshness rather than the whole VideoObject.
     if (!res.ok) return {};
     const data = await res.json();
     // Normalize Vimeo's "YYYY-MM-DD HH:MM:SS" to a timezone-qualified ISO 8601
@@ -97,47 +91,52 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const vimeo = await getVimeoMeta(VIDEO_ID);
-  const thumbnailUrl = vimeo.thumbnailUrl;
+  // Live oEmbed wins whenever it answers; VIMEO_FALLBACK only fills the gaps a
+  // transient Vimeo failure would otherwise leave. See video-metadata.ts for why
+  // these are pinned instead of fetched every time, and why neither ISR nor
+  // removing getVimeoMeta's catch solves it.
+  const thumbnailUrl = vimeo.thumbnailUrl ?? VIMEO_FALLBACK.thumbnailUrl;
+  const uploadDate = vimeo.uploadDate ?? VIMEO_FALLBACK.uploadDate;
+  const duration = vimeo.duration ?? VIMEO_FALLBACK.duration;
   const videoName = "Kelsey Stuart on what honest franchise consulting actually looks like";
   const videoDescription =
     "Waypoint Franchise Advisors founder Kelsey Stuart explains, in about three minutes, what honest, no-pitch franchise consulting actually looks like and how he helps people decide whether franchise ownership fits their life.";
-  // Only emit VideoObject schema when Vimeo gives us a real upload date and
-  // thumbnail (both required by schema.org). Never fabricate these values.
+  // No "did Vimeo answer?" pre-check here any more, deliberately. It used to
+  // guard against oEmbed returning {}, but that is exactly the case VIMEO_FALLBACK
+  // now covers, so the required fields are always populated and the check could
+  // only ever be dead code.
   //
-  // videoObjectSchema validates all of this and returns undefined on a bad
-  // value, so this pre-check is no longer what keeps invalid markup off the
-  // page. It stays because a failed oEmbed fetch returns {} (see the catch in
-  // getVimeoMeta), and that is an expected third-party outage rather than an
-  // authoring mistake: warning about it hourly would be noise, not signal.
-  const videoSchema =
-    vimeo.uploadDate && (thumbnailUrl)
-      ? videoObjectSchema(
-          {
-            name: videoName,
-            description: videoDescription,
-            thumbnailUrl: thumbnailUrl,
-            uploadDate: vimeo.uploadDate,
-            duration: vimeo.duration,
-            embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
-            // No contentUrl, deliberately. Google reads it as a direct link to
-            // the video file's actual content bytes and says in as many words not
-            // to link to the page the video lives on, which is precisely what
-            // https://vimeo.com/<id> is. We used to send exactly that, so the
-            // property could never do its job: Google fetched HTML where it
-            // expected video bytes.
-            //
-            // There is nothing correct to put here instead. getVimeoMeta reads
-            // oEmbed, which returns no media file URL, and a standard Vimeo
-            // account exposes no stable public direct-file URL. contentUrl is
-            // only RECOMMENDED, and embedUrl above already carries this node's
-            // rich-result eligibility on its own, so omitting it forfeits nothing
-            // the watch-page value was delivering. Do not add it back without a
-            // verified URL that serves the video bytes themselves.
-            transcript: VIDEO_TRANSCRIPT,
-          },
-          "https://www.waypointfranchise.com/about",
-        )
-      : null;
+  // Dropping it also restores videoObjectSchema's warning as real signal. That
+  // warning was previously suppressed because a third-party outage could trip it
+  // hourly through no fault of ours. An outage can no longer reach it, so if it
+  // ever fires now it means the pinned values themselves are malformed: an
+  // authoring mistake, which is precisely what it should be shouting about.
+  const videoSchema = videoObjectSchema(
+    {
+      name: videoName,
+      description: videoDescription,
+      thumbnailUrl: thumbnailUrl,
+      uploadDate: uploadDate,
+      duration: duration,
+      embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
+      // No contentUrl, deliberately. Google reads it as a direct link to
+      // the video file's actual content bytes and says in as many words not
+      // to link to the page the video lives on, which is precisely what
+      // https://vimeo.com/<id> is. We used to send exactly that, so the
+      // property could never do its job: Google fetched HTML where it
+      // expected video bytes.
+      //
+      // There is nothing correct to put here instead. getVimeoMeta reads
+      // oEmbed, which returns no media file URL, and a standard Vimeo
+      // account exposes no stable public direct-file URL. contentUrl is
+      // only RECOMMENDED, and embedUrl above already carries this node's
+      // rich-result eligibility on its own, so omitting it forfeits nothing
+      // the watch-page value was delivering. Do not add it back without a
+      // verified URL that serves the video bytes themselves.
+      transcript: VIDEO_TRANSCRIPT,
+    },
+    "https://www.waypointfranchise.com/about",
+  );
   return (
     <>
       {videoSchema && <JsonLd data={videoSchema} />}
@@ -199,7 +198,7 @@ export default async function AboutPage() {
           </p>
           <VimeoFacade
             videoId={VIDEO_ID}
-            thumbnailUrl={thumbnailUrl ?? "https://i.vimeocdn.com/video/2134803942-aaf25817575a9a51d5162ec0b3de4af5986faedf1bfb3597e853e15e9d09f1bb-d_1280?region=us"}
+            thumbnailUrl={thumbnailUrl}
             label="3 min · Watch"
             headline="Who is this Kelsey guy?"
             title="Kelsey Stuart on what honest franchise consulting actually looks like"

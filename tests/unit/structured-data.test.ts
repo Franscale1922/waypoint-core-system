@@ -19,6 +19,7 @@ import {
   scorecardFaqs,
 } from "@/app/lib/structured-data";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
+import { VIMEO_FALLBACK } from "@/app/(marketing)/about/video-metadata";
 
 /**
  * Guards for the JSON-LD entity graph. scripts/verify-schema.mjs is a static
@@ -352,6 +353,51 @@ describe("videoObjectSchema", () => {
     expect(node?.thumbnailUrl).toEqual([LIVE.thumbnailUrl]);
     expect(node?.publisher["@id"]).toBe(`${SITE_URL}/#business`);
     expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The outage path. When Vimeo 503s or throws, getVimeoMeta returns {} and the
+   * about page falls back to VIMEO_FALLBACK for the required fields. That used to
+   * be the case where the page emitted NO VideoObject at all and then cached that
+   * degraded render for an hour, so this asserts the fallback alone is sufficient
+   * to build a complete node.
+   *
+   * This imports the real production constant rather than restating its values,
+   * which is the whole point: a typo'd uploadDate there would drop the node
+   * silently in production, and only a test reading the actual constant can catch
+   * that. `name`/`description` are page-local literals that no outage can affect,
+   * so supplying them here does not weaken the assertion.
+   */
+  it("still builds a complete VideoObject from the pinned fallback alone, for when Vimeo is down", () => {
+    const warn = silenceWarn();
+    const node = videoObjectSchema(
+      {
+        name: LIVE.name,
+        description: LIVE.description,
+        ...VIMEO_FALLBACK,
+      },
+      "ctx",
+    );
+    expect(node).toMatchObject({
+      "@type": "VideoObject",
+      uploadDate: VIMEO_FALLBACK.uploadDate,
+      duration: VIMEO_FALLBACK.duration,
+    });
+    expect(node?.thumbnailUrl).toEqual([VIMEO_FALLBACK.thumbnailUrl]);
+    // A warning here means the pinned values are malformed. Since no third-party
+    // outage can reach this code path, that would be an authoring bug, not noise.
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The fallback is a snapshot of a live response, so its one failure mode is
+   * silent drift from what Vimeo actually serves. Pinning it against the LIVE
+   * fixture means the two can only be updated together.
+   */
+  it("keeps the pinned fallback in step with the live oEmbed fixture", () => {
+    expect(VIMEO_FALLBACK.uploadDate).toBe(LIVE.uploadDate);
+    expect(VIMEO_FALLBACK.duration).toBe(LIVE.duration);
+    expect(VIMEO_FALLBACK.thumbnailUrl).toBe(LIVE.thumbnailUrl);
   });
 
   /**
