@@ -8,7 +8,8 @@
  * defaults to `main`, so no local git is involved: .githooks/pre-push cannot see this path and CI
  * only reports once the commit already exists. Every article is therefore serialized and validated
  * here, against the same rules the hook applies to hand-written articles, before the first blob is
- * created. See src/lib/frontmatterDates.mjs.
+ * created. See src/lib/frontmatterDates.mjs for the date rules and src/lib/frontmatterFields.mjs
+ * for the required-field rules.
  *
  * Required env vars:
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
@@ -21,6 +22,8 @@
 import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
 import { validateFrontmatterDates, utcDayString } from "./frontmatterDates.mjs";
+import { validateRequiredFields } from "./frontmatterFields.mjs";
+import { validFaqEntries } from "@/app/lib/structured-data";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -187,28 +190,77 @@ export function serializeArticle(
 }
 
 /**
- * Serialize an article and validate the result against the same date rules the pre-push hook and CI
- * apply to hand-written articles (src/lib/frontmatterDates.mjs).
+ * Serialize an article and validate the result against the same rules the pre-push hook and CI
+ * apply to hand-written articles: the date rules in src/lib/frontmatterDates.mjs and the
+ * required-field rules in src/lib/frontmatterFields.mjs.
  *
  * Returns the serialized content alongside the errors so callers reuse it rather than serializing a
- * second time. With the stamping above this should never report anything on the live refresh path,
- * and it is here anyway for two reasons: `commitRefreshedArticles` is exported and can be called
- * with arbitrary payloads, and if somebody later restores the passthrough this fails closed instead
- * of quietly reopening the hole.
+ * second time.
+ *
+ * THE TWO HALVES ARE NOT THE SAME KIND OF CHECK, and conflating them is how the second one would
+ * get deleted as redundant.
+ *
+ * The DATE half is a backstop. `serializeArticle` above stamps both dates, so no model-authored
+ * date value survives to be validated, and this should never report anything on the live path. It
+ * is here because `commitRefreshedArticles` is exported and can be called with arbitrary payloads,
+ * and so that restoring the passthrough fails closed instead of quietly reopening the hole.
+ *
+ * The FIELD half is load-bearing and fires on real input. Nothing stamps `title`, `excerpt` or
+ * `faqs`: src/inngest/functions.ts pins slug, category, tier and relatedSlugs back to the original
+ * article and takes those three from model output verbatim. They cannot be stamped the way a date
+ * can, because unlike a date the pipeline has no correct value to substitute, which is the whole
+ * reason this is a validate-and-skip rather than an overwrite. Before this existed they were the
+ * one part of a refreshed article that reached `main` with nothing in front of it at all.
+ *
+ * Both are checked against the SERIALIZED BYTES rather than the frontmatter object, because the
+ * bytes are what gets committed and what production later parses. Validating the object would
+ * check something adjacent to the artifact instead of the artifact.
  */
 export function validateArticlePayload(
   article: ArticleCommitPayload,
   { today = utcDayString() }: { today?: string } = {},
 ): { errors: string[]; content: string } {
-  const content = serializeArticle(article.frontmatter, article.body, today);
-  const { errors } = validateFrontmatterDates(content, {
-    // The underlying messages are written for somebody editing a file by hand ("Quote the value in
-    // frontmatter"), which is not advice a pipeline can act on. The label is what carries the
-    // provenance into an Inngest failure and the monthly summary email.
-    label: `content/articles/${article.slug}.md (automated content refresh)`,
-    today,
+  // The underlying messages are written for somebody editing a file by hand ("Quote the value in
+  // frontmatter"), which is not advice a pipeline can act on. The label is what carries the
+  // provenance into an Inngest failure and the monthly summary email.
+  const label = `content/articles/${article.slug}.md (automated content refresh)`;
+
+  // Serialization itself can fail, and a throw here would defeat the entire point of returning
+  // errors. js-yaml refuses to dump a key whose value is explicitly `undefined` ("unacceptable kind
+  // of an object to dump"), and src/inngest/functions.ts produces exactly that shape when it pins a
+  // field back from an original article that lacks it: `newFrontmatter.tier =
+  // article.frontmatter.tier` writes the key with an undefined value rather than leaving it out.
+  //
+  // Unhandled, that propagates out of the `step.run` wrapping this call, which fails the step, gets
+  // retried, and eventually takes down the whole monthly run so the summary email never sends. That
+  // is precisely the batch-wide failure the caller drops individual articles to avoid. So a
+  // serialization failure is reported as an article-level error like any other, and that article is
+  // skipped.
+  let content: string;
+  try {
+    content = serializeArticle(article.frontmatter, article.body, today);
+  } catch (error) {
+    return {
+      errors: [
+        `${label}: the frontmatter could not be serialized to YAML at all ` +
+          `(${String(error instanceof Error ? error.message : error).split("\n")[0]}). A key ` +
+          `whose value is explicitly undefined does this. The article cannot be written and is ` +
+          `skipped.`,
+      ],
+      content: "",
+    };
+  }
+
+  const { errors: dateErrors } = validateFrontmatterDates(content, { label, today });
+  const { errors: fieldErrors } = validateRequiredFields(content, {
+    label,
+    // Production's own FAQ filter, handed in rather than reimplemented. A list of entries that all
+    // get dropped at render time publishes nothing while passing every structural check, and the
+    // only way to know which entries survive is to ask the function that decides.
+    faqEntryFilter: (entries) => validFaqEntries(entries as { q: string; a: string }[], label),
   });
-  return { errors, content };
+
+  return { errors: [...dateErrors, ...fieldErrors], content };
 }
 
 // ─── Single-commit batch push ─────────────────────────────────────────────────
@@ -245,7 +297,7 @@ export async function commitRefreshedArticles(
   const problems = prepared.flatMap((entry) => entry.errors);
   if (problems.length > 0) {
     throw new Error(
-      `Refusing to commit ${problems.length} frontmatter date problem(s) from the automated ` +
+      `Refusing to commit ${problems.length} frontmatter problem(s) from the automated ` +
         `content refresh. Nothing was written: no blobs were created and ${config.branch} was not ` +
         `advanced.\n` +
         problems.map((problem) => `  - ${problem}`).join("\n"),

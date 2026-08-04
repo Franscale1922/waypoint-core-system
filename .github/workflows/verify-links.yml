@@ -43,6 +43,14 @@ jobs:
         run: npx vitest run --project unit tests/unit/verify-dates.test.ts
       - name: Verify Dates, AI write path (unit tests)
         run: npx vitest run --project unit tests/unit/write-path-dates.test.ts
+      # The required NON-DATE frontmatter fields on that same bot path. Dates are
+      # stamped, so their guard is a backstop; title, excerpt and faqs are taken
+      # from model output verbatim and this is the only thing checking them
+      # before the commit exists. Listed by name for the same reason as every job
+      # above: this workflow selects test files explicitly, so a file that is not
+      # named here runs in the pre-push hook and silently never runs in CI.
+      - name: Verify required fields, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-fields.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

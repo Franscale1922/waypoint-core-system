@@ -1426,8 +1426,46 @@ export const contentRefreshFunction = inngest.createFunction(
                     prompt: buildUserPrompt(article),
                 });
 
-                // Parse the AI response: it should be a complete .md file
-                const parsed = matter(text);
+                // Parse the AI response: it should be a complete .md file.
+                //
+                // Guarded because js-yaml THROWS on frontmatter it refuses, and a duplicate mapping
+                // key is the everyday way a model produces that. Unhandled, the throw escapes this
+                // step, gets retried, and eventually fails the whole monthly run: every other
+                // article's refresh is lost and the summary email never sends. That is the
+                // batch-wide outage this function drops individual articles to avoid, so a
+                // malformed response is recorded the same way a compliance violation is.
+                let parsed;
+                try {
+                    parsed = matter(text);
+                } catch (error) {
+                    return {
+                        success: false as const,
+                        reason: `Model output is not parseable markdown: ${error instanceof Error ? error.message.split("\n")[0] : String(error)}`,
+                        frontmatter: null,
+                        body: null,
+                    };
+                }
+                // Parsing cleanly is not the same as parsing into a MAPPING. YAML frontmatter that
+                // is a scalar or a list parses without complaint and hands back a string, a number
+                // or an array, and the four pins below then assign onto it: on a scalar that is a
+                // TypeError ("Cannot create property 'relatedSlugs' on string"), thrown outside the
+                // catch above and therefore fatal to the whole run; on an array it SUCCEEDS and
+                // quietly produces an article-shaped nonsense object. Both were verified against
+                // this repo's gray-matter. `matter("---\nnull\n---")` is not one of them, it yields
+                // {} as normal.
+                if (
+                    parsed.data === null ||
+                    typeof parsed.data !== "object" ||
+                    Array.isArray(parsed.data)
+                ) {
+                    return {
+                        success: false as const,
+                        reason: `Model output frontmatter is not a mapping (got ${Array.isArray(parsed.data) ? "a list" : typeof parsed.data}), so it has no fields to validate`,
+                        frontmatter: null,
+                        body: null,
+                    };
+                }
+
                 const newFrontmatter = parsed.data as typeof article.frontmatter;
                 const newBody = parsed.content;
 
@@ -1448,21 +1486,31 @@ export const contentRefreshFunction = inngest.createFunction(
                     };
                 }
 
-                // Frontmatter dates, checked against the exact bytes the commit would write.
-                // commitRefreshedArticles refuses the WHOLE batch if anything invalid reaches it,
-                // which is the right behaviour at the write boundary and the wrong one here: a
-                // single bad article would take the month's other refreshes down with it, and the
-                // summary email below would never send. So the article is dropped instead, the same
-                // way a compliance violation is, and it shows up under "Failed" in that email.
-                const dateErrors = validateArticlePayload({
+                // Frontmatter dates AND required fields, checked against the exact bytes the commit
+                // would write. commitRefreshedArticles refuses the WHOLE batch if anything invalid
+                // reaches it, which is the right behaviour at the write boundary and the wrong one
+                // here: a single bad article would take the month's other refreshes down with it,
+                // and the summary email below would never send. So the article is dropped instead,
+                // the same way a compliance violation is, and it shows up under "Failed" in that
+                // email.
+                //
+                // Dropping is deliberately NOT backfilling. The four fields above are pinned back
+                // to the original because the model must not change an article's identity or
+                // taxonomy; title, excerpt and faqs are the opposite case, the very content the
+                // refresh exists to update, so there is no correct value to substitute. A response
+                // missing one of them is malformed, which makes its body suspect too, and shipping
+                // a suspect body under a salvaged title would be a worse outcome than skipping the
+                // month. The article keeps the good version already on disk and retries next
+                // cadence.
+                const payloadErrors = validateArticlePayload({
                     slug: article.slug,
                     frontmatter: newFrontmatter,
                     body: newBody,
                 }).errors;
-                if (dateErrors.length > 0) {
+                if (payloadErrors.length > 0) {
                     return {
                         success: false as const,
-                        reason: `Invalid frontmatter dates: ${dateErrors.join(" | ")}`,
+                        reason: `Invalid frontmatter: ${payloadErrors.join(" | ")}`,
                         frontmatter: null,
                         body: null,
                     };

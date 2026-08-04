@@ -33,7 +33,15 @@ import { addUtcDays, validateFrontmatterDates } from "@/lib/frontmatterDates.mjs
 const TODAY = "2026-08-04";
 const BODY = "Refreshed body copy.\n";
 
-/** Frontmatter shaped like what `matter(modelOutput).data` produces, cast the same way the pipeline casts it. */
+/**
+ * Frontmatter shaped like what `matter(modelOutput).data` produces, cast the same way the pipeline
+ * casts it.
+ *
+ * The `faqs` block is not decoration. validateArticlePayload also enforces the required non-date
+ * fields (src/lib/frontmatterFields.mjs, tests/unit/write-path-fields.test.ts), and a fixture
+ * without one is not a valid article, so it would fail these date tests for an unrelated reason and
+ * make them assert nothing about dates.
+ */
 function modelFrontmatter(extra: Record<string, unknown> = {}) {
   return {
     title: "How Franchise Financing Works",
@@ -43,6 +51,7 @@ function modelFrontmatter(extra: Record<string, unknown> = {}) {
     tier: 1,
     excerpt: "An excerpt.",
     relatedSlugs: [],
+    faqs: [{ q: "Does this fixture publish an FAQ?", a: "Yes, and it has to." }],
     ...extra,
   } as never;
 }
@@ -528,7 +537,10 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
       body: BODY,
     }));
 
-    await expect(commitRefreshedArticles(batch)).rejects.toThrow(/3 frontmatter date problem/);
+    // "frontmatter problem", not "frontmatter date problem": the boundary now reports date and
+    // required-field failures through the same counter, so the message can no longer claim every
+    // problem it is refusing is a date.
+    await expect(commitRefreshedArticles(batch)).rejects.toThrow(/3 frontmatter problem/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 });

@@ -35,6 +35,16 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import ts from "typescript";
+import {
+  BRAND_SHORT,
+  EXCERPT_MAX,
+  EXCERPT_MIN,
+  SUFFIX,
+  TITLE_BUDGET,
+  classifyExcerpt,
+  classifyFaqs,
+  hardCodesBrand,
+} from "../src/lib/frontmatterFields.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,29 +55,21 @@ export const DEFAULT_APP_DIR = path.join(REPO_ROOT, "src", "app");
 export const DEFAULT_DATA_DIR = path.join(REPO_ROOT, "src", "data");
 export const DEFAULT_CODE_DIRS = [path.join(REPO_ROOT, "src")];
 
-// CONTENT-STANDARDS Section 4 requires a search-snippet-ready excerpt, and the
-// seo-review workflow's Step 3 puts the target at 150-160 characters.
+// The excerpt window, the title budget and the brand test now live in
+// src/lib/frontmatterFields.mjs, and are re-exported here so this script's
+// existing importers (tests/unit/aeo-audit.test.ts) keep working unchanged.
 //
-// Over 160 is a hard failure because it does actual damage: the description is
-// truncated mid-sentence in the SERP, in social previews, and in the JSON-LD
-// that answer engines read. Under 150 is only wasted space, so it is reported
-// and not enforced. When this guard was added, 43 of 45 articles were over and
-// exactly 0 were inside the window, which is how a whole-catalogue defect stayed
-// invisible while every other AEO check passed.
-export const EXCERPT_MAX = 160;
-export const EXCERPT_MIN = 150;
-
-// Google renders roughly 60 characters of a title. Anything past that is
-// truncated, so the budget is the suffix plus the page's own words.
-export const TITLE_BUDGET = 60;
-export const BRAND_SHORT = "Waypoint";
-export const SUFFIX = ` | ${BRAND_SHORT}`;
-
-// Whole word, any case. A plain `includes("Waypoint")` was wrong in both
-// directions: `WHY WAYPOINT WORKS` sailed through and got the brand appended a
-// second time, while `Waypointing` was blocked despite not naming the brand.
-const BRAND_RE = new RegExp(`\\b${BRAND_SHORT}\\b`, "i");
-export const hardCodesBrand = (text) => BRAND_RE.test(text);
+// They moved because this is no longer the only thing enforcing them. The AI
+// content refresh commits articles straight through the GitHub API against
+// `main`, so it never reaches .githooks/pre-push and this script never sees its
+// output; it validates itself at its own boundary instead, against these same
+// rules. A second copy of the number 160 is precisely how the two would have
+// come to disagree about what a valid excerpt is, and the copy that drifted
+// would have been the unattended one.
+//
+// The commentary on WHY each threshold is what it is lives with the definitions
+// in that module. Read it there before changing one of these.
+export { EXCERPT_MAX, EXCERPT_MIN, TITLE_BUDGET, BRAND_SHORT, SUFFIX, hardCodesBrand };
 
 // Escape hatch: a line containing this token is skipped by the em-dash gate,
 // for the rare legitimately-functional em dash (the literal em dash inside a
@@ -213,9 +215,16 @@ export function auditArticle(raw, file) {
   // across the whole front matter meant an unrelated list could mask a missing
   // FAQ block. Note the real key is plural; the old regex never named it and
   // worked by accident.
-  const faqs = data.faqs;
-  const faqCount = Array.isArray(faqs) ? faqs.length : 0;
-  const faqsMalformed = faqs !== undefined && !Array.isArray(faqs);
+  //
+  // Classified by the shared module so the write path agrees with this one about
+  // what a broken block is. The buckets below are unchanged: only a non-list is
+  // MALFORMED (a bare `faqs:` parses to null and lands there), while an absent
+  // or empty block is reported through faqCount and does not fail a push here.
+  // The write path is stricter and rejects those too, because its input is
+  // unattended model output rather than a human's diff.
+  const faqs = classifyFaqs(data.faqs);
+  const faqCount = faqs.count;
+  const faqsMalformed = faqs.kind === "not-a-list";
 
   const rel = data.relatedSlugs;
   const relCount = Array.isArray(rel) ? rel.length : 0;
@@ -244,8 +253,11 @@ export function auditArticle(raw, file) {
   // feeds it to the meta description, the OpenGraph description, AND the
   // Article JSON-LD description. Parsed rather than regexed, so any quote style,
   // block scalar or escaped quote measures its true rendered length.
-  const excerpt = data.excerpt;
-  const excerptLen = typeof excerpt === "string" ? excerpt.length : null;
+  //
+  // Shared classifier, same contract as before: a length for anything that is a
+  // string (including the empty one) and null for anything unmeasurable, which
+  // is what the `missingExcerpt` bucket below has always keyed on.
+  const excerptLen = classifyExcerpt(data.excerpt).length;
 
   return {
     f: slug,
