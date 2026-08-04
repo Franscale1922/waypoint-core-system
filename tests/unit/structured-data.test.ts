@@ -19,7 +19,11 @@ import {
   scorecardFaqs,
 } from "@/app/lib/structured-data";
 import { getAllArticles, getArticleBySlug } from "@/lib/articles";
-import { VIMEO_FALLBACK } from "@/app/(marketing)/about/video-metadata";
+import {
+  VIMEO_FALLBACK,
+  usableDurationSeconds,
+  usableHttpUrl,
+} from "@/app/(marketing)/about/video-metadata";
 
 /**
  * Guards for the JSON-LD entity graph. scripts/verify-schema.mjs is a static
@@ -387,6 +391,53 @@ describe("videoObjectSchema", () => {
     // A warning here means the pinned values are malformed. Since no third-party
     // outage can reach this code path, that would be an authoring bug, not noise.
     expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The fallback is only ever reached through `??`, which fires on null and
+   * undefined and nothing else. That makes "Vimeo answered, but with junk" a
+   * distinct failure from "Vimeo did not answer": an empty-string thumbnail_url
+   * is not nullish, so it would bypass the fallback entirely and then fail
+   * videoObjectSchema's required check, dropping the node exactly as an outage
+   * used to. These cases are the reason the boundary validates instead of casting.
+   */
+  describe("live oEmbed values are validated before they can beat the fallback", () => {
+    it.each([
+      ["empty string", ""],
+      ["whitespace only", "   "],
+      ["not a string", 42],
+      ["null", null],
+      ["undefined", undefined],
+      ["relative path", "/video/thumb.jpg"],
+      ["protocol-relative", "//i.vimeocdn.com/x.jpg"],
+      ["non-http scheme", "javascript:alert(1)"],
+      ["unparseable", "http://"],
+    ])("rejects a %s thumbnail so the pinned one is used instead", (_label, value) => {
+      expect(usableHttpUrl(value)).toBeUndefined();
+      // The point of rejecting: `??` can only reach the fallback via undefined.
+      expect(usableHttpUrl(value) ?? VIMEO_FALLBACK.thumbnailUrl).toBe(
+        VIMEO_FALLBACK.thumbnailUrl,
+      );
+    });
+
+    it("still accepts the real thumbnail, query string and all", () => {
+      expect(usableHttpUrl(VIMEO_FALLBACK.thumbnailUrl)).toBe(VIMEO_FALLBACK.thumbnailUrl);
+    });
+
+    it.each([
+      ["NaN", NaN],
+      ["Infinity", Infinity],
+      ["negative", -5],
+      ["zero", 0],
+      ["a numeric string", "204"],
+      ["null", null],
+    ])("rejects a %s duration, which typeof alone would pass through", (_label, value) => {
+      expect(usableDurationSeconds(value)).toBeUndefined();
+    });
+
+    it("accepts a real positive duration", () => {
+      expect(usableDurationSeconds(204)).toBe(204);
+    });
   });
 
   /**

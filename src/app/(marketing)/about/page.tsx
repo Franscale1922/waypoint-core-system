@@ -4,7 +4,13 @@ import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
 import { videoObjectSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
-import { VIDEO_ID, VIMEO_FALLBACK, type VimeoMeta } from "./video-metadata";
+import {
+  VIDEO_ID,
+  VIMEO_FALLBACK,
+  usableDurationSeconds,
+  usableHttpUrl,
+  type VimeoMeta,
+} from "./video-metadata";
 
 // Revalidate every hour: re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
@@ -27,10 +33,16 @@ The cool part is, I already have a franchise brand that I still own and my famil
 I decided to just do a video instead of typing up an email or sending you to my website. In the long run, this is me, this is what I do, and I absolutely love it. So if you want someone with deep knowledge and lots of roots and history in the franchising space, I'm interested in getting to know you and seeing if I can be helpful. Okay, here's my elevator pitch. Hope you have a great day, and hope we get in contact. Bye.`;
 
 function secondsToISO8601(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+  const whole = Math.floor(seconds);
+  const m = Math.floor(whole / 60);
+  const s = whole % 60;
   return `PT${m}M${s}S`;
 }
+
+// usableHttpUrl / usableDurationSeconds live in video-metadata.ts rather than
+// here because they are one half of the fallback contract: they decide what
+// counts as live data, and VIMEO_FALLBACK supplies the rest. Keeping them beside
+// it also lets a unit test import them without dragging this whole page in.
 
 // Vimeo's oEmbed `upload_date` is "YYYY-MM-DD HH:MM:SS" (UTC, no offset). Google
 // wants uploadDate as a full ISO 8601 datetime WITH a timezone, so we normalize
@@ -49,7 +61,12 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
     const res = await fetch(
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
-      { next: { revalidate: 3600 } }
+      // A refused connection fails fast, but a connection Vimeo ACCEPTS and then
+      // never answers does not: without a deadline it blocks this render until
+      // the host gives up, which during `next build` means stalling a deploy on
+      // a third-party hang. The abort surfaces as a throw, so it lands in the
+      // same catch as any other failure and degrades to VIMEO_FALLBACK.
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
     );
     // {} here and in the catch below is "we learned nothing", NOT "this video has
     // no metadata". The caller reads VIMEO_FALLBACK for anything left unset, so a
@@ -59,13 +76,12 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
     // Normalize Vimeo's "YYYY-MM-DD HH:MM:SS" to a timezone-qualified ISO 8601
     // datetime (Google flags date-only / no-timezone values on VideoObject).
     const uploadDate = toVideoUploadDate(data.upload_date);
+    const durationSeconds = usableDurationSeconds(data.duration);
     return {
-      thumbnailUrl: data.thumbnail_url as string | undefined,
+      thumbnailUrl: usableHttpUrl(data.thumbnail_url),
       uploadDate,
       duration:
-        typeof data.duration === "number"
-          ? secondsToISO8601(data.duration)
-          : undefined,
+        durationSeconds === undefined ? undefined : secondsToISO8601(durationSeconds),
       title: data.title as string | undefined,
       description: data.description as string | undefined,
     };
