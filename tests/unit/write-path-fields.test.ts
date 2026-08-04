@@ -26,13 +26,16 @@ import * as aeoAudit from "../../scripts/aeo-audit.mjs";
  * is a backstop that cannot fire through the public API. Its fail-closed test has to force the
  * validator to prove the branch works at all.
  *
- * These fields are the opposite. Nothing stamps `title`, `excerpt` or `faqs`: src/inngest/
- * functions.ts pins slug, category, tier and relatedSlugs back to the original article and takes
- * these three from model output verbatim. So every test below drives the REAL public API with a
+ * These fields are the opposite. Nothing stamps `title`, `excerpt` or `faqs`:
+ * mergeRefreshedFrontmatter preserves every other field from the original article and takes these
+ * three from model output verbatim. So every test below drives the REAL public API with a
  * realistic bad payload, and the batch-level test proves the refusal with no mocking of the
  * validator whatsoever. That is a strictly stronger guarantee than the date file can offer, and it
  * is the reason this path needed a runtime check rather than the TypeScript cast in
  * src/lib/articles.ts, which is a compile-time claim over unvalidated markdown.
+ *
+ * The final sections cover a DIFFERENT question these rules cannot answer: not "is this field
+ * valid?" but "is the model allowed to decide this field at all?". See the header above them.
  */
 
 const TODAY = "2026-08-04";
@@ -585,5 +588,278 @@ describe("the CLI guard and the write path share one copy of the rules", () => {
     // And a bare `faqs:` still counts as malformed, exactly as before.
     const bare = aeoAudit.auditArticle('---\ntitle: "T"\nfaqs:\n---\nBody.\n', "sample.md");
     expect(bare.faqsMalformed).toBe(true);
+  });
+});
+
+// ─── Field ownership: what a refresh is allowed to change ────────────────────
+
+/**
+ * The REQUIRED-field rules above answer "did the model send us something publishable?". These
+ * answer a different question that nothing used to ask: "which fields is the model allowed to
+ * decide at all?".
+ *
+ * The refresh used to take model frontmatter wholesale and pin four fields back onto it. That is
+ * subtractive, so any field nobody named was deleted from the committed file, and two real ones
+ * were: `checklistSlug` and `escapeKit`, which gate the two CTAs in
+ * src/app/(marketing)/resources/[slug]/page.tsx. Nothing failed, because every REQUIRED field was
+ * still present. The rules above would have passed that article, which is precisely why these tests
+ * are separate from them rather than folded in.
+ */
+
+/** The original article as it sits on disk, with both CTA fields wired up. */
+function originalOnDisk(extra: Record<string, unknown> = {}) {
+  return {
+    title: "What the Franchise Process Looks Like",
+    slug: "what-the-franchise-process-looks-like",
+    date: "2026-05-31",
+    category: "Getting Started",
+    tier: 1,
+    checklistSlug: "universal",
+    excerpt: "An excerpt that is short but perfectly legal.",
+    relatedSlugs: ["do-you-need-a-franchise-consultant"],
+    faqs: [{ q: "Original question?", a: "Original answer." }],
+    escapeKit: true,
+    ...extra,
+  } as never;
+}
+
+/**
+ * Model output as GPT-4o actually returns it.
+ *
+ * Exactly the eight fields src/lib/contentRefreshPrompt.ts asks for, which is the whole mechanism of
+ * the bug: `checklistSlug` and `escapeKit` are not in that list, so a well-behaved model that
+ * follows the prompt perfectly still omits them. These fixtures are built by NAMING the eight
+ * fields rather than by deleting two from the original, so the test cannot drift into passing just
+ * because the prompt changed.
+ */
+function modelOutput(extra: Record<string, unknown> = {}): Record<string, unknown> {
+  return {
+    title: "What the Franchise Process Looks Like, Start to Finish",
+    slug: "what-the-franchise-process-looks-like",
+    date: "2026-08-04",
+    category: "Getting Started",
+    tier: 1,
+    excerpt: "A freshly rewritten excerpt from the model.",
+    relatedSlugs: ["do-you-need-a-franchise-consultant"],
+    faqs: [{ q: "Refreshed question?", a: "Refreshed answer." }],
+    ...extra,
+  };
+}
+
+describe("mergeRefreshedFrontmatter: fields nobody named survive a refresh", () => {
+  it("keeps the two CTA fields the model never emits", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(originalOnDisk(), modelOutput());
+
+    // The regression itself. Both were silently deleted before.
+    expect(merged.checklistSlug).toBe("universal");
+    expect(merged.escapeKit).toBe(true);
+  });
+
+  it("keeps escapeKit when it is false, not merely when it is truthy", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(
+      originalOnDisk({ escapeKit: false }),
+      modelOutput(),
+    );
+
+    // A truthiness-based preservation would drop this and look correct on all 12 live articles,
+    // every one of which sets it to true.
+    expect(merged.escapeKit).toBe(false);
+    expect(Object.hasOwn(merged, "escapeKit")).toBe(true);
+  });
+
+  it("still preserves everything the four old pins covered", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(
+      originalOnDisk(),
+      // A model that tries to rewrite identity and taxonomy. It does not get to.
+      modelOutput({
+        slug: "a-slug-the-model-invented",
+        category: "Going Deeper",
+        tier: 3,
+        relatedSlugs: ["something-else-entirely"],
+      }),
+    );
+
+    expect(merged.slug).toBe("what-the-franchise-process-looks-like");
+    expect(merged.category).toBe("Getting Started");
+    expect(merged.tier).toBe(1);
+    expect(merged.relatedSlugs).toEqual(["do-you-need-a-franchise-consultant"]);
+  });
+
+  it("takes the three fields the refresh exists to update", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(originalOnDisk(), modelOutput());
+
+    // Preservation must not be so aggressive that the refresh stops refreshing.
+    expect(merged.title).toBe("What the Franchise Process Looks Like, Start to Finish");
+    expect(merged.excerpt).toBe("A freshly rewritten excerpt from the model.");
+    expect(merged.faqs).toEqual([{ q: "Refreshed question?", a: "Refreshed answer." }]);
+  });
+
+  it("drops a field the model invented", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(
+      originalOnDisk(),
+      modelOutput({ author: "Hallucinated Byline", noindex: true }),
+    );
+
+    // The second hole the inversion closes: model-authored frontmatter used to reach main verbatim.
+    expect(Object.hasOwn(merged, "author")).toBe(false);
+    expect(Object.hasOwn(merged, "noindex")).toBe(false);
+  });
+
+  it("preserves a field nobody has thought of yet", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const merged = mergeRefreshedFrontmatter(
+      originalOnDisk({ someFieldAddedNextYear: "still here" }),
+      modelOutput(),
+    );
+
+    // This is the actual root cause under test. checklistSlug and escapeKit are two symptoms of it,
+    // and a fix that only pinned those two would fail this case while passing every other test here.
+    expect(merged.someFieldAddedNextYear).toBe("still here");
+  });
+
+  it("deletes a model-owned field the model omitted rather than inheriting it", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const output = modelOutput();
+    delete output.title;
+    const merged = mergeRefreshedFrontmatter(originalOnDisk(), output);
+
+    // Inheriting the original title here would publish a suspect new body under the old headline
+    // and pass every required-field rule while doing it. The key must be absent, not undefined:
+    // js-yaml refuses to dump an explicit undefined, which would fail the article for the wrong
+    // reason and with a message that names no field.
+    expect(Object.hasOwn(merged, "title")).toBe(false);
+  });
+
+  it("does not mutate the original article's frontmatter", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const original = originalOnDisk() as Record<string, unknown>;
+    mergeRefreshedFrontmatter(original as never, modelOutput({ title: "Rewritten" }));
+
+    // The caller loops over articles loaded once at the top of the run, so mutating this would
+    // corrupt every later comparison against the original.
+    expect(original.title).toBe("What the Franchise Process Looks Like");
+  });
+});
+
+describe("what preservation does NOT fix: the Inngest step boundary", () => {
+  it("normalizes a Date-valued preserved field into an ISO string", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+
+    // CHARACTERIZATION TEST. This pins a known limitation so a future change to the load path is
+    // visible in a diff instead of silent. It documents current behaviour and does not endorse it.
+    //
+    // src/inngest/functions.ts loads articles inside step.run, and Inngest memoizes a step's return
+    // value as JSON. js-yaml resolves an unquoted YAML timestamp into a Date before any of our code
+    // runs (see the header of src/lib/frontmatterDates.mjs), and JSON turns that Date into a string,
+    // so by the time the merge sees it the authored text is already gone.
+    //
+    // Preserving a field therefore preserves the PARSED value, not the authored one. For an
+    // impossible date such as 2026-02-30, js-yaml has already rolled it over to March 2, and the
+    // refresh would commit that valid-looking but false value in place of the author's invalid one.
+    //
+    // This is NOT a regression from the inversion. Before it, an unpinned field was deleted from the
+    // article outright, so the block did not survive at all. Preserving it imperfectly is strictly
+    // better than destroying it, and no article on disk carries such a field today. Fixing it
+    // properly means carrying RAW frontmatter across the step boundary, which is a change to the
+    // load path rather than to field ownership.
+    const parsedFromDisk = { ...(originalOnDisk() as object) } as Record<string, unknown>;
+    parsedFromDisk.video = { uploadDate: new Date("2026-02-30T12:00:00Z") };
+
+    const acrossStepBoundary = JSON.parse(JSON.stringify(parsedFromDisk));
+    const merged = mergeRefreshedFrontmatter(acrossStepBoundary, modelOutput()) as Record<
+      string,
+      unknown
+    >;
+
+    // The block survives, which is the fix working.
+    expect(merged.video).toBeDefined();
+    // But as a normalized string, and rolled over to March. If this assertion ever starts failing,
+    // the load path changed and that is worth knowing.
+    expect((merged.video as Record<string, unknown>).uploadDate).toBe("2026-03-02T12:00:00.000Z");
+  });
+});
+
+describe("field ownership at the real commit boundary", () => {
+  it("commits the CTA fields in the actual bytes, not just the object", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const { validateArticlePayload } = await import("@/lib/githubArticleCommit");
+
+    const frontmatter = mergeRefreshedFrontmatter(originalOnDisk(), modelOutput());
+    const { errors, content } = validateArticlePayload(
+      { slug: "what-the-franchise-process-looks-like", frontmatter, body: BODY },
+      { today: TODAY },
+    );
+
+    expect(errors).toEqual([]);
+
+    // Parse the committed bytes back, because the bytes are what production reads and what the two
+    // CTA blocks are gated on. Asserting on the object would check something adjacent to the file.
+    const written = matter(content).data;
+    expect(written.checklistSlug).toBe("universal");
+    expect(written.escapeKit).toBe(true);
+  });
+
+  it("skips an article with a named missing-field error, not a serialization failure", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const { validateArticlePayload } = await import("@/lib/githubArticleCommit");
+
+    const output = modelOutput();
+    delete output.excerpt;
+    const frontmatter = mergeRefreshedFrontmatter(originalOnDisk(), output);
+    const { errors } = validateArticlePayload(
+      { slug: "what-the-franchise-process-looks-like", frontmatter, body: BODY },
+      { today: TODAY },
+    );
+
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toMatch(/missing REQUIRED "excerpt"/);
+    // The distinction this test exists for: assigning undefined instead of deleting would also
+    // reject the article, but through js-yaml refusing to dump, whose message names no field.
+    expect(errors[0]).not.toMatch(/could not be serialized/);
+  });
+});
+
+describe("the live corpus keeps its CTA wiring through a refresh", () => {
+  it("preserves checklistSlug and escapeKit on every article that has them", async () => {
+    const { getAllArticles, mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const articles = getAllArticles();
+
+    // A tripwire, the same one every guard in this repo carries: a run that examined nothing has
+    // not passed, it has failed to look.
+    expect(articles.length).toBeGreaterThan(0);
+
+    let withChecklist = 0;
+    let withEscapeKit = 0;
+
+    for (const article of articles) {
+      // Simulate the refresh faithfully: the model returns the eight prompted fields for THIS
+      // article and nothing else.
+      const output = modelOutput({
+        slug: article.frontmatter.slug,
+        category: article.frontmatter.category,
+        tier: article.frontmatter.tier,
+        relatedSlugs: article.frontmatter.relatedSlugs,
+      });
+      const merged = mergeRefreshedFrontmatter(article.frontmatter, output);
+
+      if (Object.hasOwn(article.frontmatter, "checklistSlug")) {
+        withChecklist += 1;
+        expect(merged.checklistSlug).toBe(article.frontmatter.checklistSlug);
+      }
+      if (Object.hasOwn(article.frontmatter, "escapeKit")) {
+        withEscapeKit += 1;
+        expect(merged.escapeKit).toBe(article.frontmatter.escapeKit);
+      }
+    }
+
+    // Assert the corpus still has something to protect. If a future edit strips these fields from
+    // the articles, the loop above would pass vacuously and this catches that instead.
+    expect(withChecklist).toBeGreaterThan(0);
+    expect(withEscapeKit).toBeGreaterThan(0);
   });
 });

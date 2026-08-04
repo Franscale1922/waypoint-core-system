@@ -11,9 +11,9 @@
  * against `main`, touching no local git, so the hook never runs and CI only ever reports after the
  * commit already exists.
  *
- * The exposure was not theoretical. src/inngest/functions.ts pins `slug`, `category`, `tier` and
- * `relatedSlugs` back to the original article but takes `title`, `excerpt` and `faqs` from model
- * output as-is, and src/lib/articles.ts types the first two as required with a CAST, which is a
+ * The exposure was not theoretical. src/inngest/functions.ts preserves every field the model does
+ * not own from the original article but takes `title`, `excerpt` and `faqs` from model output
+ * as-is, and src/lib/articles.ts types the first two as required with a CAST, which is a
  * compile-time claim over unvalidated markdown and not a runtime check. An article committed
  * without a `title` reaches src/app/components/ResourcesGrid.tsx, which calls
  * `a.title.toLowerCase()` on every article with no guard, and throws.

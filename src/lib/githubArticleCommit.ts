@@ -398,11 +398,15 @@ async function githubRequest<T>(
  * Serialize one article to the exact bytes that will be committed.
  *
  * BOTH dates are stamped, never taken from the caller. The caller here is a language model: the
- * refresh hands it an existing article and keeps the frontmatter it returns, so before this every
- * field it invented was preserved verbatim. `date` was already overwritten; `updatedAt` was not,
- * which meant model output landed on `main` unchecked, and `main` is what the site builds from. A
- * model has no basis for authoring either value, so it no longer gets to: this is the single point
- * where the commit path turns frontmatter into a file, and it stamps them here.
+ * refresh used to hand it an existing article and keep the frontmatter it returned, so every field
+ * it invented was preserved verbatim. `date` was already overwritten; `updatedAt` was not, which
+ * meant model output landed on `main` unchecked, and `main` is what the site builds from. A model
+ * has no basis for authoring either value, so it no longer gets to: this is the single point where
+ * the commit path turns frontmatter into a file, and it stamps them here.
+ *
+ * mergeRefreshedFrontmatter now also stops invented fields upstream, by reading only the three the
+ * model owns. This stamp stays regardless: it is the last line before the bytes, and
+ * commitRefreshedArticles is exported and callable with arbitrary payloads.
  *
  * `today` is a parameter so the stamped value and the value the guard below validates against are
  * the same one, rather than two `new Date()` calls that can land on opposite sides of midnight.
@@ -433,11 +437,11 @@ export function serializeArticle(
  * and so that restoring the passthrough fails closed instead of quietly reopening the hole.
  *
  * The FIELD half is load-bearing and fires on real input. Nothing stamps `title`, `excerpt` or
- * `faqs`: src/inngest/functions.ts pins slug, category, tier and relatedSlugs back to the original
- * article and takes those three from model output verbatim. They cannot be stamped the way a date
- * can, because unlike a date the pipeline has no correct value to substitute, which is the whole
- * reason this is a validate-and-skip rather than an overwrite. Before this existed they were the
- * one part of a refreshed article that reached `main` with nothing in front of it at all.
+ * `faqs`: mergeRefreshedFrontmatter in src/lib/contentRefresh.ts preserves every other field from
+ * the original article and takes those three from model output verbatim. They cannot be stamped the
+ * way a date can, because unlike a date the pipeline has no correct value to substitute, which is
+ * the whole reason this is a validate-and-skip rather than an overwrite. Before this existed they
+ * were the one part of a refreshed article that reached `main` with nothing in front of it at all.
  *
  * Both are checked against the SERIALIZED BYTES rather than the frontmatter object, because the
  * bytes are what gets committed and what production later parses. Validating the object would
