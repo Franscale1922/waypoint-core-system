@@ -14,11 +14,11 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `aaa8437` — PR #22 **merged and deployed green 2026-08-04**; #24/#25 before it |
+| `main` | `18bf899` — PRs #22 and #26 **merged and deployed green 2026-08-04**; #24/#25 before them |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
-| `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`). Remote branch `b3ad9b5` still exists on purpose: PR #26 is based on it |
-| `claude/beautiful-napier-ede2fc` | `0614c7c` — **PR #26 open**, VideoObject validation. **Needs a rebase, not a retarget — see below** |
+| `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`), deployed green. Safe to delete the remote branch now that #26 is off it |
+| `claude/beautiful-napier-ede2fc` | **merged as #26** (`18bf899`), deployed green, after a rebase onto `main` |
 | `claude/competent-easley-9eec18` | **PR #23 open**, aeo-audit gate hardening, base `main`, checks green. Merging is a go-live |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
@@ -58,42 +58,39 @@ structurally enforced. See "The gap worth acting on separately" in the review do
 
 ---
 
-## 🟡 The open structured-data stack (added 2026-08-04, separate from everything above)
+## ✅ The structured-data stack is CLOSED (2026-08-04)
 
-Two branches sit in a stack that has **not** reached `main`. They are independent of the #24/#25
-work and were developed in parallel worktrees.
+Both branches reached `main` and deployed green. Nothing is left open here.
 
 ```
-main (aaa8437)  <- base branch MERGED here as #22, deployed green 2026-08-04
- └─ seo/structured-data-entity-graph  b3ad9b5   merged as #22; branch kept alive for #26
-     └─ claude/beautiful-napier-ede2fc 0614c7c  PR #26, base = the branch above
+main (18bf899)
+ ├─ #22  seo/structured-data-entity-graph   entity graph + date validation   MERGED, deployed
+ └─ #26  claude/beautiful-napier-ede2fc     VideoObject validation           MERGED, deployed
 ```
 
-**The base merged as #22 on 2026-08-04. PR #26 now needs a REBASE, not a retarget.**
+**One trap worth carrying forward, because it will recur on every stacked branch in this repo.**
 
-The original plan here said "merge base first, then #26", which assumed the base would merge with
-its SHAs intact. It did not: this repo squash-merges PRs (see the `(#21)`/`(#24)`/`(#25)` suffixes
-in `main`), so #22 collapsed the five base commits into one NEW commit `aaa8437`. Those five SHAs
-now exist nowhere in `main`'s history, so simply retargeting #26 at `main` would replay all five as
-if they were unmerged, conflicting against the squashed copy already there.
+The plan here originally said "merge base first, then #26", which assumed the base would merge with
+its SHAs intact. It did not: **this repo squash-merges PRs** (see the `(#21)`/`(#24)`/`(#25)`
+suffixes in `main`), so #22 collapsed five commits into one NEW SHA. The originals then existed
+nowhere in `main`, and retargeting #26 at `main` would have replayed all five against the squashed
+copy already there.
 
-The fix is one command, run by whoever owns that branch:
+A squash-merged base needs a **rebase**, not a retarget:
 
 ```bash
-git rebase --onto origin/main aad80e6 claude/beautiful-napier-ede2fc
+git rebase --onto origin/main <old-base-tip> <stacked-branch>
 ```
 
-That drops the five already-merged commits and keeps only #26's own two (`cad09e6`, `0614c7c`).
-Then retarget the PR to `main` and force-push the branch.
+Here that dropped the five merged commits and kept only #26's own two. It was clean (the two
+branches touched disjoint parts of the file), then force-push with `--force-with-lease`, retarget,
+verify, merge. **Stack a branch on another in this repo only if you are ready to do this**, or base
+it on `main` from the start and accept the noisier diff.
 
-**It was deliberately NOT done in the #22 session**, because it rewrites published history on a
-branch a background session may still hold, and force-pushing another session's branch silently is
-exactly the destructive move that needs a human decision first. The remote base branch
-`seo/structured-data-entity-graph` was therefore left undeleted, so #26 is not broken in the
-meantime: it still shows a clean 2-commit diff against its existing base.
-
-**Do not merge #26 into its current base.** That base is already in `main`; merging there would
-park the VideoObject work on a dead branch instead of shipping it.
+Two safeguards that made it recoverable, worth repeating: the remote base branch was left
+**undeleted** until the stacked PR was off it, so #26 was never broken in the interim; and the
+rebase waited until the background session owning that branch had **ended**, because force-pushing
+a branch another session holds is how work gets silently destroyed.
 
 **`seo/structured-data-entity-graph` (shipped as #22)** — makes `/about#kelsey` the one
 authoritative Person node, stops `toWww` rewriting lookalike hosts, and validates every date bound
