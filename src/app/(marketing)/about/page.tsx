@@ -4,11 +4,16 @@ import Link from "next/link";
 import VimeoFacade from "../../components/VimeoFacade";
 import { videoObjectSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
+import {
+  VIDEO_ID,
+  VIMEO_FALLBACK,
+  usableDurationSeconds,
+  usableHttpUrl,
+  type VimeoMeta,
+} from "./video-metadata";
 
 // Revalidate every hour: re-fetches Vimeo oEmbed metadata if it ever changes
 export const revalidate = 3600;
-
-const VIDEO_ID = "1174270863";
 
 // Plain-text transcript of the About video (Kelsey's own words; timestamps and
 // speaker labels stripped, the speech-to-text glitch "Blumen Blinds" corrected
@@ -27,19 +32,17 @@ The cool part is, I already have a franchise brand that I still own and my famil
 
 I decided to just do a video instead of typing up an email or sending you to my website. In the long run, this is me, this is what I do, and I absolutely love it. So if you want someone with deep knowledge and lots of roots and history in the franchising space, I'm interested in getting to know you and seeing if I can be helpful. Okay, here's my elevator pitch. Hope you have a great day, and hope we get in contact. Bye.`;
 
-type VimeoMeta = {
-  thumbnailUrl?: string;
-  uploadDate?: string; // ISO 8601 date (required by schema.org VideoObject)
-  duration?: string; // ISO 8601 duration, e.g. PT3M12S
-  title?: string;
-  description?: string;
-};
-
 function secondsToISO8601(seconds: number): string {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
+  const whole = Math.floor(seconds);
+  const m = Math.floor(whole / 60);
+  const s = whole % 60;
   return `PT${m}M${s}S`;
 }
+
+// usableHttpUrl / usableDurationSeconds live in video-metadata.ts rather than
+// here because they are one half of the fallback contract: they decide what
+// counts as live data, and VIMEO_FALLBACK supplies the rest. Keeping them beside
+// it also lets a unit test import them without dragging this whole page in.
 
 // Vimeo's oEmbed `upload_date` is "YYYY-MM-DD HH:MM:SS" (UTC, no offset). Google
 // wants uploadDate as a full ISO 8601 datetime WITH a timezone, so we normalize
@@ -56,44 +59,43 @@ function toVideoUploadDate(raw: unknown): string | undefined {
 
 async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
-    // Two deliberate choices here, and they depend on each other.
-    //
-    // 1. The deadline. A Vimeo connection that is accepted and then stalls before
-    //    headers throws nothing, so the catch below cannot help and this server
-    //    component blocks until Vercel kills the function -- 300s by default, and
-    //    nothing in this repo overrides it. That is a stalled /about for a real
-    //    visitor. AbortSignal.timeout rejects with a TimeoutError, which the catch
-    //    turns into the same empty-meta fallback a Vimeo outage already produces.
-    //    5s is ~10x the slowest healthy oEmbed response measured (0.20-0.52s), so
-    //    it costs a healthy fetch nothing.
-    //
-    // 2. No `next: { revalidate }`. It looked merely redundant beside the
-    //    page-level `revalidate = 3600` above, but it was worse: it gave this
-    //    fetch its own cache entry, and Next drops the abort signal whenever it
-    //    refreshes a STALE entry ("don't pass through signal when revalidating",
-    //    patch-fetch.js). The hourly stale refresh is exactly when Vimeo gets
-    //    re-contacted, so the fetch-level cache disarmed the deadline on the very
-    //    path it was added for. Without it Next marks the fetch auto-no-cache at
-    //    runtime, no stale entry ever exists, and the signal always applies.
-    //    This does NOT make the page dynamic: Next explicitly exempts
-    //    auto-no-cache from the ISR dynamic switch, so /about stays statically
-    //    generated and cached by the page-level revalidate.
     const res = await fetch(
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
+      // A refused connection fails fast, but a connection Vimeo ACCEPTS and then
+      // never answers does not: without a deadline it blocks this render until
+      // the host gives up, which during `next build` means stalling a deploy on
+      // a third-party hang. The abort surfaces as a throw, so it lands in the
+      // same catch as any other failure and degrades to VIMEO_FALLBACK. Nothing
+      // in this repo sets maxDuration, so the host would not step in until 300s.
+      //
+      // Deliberately no `next: { revalidate }` beside the signal. It looked
+      // merely redundant next to the page-level `revalidate = 3600`, but it was
+      // worse than redundant: it gave this fetch its own cache entry, and Next
+      // drops the abort signal whenever it refreshes a STALE one ("don't pass
+      // through signal when revalidating", patch-fetch.js). The hourly stale
+      // refresh is exactly when Vimeo gets re-contacted, so the fetch-level
+      // cache disarmed the deadline on the very path it was added for. Without
+      // it the fetch is auto-no-cache at runtime, no stale entry ever exists,
+      // and the signal always applies. This does NOT make the page dynamic:
+      // Next exempts auto-no-cache from the ISR dynamic switch, and the build
+      // route table confirms /about still prerenders static with a 1h
+      // revalidate.
       { signal: AbortSignal.timeout(5000) }
     );
+    // {} here and in the catch below is "we learned nothing", NOT "this video has
+    // no metadata". The caller reads VIMEO_FALLBACK for anything left unset, so a
+    // Vimeo outage costs freshness rather than the whole VideoObject.
     if (!res.ok) return {};
     const data = await res.json();
     // Normalize Vimeo's "YYYY-MM-DD HH:MM:SS" to a timezone-qualified ISO 8601
     // datetime (Google flags date-only / no-timezone values on VideoObject).
     const uploadDate = toVideoUploadDate(data.upload_date);
+    const durationSeconds = usableDurationSeconds(data.duration);
     return {
-      thumbnailUrl: data.thumbnail_url as string | undefined,
+      thumbnailUrl: usableHttpUrl(data.thumbnail_url),
       uploadDate,
       duration:
-        typeof data.duration === "number"
-          ? secondsToISO8601(data.duration)
-          : undefined,
+        durationSeconds === undefined ? undefined : secondsToISO8601(durationSeconds),
       title: data.title as string | undefined,
       description: data.description as string | undefined,
     };
@@ -119,47 +121,52 @@ export const metadata: Metadata = {
 
 export default async function AboutPage() {
   const vimeo = await getVimeoMeta(VIDEO_ID);
-  const thumbnailUrl = vimeo.thumbnailUrl;
+  // Live oEmbed wins whenever it answers; VIMEO_FALLBACK only fills the gaps a
+  // transient Vimeo failure would otherwise leave. See video-metadata.ts for why
+  // these are pinned instead of fetched every time, and why neither ISR nor
+  // removing getVimeoMeta's catch solves it.
+  const thumbnailUrl = vimeo.thumbnailUrl ?? VIMEO_FALLBACK.thumbnailUrl;
+  const uploadDate = vimeo.uploadDate ?? VIMEO_FALLBACK.uploadDate;
+  const duration = vimeo.duration ?? VIMEO_FALLBACK.duration;
   const videoName = "Kelsey Stuart on what honest franchise consulting actually looks like";
   const videoDescription =
     "Waypoint Franchise Advisors founder Kelsey Stuart explains, in about three minutes, what honest, no-pitch franchise consulting actually looks like and how he helps people decide whether franchise ownership fits their life.";
-  // Only emit VideoObject schema when Vimeo gives us a real upload date and
-  // thumbnail (both required by schema.org). Never fabricate these values.
+  // No "did Vimeo answer?" pre-check here any more, deliberately. It used to
+  // guard against oEmbed returning {}, but that is exactly the case VIMEO_FALLBACK
+  // now covers, so the required fields are always populated and the check could
+  // only ever be dead code.
   //
-  // videoObjectSchema validates all of this and returns undefined on a bad
-  // value, so this pre-check is no longer what keeps invalid markup off the
-  // page. It stays because a failed oEmbed fetch returns {} (see the catch in
-  // getVimeoMeta), and that is an expected third-party outage rather than an
-  // authoring mistake: warning about it hourly would be noise, not signal.
-  const videoSchema =
-    vimeo.uploadDate && (thumbnailUrl)
-      ? videoObjectSchema(
-          {
-            name: videoName,
-            description: videoDescription,
-            thumbnailUrl: thumbnailUrl,
-            uploadDate: vimeo.uploadDate,
-            duration: vimeo.duration,
-            embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
-            // No contentUrl, deliberately. Google reads it as a direct link to
-            // the video file's actual content bytes and says in as many words not
-            // to link to the page the video lives on, which is precisely what
-            // https://vimeo.com/<id> is. We used to send exactly that, so the
-            // property could never do its job: Google fetched HTML where it
-            // expected video bytes.
-            //
-            // There is nothing correct to put here instead. getVimeoMeta reads
-            // oEmbed, which returns no media file URL, and a standard Vimeo
-            // account exposes no stable public direct-file URL. contentUrl is
-            // only RECOMMENDED, and embedUrl above already carries this node's
-            // rich-result eligibility on its own, so omitting it forfeits nothing
-            // the watch-page value was delivering. Do not add it back without a
-            // verified URL that serves the video bytes themselves.
-            transcript: VIDEO_TRANSCRIPT,
-          },
-          "https://www.waypointfranchise.com/about",
-        )
-      : null;
+  // Dropping it also restores videoObjectSchema's warning as real signal. That
+  // warning was previously suppressed because a third-party outage could trip it
+  // hourly through no fault of ours. An outage can no longer reach it, so if it
+  // ever fires now it means the pinned values themselves are malformed: an
+  // authoring mistake, which is precisely what it should be shouting about.
+  const videoSchema = videoObjectSchema(
+    {
+      name: videoName,
+      description: videoDescription,
+      thumbnailUrl: thumbnailUrl,
+      uploadDate: uploadDate,
+      duration: duration,
+      embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
+      // No contentUrl, deliberately. Google reads it as a direct link to
+      // the video file's actual content bytes and says in as many words not
+      // to link to the page the video lives on, which is precisely what
+      // https://vimeo.com/<id> is. We used to send exactly that, so the
+      // property could never do its job: Google fetched HTML where it
+      // expected video bytes.
+      //
+      // There is nothing correct to put here instead. getVimeoMeta reads
+      // oEmbed, which returns no media file URL, and a standard Vimeo
+      // account exposes no stable public direct-file URL. contentUrl is
+      // only RECOMMENDED, and embedUrl above already carries this node's
+      // rich-result eligibility on its own, so omitting it forfeits nothing
+      // the watch-page value was delivering. Do not add it back without a
+      // verified URL that serves the video bytes themselves.
+      transcript: VIDEO_TRANSCRIPT,
+    },
+    "https://www.waypointfranchise.com/about",
+  );
   return (
     <>
       {videoSchema && <JsonLd data={videoSchema} />}
@@ -221,7 +228,7 @@ export default async function AboutPage() {
           </p>
           <VimeoFacade
             videoId={VIDEO_ID}
-            thumbnailUrl={thumbnailUrl ?? "https://i.vimeocdn.com/video/2134803942-aaf25817575a9a51d5162ec0b3de4af5986faedf1bfb3597e853e15e9d09f1bb-d_1280?region=us"}
+            thumbnailUrl={thumbnailUrl}
             label="3 min · Watch"
             headline="Who is this Kelsey guy?"
             title="Kelsey Stuart on what honest franchise consulting actually looks like"
