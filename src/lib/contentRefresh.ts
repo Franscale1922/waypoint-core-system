@@ -256,8 +256,16 @@ export function getRefreshCadenceDays(article: Article): number | null {
   const slugTokens = new Set(slug.toLowerCase().split(/[^a-z0-9]+/));
   if (FINANCING_KEYWORDS.some((kw) => slugTokens.has(kw) || slugTokens.has(`${kw}s`))) return 365;
 
-  // Industry Spotlights by tier, for an article whose category says otherwise.
-  if (tier === 3) return 548;
+  // Industry Spotlights category → 18 months.
+  //
+  // BOTH halves, as it has always been. An intermediate revision of this change
+  // split them to promote the category above the financing keywords; reverting
+  // that promotion left the `tier === 3` half behind on its own, which silently
+  // dropped every Industry Spotlight whose tier is not 3 down to the Going
+  // Deeper or default cadence. Category and tier are 1:1 across all 45 articles,
+  // so a whole-corpus comparison cannot see that regression: it is exactly the
+  // kind a "nothing changed" check passes.
+  if (category === "Industry Spotlights" || tier === 3) return 548;
 
   // Remaining Going Deeper process articles → 24 months
   if (category === "Going Deeper" || tier === 2) return 730;

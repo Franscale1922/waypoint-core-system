@@ -1408,12 +1408,18 @@ export const contentRefreshFunction = inngest.createFunction(
         // a rollback replays an array into code that wants an array, and `discovery-skips` is
         // simply a step the old code never asks for, so its cached value is ignored rather than
         // misread. Nothing in the chain below needs a new ID.
-        const articles = await step.run("load-all-articles", async () => {
-            return discoverArticles().articles;
-        });
-        const discoverySkips = await step.run("discovery-skips", async () => {
-            return discoverArticles().skipped;
-        });
+        // ONE read feeding both steps. Calling discoverArticles() inside each would let them
+        // execute at different times, which is not hypothetical: Inngest re-enters the function
+        // body between steps and retries individual steps, so the second read can see a corpus the
+        // first one did not. The two would then describe different versions of the directory, and
+        // a file could be reported as both refreshed and skipped in the same summary.
+        //
+        // On a resumed run this call re-executes and its result is discarded, because both steps
+        // replay from cache. That is the correct outcome and costs one directory read: the cached
+        // pair still comes from whichever single call produced them originally.
+        const discovery = discoverArticles();
+        const articles = await step.run("load-all-articles", async () => discovery.articles);
+        const discoverySkips = await step.run("discovery-skips", async () => discovery.skipped);
 
         // ── Step 2: Identify stale articles ───────────────────────────────────
         const staleArticles = await step.run("identify-stale", async () => {
@@ -1533,6 +1539,23 @@ export const contentRefreshFunction = inngest.createFunction(
                 newFrontmatter.slug = article.slug;
                 newFrontmatter.category = article.frontmatter.category;
                 newFrontmatter.tier = article.frontmatter.tier;
+                // reviewCadence is scheduling metadata, not content, so it is pinned like the
+                // taxonomy above rather than taken from model output. Left unpinned it was simply
+                // ERASED: `newFrontmatter` is the model's frontmatter wholesale, the model is never
+                // told this field exists, and so the first refresh of an article silently deleted
+                // the override and returned it to the slug guess it was added to correct. The
+                // damage would surface a year later as an article refreshed on the wrong cadence.
+                //
+                // Assigned conditionally because `matter.stringify` throws on a key holding an
+                // explicit `undefined`, and most articles have no cadence to pin back. The delete
+                // is the other half: it stops the model INVENTING a value, which is also why
+                // nothing validates this field on the write path. It can only ever hold a value
+                // that already passed the pre-push gate on a human's article.
+                if (article.frontmatter.reviewCadence !== undefined) {
+                    newFrontmatter.reviewCadence = article.frontmatter.reviewCadence;
+                } else {
+                    delete newFrontmatter.reviewCadence;
+                }
 
                 // Compliance check before writing
                 const { passes, violations } = passesComplianceCheck(newBody);

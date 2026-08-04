@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import matter from "gray-matter";
 import fs from "fs";
-import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
+import { mkdtempSync, rmSync, writeFileSync, mkdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -234,6 +235,16 @@ describe("refresh cadence", () => {
     expect(getRefreshCadenceDays(articleFor("pilates-studio-franchises", "Industry Spotlights", 3))).toBe(548);
   });
 
+  it("recognises an Industry Spotlight by CATEGORY as well as by tier", () => {
+    // Both halves of `category === "Industry Spotlights" || tier === 3`. Reverting an intermediate
+    // precedence change left only the tier half behind at one point, which dropped every spotlight
+    // whose tier is not 3 to the Going Deeper or default cadence. Category and tier are 1:1 across
+    // all 45 articles, so the whole-corpus comparison used to check this work is blind to it: this
+    // is the assertion that is not.
+    expect(getRefreshCadenceDays(articleFor("mosquito-control-franchises", "Industry Spotlights", 2))).toBe(548);
+    expect(getRefreshCadenceDays(articleFor("some-spotlight", "Something Else", 3))).toBe(548);
+  });
+
   it("matches financing keywords as slug TOKENS, not as substrings", () => {
     // `slug.includes("fee")` fires inside "coffee". On a franchise site that is not hypothetical:
     // a coffee franchise article would take the 365-day financing cadence instead of its 730-day
@@ -323,6 +334,67 @@ describe("an authored reviewCadence overrides every inference", () => {
     } finally {
       warn.mockRestore();
     }
+  });
+
+  it("survives a refresh instead of being erased by it", async () => {
+    // The refresh replaces frontmatter wholesale with model output and pins four fields back. The
+    // model is never told this field exists, so an unpinned reviewCadence is silently DELETED by
+    // the first refresh, returning the article to the slug guess the field was added to correct.
+    // Nothing would notice for a year.
+    //
+    // Driven through the REAL serializer, because the bytes committed to main are what a later run
+    // parses; asserting on the frontmatter object would check something adjacent to the artifact.
+    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+
+    const original = withCadence("some-article", "Going Deeper", 2, "strategic").frontmatter;
+    // What the model returns: the same article, minus the field it was never told about.
+    const modelOutput = { ...original };
+    delete (modelOutput as Record<string, unknown>).reviewCadence;
+
+    // The pin, as src/inngest/functions.ts applies it.
+    if (original.reviewCadence !== undefined) modelOutput.reviewCadence = original.reviewCadence;
+
+    const committed = matter(serializeArticle(modelOutput, "Body.\n", "2026-08-04"));
+    expect(committed.data.reviewCadence).toBe("strategic");
+    expect(
+      getRefreshCadenceDays({
+        slug: "some-article",
+        frontmatter: committed.data as Article["frontmatter"],
+        body: "",
+        filePath: "/content/articles/some-article.md",
+      }),
+    ).toBeNull();
+  });
+
+  it("cannot be invented by the model on an article that never declared one", async () => {
+    // The other half of the pin. If the model emits a reviewCadence the author never wrote, it is
+    // deleted rather than committed, which is why nothing validates this field on the write path:
+    // it can only ever hold a value that already passed the pre-push gate.
+    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+
+    const original = articleFor("some-article", "Going Deeper", 2).frontmatter;
+    const modelOutput = { ...original, reviewCadence: "strategic" };
+
+    if (original.reviewCadence !== undefined) modelOutput.reviewCadence = original.reviewCadence;
+    else delete (modelOutput as Record<string, unknown>).reviewCadence;
+
+    const committed = matter(serializeArticle(modelOutput, "Body.\n", "2026-08-04"));
+    expect(committed.data.reviewCadence).toBeUndefined();
+  });
+
+  it("is pinned by the refresh handler itself, not merely by the two tests above", () => {
+    // STRUCTURAL GUARD, in the style of tests/unit/background-work-coverage.test.ts.
+    //
+    // The two tests above replicate the pin to drive the real serializer, which proves the bytes
+    // round-trip but would keep passing if somebody deleted the pin from the handler tomorrow.
+    // The pin lives inside an Inngest step that a unit test cannot invoke, so the honest check is
+    // against the source: both halves must be there, because preserving the author's value and
+    // refusing the model's are what together make this field un-forgeable.
+    const src = readFileSync(join(process.cwd(), "src", "inngest", "functions.ts"), "utf8");
+    const pinned = new Set([...src.matchAll(/newFrontmatter\.(\w+)\s*=/g)].map((m) => m[1]));
+
+    expect(pinned).toContain("reviewCadence");
+    expect(src).toMatch(/delete\s+newFrontmatter\.reviewCadence/);
   });
 
   it("is not fooled by a value inherited from Object.prototype", () => {
