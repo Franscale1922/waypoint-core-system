@@ -434,8 +434,12 @@ produced a confident false claim. Check against source before acting.
 comments, so the rule is documented here.
 
 **A push to `main` skips the production build when the commit touches ONLY** `.claude/`,
-`.codex-reviews/`, `CLAUDE.md`, `AGENTS.md`, or `.gitignore` — files no part of the build reads.
-Anything else deploys as before, **including `content/`**, which holds the 45 site-facing articles.
+`.codex-reviews/`, `CLAUDE.md`, `AGENTS.md`, `.gitignore`, or `docs/seo-reviews/` — files no part of
+the build reads. Anything else deploys as before, **including `content/`**, which holds the 45
+site-facing articles, and the rest of `docs/`.
+
+Read the exclusion list off `vercel.json` rather than trusting this paragraph: it was already stale
+once (it omitted `docs/seo-reviews/`, added later so session handoffs cost no deploy).
 
 Why it exists: every deploy runs `prisma db push` against the **production** database, so a no-op
 rebuild is not free.

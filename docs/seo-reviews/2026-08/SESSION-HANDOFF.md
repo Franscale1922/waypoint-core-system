@@ -84,9 +84,10 @@ all 8 new term pages serve 4 FAQ entries. `npm test` 291 unit + 19 auth green, `
 
 ## Open work, ranked
 
-1. ~~**Codex review.** Blocking.~~ Done 2026-08-04, merged. Two follow-ups came out of it and are
-   tracked separately: `aeo-audit.mjs` parsing robustness (it can pass while skipping checks it
-   claims to run) and JSON-LD identity duplication in `structured-data.ts`. Neither blocks anything.
+1. ~~**Codex review.** Blocking.~~ Done 2026-08-04, merged. Two follow-ups came out of it:
+   - ~~`aeo-audit.mjs` parsing robustness (it can pass while skipping checks it claims to run)~~
+     **DONE 2026-08-04 — see "The aeo-audit follow-up" below. Awaiting merge as PR #23.**
+   - JSON-LD identity duplication in `structured-data.ts` — **still open**, blocks nothing.
 2. **Differentiate more glossary terms**, evidence-first. Use the MCP:
    `queries_for_page` on `https://www.waypointfranchise.com/glossary` with `days: 90` names exactly
    which terms the index is absorbing.
@@ -98,6 +99,49 @@ all 8 new term pages serve 4 FAQ entries. `npm test` 291 unit + 19 auth green, `
    is its own go-live decision.
 6. **September re-measure.** The 18 differentiated terms are the experiment: do they take
    definitional queries off the index?
+
+---
+
+## The aeo-audit follow-up — done 2026-08-04, PR #23
+
+Branch `claude/competent-easley-9eec18`, HEAD `fa7524b`, two commits. **Open, mergeable, all checks
+green. Merging is a go-live**: it changes visitor-facing copy (contact hero, site-wide description,
+five industry/financing descriptions, the cost pages, two email footers).
+
+The deferred round-1 findings are all closed. Two were **live defects**, not theory:
+
+- **Section 11 counted only the literal em dash**, so copy that *renders* one was invisible.
+  `&mdash;` twice in the public contact hero, `&mdash;` in both email footers, and `—` in the
+  outreach prompt were all shipping while the gate printed `PASS Section 11: 0 em dashes`.
+- **The description gate reported `31/31` and `PASS`** while seven descriptions were over 160:
+  `layout.tsx` (168, the site-wide default), five `src/data` values (166-183), and the cost-page
+  template (196-206 rendered). It only ever opened `page.tsx`.
+
+Codex's stated symptom for the second was **wrong** (it claimed the gate could report `0/0`; it
+reported `31/31`). The hole underneath was real and larger than described. Reproduce before fixing.
+
+**Metadata is now read from the TypeScript AST.** The hand-rolled scanner leaked nine fail-open
+paths — spreads, quoted keys, shorthand, computed keys, arrow-exported `generateMetadata`,
+re-exports, `page.jsx`, string concatenation — each of which read as "absent" and exempted the
+route. Front matter is parsed with `gray-matter`. Both mean the script now needs `node_modules`; it
+no longer runs on a fresh clone before `npm install`. CI installs first, the hook is always local.
+
+Round 2 on the result returned **0 high** (from 3). Four new mediums it found are fixed too.
+
+### Do not reverse these
+
+- **The over-60-char title report stays an advisory.** Unchanged from the decision above, but now
+  `tests/unit/aeo-audit.test.ts` asserts an over-budget title still exits 0. If that test goes red,
+  someone has turned it into a gate.
+- **`aeo-desc-dynamic:` needs a reason, in a comment.** A bare token, or the token inside a string,
+  deliberately does not silence the gate. Five dynamic routes carry real reasons.
+- **Declined, and tracked separately:** the pre-push hook audits the *working tree*, not the commits
+  being pushed, so an uncommitted fix can let a bad commit through. True of all three checks in that
+  hook. The safe fix reads the pushed tree; a stash-based one risks losing uncommitted work.
+
+91 tests, each paired with the mutation that must break it. One of them originally passed by
+construction and was rewritten — worth remembering that a green test proves nothing until you have
+watched it go red.
 
 ---
 
