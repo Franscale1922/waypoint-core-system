@@ -58,6 +58,12 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
     meta: { slug, title: data.title, date: data.date, updatedAt: data.updatedAt ?? undefined, category: data.category, tier: data.tier, excerpt: data.excerpt, checklistSlug: data.checklistSlug ?? undefined, escapeKit: data.escapeKit ?? undefined },
     content,
     relatedSlugs: (data.relatedSlugs as string[]) ?? [],
+    // Same kind of assertion as `video` below, and not a validation boundary
+    // either: a list item written as a bare string, or a stray "-" that YAML
+    // parses as null, survives this cast. validFaqEntries() in
+    // app/lib/structured-data.ts filters the entries at the point of use, and
+    // the article route renders the visible FAQ from that same filtered set, so
+    // do not add a second, drifting validator here.
     faqs: (data.faqs as { q: string; a: string }[] | undefined) ?? undefined,
     // This `as` is an assertion, NOT a validation boundary: js-yaml will hand
     // back whatever the frontmatter says, including a Date for an unquoted

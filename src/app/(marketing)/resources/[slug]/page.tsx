@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import { getAllArticles, getArticleBySlug, getRelatedArticles } from "../../../../lib/articles";
-import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema, schemaDate } from "../../../lib/structured-data";
+import { SITE_URL, jsonLdGraph, breadcrumbSchema, videoObjectSchema, faqPageSchema, validFaqEntries, schemaDate } from "../../../lib/structured-data";
 import JsonLd from "../../../components/JsonLd";
 import RelatedArticles from "../../../../components/RelatedArticles";
 import EmailCapture from "../../../components/EmailCapture";
@@ -61,6 +61,12 @@ export default async function ArticlePage({ params }: Props) {
   // when the video cannot be described validly. jsonLdGraph filters nullish nodes,
   // so that undefined can be passed straight through.
   const videoNode = video ? videoObjectSchema(video, articleUrl) : undefined;
+  // And the same story again for the FAQ list. Filtered ONCE here, then used for
+  // both the markup and the visible section below: a malformed entry would
+  // otherwise crash this render exactly as it crashed the schema builder, and
+  // filtering only inside faqPageSchema would let the two drift apart, which is
+  // the one thing FAQPage markup may not do.
+  const faqEntries = validFaqEntries(faqs, `article "${slug}"`);
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
   const articleGraph = jsonLdGraph(
@@ -91,7 +97,7 @@ export default async function ArticlePage({ params }: Props) {
         { name: meta.title, url: articleUrl },
       ]),
     },
-    ...(faqs && faqs.length > 0 ? [faqPageSchema(faqs, articleUrl)] : []),
+    faqEntries.length > 0 ? faqPageSchema(faqEntries, articleUrl, `article "${slug}"`) : undefined,
     videoNode,
   );
   return (
@@ -133,17 +139,18 @@ export default async function ArticlePage({ params }: Props) {
       <section className="max-w-3xl mx-auto px-6">
         <InlineCapture />
       </section>
-      {/* Visible FAQ: same `faqs` array feeds the FAQPage schema above, so on-page
-          content and structured data stay in lockstep (Google requires the FAQ to be
-          present on the page for the markup to be eligible). */}
-      {faqs && faqs.length > 0 && (
+      {/* Visible FAQ: the same validated `faqEntries` feed the FAQPage schema above,
+          so on-page content and structured data stay in lockstep (Google requires the
+          FAQ to be present on the page for the markup to be eligible). Rendering the
+          raw `faqs` here instead would reintroduce both the drift and the crash. */}
+      {faqEntries.length > 0 && (
         <section className="max-w-3xl mx-auto px-6 py-12 sm:py-16 border-t border-[#e8e0d0]">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#8E3012] mb-4">
             Common Questions
           </p>
           <h2 className="font-playfair text-2xl sm:text-3xl mb-6">Frequently asked questions</h2>
           <div>
-            {faqs.map(({ q, a }) => (
+            {faqEntries.map(({ q, a }) => (
               <FAQItem key={q} q={q} a={a} />
             ))}
           </div>
