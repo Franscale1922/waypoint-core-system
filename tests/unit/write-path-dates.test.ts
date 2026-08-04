@@ -204,6 +204,87 @@ describe("the historical bug", () => {
   });
 });
 
+/**
+ * The encoder, tested directly.
+ *
+ * getConfig now rejects every branch name that actually needs encoding, so — exactly like the
+ * fail-closed validator test below — this cannot be reached through the public API with the inputs
+ * that matter. Driving it directly is the only honest way to show it encodes them correctly, which
+ * is what keeps the URL right if that validation is ever loosened.
+ */
+describe("encodeRefForPath", () => {
+  it.each([
+    ["main", "main"],
+    ["release/1.0", "release/1.0"],
+    ["feature/JIRA-12_v2.1", "feature/JIRA-12_v2.1"],
+    // Legal in a ref, each corrupting the URL its own way: fragment, stray escape, separator.
+    ["release#1", "release%231"],
+    ["rel%2Fx", "rel%252Fx"],
+    ["a&b", "a%26b"],
+    ["a+b", "a%2Bb"],
+    // Slashes survive; only the segments around them are encoded.
+    ["release#1/hot", "release%231/hot"],
+  ])("encodes %o as %o", async (input, expected) => {
+    const { encodeRefForPath } = await import("@/lib/githubArticleCommit");
+    expect(encodeRefForPath(input)).toBe(expected);
+  });
+
+  it("never turns a separator into %2F", async () => {
+    const { encodeRefForPath } = await import("@/lib/githubArticleCommit");
+    // The whole reason this is not encodeURIComponent(branch).
+    expect(encodeURIComponent("release/1.0")).toBe("release%2F1.0");
+    expect(encodeRefForPath("release/1.0")).toBe("release/1.0");
+  });
+});
+
+/**
+ * The two paths the commit path actually requests.
+ *
+ * This is the assertion that guards the CALL SITES rather than the encoder. Because getConfig
+ * rejects every branch name needing encoding, driving commitRefreshedArticles can never distinguish
+ * an encoded path from a raw one — verified by mutation: reverting both call sites to raw
+ * interpolation left all the end-to-end tests green. So the paths are asserted here, where a branch
+ * that needs encoding can still be passed in.
+ */
+describe("branchRefPaths", () => {
+  it("encodes the ref in both the read and the update path", async () => {
+    const { branchRefPaths } = await import("@/lib/githubArticleCommit");
+
+    // The fragment case: raw, the update path is sent as `/git/refs/heads/release`, which on a repo
+    // that also has a `release` branch advances the wrong ref while every response looks healthy.
+    expect(branchRefPaths("release#1")).toEqual({
+      read: "/git/ref/heads/release%231",
+      update: "/git/refs/heads/release%231",
+    });
+    expect(branchRefPaths("a&b")).toEqual({
+      read: "/git/ref/heads/a%26b",
+      update: "/git/refs/heads/a%26b",
+    });
+  });
+
+  it("leaves an ordinary or slashed branch untouched", async () => {
+    const { branchRefPaths } = await import("@/lib/githubArticleCommit");
+
+    expect(branchRefPaths("main")).toEqual({
+      read: "/git/ref/heads/main",
+      update: "/git/refs/heads/main",
+    });
+    expect(branchRefPaths("release/1.0")).toEqual({
+      read: "/git/ref/heads/release/1.0",
+      update: "/git/refs/heads/release/1.0",
+    });
+  });
+
+  it("keeps GitHub's singular/plural asymmetry, which is not a typo", async () => {
+    const { branchRefPaths } = await import("@/lib/githubArticleCommit");
+    const { read, update } = branchRefPaths("main");
+
+    expect(read).toContain("/git/ref/heads/");
+    expect(update).toContain("/git/refs/heads/");
+    expect(read).not.toBe(update);
+  });
+});
+
 describe("commitRefreshedArticles: nothing is written when validation fails", () => {
   const ORIGINAL_ENV = { ...process.env };
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -278,6 +359,156 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/not a real calendar day/);
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/main was not\s+advanced/);
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The branch name reaches production through a URL, not through git.
+   *
+   * `#`, `%`, `&` and `+` are all legal in a branch name (`git check-ref-format` accepts
+   * `refs/heads/release#1`) and all of them mean something else inside a URL. Interpolated raw, a
+   * `#` opens a fragment: the request for `/git/refs/heads/release#1` leaves as
+   * `/git/refs/heads/release`, so on a repo that also has a `release` branch the PATCH advances
+   * THAT branch, and every response still looks healthy.
+   *
+   * These assert on the URL the stub was actually called with, which is the only place the
+   * difference is observable.
+   */
+  it("keeps the slashes in a slashed branch instead of encoding them away", async () => {
+    process.env.GITHUB_BRANCH = "release/1.0";
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    await commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]);
+
+    const urls = fetchMock.mock.calls.map(([url]) => String(url));
+    // The trap in the fix itself: encodeURIComponent over the whole value yields `release%2F1.0`,
+    // which GitHub reads as a branch of that literal name. Both the read and the PATCH must keep
+    // `/` as a path separator.
+    expect(urls).toContain("https://api.github.com/repos/Franscale1922/waypoint-core-system/git/ref/heads/release/1.0");
+    const patch = fetchMock.mock.calls.find(([, init]) => init?.method === "PATCH");
+    expect(String(patch![0])).toBe(
+      "https://api.github.com/repos/Franscale1922/waypoint-core-system/git/refs/heads/release/1.0",
+    );
+    expect(urls.some((url) => url.includes("%2F"))).toBe(false);
+  });
+
+  it("refuses a branch name that would change which ref the URL points at", async () => {
+    process.env.GITHUB_BRANCH = "release#1";
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+    await expect(
+      commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]),
+    ).rejects.toThrow(/Refusing to use GITHUB_BRANCH/);
+    // The consequence that matters: rejected on configuration, before a blob exists or any ref moved.
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  /**
+   * This error is thrown inside an Inngest step, so it reaches failure telemetry and the monthly
+   * summary email. The values that trigger it are, by the check's own premise, most likely
+   * mis-mapped environment variables, so the rejected bytes could be anything that got pointed at
+   * the wrong name. The message names the variable and states the rule; it must not quote the value.
+   */
+  it("names the offending variable without echoing what was in it", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const secretish = "ghp_NOTAREALTOKEN&pretend=this=leaked";
+
+    process.env.GITHUB_BRANCH = secretish;
+    const error = await commitRefreshedArticles(batch).catch((e: Error) => e);
+
+    expect(error).toBeInstanceOf(Error);
+    const message = (error as Error).message;
+    expect(message).toContain("GITHUB_BRANCH");
+    expect(message).toContain("not a plain slash-separated name");
+    // The whole point. Neither the value nor any recognisable run of it survives into the message.
+    expect(message).not.toContain(secretish);
+    expect(message).not.toContain("ghp_");
+    expect(message).not.toContain("NOTAREALTOKEN");
+    // Length is reported instead, which is diagnostic without being a disclosure.
+    expect(message).toContain(`${secretish.length} character(s)`);
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it.each(["", "release%2Fmain", "a&b", "feature/../main", "/main", "main/"])(
+    "refuses GITHUB_BRANCH=%o before issuing a request",
+    async (branch) => {
+      process.env.GITHUB_BRANCH = branch;
+      const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+
+      await expect(
+        commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]),
+      ).rejects.toThrow(/Refusing to use GITHUB_BRANCH/);
+      expect(fetchMock).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses an owner or repo that would retarget the request the same way", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+
+    process.env.GITHUB_REPO_OWNER = "Franscale1922/evil";
+    await expect(commitRefreshedArticles(batch)).rejects.toThrow(/Refusing to use GITHUB_REPO_OWNER/);
+
+    process.env.GITHUB_REPO_OWNER = "Franscale1922";
+    process.env.GITHUB_REPO_NAME = "waypoint-core-system#x";
+    await expect(commitRefreshedArticles(batch)).rejects.toThrow(/Refusing to use GITHUB_REPO_NAME/);
+
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("still accepts the default and other ordinary branch names", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+
+    delete process.env.GITHUB_BRANCH; // the documented default
+    await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+    expect(fetchMock.mock.calls.map(([url]) => String(url))).toContain(
+      "https://api.github.com/repos/Franscale1922/waypoint-core-system/git/ref/heads/main",
+    );
+
+    for (const branch of ["main", "feature/JIRA-12_v2.1", "v2.0.x", "_staging"]) {
+      process.env.GITHUB_BRANCH = branch;
+      await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+    }
+  });
+
+  /**
+   * The tripwire between the two guards.
+   *
+   * The encoding and the validation close different halves of the same hole, and today the
+   * validation is the stricter of the two: every branch name it accepts is already URL-safe, so the
+   * encoding changes nothing for any value that can actually reach the call sites. That is by
+   * design, and it is also why the end-to-end tests above cannot observe the encoding at all —
+   * hence the direct assertions on `branchRefPaths`.
+   *
+   * This pins the relationship rather than leaving it as a comment. Widen SAFE_REF_SEGMENT to admit
+   * something like `#` and this goes red, which is the moment the encoding stops being belt-and-
+   * braces and starts being the only thing standing between a mangled env var and the wrong ref.
+   */
+  it("accepts only branch names that already encode to themselves", async () => {
+    const { commitRefreshedArticles, encodeRefForPath } = await import("@/lib/githubArticleCommit");
+    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+
+    const candidates = [
+      "main", "release/1.0", "feature/JIRA-12_v2.1", "v2.0.x", "_staging", "a..b",
+      "release#1", "a&b", "a+b", "rel%2Fx", "", "/main", "main/",
+    ];
+
+    let accepted = 0;
+    for (const branch of candidates) {
+      process.env.GITHUB_BRANCH = branch;
+      fetchMock.mockClear();
+      const ok = await commitRefreshedArticles(batch).then(() => true, () => false);
+      if (!ok) continue;
+      accepted++;
+      // One direction only. The converse does not hold and should not be asserted: "", "/main" and
+      // "main/" are rejected for being malformed, not for needing encoding.
+      expect(encodeRefForPath(branch)).toBe(branch);
+      expect(String(fetchMock.mock.calls[0][0])).toContain(`/git/ref/heads/${branch}`);
+    }
+
+    // Guard against the whole loop passing vacuously if every candidate were somehow rejected.
+    expect(accepted).toBe(6);
   });
 
   it("reports every bad article in the batch, not just the first", async () => {

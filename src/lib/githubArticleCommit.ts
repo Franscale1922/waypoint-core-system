@@ -14,7 +14,8 @@
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
  *   GITHUB_REPO_OWNER: e.g. "Franscale1922"
  *   GITHUB_REPO_NAME:  e.g. "waypoint-core-system"
- *   GITHUB_BRANCH:     defaults to "main" if not set
+ *   GITHUB_BRANCH:     defaults to "main" if not set. Slashes are fine ("release/1.0"); anything
+ *                      needing URL-encoding is rejected at startup. See getConfig.
  */
 
 import matter from "gray-matter";
@@ -38,6 +39,85 @@ interface GitHubConfig {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+/**
+ * Encode a git ref for interpolation into a URL path.
+ *
+ * Per segment, deliberately. `encodeURIComponent` over the whole value would turn the `/` in
+ * `release/1.0` into `%2F`, and GitHub would then look for a branch literally named `release%2F1.0`,
+ * breaking every legitimate slashed branch name in the course of fixing the unslashed ones.
+ * Splitting on `/` first keeps the separators as separators and encodes only what sits between them.
+ *
+ * `#` is the case that motivates this. It is a legal branch name character (`git check-ref-format`
+ * accepts `refs/heads/release#1`), and pasted raw into a URL it opens a fragment, so the request
+ * for `/git/refs/heads/release#1` is sent as `/git/refs/heads/release`, with the rest dropped before
+ * it ever leaves the process. On a repo that also has a `release` branch, step 6 below would read
+ * and then advance THAT branch instead of the configured one, with every response looking healthy.
+ * `%` and `&` are legal in a ref too and corrupt the path for their own reasons.
+ *
+ * Exported for the tests: with the validation in `getConfig` this is unreachable for any value that
+ * actually needs it, so testing it directly is the only honest way to show it encodes correctly.
+ */
+export function encodeRefForPath(ref: string): string {
+  return ref.split("/").map(encodeURIComponent).join("/");
+}
+
+/**
+ * Both API paths for one branch, built from a single encoded ref.
+ *
+ * The two differ by one character because GitHub really does use different nouns for the two
+ * operations: reading is `/git/ref/heads/X` (singular), updating is `/git/refs/heads/X` (plural).
+ * That reads like a typo at the call site and is not one. Building both here keeps the asymmetry
+ * documented in one place instead of inviting someone to "fix" it.
+ *
+ * It is also what makes the encoding testable. `getConfig` rejects every branch name that needs
+ * encoding, so no value reaching the call sites through the public API encodes to anything other
+ * than itself. A test driving `commitRefreshedArticles` therefore cannot tell an encoded path from
+ * an unencoded one, and deleting the encoding would not turn anything red. Asserting on this
+ * function directly is what actually guards it.
+ */
+export function branchRefPaths(branch: string): { read: string; update: string } {
+  const ref = encodeRefForPath(branch);
+  return { read: `/git/ref/heads/${ref}`, update: `/git/refs/heads/${ref}` };
+}
+
+/**
+ * What this write path will accept in the names it interpolates into an API URL.
+ *
+ * Deliberately narrower than `git check-ref-format`: `#`, `%`, `&` and `+` are all legal in a branch
+ * name and every one of them means something else inside a URL. `encodeRefForPath` makes them safe
+ * to send, but a configured value that needs encoding is far more likely a mangled environment
+ * variable than a ref anybody meant to write to, and `getConfig` is the last point before a PATCH
+ * to a production ref. So the two are not redundant: the encoding is the correctness fix, this is
+ * the loud failure, and they close different halves of the same hole.
+ *
+ * Refs that are URL-safe but still invalid (`a..b`, a `.lock` suffix) are left to GitHub, which
+ * answers 404 and `githubRequest` turns into a thrown error naming the path. That is already a loud
+ * failure, so reimplementing check-ref-format here would buy nothing.
+ */
+const SAFE_REF_SEGMENT = /^[A-Za-z0-9_][A-Za-z0-9._-]*$/;
+/** GitHub owners and repos are `[A-Za-z0-9._-]` only, so they never legitimately need encoding. */
+const SAFE_OWNER_OR_REPO = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
+
+/**
+ * The value is named but never echoed, deliberately.
+ *
+ * This error is thrown from inside an Inngest step, so its message lands in failure telemetry and
+ * the monthly summary email. The whole premise of the check above is that a value reaching it is
+ * probably a mis-mapped environment variable rather than an intentional target, which means the
+ * thing being echoed could be whatever was mapped there by mistake, including a credential. The
+ * variable name plus the rule is what makes the failure actionable; the bytes add nothing an
+ * operator looking at their own configuration does not already have.
+ */
+function rejectConfigValue(envVar: string, value: string): Error {
+  return new Error(
+    `Refusing to use ${envVar} (${value.length} character(s)): it is not a plain slash-separated ` +
+      `name. This function PATCHes a branch ref directly, so a value that needs URL-encoding here ` +
+      `is treated as a misconfigured environment variable rather than an intentional target. ` +
+      `Allowed per slash-separated segment: letters, digits, "." "_" "-", starting with a letter, ` +
+      `digit or "_". The value itself is withheld on purpose; see the note above this function.`,
+  );
+}
+
 function getConfig(): GitHubConfig {
   const token = process.env.GITHUB_TOKEN;
   const owner = process.env.GITHUB_REPO_OWNER;
@@ -47,6 +127,14 @@ function getConfig(): GitHubConfig {
   if (!token) throw new Error("Missing env var: GITHUB_TOKEN");
   if (!owner) throw new Error("Missing env var: GITHUB_REPO_OWNER");
   if (!repo) throw new Error("Missing env var: GITHUB_REPO_NAME");
+
+  // Checked before anything is read or written, so a mangled value fails on configuration rather
+  // than halfway through a batch, or, worse, quietly against a ref nobody chose.
+  if (!SAFE_OWNER_OR_REPO.test(owner)) throw rejectConfigValue("GITHUB_REPO_OWNER", owner);
+  if (!SAFE_OWNER_OR_REPO.test(repo)) throw rejectConfigValue("GITHUB_REPO_NAME", repo);
+  if (!branch.split("/").every((segment) => SAFE_REF_SEGMENT.test(segment))) {
+    throw rejectConfigValue("GITHUB_BRANCH", branch);
+  }
 
   return { token, owner, repo, branch };
 }
@@ -165,8 +253,9 @@ export async function commitRefreshedArticles(
   }
 
   // ── 1. Get current HEAD commit SHA ───────────────────────────────────────
+  const refPaths = branchRefPaths(config.branch);
   const refData = await githubRequest<{ object: { sha: string } }>(
-    `/git/ref/heads/${config.branch}`,
+    refPaths.read,
     config
   );
   const latestCommitSha = refData.object.sha;
@@ -235,7 +324,7 @@ export async function commitRefreshedArticles(
 
   // ── 6. Advance the branch ref to the new commit ───────────────────────────
   await githubRequest(
-    `/git/refs/heads/${config.branch}`,
+    refPaths.update,
     config,
     {
       method: "PATCH",
