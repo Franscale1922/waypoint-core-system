@@ -62,6 +62,13 @@ const IN_GIT_REPO =
     cwd: REPO_ROOT,
     encoding: "utf8",
     timeout: 30_000,
+    // Must not inherit. Git exports GIT_DIR to its hooks, and the gate passes
+    // its environment down to vitest, so an inherited GIT_DIR would answer this
+    // question from the REAL repository while cwd is an extracted tree with no
+    // .git at all. The guard would then never fire, which is the one case it
+    // exists for. gitEnv() is not usable here: this runs at module load, before
+    // fakeHome exists.
+    env: { PATH: process.env.PATH ?? "", GIT_CONFIG_GLOBAL: "/dev/null", GIT_CONFIG_SYSTEM: "/dev/null" },
   }).status === 0;
 
 let base: string;
@@ -91,26 +98,44 @@ function article(body: string) {
   return `---\ntitle: "Gate Probe"\nexcerpt: "A short probe excerpt for the pre-push gate fixture."\n---\n\n${body}\n`;
 }
 
-/** git with a scrubbed environment, so the developer's own config cannot leak in. */
+/**
+ * A git environment built from nothing, never inherited.
+ *
+ * EVERY git call in this file must use this, not just the convenient ones. Git
+ * exports GIT_DIR when it runs a hook, and this suite runs inside that hook,
+ * because the gate executes the unit suites. An inherited GIT_DIR takes
+ * precedence over `cwd`, so an un-scrubbed call silently addresses the REAL
+ * repository instead of the fixture.
+ *
+ * That is not hypothetical. Two cases here passed standalone and failed the
+ * moment they ran under the gate, because `git show` against the fixture's bare
+ * remote was answering from the real repo and reporting "branch not found".
+ *
+ * Building the env from scratch also keeps the developer's own config out: a
+ * personal core.hooksPath, commit.gpgsign or template dir would each change
+ * what these cases measure.
+ */
+function gitEnv(extra: Record<string, string> = {}) {
+  return {
+    PATH: process.env.PATH ?? "",
+    GIT_CONFIG_GLOBAL: "/dev/null",
+    GIT_CONFIG_SYSTEM: "/dev/null",
+    GIT_TERMINAL_PROMPT: "0",
+    // A HOME with no Projects/brand-intelligence-pipeline, so the brand-map
+    // drift check takes its documented absent-repo skip instead of hard
+    // failing. Deliberately NOT SKIP_BIP_DRIFT=1, which would also disarm the
+    // drift test that shares that variable.
+    HOME: fakeHome,
+    ...extra,
+  };
+}
+
 function git(args: string[], env: Record<string, string> = {}, cwd = repo) {
   return spawnSync("git", args, {
     cwd,
     encoding: "utf8",
     timeout: TIMEOUT,
-    env: {
-      PATH: process.env.PATH ?? "",
-      // Neutralise global config: a personal core.hooksPath, commit.gpgsign or
-      // template dir would otherwise change what this test measures.
-      GIT_CONFIG_GLOBAL: "/dev/null",
-      GIT_CONFIG_SYSTEM: "/dev/null",
-      GIT_TERMINAL_PROMPT: "0",
-      // A HOME with no Projects/brand-intelligence-pipeline, so the brand-map
-      // drift check takes its documented absent-repo skip instead of hard
-      // failing. Deliberately NOT SKIP_BIP_DRIFT=1, which would also disarm the
-      // drift test that shares that variable.
-      HOME: fakeHome,
-      ...env,
-    },
+    env: gitEnv(env),
   });
 }
 
@@ -127,6 +152,7 @@ function emDashesOnRemote(branch: string, path = ARTICLE) {
     cwd: remote,
     encoding: "utf8",
     timeout: TIMEOUT,
+    env: gitEnv(),
   });
   if (r.status !== 0) return null;
   return (r.stdout.match(new RegExp(EMDASH, "g")) ?? []).length;
@@ -156,7 +182,7 @@ beforeAll(() => {
   writeFileSync(join(oldHookDir, "pre-push"), WORKING_TREE_HOOK);
   chmodSync(join(oldHookDir, "pre-push"), 0o755);
 
-  spawnSync("git", ["init", "--bare", "-q", remote], { timeout: TIMEOUT });
+  spawnSync("git", ["init", "--bare", "-q", remote], { timeout: TIMEOUT, env: gitEnv() });
 
   // Seed from the real tree so the checks have their real inputs and the
   // orchestrator's floor guard is satisfied. brands/ is excluded: ~989MB of
@@ -165,6 +191,7 @@ beforeAll(() => {
   const archived = spawnSync("git", ["archive", "--output", tarball, "HEAD", "--", ":(exclude)brands"], {
     cwd: REPO_ROOT,
     timeout: TIMEOUT,
+    env: gitEnv(),
   });
   if (archived.status !== 0) throw new Error("could not seed the fixture from HEAD");
   spawnSync("tar", ["-xf", tarball, "-C", repo], { timeout: TIMEOUT });
