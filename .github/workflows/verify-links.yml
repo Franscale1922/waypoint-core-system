@@ -60,6 +60,15 @@ jobs:
       # refuse fails here rather than months later as a dropped article.
       - name: Verify Slugs, AI write path (unit tests)
         run: npx vitest run --project unit tests/unit/write-path-slug.test.ts
+      # Where that slug COMES FROM, which the job above takes as given. It checks
+      # the payload against its own frontmatter at the write boundary; this one
+      # covers the step before, in discovery: the live site reads the FILENAME
+      # and the refresh preferred the FIELD, so a file whose frontmatter
+      # contradicted its own name armed the refresh to commit a duplicate under
+      # the other name. Also covers the reviewCadence override.
+      # Listed by name for the same reason as every job above.
+      - name: Verify article slug identity (unit tests)
+        run: npx vitest run --project unit tests/unit/article-slug-identity.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

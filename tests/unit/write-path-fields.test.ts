@@ -826,8 +826,11 @@ describe("field ownership at the real commit boundary", () => {
 
 describe("the live corpus keeps its CTA wiring through a refresh", () => {
   it("preserves checklistSlug and escapeKit on every article that has them", async () => {
-    const { getAllArticles, mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
-    const articles = getAllArticles();
+    // discoverArticles, not getAllArticles: the function was renamed because src/lib/articles.ts
+    // exports a different one under that name over the same corpus, and it now returns the
+    // articles it refused alongside the ones it accepted.
+    const { discoverArticles, mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const { articles } = discoverArticles();
 
     // A tripwire, the same one every guard in this repo carries: a run that examined nothing has
     // not passed, it has failed to look.

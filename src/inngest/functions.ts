@@ -1363,7 +1363,8 @@ export const monitorProcess = inngest.createFunction(
 
 import matter from "gray-matter";
 import {
-    getAllArticles,
+    articleIdentityMatchesFile,
+    discoverArticles,
     isStale,
     mergeRefreshedFrontmatter,
     passesComplianceCheck,
@@ -1393,37 +1394,95 @@ export const contentRefreshFunction = inngest.createFunction(
         const force = (event as any)?.data?.force === true;
 
         // ── Step 1: Load all articles ─────────────────────────────────────────
-        const articles = await step.run("load-all-articles", async () => {
-            return getAllArticles();
-        });
+        //
+        // This step keeps its ID and its ARRAY shape, and the new skip list is returned by a
+        // separate step alongside it, rather than widening this one to `{articles, skipped}`.
+        //
+        // Changing a step's return shape is what forces a version bump, and bumping the ID here
+        // turned out to be worse than the problem. Inngest memoizes per step ID within a run, so
+        // a fresh ID makes a resumed run re-read the corpus while `refresh-<slug>`,
+        // `commit-to-github` and `send-refresh-summary` all still replay from their old IDs: a
+        // mixed-vintage run where discovery reflects the current files and the model output being
+        // committed does not. Versioning the whole chain instead only trades that for re-running
+        // paid model calls and re-committing an already-committed batch.
+        //
+        // Keeping the shape sidesteps the choice. An old run resuming gets the array it expects,
+        // a rollback replays an array into code that wants an array, and `discovery-skips` is
+        // simply a step the old code never asks for, so its cached value is ignored rather than
+        // misread. Nothing in the chain below needs a new ID.
+        // ONE read feeding both steps, rather than calling discoverArticles() inside each. That
+        // removes the common way they would disagree: Inngest re-enters the function body between
+        // steps, so two separate reads execute at different times and can see different corpora,
+        // and a file could then be reported as both refreshed and skipped in the same summary.
+        //
+        // This is NOT a durable snapshot, and the distinction matters. Once both steps have
+        // completed they replay together from cache, and this call's result is recomputed and
+        // discarded. But a run interrupted BETWEEN them resumes with `load-all-articles` cached
+        // and `discovery-skips` not, so the skip list is then built from a fresh read. The window
+        // is one gap with no I/O in it, and the blast radius is the accuracy of the skip list in
+        // that summary, not what gets written: every article is re-checked against its own file
+        // below, and the commit refuses anything that does not match.
+        //
+        // Making it genuinely atomic means one step returning both, which is the shape change that
+        // forces a step-ID version bump, which is what produced a far worse mixed-vintage failure
+        // (see the note on why these IDs are unchanged). Reporting accuracy in a narrow window is
+        // the cheaper thing to give up.
+        const discovery = discoverArticles();
+        const articles = await step.run("load-all-articles", async () => discovery.articles);
+        const discoverySkips = await step.run("discovery-skips", async () => discovery.skipped);
 
         // ── Step 2: Identify stale articles ───────────────────────────────────
         const staleArticles = await step.run("identify-stale", async () => {
             return articles.filter((a) => isStale(a, force));
         });
 
-        if (staleArticles.length === 0) {
+        const refreshed: string[] = [];
+        // Seeded with discovery's refusals so they are reported rather than merely logged. These
+        // are keyed by FILE, not slug: the whole reason the article was dropped is that those two
+        // disagree, so naming the slug would print the value that is wrong.
+        const failed: { slug: string; reason: string }[] = discoverySkips.map((s) => ({
+            slug: s.file,
+            reason: s.reason,
+        }));
+        const toCommit: ArticleCommitPayload[] = [];
+
+        // Nothing to rewrite. The early return still has to account for discovery's refusals: a
+        // corpus whose only problem article was skipped here would otherwise report a clean
+        // "No articles due for refresh" and send no summary, which is precisely the run a human
+        // needed to see.
+        if (staleArticles.length === 0 && failed.length === 0) {
             return { status: "No articles due for refresh", total: articles.length };
         }
 
-        const refreshed: string[] = [];
-        const failed: { slug: string; reason: string }[] = [];
-        const toCommit: ArticleCommitPayload[] = [];
-
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
+            // Re-assert the identity invariant rather than trusting that discovery established it,
+            // because this run may not be the one that established it. `load-all-articles` keeps
+            // its step ID deliberately (see above), so a run that began before this deployed
+            // replays its OLD cached result: articles carrying the frontmatter-derived slug that
+            // discovery would now refuse, with discovery's own check bypassed because discovery
+            // never runs again. This is the guard for exactly that window, and it runs before the
+            // model call so a violation costs no OpenAI spend.
+            if (!articleIdentityMatchesFile(article)) {
+                failed.push({
+                    slug: article.slug,
+                    reason:
+                        `identity "${article.slug}" does not match its file ${article.filePath}. ` +
+                        `Refusing to refresh: the commit path would write a different file than ` +
+                        `this article was read from.`,
+                });
+                continue;
+            }
+
             // The file this refresh overwrites is the file it READ, named by its own path on disk.
             //
-            // Not `article.slug`, which getAllArticles resolves as `data.slug ?? filename`: taking
-            // the destination from frontmatter would make the guard in validateArticlePayload
-            // compare that value against itself and always agree. An article stored as
-            // `original.md` but carrying `slug: other` would then refresh into `other.md`, leaving
-            // `original.md` stale forever and overwriting whatever `other.md` was.
-            //
-            // Derived from the filename, the guard is comparing two independent things again: the
-            // file that was read against the slug the article claims. They disagree only when the
-            // corpus is inconsistent, and then this article is dropped and reported rather than
-            // written to a guessed path.
+            // This now agrees with `article.slug` by construction, because discovery derives that
+            // from the filename too and refuses any article where the two disagree. It is kept
+            // because the two answer different questions and fail independently: discovery decides
+            // what an article IS, and this decides where a payload GOES. Recomputing the
+            // destination from the path means the guard in validateArticlePayload still compares
+            // two independently derived values rather than one value against itself, which is what
+            // makes that guard capable of failing at all.
             const destinationSlug = path.basename(article.filePath, ".md");
 
             const result = await step.run(`refresh-${article.slug}`, async () => {
@@ -1493,6 +1552,13 @@ export const contentRefreshFunction = inngest.createFunction(
                     parsed.data as Record<string, unknown>,
                 );
                 const newBody = parsed.content;
+
+                // No explicit pin for `reviewCadence`. mergeRefreshedFrontmatter above starts from
+                // the ORIGINAL and takes only MODEL_OWNED_FIELDS from the model, so the field is
+                // preserved by default AND a value the model invents is ignored. That is both
+                // halves of what an explicit pin would have to do, generically, which is also why
+                // nothing validates this field on the write path: it can only ever hold a value
+                // that already passed the pre-push gate on a human's article.
 
                 // Compliance check before writing. Every field the model wrote, not just
                 // the body: the excerpt and the FAQ answers are published too.
@@ -1581,6 +1647,19 @@ export const contentRefreshFunction = inngest.createFunction(
             });
             const apiKey = settings?.resendApiKey || process.env.RESEND_API_KEY;
             if (!apiKey) {
+                // An all-clear nobody receives is a tolerable loss. A FAILURE nobody receives is
+                // not: this email is the only place a skipped or refused article is reported, and
+                // on a run whose articles were all skipped it is the only output at all. Swallowing
+                // that leaves the function returning "Complete" while the operator hears nothing,
+                // which is indistinguishable from a healthy month. Throwing marks the Inngest run
+                // failed, which is itself monitored, so the degraded channel surfaces through a
+                // path that does not depend on the channel that is degraded.
+                if (failed.length > 0) {
+                    throw new Error(
+                        `Content refresh had ${failed.length} failure(s) and no Resend API key to ` +
+                            `report them: ${failed.map((f) => `${f.slug} (${f.reason})`).join("; ")}`,
+                    );
+                }
                 console.warn("[content-refresh] No Resend API key, skipping summary email");
                 return;
             }
@@ -1605,12 +1684,31 @@ export const contentRefreshFunction = inngest.createFunction(
                 `⏭ Skipped (strategic/not due): ${articles.length - staleArticles.length} articles`,
             ];
 
-            await client.emails.send({
+            // Resend reports a rejected send in the RESULT, not by throwing: a revoked key, a
+            // rejected sender or an outage all come back as `{ error }` from a call that resolves
+            // normally. src/app/api/contact/route.ts already reads that contract; discarding it
+            // here would have left the absent-key branch above guarding one way to lose a failure
+            // report while the likelier one, a key that exists and no longer works, still returned
+            // success and reported Complete.
+            const sendResult = await client.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: [NOTIFY_EMAIL],
                 subject: `Content Refresh: ${refreshed.length} articles updated, ${today}`,
                 text: bodyLines.join("\n"),
             });
+
+            if (sendResult.error) {
+                const detail = JSON.stringify(sendResult.error);
+                // Same asymmetry as the missing key: an undelivered all-clear is a tolerable loss,
+                // an undelivered failure list is the silent month this whole path exists to stop.
+                if (failed.length > 0) {
+                    throw new Error(
+                        `Content refresh had ${failed.length} failure(s) and the summary email was ` +
+                            `rejected (${detail}): ${failed.map((f) => `${f.slug} (${f.reason})`).join("; ")}`,
+                    );
+                }
+                console.error("[content-refresh] Resend summary error:", detail);
+            }
         });
 
         return {
