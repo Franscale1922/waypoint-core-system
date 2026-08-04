@@ -1369,6 +1369,7 @@ import {
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
 import { commitRefreshedArticles, validateArticlePayload, ArticleCommitPayload } from "@/lib/githubArticleCommit";
+import path from "path";
 
 const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 
@@ -1410,6 +1411,20 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
+            // The file this refresh overwrites is the file it READ, named by its own path on disk.
+            //
+            // Not `article.slug`, which getAllArticles resolves as `data.slug ?? filename`: taking
+            // the destination from frontmatter would make the guard in validateArticlePayload
+            // compare that value against itself and always agree. An article stored as
+            // `original.md` but carrying `slug: other` would then refresh into `other.md`, leaving
+            // `original.md` stale forever and overwriting whatever `other.md` was.
+            //
+            // Derived from the filename, the guard is comparing two independent things again: the
+            // file that was read against the slug the article claims. They disagree only when the
+            // corpus is inconsistent, and then this article is dropped and reported rather than
+            // written to a guessed path.
+            const destinationSlug = path.basename(article.filePath, ".md");
+
             const result = await step.run(`refresh-${article.slug}`, async () => {
                 const settings = await prisma.systemSettings.findUnique({
                     where: { id: "singleton" }
@@ -1487,7 +1502,8 @@ export const contentRefreshFunction = inngest.createFunction(
                 }
 
                 // Frontmatter dates AND required fields, checked against the exact bytes the commit
-                // would write. commitRefreshedArticles refuses the WHOLE batch if anything invalid
+                // would write, plus the slug that decides which file those bytes replace.
+                // commitRefreshedArticles refuses the WHOLE batch if anything invalid
                 // reaches it, which is the right behaviour at the write boundary and the wrong one
                 // here: a single bad article would take the month's other refreshes down with it,
                 // and the summary email below would never send. So the article is dropped instead,
@@ -1503,14 +1519,16 @@ export const contentRefreshFunction = inngest.createFunction(
                 // month. The article keeps the good version already on disk and retries next
                 // cadence.
                 const payloadErrors = validateArticlePayload({
-                    slug: article.slug,
+                    slug: destinationSlug,
                     frontmatter: newFrontmatter,
                     body: newBody,
                 }).errors;
                 if (payloadErrors.length > 0) {
                     return {
                         success: false as const,
-                        reason: `Invalid frontmatter: ${payloadErrors.join(" | ")}`,
+                        // "payload", not "frontmatter": these errors now also cover the slug, which
+                        // is the destination rather than a field in the file.
+                        reason: `Invalid article payload: ${payloadErrors.join(" | ")}`,
                         frontmatter: null,
                         body: null,
                     };
@@ -1522,7 +1540,9 @@ export const contentRefreshFunction = inngest.createFunction(
             if (result.success && result.frontmatter && result.body) {
                 refreshed.push(article.slug);
                 toCommit.push({
-                    slug: article.slug,
+                    // The same destination the validation above was run against, so the bytes that
+                    // were checked and the path they land on were decided together.
+                    slug: destinationSlug,
                     frontmatter: result.frontmatter,
                     body: result.body,
                 });

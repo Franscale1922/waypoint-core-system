@@ -51,6 +51,15 @@ jobs:
       # named here runs in the pre-push hook and silently never runs in CI.
       - name: Verify required fields, AI write path (unit tests)
         run: npx vitest run --project unit tests/unit/write-path-fields.test.ts
+      # The other half of the same commit: WHERE that write path puts the file.
+      # The three jobs above check the bytes; this one checks the destination.
+      # The slug becomes the path of a tree entry, so this suite covers the
+      # format, the payload-slug/frontmatter-slug binding, and duplicate
+      # destinations within one batch. It also re-checks every article on disk
+      # against the enforced format, so a newly authored slug the refresh would
+      # refuse fails here rather than months later as a dropped article.
+      - name: Verify Slugs, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-slug.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)
