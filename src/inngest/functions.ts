@@ -1363,7 +1363,8 @@ export const monitorProcess = inngest.createFunction(
 
 import matter from "gray-matter";
 import {
-    getAllArticles,
+    articleIdentityMatchesFile,
+    discoverArticles,
     isStale,
     passesComplianceCheck,
 } from "@/lib/contentRefresh";
@@ -1391,25 +1392,59 @@ export const contentRefreshFunction = inngest.createFunction(
         const force = (event as any)?.data?.force === true;
 
         // ── Step 1: Load all articles ─────────────────────────────────────────
-        const articles = await step.run("load-all-articles", async () => {
-            return getAllArticles();
+        const discovery = await step.run("load-all-articles", async () => {
+            return discoverArticles();
         });
+        // A cached result from before this step returned `{articles, skipped}` replays as a bare
+        // array, which would make `.articles` undefined and throw on the next line. Inngest
+        // memoizes by step ID, and the ID did not change, so the old shape is exactly what an
+        // in-flight run hands back.
+        const articles = Array.isArray(discovery) ? discovery : discovery.articles;
+        const discoverySkips = Array.isArray(discovery) ? [] : discovery.skipped;
 
         // ── Step 2: Identify stale articles ───────────────────────────────────
         const staleArticles = await step.run("identify-stale", async () => {
             return articles.filter((a) => isStale(a, force));
         });
 
-        if (staleArticles.length === 0) {
+        const refreshed: string[] = [];
+        // Seeded with discovery's refusals so they are reported rather than merely logged. These
+        // are keyed by FILE, not slug: the whole reason the article was dropped is that those two
+        // disagree, so naming the slug would print the value that is wrong.
+        const failed: { slug: string; reason: string }[] = discoverySkips.map((s) => ({
+            slug: s.file,
+            reason: s.reason,
+        }));
+        const toCommit: ArticleCommitPayload[] = [];
+
+        // Nothing to rewrite. The early return still has to account for discovery's refusals: a
+        // corpus whose only problem article was skipped here would otherwise report a clean
+        // "No articles due for refresh" and send no summary, which is precisely the run a human
+        // needed to see.
+        if (staleArticles.length === 0 && failed.length === 0) {
             return { status: "No articles due for refresh", total: articles.length };
         }
 
-        const refreshed: string[] = [];
-        const failed: { slug: string; reason: string }[] = [];
-        const toCommit: ArticleCommitPayload[] = [];
-
         // ── Step 3: Rewrite each stale article with GPT-4o ────────────────────
         for (const article of staleArticles) {
+            // Re-assert the identity invariant discovery established, because this run may not be
+            // the one that established it. `load-all-articles` is memoized by step ID, so a run
+            // that began before this code deployed replays the OLD result: articles carrying a
+            // frontmatter-derived slug that discovery would now refuse. Checked here rather than
+            // at the commit, so a mismatch costs no OpenAI call, and stated as a positive
+            // invariant rather than a repeat of the discovery rule so it holds whatever produced
+            // the article.
+            if (!articleIdentityMatchesFile(article)) {
+                failed.push({
+                    slug: article.slug,
+                    reason:
+                        `identity "${article.slug}" does not match its file ${article.filePath}. ` +
+                        `Refusing to refresh: the commit path would write a different file than ` +
+                        `this article was read from.`,
+                });
+                continue;
+            }
+
             const result = await step.run(`refresh-${article.slug}`, async () => {
                 const settings = await prisma.systemSettings.findUnique({
                     where: { id: "singleton" }
@@ -1472,7 +1507,7 @@ export const contentRefreshFunction = inngest.createFunction(
                 // Safety guard: ensure relatedSlugs are preserved
                 newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
                 // Pinned from the DERIVED identity, not from `frontmatter.slug`.
-                // getAllArticles derives this from the filename and is what
+                // discoverArticles derives this from the filename and is what
                 // commitRefreshedArticles builds the write path out of, so
                 // pinning the same value is what keeps the committed frontmatter
                 // and the path it is committed to describing one article. Pinning

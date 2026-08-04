@@ -4,7 +4,12 @@ import { mkdtempSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-import { getAllArticles, getRefreshCadenceDays, type Article } from "@/lib/contentRefresh";
+import {
+  articleIdentityMatchesFile,
+  discoverArticles,
+  getRefreshCadenceDays,
+  type Article,
+} from "@/lib/contentRefresh";
 import { auditArticle, auditAll } from "../../scripts/aeo-audit.mjs";
 
 /**
@@ -39,7 +44,7 @@ import { auditArticle, auditAll } from "../../scripts/aeo-audit.mjs";
 // ─── contentRefresh discovery ───────────────────────────────────────────────
 
 /**
- * getAllArticles reads a module-level ARTICLES_DIR fixed at import time, so the two fs calls are
+ * discoverArticles reads a module-level ARTICLES_DIR fixed at import time, so the two fs calls are
  * stubbed rather than the directory redirected. Both are spies on the REAL fs module object that
  * contentRefresh.ts holds a reference to, not a vi.mock of "fs": gray-matter reaches into fs for
  * matter.read, and replacing the whole module to test a path that never calls it is how a mock
@@ -75,10 +80,11 @@ describe("contentRefresh identity comes from the filename", () => {
   it("uses the filename, not a frontmatter slug that agrees with it", () => {
     withArticleFiles({ "guide.md": frontmatter({ slug: "guide", title: "Guide" }) });
 
-    const articles = getAllArticles();
+    const { articles, skipped } = discoverArticles();
 
     expect(articles).toHaveLength(1);
     expect(articles[0].slug).toBe("guide");
+    expect(skipped).toEqual([]);
   });
 
   it("uses the filename when the article carries no slug field at all", () => {
@@ -86,10 +92,11 @@ describe("contentRefresh identity comes from the filename", () => {
     // article that simply omits it must still be discovered and refreshed as normal.
     withArticleFiles({ "guide.md": frontmatter({ title: "Guide" }) });
 
-    const articles = getAllArticles();
+    const { articles, skipped } = discoverArticles();
 
     expect(articles).toHaveLength(1);
     expect(articles[0].slug).toBe("guide");
+    expect(skipped).toEqual([]);
   });
 
   it("SKIPS an article whose frontmatter slug contradicts its filename", () => {
@@ -100,12 +107,25 @@ describe("contentRefresh identity comes from the filename", () => {
       "guide.md": frontmatter({ slug: "renamed-guide", title: "Guide" }),
     });
 
-    const articles = getAllArticles();
+    const { articles } = discoverArticles();
 
     expect(articles).toEqual([]);
     expect(warn).toHaveBeenCalledOnce();
     expect(warn.mock.calls[0][0]).toContain("renamed-guide");
     expect(warn.mock.calls[0][0]).toContain("guide.md");
+  });
+
+  it("REPORTS the skip as data, not only as a log line", () => {
+    // A console warning inside an Inngest step is not something anyone reads. The skipped article
+    // never reaches the stale list, so it cannot show up in the run's failure list on its own:
+    // without this, the one article that most needs a human is the one nobody hears about.
+    withArticleFiles({ "guide.md": frontmatter({ slug: "renamed-guide", title: "Guide" }) });
+
+    const { skipped } = discoverArticles();
+
+    expect(skipped).toHaveLength(1);
+    expect(skipped[0].file).toBe("guide.md");
+    expect(skipped[0].reason).toContain("renamed-guide");
   });
 
   it("drops only the contradictory article, never the rest of the batch", () => {
@@ -118,24 +138,59 @@ describe("contentRefresh identity comes from the filename", () => {
       "good-two.md": frontmatter({ title: "Good Two" }),
     });
 
-    const articles = getAllArticles();
+    const { articles, skipped } = discoverArticles();
 
     expect(articles.map((a) => a.slug)).toEqual(["good-one", "good-two"]);
+    expect(skipped.map((s) => s.file)).toEqual(["bad.md"]);
   });
 
   it("never returns an article whose slug disagrees with the file it was read from", () => {
     // The property that actually matters, stated directly rather than inferred from the cases
     // above: the commit path builds `content/articles/${slug}.md` out of this value, so anything
-    // getAllArticles returns must round-trip to the file it came from.
+    // discoverArticles returns must round-trip to the file it came from.
     withArticleFiles({
       "alpha.md": frontmatter({ slug: "alpha", title: "Alpha" }),
       "beta.md": frontmatter({ slug: "wrong", title: "Beta" }),
       "gamma.md": frontmatter({ title: "Gamma" }),
     });
 
-    for (const a of getAllArticles()) {
-      expect(a.filePath.endsWith(`/${a.slug}.md`)).toBe(true);
+    for (const a of discoverArticles().articles) {
+      expect(articleIdentityMatchesFile(a)).toBe(true);
     }
+  });
+});
+
+// ─── The downstream invariant ───────────────────────────────────────────────
+
+describe("articleIdentityMatchesFile re-checks what discovery established", () => {
+  // The write path cannot assume discovery produced the article it is holding.
+  // src/inngest/functions.ts loads articles inside a memoized Inngest step, so a run that started
+  // before this code deployed replays the OLD cached result: an article carrying the
+  // frontmatter-derived slug against its original filePath, with every check inside discovery
+  // bypassed because discovery never runs again.
+  const article = (slug: string, filePath: string): Article => ({
+    slug,
+    frontmatter: {
+      title: "T",
+      slug,
+      date: "2020-01-01",
+      category: "Going Deeper",
+      tier: 2,
+      excerpt: "e",
+      relatedSlugs: [],
+    },
+    body: "",
+    filePath,
+  });
+
+  it("accepts an article whose slug matches its file", () => {
+    expect(articleIdentityMatchesFile(article("guide", "/content/articles/guide.md"))).toBe(true);
+  });
+
+  it("REJECTS a replayed article carrying the old frontmatter-derived slug", () => {
+    expect(
+      articleIdentityMatchesFile(article("renamed-guide", "/content/articles/guide.md")),
+    ).toBe(false);
   });
 });
 
@@ -170,8 +225,25 @@ describe("refresh cadence prefers a curated category over a slug keyword", () =>
     ).toBe(548);
   });
 
-  it("applies the same precedence to a tier-3 article in any category", () => {
-    expect(getRefreshCadenceDays(articleFor("sba-lending-for-widgets", "Going Deeper", 3))).toBe(548);
+  it("promotes only the CATEGORY, leaving tier 3 below financing where it has always been", () => {
+    // The category is an explicit editorial statement; `tier === 3` is a looser numeric proxy for
+    // it. Promoting both would silently reverse an unrelated rule, sending a tier-3 article that
+    // is genuinely financing material from 365 to 548 and leaving rate-sensitive copy half a year
+    // longer than the standard allows. The two agree in all 45 articles today, so this asserts the
+    // distinction rather than any current behaviour.
+    expect(getRefreshCadenceDays(articleFor("sba-lending-for-widgets", "Going Deeper", 3))).toBe(365);
+    // ...while a tier-3 article with no financing signal still gets the spotlight cadence.
+    expect(getRefreshCadenceDays(articleFor("pilates-studio-franchises", "Going Deeper", 3))).toBe(548);
+  });
+
+  it("matches financing keywords as slug TOKENS, not as substrings", () => {
+    // `slug.includes("fee")` fires inside "coffee". On a franchise site that is not hypothetical:
+    // a coffee franchise article would take the 365-day financing cadence instead of its 730-day
+    // process one, purely because of three letters inside an unrelated word.
+    expect(getRefreshCadenceDays(articleFor("coffee-franchise-due-diligence", "Going Deeper", 2))).toBe(730);
+    // The narrowing must not cost real matches: the corpus writes these both ways.
+    expect(getRefreshCadenceDays(articleFor("franchise-fees-explained", "Going Deeper", 2))).toBe(365);
+    expect(getRefreshCadenceDays(articleFor("startup-costs-by-brand", "Going Deeper", 2))).toBe(365);
   });
 
   it("KEEPS financing articles on 365 rather than letting Going Deeper claim them", () => {

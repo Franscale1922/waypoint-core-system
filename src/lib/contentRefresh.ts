@@ -39,12 +39,49 @@ const ARTICLES_DIR = path.join(
   "articles"
 );
 
-export function getAllArticles(): Article[] {
+/** An article discovery refused to return, and why, so a run can report it. */
+export interface SkippedArticle {
+  file: string;
+  reason: string;
+}
+
+export interface ArticleDiscovery {
+  articles: Article[];
+  skipped: SkippedArticle[];
+}
+
+/**
+ * True when an article's identity still matches the file it was read from.
+ *
+ * Exported because the write path re-checks it rather than trusting discovery.
+ * src/inngest/functions.ts loads articles inside `step.run("load-all-articles")`,
+ * which Inngest MEMOIZES: a run that started before this code deployed replays
+ * that step's cached result verbatim, so it can hand back an article carrying the
+ * old frontmatter-derived slug against the original filePath, and every check
+ * inside discovery is bypassed because discovery never runs again. Re-asserting
+ * the invariant downstream is what makes the fix hold across a deploy boundary.
+ */
+export function articleIdentityMatchesFile(article: Article): boolean {
+  return path.basename(article.filePath, ".md") === article.slug;
+}
+
+/**
+ * Discover every article on disk, plus the ones deliberately not returned.
+ *
+ * Named `discoverArticles` rather than `getAllArticles` because src/lib/articles.ts
+ * exports a DIFFERENT function under that name, serving the live site from the same
+ * directory with a different shape. Two same-named functions over one corpus is how
+ * a reader concludes the site and the refresh agree about identity when the whole
+ * point of this module is that they once did not.
+ */
+export function discoverArticles(): ArticleDiscovery {
   const files = fs
     .readdirSync(ARTICLES_DIR)
     .filter((f) => f.endsWith(".md"));
 
-  return files.flatMap((file) => {
+  const skipped: SkippedArticle[] = [];
+
+  const articles = files.flatMap((file) => {
     const filePath = path.join(ARTICLES_DIR, file);
     const raw = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(raw);
@@ -77,12 +114,20 @@ export function getAllArticles(): Article[] {
     // cadence. scripts/aeo-audit.mjs fails the push on exactly this divergence,
     // so it should never reach this far; this is the backstop for content that
     // predates that gate.
+    //
+    // The skip is RECORDED, not just logged. An article dropped here never
+    // reaches `staleArticles`, so it cannot appear in the run's failure list the
+    // way a compliance violation does, and a console warning inside an Inngest
+    // step is not something anyone reads. Left invisible, the one article that
+    // most needs a human would go unrefreshed every month in silence, and a
+    // corpus where it was the ONLY stale article would report "No articles due
+    // for refresh" and send no summary at all.
     if (data.slug !== undefined && data.slug !== slug) {
-      console.warn(
-        `[contentRefresh] Skipping "${file}": frontmatter slug ` +
-          `"${String(data.slug)}" does not match the filename. The filename is ` +
-          `authoritative. Fix the frontmatter, or rename the file.`,
-      );
+      const reason =
+        `frontmatter slug "${String(data.slug)}" does not match the filename. ` +
+        `The filename is authoritative. Fix the frontmatter, or rename the file.`;
+      console.warn(`[contentRefresh] Skipping "${file}": ${reason}`);
+      skipped.push({ file, reason });
       return [];
     }
 
@@ -95,6 +140,8 @@ export function getAllArticles(): Article[] {
       },
     ];
   });
+
+  return { articles, skipped };
 }
 
 // ─── Cadence Mapping ─────────────────────────────────────────────────────────
@@ -127,26 +174,45 @@ export function getRefreshCadenceDays(article: Article): number | null {
 
   // Industry Spotlights category → 18 months.
   //
-  // Checked BEFORE the financing keywords below, because a curated frontmatter
-  // field must beat a guess made from the slug string. Those keywords match a
-  // substring ANYWHERE in the slug, so a spotlight on a cost-sensitive segment
-  // (`...-cost-...`, `...-fees-...`) would otherwise be pulled onto the 365-day
-  // financing cadence and refreshed 183 days early on every cycle, purely
-  // because of how its title happens to read. No article on disk hits this
-  // today. The ordering is here so content authoring cannot create it.
-  if (category === "Industry Spotlights" || tier === 3) return 548;
+  // The CATEGORY, and only the category, is checked before the financing
+  // keywords below, because an explicitly authored field must beat a guess made
+  // from the slug string. Those keywords match anywhere in the slug, so a
+  // spotlight on a cost-sensitive segment (`...-cost-...`, `...-fees-...`) would
+  // otherwise take the 365-day financing cadence and refresh 183 days early on
+  // every cycle, purely because of how its title happens to read.
+  //
+  // `tier === 3` deliberately stays BELOW financing, where it has always been.
+  // Promoting it here too would silently reverse an unrelated rule: a tier-3
+  // article that is genuinely financing material would jump from 365 to 548 and
+  // sit half a year longer than the standard says it should. Category and tier
+  // agree in all 45 articles today, so this distinction changes nothing now; it
+  // is drawn so that the day they disagree, the more specific field wins and the
+  // looser numeric one does not quietly redefine the financing cadence.
+  if (category === "Industry Spotlights") return 548;
 
   // Financing / investment / cost → 12 months.
   //
-  // Still a slug heuristic, and still ahead of the Going Deeper branch on
-  // purpose. Financing material (SBA terms, ROBS rules, fee structures) goes
-  // stale materially faster than the 730-day process cadence, and three current
-  // Going Deeper articles rely on this ordering to stay on 365. This is
-  // deliberately NOT the wholesale reorder of putting every category branch
-  // first: that would push those three to 730 and let real rate and rule
-  // changes sit unreviewed for two years, trading a latent bug for a live one.
+  // Matched on hyphen-separated TOKENS, not on substrings. `slug.includes("fee")`
+  // fires inside "coffee", so `coffee-franchise-due-diligence` took the 365-day
+  // financing cadence instead of its 730-day process one. On a franchise site
+  // that is not a hypothetical: coffee is a real category. No article on disk
+  // hits it today, and every one of the six that DO match still matches as a
+  // whole word, so this narrowing changes nothing now. Plurals are matched
+  // explicitly because the corpus uses both ("fee", "fees", "costs").
+  //
+  // Still ahead of the Going Deeper branch on purpose. Financing material (SBA
+  // terms, ROBS rules, fee structures) goes stale materially faster than the
+  // 730-day process cadence, and three current articles rely on that ordering to
+  // stay on 365. This is deliberately NOT the wholesale reorder of putting every
+  // category branch first: that would demote those three to 730 and let real
+  // rate and rule changes sit unreviewed for two years, trading a latent bug for
+  // a live one.
   const FINANCING_KEYWORDS = ["funding", "cost", "fee", "sba", "robs", "financing", "investment"];
-  if (FINANCING_KEYWORDS.some((kw) => slug.includes(kw))) return 365;
+  const slugTokens = new Set(slug.split("-"));
+  if (FINANCING_KEYWORDS.some((kw) => slugTokens.has(kw) || slugTokens.has(`${kw}s`))) return 365;
+
+  // Industry Spotlights by tier, for an article whose category says otherwise.
+  if (tier === 3) return 548;
 
   // Remaining Going Deeper process articles → 24 months
   if (category === "Going Deeper" || tier === 2) return 730;
