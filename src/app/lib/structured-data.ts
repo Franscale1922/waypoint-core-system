@@ -341,6 +341,7 @@ export function webPageSchema({
   breadcrumb,
   mainEntityId,
   primaryImage,
+  dateModified,
 }: {
   url: string;
   name: string;
@@ -348,6 +349,13 @@ export function webPageSchema({
   breadcrumb?: ReturnType<typeof breadcrumbSchema>;
   mainEntityId?: string;
   primaryImage?: string;
+  /**
+   * ISO date this page's substance was last reviewed. Optional because most
+   * pages are evergreen, but a page whose value IS its currency (cost figures,
+   * loan terms) should emit it: articles carry dateModified and these landing
+   * pages did not, so nothing told a crawler the numbers were still current.
+   */
+  dateModified?: string;
 }) {
   const canonical = toWww(url);
   return {
@@ -358,6 +366,7 @@ export function webPageSchema({
     description,
     isPartOf: { "@id": `${SITE_URL}/#website` },
     inLanguage: "en-US",
+    ...(dateModified ? { dateModified } : {}),
     ...(primaryImage ? { primaryImageOfPage: toWww(primaryImage) } : {}),
     ...(mainEntityId ? { mainEntity: { "@id": mainEntityId } } : {}),
     ...(breadcrumb ? { breadcrumb } : {}),

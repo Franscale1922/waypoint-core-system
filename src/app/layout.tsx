@@ -25,8 +25,14 @@ const SITE_URL = "https://www.waypointfranchise.com";
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Waypoint Franchise Advisors | Franchise Guidance from Whitefish, MT",
-    template: "%s | Waypoint Franchise Advisors",
+    default: "Franchise Guidance from a Former Franchisor | Waypoint",
+    // The suffix is the whole site's title budget, spent once per page. At
+    // " | Waypoint Franchise Advisors" it was 30 of the ~60 characters Google
+    // renders, so half of every title went to the brand and 44 of 45 article
+    // titles overflowed. "Waypoint" costs 11 and leaves 49 for the words that
+    // actually match a query. The display URL already reads
+    // waypointfranchise.com, so "Franchise" was being said twice in one result.
+    template: "%s | Waypoint",
   },
   description:
     "Free franchise consulting from Kelsey Stuart, former Bloomin' Blinds franchisor. I've helped 146+ owners find and start the right franchise. Book a free discovery call.",

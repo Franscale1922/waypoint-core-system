@@ -5,6 +5,15 @@ import type { InvestmentTier } from "@/app/components/InvestmentTierToggle";
 import { SITE_URL, jsonLdGraph, webPageSchema, breadcrumbSchema, faqPageSchema } from "../../lib/structured-data";
 import JsonLd from "../../components/JsonLd";
 
+// One date, three consumers: the visible "Last reviewed" line, the WebPage
+// dateModified, and anyone grepping for staleness. It read "March 2026" in prose
+// until 2026-08-03 while the schema emitted no date at all, so the page's single
+// most important property (that its cost figures are current) was five months
+// stale on the surface and invisible to crawlers. Update this when the figures
+// are actually re-checked, not when the file is edited.
+const LAST_REVIEWED = "2026-08-03";
+const LAST_REVIEWED_LABEL = "August 2026";
+
 const investmentGuideSchema = faqPageSchema(
   [
     {
@@ -28,7 +37,7 @@ const investmentGuideSchema = faqPageSchema(
 );
 
 export const metadata: Metadata = {
-  title: "How Much Does a Franchise Cost? | Investment Guide",
+  title: "How Much Does a Franchise Cost?",
   description:
     "How much does a franchise cost? Initial franchise fees run $20,000 to $60,000, plus total investment by category, royalties, and working capital needs.",
   alternates: { canonical: "https://www.waypointfranchise.com/investment" },
@@ -128,6 +137,7 @@ export default function InvestmentPage() {
               { name: "Home", url: SITE_URL },
               { name: "Investment Guide", url: `${SITE_URL}/investment` },
             ]),
+            dateModified: LAST_REVIEWED,
           }),
           investmentGuideSchema,
         )}
@@ -146,7 +156,7 @@ export default function InvestmentPage() {
             The total investment to buy a franchise typically ranges from <strong>$75,000 to $500,000+</strong>, depending on the business model. That number includes the initial franchise fee, setup costs, equipment, working capital, and pre-opening expenses. Not just the fee on the cover page.
           </p>
           <p className="text-sm text-[#6a6a5e] leading-relaxed max-w-2xl">
-            This guide breaks down every cost component, explains how investment tiers work across business categories, and covers how financing fits in. Last updated: March 2026.
+            This guide breaks down every cost component, explains how investment tiers work across business categories, and covers how financing fits in. Last reviewed: {LAST_REVIEWED_LABEL}.
           </p>
         </div>
       </section>
