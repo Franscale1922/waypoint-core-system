@@ -14,45 +14,39 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `96e1145` — PR #21 merged and **deployed** 2026-08-04 |
-| `seo/investment-selection-intent` | `6ea160d` — pushed, **no PR**, **not reviewed**, not merged |
-| `seo/auv-cluster` | `41e4bdd` — pushed, **no PR**, **not reviewed**, not merged |
+| `main` | `24530c1` — PRs #24 and #25 reviewed, merged, and deployed 2026-08-04 |
+| `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
+| `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
-
-Both branches are cut from `96e1145` and are **independent of each other**. Either can merge first.
 
 ---
 
-## 🔴 The one blocking item
+## ✅ The blocking item is closed
 
-**The mandatory adversarial review has not run on either branch.** That is the only reason neither
-is a PR. Everything else is finished and verified green (`npm test`, `aeo-audit` exit 0, no new type
-errors, both verified rendering in a real browser).
+**The mandatory adversarial review ran on both branches 2026-08-04.** Full record, including every
+finding logged but not fixed, is in `ADVERSARIAL-REVIEW-2026-08-04.md` beside this file. Summary:
 
-**Codex reviews the code branch only.** `seo/investment-selection-intent` touches
-`src/app/(marketing)/investment/page.tsx` and `src/app/components/InvestmentTierToggle.tsx`.
-`seo/auv-cluster` is glossary data and article prose, which CLAUDE.md explicitly exempts from
-external review; it gets a Claude pass, labelled as self-review.
+- **Codex round 1 on the code branch: 0 high findings** across three runs (branch diff, and both
+  whole files). Two Mediums were real and branch-introduced *in effect*, and were fixed in `f52281d`
+  before merge: the newly visible FAQ contradicted the page's own liquid-capital figures in three
+  places and the Liquid Capital glossary entry, and it shipped undated investment ranges against
+  Section 6. Everything else was pre-existing and is logged in the review doc.
+- **`seo/auv-cluster` got a Claude pass, labelled self-review.** No changes required.
 
-```bash
-git checkout seo/investment-selection-intent
-node scripts/codex-review.mjs --target "src/app/(marketing)/investment/page.tsx" --round 1 --out .codex-reviews/investment-page
-node scripts/codex-review.mjs --target src/app/components/InvestmentTierToggle.tsx --round 1 --out .codex-reviews/tier-toggle
-```
+**Two method notes worth carrying forward:**
 
-**`--out` is not optional.** Both runs are round 1 and the wrapper keys the findings path on
-`--round` alone (`scripts/codex-review.mjs:229`), so without separate directories the second run
-silently overwrites the first. Do not raise `--round` instead: the round number selects the reviewer
-persona, so that changes what gets reviewed, not just where it lands. Do **not** use `--diff` — the
-tree is clean, so it reviews nothing and returns a false all-clear. See the
-`codex-review-round-collision` memory.
+1. **Review the diff by writing it to a patch file and `--target`ing that.** `--target` on a source
+   file reviews the whole file with no idea what changed, and `--diff` is vacuous on a clean tree.
+   The patch-file run is what surfaced both real defects.
+2. **`--out` is not optional** when several runs share a round. The wrapper keys the findings path on
+   `--round` alone (`scripts/codex-review.mjs:229`), so same-round runs overwrite one another. Do not
+   raise `--round` instead: the round selects the reviewer persona, so it changes what gets reviewed.
 
-`--target` reviews the WHOLE file, so expect most findings to be pre-existing rather than from these
-branches. Triage before acting: branch-introduced gets fixed, pre-existing gets logged.
-
-After the review passes: open both PRs and merge. **Merging deploys waypointfranchise.com**, and the
-production build runs `prisma db push` against the live database. Neither branch touches `prisma/`,
-so that is a schema no-op.
+**The defect class that started all this is still unguarded.** Verified: `aeo-audit.mjs` never reads
+`src/`, `verify-schema.mjs` never compares schema against visible copy, and `verify-links.mjs`
+validates only `relatedSlugs` frontmatter (not `.tsx` hrefs or inline markdown links). The
+investment fix is sound for that one page but is not structurally enforced. See "The gap worth
+acting on separately" in the review doc.
 
 ---
 
@@ -140,7 +134,11 @@ session or cause harm.
 
 ## Open work, ranked
 
-1. **The adversarial review** (above). Blocking, and the only thing between here and merge.
+1. **A schema-vs-visible parity gate**, plus the pre-existing defects the review logged and did not
+   fix (nested `<main>` landmarks, which likely affect every marketing page; the `InvestmentTierToggle`
+   accessibility set; overlapping tier intervals). All verified real and enumerated in
+   `ADVERSARIAL-REVIEW-2026-08-04.md`. The parity gate belongs in `verify-schema.mjs` and is scoped
+   work to agree, not a bolt-on.
 2. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
    and unenforced by any check — `aeo-audit` does not test for item numbers at all. Was 52; the AUV
    entry fixed 2. This is a contained cleanup in one file, plus a candidate gate to add to the audit
