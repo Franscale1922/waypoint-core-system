@@ -419,6 +419,34 @@ function runChecks(tree, cwd, runTests) {
     ]);
   }
 
+  // 2b. Structured data, including FAQ schema-vs-visible parity. Same reasoning
+  //     as the dates check above: this runs against the pushed corpus, which is
+  //     the only thing that proves the PAGES are clean, while the unit suite
+  //     only proves the checker works against fixtures.
+  //
+  //     It is here rather than in the hook's degraded path because that path is
+  //     a fallback, not the gate. On 2026-08-04 /investment shipped four FAQPage
+  //     Q&As that rendered nowhere, and nothing automatic would have caught it:
+  //     verify-schema existed but ran only under `npm test`.
+  //
+  //     SKIP_SCHEMA_CHECK follows the SKIP_UNIT_TESTS precedent. The FAQ half is
+  //     a hand-rolled lexer over TypeScript, documented as approximate, and
+  //     CLAUDE.md bans --no-verify, so without a named valve one false positive
+  //     would block every push with no way through.
+  if (env.SKIP_SCHEMA_CHECK !== "1") {
+    const schema = stream("node", [path.join(tree, "scripts", "verify-schema.mjs")], { cwd: tree, env });
+    if (!succeeded(schema)) {
+      return blocked([
+        `the structured-data check failed for the pushed tree (${describeFailure(schema)}). Common causes:`,
+        "FAQPage schema whose questions are not rendered on the page: feed the",
+        "  schema and the visible FAQ from ONE named array, and map that array in JSX",
+        "a non-www waypointfranchise.com URL in a page/schema file",
+        "Re-check:  npm run verify-schema",
+        "Genuinely need to skip?  SKIP_SCHEMA_CHECK=1 git push",
+      ]);
+    }
+  }
+
   // 3. Brand-identity map drift. The extracted copy must be the one invoked, or
   //    it would compare the INSTALLED repo's map and silently validate the wrong
   //    tree. Its registry source is an absolute homedir()/BIP_REGISTRY_PATH path
