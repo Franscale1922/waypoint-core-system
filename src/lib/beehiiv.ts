@@ -11,6 +11,8 @@
  * returns. Inside an Inngest step, await it directly.
  */
 
+import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+
 const BEEHIIV_API_BASE = "https://api.beehiiv.com/v2";
 
 export async function subscribeToBeehiiv(
@@ -22,6 +24,18 @@ export async function subscribeToBeehiiv(
 
   if (!apiKey || !publicationId) {
     // Local dev without credentials: skip silently
+    return;
+  }
+
+  // The suppression check lives HERE, not at the call sites, because forgetting
+  // it at one of the six would silently undo somebody's opt-out.
+  //
+  // `reactivate_existing: true` below is the reason it matters: without this
+  // guard, a person who unsubscribed and later downloaded another guide was
+  // resurrected on the newsletter by that download. They had been told they
+  // would receive no more email, and then received the next issue.
+  if (await isEmailSuppressedFailClosed(email)) {
+    console.log("[beehiiv] address is suppressed; not subscribing");
     return;
   }
 

@@ -31,10 +31,17 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { normalizeEmail } from "@/lib/email-suppression";
-import { clientIpFrom, consumeRateLimit, pruneRateLimitBuckets } from "@/lib/rate-limit";
+import {
+  acquireDeliveryLock,
+  clientIpFrom,
+  consumeRateLimit,
+  pruneRateLimitBuckets,
+  releaseDeliveryLock,
+} from "@/lib/rate-limit";
 import { afterResponse } from "@/lib/after-response";
 
 const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
 
 /**
  * Submissions per hour from one client address, across every magnet.
@@ -50,8 +57,19 @@ const IP_LIMIT = 8;
  */
 const EMAIL_LIMIT = 3;
 
+/**
+ * Deliveries per DAY to one address, across every magnet.
+ *
+ * The hourly cap alone is not a bound worth the name: sustained, it permits 72
+ * unsolicited messages a day to a victim, which is a slower inbox-bombing tool
+ * rather than a fixed one. It matters most on the quiz routes, which cannot use
+ * idempotency because a retake legitimately produces a different result and so
+ * have nothing else holding them down.
+ */
+const EMAIL_DAILY_LIMIT = 6;
+
 /** A repeat request for the same magnet inside this window is a no-op. */
-const IDEMPOTENCY_WINDOW_MS = 24 * HOUR_MS;
+const IDEMPOTENCY_WINDOW_MS = DAY_MS;
 
 /** Deliberately permissive: rejecting real addresses costs leads. */
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -77,8 +95,19 @@ export interface CaptureGuardOptions {
 }
 
 export type CaptureDecision =
-  | { proceed: true; email: string }
+  | {
+      proceed: true;
+      email: string;
+      /**
+       * Drops the in-flight delivery reservation. Call it on EVERY path where
+       * delivery did not happen, or the visitor's retry is suppressed until the
+       * lock ages out. No-op for routes that passed no idempotency key.
+       */
+      release: () => Promise<void>;
+    }
   | { proceed: false; response: NextResponse };
+
+const noopRelease = async () => {};
 
 /**
  * Runs the guard. On `proceed: true` the caller continues with the NORMALIZED
@@ -103,6 +132,9 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
   // record, no unsubscribe token and no nurture. Failing open in that window
   // does not preserve a lead, it only emails strangers messages we have no
   // record of and they cannot opt out of.
+  //
+  // The IP counter is charged per ATTEMPT, ahead of everything else, so a flood
+  // cannot make us do database work just to discover it is a flood.
   const ip = clientIpFrom(req.headers);
   try {
     if (ip) {
@@ -110,53 +142,68 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
       schedulePrune(perIp.count);
       if (!perIp.allowed) return { proceed: false, response: tooMany(route, "ip", perIp.retryAfterSeconds) };
     }
-
-    const perEmail = await consumeRateLimit({ scope: "email", key: email, limit: EMAIL_LIMIT, windowMs: HOUR_MS });
-    schedulePrune(perEmail.count);
-    if (!perEmail.allowed) return { proceed: false, response: tooMany(route, "email", perEmail.retryAfterSeconds) };
   } catch (err) {
-    console.error(`[${route}] rate limiter unavailable; refusing the request:`, err);
-    return {
-      proceed: false,
-      response: NextResponse.json(
-        { error: "We couldn't process that just now. Please try again in a few minutes." },
-        { status: 503, headers: { "Retry-After": "300" } }
-      ),
-    };
+    return { proceed: false, response: limiterUnavailable(route, err) };
   }
 
-  // ── Idempotency ──────────────────────────────────────────────────────────
+  // ── Idempotency, in two halves ───────────────────────────────────────────
   // A duplicate is reported as success, because from the visitor's side it IS
   // success: the email they are being told to look for is already in their
   // inbox. Returning an error would push them to submit again.
-  if (!idempotency) return { proceed: true, email };
-
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const delivered = await (prisma as any)[idempotency.model].findFirst({
-      where: {
-        ...(idempotency.where ?? {}),
-        email: { equals: email, mode: "insensitive" },
-        nurtureStep: { gte: 1 },
-        createdAt: { gt: new Date(Date.now() - IDEMPOTENCY_WINDOW_MS) },
-      },
-      select: { id: true },
-    });
-    if (delivered) {
-      console.log(`[${route}] duplicate submission inside the idempotency window; no side effects`);
-      return {
-        proceed: false,
-        response: NextResponse.json({ success: true, deduplicated: true }),
-      };
+  //
+  // The durable half. Covers the whole window but is a read followed by a write,
+  // so it cannot see a sibling request that is in flight right now.
+  if (idempotency) {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const delivered = await (prisma as any)[idempotency.model].findFirst({
+        where: {
+          ...(idempotency.where ?? {}),
+          email: { equals: email, mode: "insensitive" },
+          nurtureStep: { gte: 1 },
+          createdAt: { gt: new Date(Date.now() - IDEMPOTENCY_WINDOW_MS) },
+        },
+        select: { id: true },
+      });
+      if (delivered) return { proceed: false, response: duplicate(route) };
+    } catch (err) {
+      // Unlike the limiter, this one fails OPEN. Its job is suppressing a repeat
+      // delivery, so the worst case is one extra copy of an email the visitor
+      // asked for, which beats denying a first-time lead their download.
+      console.error(`[${route}] idempotency check failed; continuing:`, err);
     }
-  } catch (err) {
-    // Unlike the limiter, this one fails OPEN. Its job is suppressing a repeat
-    // delivery, so the worst case is one extra copy of an email the visitor
-    // asked for, which beats denying a first-time lead their download.
-    console.error(`[${route}] idempotency check failed; continuing:`, err);
   }
 
-  return { proceed: true, email };
+  // The delivery counters are charged only once this request looks like a real
+  // delivery. Charging them above would let two harmless browser retries burn an
+  // address's hourly quota and then refuse it a DIFFERENT guide it never got.
+  try {
+    const perHour = await consumeRateLimit({ scope: "email", key: email, limit: EMAIL_LIMIT, windowMs: HOUR_MS });
+    schedulePrune(perHour.count);
+    if (!perHour.allowed) return { proceed: false, response: tooMany(route, "email", perHour.retryAfterSeconds) };
+
+    const perDay = await consumeRateLimit({ scope: "email-day", key: email, limit: EMAIL_DAILY_LIMIT, windowMs: DAY_MS });
+    schedulePrune(perDay.count);
+    if (!perDay.allowed) return { proceed: false, response: tooMany(route, "email-day", perDay.retryAfterSeconds) };
+  } catch (err) {
+    return { proceed: false, response: limiterUnavailable(route, err) };
+  }
+
+  if (!idempotency) return { proceed: true, email, release: noopRelease };
+
+  // The atomic half. An INSERT against a unique constraint is the operation the
+  // read above is missing: of three concurrent requests exactly one wins, and
+  // the losers are duplicates rather than three rows, three copies of the email
+  // and three independent nurture sequences.
+  const lockKey = `${idempotency.model}|${JSON.stringify(idempotency.where ?? {})}|${email}`;
+  try {
+    if (!(await acquireDeliveryLock(lockKey))) return { proceed: false, response: duplicate(route) };
+  } catch (err) {
+    console.error(`[${route}] could not reserve delivery; continuing without the lock:`, err);
+    return { proceed: true, email, release: noopRelease };
+  }
+
+  return { proceed: true, email, release: () => releaseDeliveryLock(lockKey) };
 }
 
 /**
@@ -167,6 +214,19 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
 function schedulePrune(count: number): void {
   if (count !== 1) return;
   afterResponse("[rate-limit] prune", () => pruneRateLimitBuckets());
+}
+
+function duplicate(route: string): NextResponse {
+  console.log(`[${route}] duplicate submission inside the idempotency window; no side effects`);
+  return NextResponse.json({ success: true, deduplicated: true });
+}
+
+function limiterUnavailable(route: string, err: unknown): NextResponse {
+  console.error(`[${route}] rate limiter unavailable; refusing the request:`, err);
+  return NextResponse.json(
+    { error: "We couldn't process that just now. Please try again in a few minutes." },
+    { status: 503, headers: { "Retry-After": "300" } }
+  );
 }
 
 function tooMany(route: string, scope: string, retryAfterSeconds: number): NextResponse {

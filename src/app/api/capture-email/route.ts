@@ -192,7 +192,12 @@ export async function POST(req: Request) {
 
       // The whole point of the request. Reporting success on a failed send is
       // what left people watching an inbox that was never going to receive it.
-      if (resendFailed(`${LABEL} delivery`, deliveryResult)) return deliveryFailed();
+      if (resendFailed(`${LABEL} delivery`, deliveryResult)) {
+        // Drop the in-flight reservation so the visitor's retry is not mistaken
+        // for a duplicate of a delivery that never happened.
+        await guard.release();
+        return deliveryFailed();
+      }
 
       // Arms idempotency, and only now: keyed on delivery rather than on the row
       // existing, so the retry after a failed send is not suppressed.
@@ -222,6 +227,10 @@ export async function POST(req: Request) {
         });
       }
     }
+
+    // Kelsey's own address skips the subscriber send, so nothing consumed the
+    // reservation. Releasing keeps test submissions from blocking each other.
+    if (isKelsey) await guard.release();
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {

@@ -315,3 +315,124 @@ describe("unsubscribe links resolve to a handler that can find the record", () =
     expect(headers["List-Unsubscribe-Post"]).toBeUndefined();
   });
 });
+
+// ── Findings from the round-1 adversarial review ────────────────────────────
+
+describe("the concurrency window between checking and delivering", () => {
+  it("treats a lost race for the reservation as a duplicate", async () => {
+    // The read-then-write check cannot see a sibling request that is in flight,
+    // so three at once could each observe no prior delivery and each send. The
+    // unique constraint is the atomic operation that check was missing.
+    h.db.rateLimitBucket.create.mockRejectedValue(Object.assign(new Error("dup"), { code: "P2002" }));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    await expect(res.json()).resolves.toMatchObject({ deduplicated: true });
+    expect(h.emailSend).not.toHaveBeenCalled();
+    expect(h.sendEvent).not.toHaveBeenCalled();
+  });
+
+  it("releases the reservation when delivery fails, so the retry gets through", async () => {
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+
+    expect(h.db.rateLimitBucket.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ scope: "lock" }) })
+    );
+  });
+});
+
+describe("delivery quota is charged for deliveries, not attempts", () => {
+  it("does not charge the address counter for a duplicate", async () => {
+    // Two harmless browser retries used to burn the hourly quota, so a request
+    // for a DIFFERENT guide in the same hour was refused with a 429.
+    h.db.checklistDownload.findFirst.mockResolvedValue({ id: "already_delivered" });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+
+    const scopes = h.db.rateLimitBucket.upsert.mock.calls.map(
+      (c) => (c[0] as { create: { scope: string } }).create.scope
+    );
+    expect(scopes).not.toContain("email");
+  });
+
+  it("caps deliveries per day, not only per hour", async () => {
+    // 3/hour sustained is 72 messages a day at a victim: a slower bombing tool,
+    // not a bounded one. It is the only cap the quiz routes have.
+    h.db.rateLimitBucket.upsert.mockImplementation(async (args: { create: { scope: string } }) => ({
+      count: args.create.scope === "email-day" ? 99 : 1,
+    }));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(429);
+    expect(h.emailSend).not.toHaveBeenCalled();
+  });
+});
+
+describe("an opt-out is not undone by the newsletter sync", () => {
+  it("does not re-subscribe a suppressed address to beehiiv", async () => {
+    // beehiiv is called with reactivate_existing, so before this an unsubscribed
+    // person who later took a guide was resurrected onto the newsletter by that
+    // download, having just been told they would get no more email.
+    h.db.escapeKitDownload.findFirst.mockImplementation(async (args: { where?: Record<string, unknown> }) =>
+      args?.where?.unsubscribed === true ? { id: "opted_out" } : null
+    );
+    // The real helper, not the stub the other tests use: the guard lives inside it.
+    vi.doUnmock("@/lib/beehiiv");
+    vi.resetModules();
+    const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}"));
+    process.env.BEEHIIV_API_KEY = "test-key";
+    process.env.BEEHIIV_PUBLICATION_ID = "pub_test";
+
+    const { subscribeToBeehiiv } = await import("@/lib/beehiiv");
+    await subscribeToBeehiiv(EMAIL, "Test Prospect");
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+
+    fetchSpy.mockRestore();
+    delete process.env.BEEHIIV_API_KEY;
+    delete process.env.BEEHIIV_PUBLICATION_ID;
+    vi.doMock("@/lib/beehiiv", () => ({ subscribeToBeehiiv: h.subscribeToBeehiiv }));
+    vi.resetModules();
+  });
+});
+
+describe("quiz routes do not drip to someone whose result never arrived", () => {
+  const SCORECARD = {
+    name: "Test Prospect",
+    email: EMAIL,
+    score: 55,
+    primaryDriver: "Autonomy",
+    biggestFear: "Risk",
+  };
+
+  it("releases the submission row and starts nothing when the send fails", async () => {
+    // after() already holds the callback by the time delivery is checked, so
+    // returning 500 did not stop the sequence from starting.
+    h.emailSend.mockResolvedValue(RESEND_ERROR);
+    const { POST } = await import("@/app/api/scorecard-complete/route");
+
+    const res = await POST(post(SCORECARD));
+    await runScheduled();
+
+    expect(res.status).toBe(500);
+    expect(h.sendEvent).not.toHaveBeenCalled();
+    expect(h.db.scorecardSubmission.delete).toHaveBeenCalledWith({ where: { id: ID } });
+  });
+
+  it("starts the sequence when the result did arrive", async () => {
+    const { POST } = await import("@/app/api/scorecard-complete/route");
+
+    await POST(post(SCORECARD));
+    await runScheduled();
+
+    expect(h.sendEvent).toHaveBeenCalledTimes(1);
+    expect(h.db.scorecardSubmission.delete).not.toHaveBeenCalled();
+  });
+});

@@ -28,7 +28,12 @@
  */
 import prisma from "@/lib/prisma";
 
-export type RateLimitScope = "ip" | "email";
+/**
+ * "email" and "email-day" are the same dimension at two windows: an hourly cap
+ * for bursts and a daily one so a sustained trickle is bounded too.
+ * "lock" is not a counter at all; see acquireDeliveryLock.
+ */
+export type RateLimitScope = "ip" | "email" | "email-day" | "lock";
 
 export interface RateLimitRule {
   scope: RateLimitScope;
@@ -106,6 +111,59 @@ export async function consumeRateLimit(rule: RateLimitRule): Promise<RateLimitRe
 
 function isUniqueViolation(err: unknown): boolean {
   return typeof err === "object" && err !== null && (err as { code?: string }).code === "P2002";
+}
+
+/**
+ * How long an in-flight delivery reservation is held. Short on purpose: it only
+ * has to outlive a single request. If the invocation dies between reserving and
+ * delivering, the address is blocked for at most this long instead of for the
+ * whole idempotency window.
+ */
+const LOCK_WINDOW_MS = 15 * 60 * 1000;
+
+/**
+ * Reserves the right to deliver to `key`, returning false if someone already
+ * holds it.
+ *
+ * This is a mutex, not a counter, and it exists because a read-then-write
+ * idempotency check is not atomic: three concurrent requests can all observe no
+ * prior delivery, then all create a row, send a copy and start a nurture
+ * sequence. INSERT against the unique constraint is the atomic operation the
+ * check was missing, so exactly one caller wins and the rest are duplicates.
+ *
+ * It is the short-lived half of a pair. The durable half is the delivered marker
+ * on the record itself, which covers the full idempotency window; this only
+ * covers the moments while a request is in flight.
+ *
+ * THROWS on infrastructure failure, like consumeRateLimit, so the caller decides.
+ */
+export async function acquireDeliveryLock(key: string, now = Date.now()): Promise<boolean> {
+  try {
+    await prisma.rateLimitBucket.create({
+      data: { scope: "lock", key, bucket: bucketStart(LOCK_WINDOW_MS, now), count: 1 },
+    });
+    return true;
+  } catch (err) {
+    if (isUniqueViolation(err)) return false;
+    throw err;
+  }
+}
+
+/**
+ * Drops a reservation so the visitor's retry is not suppressed.
+ *
+ * Call it whenever delivery did not happen. Never throws: failing to release
+ * costs one blocked retry for at most LOCK_WINDOW_MS, which is not worth
+ * replacing an error the caller is already handling.
+ */
+export async function releaseDeliveryLock(key: string, now = Date.now()): Promise<void> {
+  try {
+    await prisma.rateLimitBucket.deleteMany({
+      where: { scope: "lock", key, bucket: bucketStart(LOCK_WINDOW_MS, now) },
+    });
+  } catch (err) {
+    console.error("[rate-limit] could not release delivery lock:", err);
+  }
 }
 
 /**

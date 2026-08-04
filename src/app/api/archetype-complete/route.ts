@@ -89,6 +89,12 @@ export async function POST(req: Request) {
 
     let submission = activeSubmission;
     let sequenceStarted = false;
+    // Read by the deferred nurture trigger below, which runs only once the
+    // response is flushed and so sees whatever the confirmation send set it to.
+    // Without it a failed delivery returned 500 to the visitor and started the
+    // drip regardless, because after() had already been handed the callback:
+    // Day-3 marketing for a result they never received.
+    let delivered = false;
 
     if (!activeSubmission) {
       submission = await submissions.create({
@@ -115,6 +121,11 @@ export async function POST(req: Request) {
       const submissionId = submission.id;
       afterResponse("[archetype-complete] Nurture trigger", async () => {
         try {
+          if (!delivered) {
+            console.error("[archetype-complete] delivery failed; releasing the submission row instead of starting a sequence");
+            await submissions.delete({ where: { id: submissionId } });
+            return;
+          }
           // An opt-out on ANY list belongs to this person and stops the sequence
           // before it starts. The confirmation email above still goes out.
           if (await isEmailSuppressedFailClosed(email)) {
@@ -190,6 +201,7 @@ export async function POST(req: Request) {
     // The Resend SDK resolves with { data, error } rather than rejecting, so an
     // unchecked await reported success for a message that never left.
     if (resendFailed("[archetype-complete] delivery", deliveryResult)) return deliveryFailed();
+    delivered = true;
     await markDelivered("archetypeSubmission", submission.id, "[archetype-complete]");
 
     return NextResponse.json({

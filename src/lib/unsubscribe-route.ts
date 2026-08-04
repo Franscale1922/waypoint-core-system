@@ -88,7 +88,7 @@ export function createUnsubscribeRoute(opts: UnsubscribeRouteOptions) {
     return html(
       page({
         heading: "Unsubscribe?",
-        body: "Confirm below and you'll stop receiving emails from Waypoint. This covers every list, not just the one that brought you here.",
+        body: "Confirm below and you'll stop receiving emails from Waypoint. This covers every sequence, not just the one that brought you here.",
         form: action,
       }),
       200
@@ -104,10 +104,15 @@ export function createUnsubscribeRoute(opts: UnsubscribeRouteOptions) {
     return html(
       page({
         heading: "You're unsubscribed",
+        // Deliberately scoped to what this actually controls. Waypoint's own
+        // sequences stop here, and nothing can re-subscribe the address (see the
+        // guard in beehiiv.ts). The beehiiv newsletter is a separate list with
+        // its own opt-out in every issue, and claiming to have cancelled that
+        // too would be a promise this handler cannot keep.
         body:
           outcome.kind === "not-found"
             ? "We couldn't find that subscription. You may have already been removed."
-            : "You won't receive any more emails from Waypoint.",
+            : "You won't receive any more emails from Waypoint's sequences. If you also get the newsletter, use the unsubscribe link at the bottom of any issue.",
       }),
       200
     );
