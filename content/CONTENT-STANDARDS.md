@@ -431,13 +431,24 @@ If a page genuinely needs a custom title with no brand appended at all, use `tit
 
 ### Verification
 
-The pre-push hook (`.githooks/pre-push` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains the bare word `Waypoint`. To check manually before committing:
+The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/aeo-audit.mjs`) fails the push if any frontmatter `title:` or `metaTitle:` contains the bare word `Waypoint`. To check manually before committing:
 
 `grep -rn "Waypoint" content/articles src/data`
 
 and confirm no `title:` or `metaTitle:` line appears in the results.
 
 The test is the bare word, not the `| Waypoint` suffix. `Why Waypoint Works` and `Foo |Waypoint` render the brand twice just as surely as `Foo | Waypoint` does, and a suffix test matched none of them.
+
+**The hook reads the commits being pushed, not your working tree** (changed 2026-08-04). Two consequences worth knowing:
+
+- Editing a file without committing the edit will **not** clear a failure. The fix has to be committed.
+- A violation that exists only in your working tree will **not** block a push, so an unrelated edit in flight cannot stop you shipping something else.
+
+`SKIP_ARCHIVE_VERIFY=1` forces the hook back to checking your working tree. It is an emergency hatch with the same effect as the bug described above: a violation you have committed but repaired locally will not be caught. `CLAUDE.md` bans `--no-verify`; treat this the same way.
+
+To run exactly what a push will run, against a commit rather than your working copy:
+
+`node scripts/verify-pushed-tree.mjs $(git rev-parse HEAD)`
 
 ### Title length is reported, not enforced
 
@@ -471,6 +482,6 @@ A malformed date costs more than it looks: it removes the article's publication 
 
 ### Verification
 
-The pre-push hook (`.githooks/pre-push` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, or not a real calendar day. The same check runs in CI and in `npm test`. To check manually:
+The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, or not a real calendar day. The same check runs in CI and in `npm test`. To check manually:
 
 `npm run verify-dates`
