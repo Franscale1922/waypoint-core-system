@@ -1,9 +1,12 @@
-# Session handoff — 2026-08-03 SEO/AEO work
+# Session handoff — 2026-08 SEO/AEO work
 
 Written to `docs/seo-reviews/` rather than `.claude/` on purpose: **`.claude/*` is gitignored**
 (`.gitignore:48`), so anything left there is untracked, invisible on any other machine, and exposed
 to the branch-asymmetric deletion trap. This path is tracked AND excluded from `vercel.json`'s
 `ignoreCommand`, so it costs no deploy.
+
+Rewritten 2026-08-04 rather than appended, so a later session cannot read a stale blocking item
+first. The PR #21 section that used to head this file is now history and is summarised below.
 
 ---
 
@@ -11,107 +14,171 @@ to the branch-asymmetric deletion trap. This path is tracked AND excluded from `
 
 | | |
 |---|---|
-| Branch | `seo/title-budget-and-glossary` (merged and deleted) |
-| Merged | **yes**, 2026-08-04, squashed as `9f746e9` |
-| Deployed | **yes**, production |
-| `main` | `9f746e9` |
+| `main` | `96e1145` — PR #21 merged and **deployed** 2026-08-04 |
+| `seo/investment-selection-intent` | `6ea160d` — pushed, **no PR**, **not reviewed**, not merged |
+| `seo/auv-cluster` | `41e4bdd` — pushed, **no PR**, **not reviewed**, not merged |
+| Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
-Everything in this branch is now merged and live. The rows above read "no" until 2026-08-04;
-they are updated rather than appended so a later session cannot read the stale state first.
+Both branches are cut from `96e1145` and are **independent of each other**. Either can merge first.
 
 ---
 
-## ✅ The blocking item — CLEARED 2026-08-04
+## 🔴 The one blocking item
 
-**The mandatory adversarial Codex review ran, and PR #21 merged as `9f746e9`.** Two round-1 runs,
-riskiest code first, into separate output directories:
+**The mandatory adversarial review has not run on either branch.** That is the only reason neither
+is a PR. Everything else is finished and verified green (`npm test`, `aeo-audit` exit 0, no new type
+errors, both verified rendering in a real browser).
+
+**Codex reviews the code branch only.** `seo/investment-selection-intent` touches
+`src/app/(marketing)/investment/page.tsx` and `src/app/components/InvestmentTierToggle.tsx`.
+`seo/auv-cluster` is glossary data and article prose, which CLAUDE.md explicitly exempts from
+external review; it gets a Claude pass, labelled as self-review.
 
 ```bash
-node scripts/codex-review.mjs --target scripts/aeo-audit.mjs --round 1 --out .codex-reviews/aeo-audit
-node scripts/codex-review.mjs --target src/app/lib/structured-data.ts --round 1 --out .codex-reviews/structured-data
+git checkout seo/investment-selection-intent
+node scripts/codex-review.mjs --target "src/app/(marketing)/investment/page.tsx" --round 1 --out .codex-reviews/investment-page
+node scripts/codex-review.mjs --target src/app/components/InvestmentTierToggle.tsx --round 1 --out .codex-reviews/tier-toggle
 ```
 
-**`--out` is not optional.** Both runs are round 1, and the wrapper writes
-`<out>/findings-round-<N>.md`, so without it the second run silently overwrites the first
-(`scripts/codex-review.mjs:229`). Anyone repeating this pattern must separate the directories.
+**`--out` is not optional.** Both runs are round 1 and the wrapper keys the findings path on
+`--round` alone (`scripts/codex-review.mjs:229`), so without separate directories the second run
+silently overwrites the first. Do not raise `--round` instead: the round number selects the reviewer
+persona, so that changes what gets reviewed, not just where it lands. Do **not** use `--diff` — the
+tree is clean, so it reviews nothing and returns a false all-clear. See the
+`codex-review-round-collision` memory.
 
-Result: `aeo-audit.mjs` 2 high / 4 medium / 2 low, `structured-data.ts` 0 high / 2 medium / 1 low.
-**`--target` reviews the whole file, not the branch diff**, so 10 of the 11 findings are
-pre-existing on `main` and were deliberately kept out of a reviewed diff. They are logged as two
-follow-up tasks (aeo-audit parsing robustness; JSON-LD identity duplication).
+`--target` reviews the WHOLE file, so expect most findings to be pre-existing rather than from these
+branches. Triage before acting: branch-introduced gets fixed, pre-existing gets logged.
 
-One finding was branch-introduced and is fixed: `hardCodesBrand` tested for the exact long brand
-plus the exact `" | Waypoint"` string, so `Why Waypoint Works` and `Foo |Waypoint` both passed the
-gate while still rendering the brand twice. It now tests the bare word. Verified zero false
-positives first (no article title or `metaTitle` contains the word), then confirmed both cases
-fail the gate against a throwaway article.
-
-A separate self-review pass — **labelled as such, since Codex cannot read CLAUDE.md, memory, or
-this file** — found what Codex structurally could not: CONTENT-STANDARDS §14 and the glossary route
-comment still documented the old `"%s | Waypoint Franchise Advisors"` template this branch
-replaced, so the rule and its enforcement disagreed. Both corrected.
+After the review passes: open both PRs and merge. **Merging deploys waypointfranchise.com**, and the
+production build runs `prisma db push` against the live database. Neither branch touches `prisma/`,
+so that is a schema no-op.
 
 ---
 
-## What this branch contains
+## What the two branches contain
 
-Full reasoning in `technical-aeo-audit.md` beside this file. In brief:
+Full reasoning is in the commit messages, which are deliberately long. In brief:
 
-1. **Title budget.** `title.template` was `"%s | Waypoint Franchise Advisors"`, spending 30 of
-   Google's ~60 rendered characters on the brand. Now `"%s | Waypoint"`. Four core pages shortened.
-2. **Glossary.** 8 more terms given three unique FAQs each, chosen from the 90-day query pull.
-   18 of 99 done.
-3. **Freshness.** `/investment` had a five-month-stale visible date and no `dateModified` at all.
+**`seo/investment-selection-intent`** — Search Console (90d to 2026-08-04) shows `/investment` ranks
+**4.1 for "best franchises to own"** (21 impressions) and ~90 for every cost query it was written
+for, earning no clicks on either. It now answers that query, brand-free. Two defects found while in
+there, both pre-existing and both on the site's highest-impression page:
 
-Verified on the dev server: touched titles render inside 60 chars, `dateModified` emits `2026-08-03`,
-all 8 new term pages serve 4 FAQ entries. `npm test` 291 unit + 19 auth green, `aeo-audit` exit 0.
+- **The FAQ schema was invisible.** The schema array and the on-page FAQ array had **zero overlap**:
+  four Q&As were declared as structured data that appeared nowhere on the page. Google requires
+  FAQPage markup to be visible. Both now derive from one array, so the drift cannot recur.
+- **Six rendered Section 10 violations**, including a stat tile that just read "Item 7" and copy
+  inside `InvestmentTierToggle.tsx` that a file-level grep of the page missed. Only the rendered-DOM
+  check caught the component one.
+
+**`seo/auv-cluster`** — the AUV cluster is the largest coherent, servable demand on the site
+(~70 impressions across nine queries; term page at position 37). Adds the restaurant framing and a
+"what is a good AUV" answer, clears three Section 10 violations, drops an invented "15% vs 8%
+operating margins" illustration that broke Section 1, and doubles inbound links from 2 to 4.
 
 ---
 
 ## Decisions already made — do not silently reverse
 
-- **Do not thin the `/glossary` index.** It duplicates all 99 definitions and cannibalises its own
-  term pages, but it draws 311 impressions and is the best-ranked page on the site. The chosen fix
-  is differentiating term pages, not gutting what works.
-- **Do not bulk-rewrite the 30 over-budget article titles.** Keywords are front-loaded, so
-  truncation costs the brand rather than the match, and retitling a ranking page risks traffic for a
-  modest gain. `aeo-audit` reports them as an **advisory, not a gate**, deliberately — a gate would
-  force exactly that rushed rewrite.
-- **Do not mass-produce the remaining 81 glossary FAQs.** 243 generic FAQs would trade a duplication
-  problem for a thin-content problem. Batch them on demand evidence.
+- **No "best franchises" listicle, ever.** CONTENT-STANDARDS Section 2 bans named brands outright,
+  "hard rule with no exceptions". This is a repo rule, not just FTC caution. The compliant answer to
+  that query is that its premise is wrong, which is what shipped.
+- **`/investment`'s title stays cost-first.** Only the description spans both intents. Re-cutting a
+  title shipped the same day is churn.
+- **Do not thin the `/glossary` index** (carried over, and now better supported — see below).
+- **Do not bulk-rewrite the 30 over-budget article titles.** See the measurement below; the reason
+  recorded in the previous handoff was wrong even though the conclusion was right.
+- **Do not mass-produce the remaining 81 glossary FAQs.** Differentiate on demand evidence.
+
+---
+
+## Beliefs corrected this session — do not re-adopt the old ones
+
+These were each stated confidently somewhere upstream and are wrong. Re-deriving them would waste a
+session or cause harm.
+
+1. **The glossary cannibalisation thesis does not hold.** The index does not outrank its own term
+   pages for definitional queries. For `auv meaning franchise` the **index ranks 83 while the AUV
+   term page ranks 37** — the term page is winning. `common franchise terms`, the query that
+   literally describes an index, ranks **97**. What the index actually ranks 1st–5th for is
+   brand-cost junk (`alfamart franchise fee`, `bojangles pronunciation`, `chris brown net worth`),
+   heavily India/Pakistan-skewed, plus AI-assistant prompt leakage. Its 792 impressions at
+   "position 5.5" are a vanity metric at 0.13% CTR. So thinning it would not help term pages, and
+   protecting it is not worth much either. Term pages' zero impressions are a demand/authority
+   problem, not cannibalisation.
+2. **Retitling the 30 over-budget articles addresses ~34 impressions.** Title length is a CTR lever;
+   CTR only operates on page 1. Only 6 of the 30 are on page 1 and they draw ~34 impressions
+   between them in 90 days. 11 of the 30 have **zero** impressions, so the recorded reason ("risks
+   traffic on a ranking page") was wrong — there is almost no traffic to risk. Right conclusion,
+   wrong reason. Retitle a page when it reaches page 1, as a follow-on to whatever got it there.
+3. **"franchise opportunities at position 2.9" is not a real page-1 ranking.** 18 impressions is far
+   too few for that head term; a genuine position-3 would produce thousands. Same trap already
+   flagged for `franchise-investment-by-category`. Only `best franchises to own` looks durable.
+4. **Piggyback should drop, not rise.** The impression-sorted query list includes every query with
+   ≥2 impressions and Piggyback is not in it, so it has **≤1 impression in 90 days**. Position 1 for
+   something nobody searches is worth ~nothing. The previous handoff ranked it #3.
+5. **"Payroll and freight" is half right.** `freight franchise cost` is real (16 impressions at
+   89.4). Payroll does not appear at all, so ≤1 impression. Do freight, drop payroll.
+6. **Section 10 in articles was a false alarm.** An initial count of 74 violations was wrong: all 22
+   article hits are inside `fdd-decoded-what-actually-matters.md`, the one explicitly exempt
+   article. **The articles are clean.** The real violations are in `src/data/glossary.ts`.
 
 ---
 
 ## Open work, ranked
 
-1. ~~**Codex review.** Blocking.~~ Done 2026-08-04, merged. Two follow-ups came out of it and are
-   tracked separately: `aeo-audit.mjs` parsing robustness (it can pass while skipping checks it
-   claims to run) and JSON-LD identity duplication in `structured-data.ts`. Neither blocks anything.
-2. **Differentiate more glossary terms**, evidence-first. Use the MCP:
-   `queries_for_page` on `https://www.waypointfranchise.com/glossary` with `days: 90` names exactly
-   which terms the index is absorbing.
-3. **Add a Piggyback entry.** `piggyback franchise definition` ranks **position 1** with no page
-   behind it.
-4. **Payroll and freight category articles.** 27 and 10 impressions, landing on `/investment` at
-   position 92, no coverage anywhere. Both need sourced investment ranges first; no figures invented.
+1. **The adversarial review** (above). Blocking, and the only thing between here and merge.
+2. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
+   and unenforced by any check — `aeo-audit` does not test for item numbers at all. Was 52; the AUV
+   entry fixed 2. This is a contained cleanup in one file, plus a candidate gate to add to the audit
+   so it cannot regress. Not SEO work, so it was deliberately not folded into these branches.
+3. **`freight franchise cost`** — 16 impressions at position 89.4, no coverage. Needs a sourced
+   investment range first; invent no figures.
+4. **Territory cluster (~19 impressions, pages at 75–86) and `b2b franchises` (16 at 80.8).** Pages
+   exist and are not competitive. Deliberately ranked below the above: moving a position-80 page to
+   page 1 is a long haul for low volume.
 5. **Three Phase-2 article drafts** still held on `aeo/phase2-drafts-reinvention-spouse`. Publishing
    is its own go-live decision.
-6. **September re-measure.** The 18 differentiated terms are the experiment: do they take
-   definitional queries off the index?
+6. **September re-measure.** Two experiments now run together: the 18 differentiated glossary terms
+   from PR #21, and whether the built-out AUV page moves off position 37. AUV is the cleaner test,
+   because it is the only term page with demand behind it.
+
+---
+
+## In flight elsewhere — check before editing these files
+
+Two background sessions were started 2026-08-04 from task chips and may have landed work:
+
+- **`scripts/aeo-audit.mjs`** — hardening its parsing against the Codex round-1 findings (the
+  description gate silently skipping unparseable metadata, the em-dash gate missing frontmatter and
+  HTML escapes, CRLF, YAML excerpts, FAQ counting). **Confirmed live this session:** the audit
+  reported an over-length description at the wrong line number, which is that exact defect.
+- **`src/app/lib/structured-data.ts`** — JSON-LD identity duplication (`founder` creating an
+  anonymous Person instead of referencing `/about#kelsey`, identical `sameAs` on Person and
+  LocalBusiness, unbounded `toWww` hostname match).
+
+Neither branch here touches those files, so there should be no conflict, but `git fetch` and check
+before assuming.
 
 ---
 
 ## Things that will mislead you if you do not know them
 
-- **Search Console withholds ~65% of a page's impressions** under its anonymised-query threshold.
-  For `/glossary`, 93 named queries account for ~97 of 279. Every query-level claim describes about
-  a third of reality. This is permanent.
-- **The Search Console MCP works, on this laptop only.** ADC is per-machine. See the
-  `search-console-mcp-adc-scope` memory for the three gates and their misleading errors.
-- **`franchise-investment-by-category`'s position 3.3 is not evidence of anything.** Every visible
-  query serving it is a brand lookup (`bonkers corner franchise cost` at position 1.0). This session
-  cited it twice as proof reference-table content works, then withdrew it.
-- **August's figures were restated** after the generator was fixed: 985 → 938 impressions,
-  22.8 → 26.5 average position. Same month, re-derived correctly. Older numbers in merged PR bodies
-  are pre-restatement.
-- **`agentopus` MCP** is authenticated but its tools need a fresh session to appear.
+- **Search Console withholds ~65% of impressions.** Every query-level claim above describes about a
+  third of reality. Permanent, not a gap to close.
+- **`queries_for_page` truncates ALPHABETICALLY, not by volume.** Rows tie at 0 clicks and then sort
+  by key, so a 40-row pull returns queries starting a–c and looks like a top-40. This bit twice this
+  session. `top_queries_by_impressions` sorts correctly; use it for anything ranked.
+- **The Search Console MCP works on this laptop only** (ADC is per-machine). See the
+  `search-console-mcp-adc-scope` memory.
+- **A skipped deploy presents as a CANCELED deployment**, not a failure. Agent-only and
+  `docs/seo-reviews/` pushes are skipped by design.
+- **The Vercel project is `waypoint-core-system`** (`prj_txOXYLrWsCZoRW202OcbO7gBrvaM`), team
+  `team_FyOCvs8tn3Upspe88X6QOk42`. The `velvet-armstrong` name in an older memory does not resolve.
+- **`npx tsc --noEmit` is red on `main`** in three `tests/unit/` files. Pre-existing, unrelated to
+  any of this work, and **not build-blocking** — proven by these commits building READY on Vercel.
+  Do not try to "fix" it as part of this work, and do not treat it as a regression.
+- **The site draws 17 clicks per 90 days.** Everything above competes for tens of impressions. The
+  binding constraint is not page quality; it is that most current demand is brand-cost lookups from
+  markets Waypoint cannot serve. No amount of on-page work fixes that.
