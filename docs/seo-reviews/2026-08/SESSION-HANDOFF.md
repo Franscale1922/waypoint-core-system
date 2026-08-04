@@ -11,34 +11,45 @@ to the branch-asymmetric deletion trap. This path is tracked AND excluded from `
 
 | | |
 |---|---|
-| Branch | `seo/title-budget-and-glossary` |
-| HEAD | `e8b0f3b` |
-| Pushed | yes, upstream set |
-| Merged | **no** |
-| Deployed | **no** |
-| `main` | `1199a52` |
+| Branch | `seo/title-budget-and-glossary` (merged and deleted) |
+| Merged | **yes**, 2026-08-04, squashed as `9f746e9` |
+| Deployed | **yes**, production |
+| `main` | `9f746e9` |
 
-Everything before this branch is already merged and live on `main`.
+Everything in this branch is now merged and live. The rows above read "no" until 2026-08-04;
+they are updated rather than appended so a later session cannot read the stale state first.
 
 ---
 
-## 🔴 The one blocking item
+## ✅ The blocking item — CLEARED 2026-08-04
 
-**The mandatory adversarial Codex review has not run on `e8b0f3b`.** Everything else is finished and
-verified. This is a hard gate under CLAUDE.md and the reason the branch is unmerged.
+**The mandatory adversarial Codex review ran, and PR #21 merged as `9f746e9`.** Two round-1 runs,
+riskiest code first, into separate output directories:
 
 ```bash
-node scripts/codex-review.mjs --target src/data/glossary.ts --round 1
+node scripts/codex-review.mjs --target scripts/aeo-audit.mjs --round 1 --out .codex-reviews/aeo-audit
+node scripts/codex-review.mjs --target src/app/lib/structured-data.ts --round 1 --out .codex-reviews/structured-data
 ```
 
-Then read `.codex-reviews/findings-round-1.md` — **the findings file, never the transcript**.
-Reproduce every finding against the real code before acting; act or decline with a stated reason.
-`--diff` is useless here: the tree is clean, so it would review nothing and report a false all-clear.
+**`--out` is not optional.** Both runs are round 1, and the wrapper writes
+`<out>/findings-round-<N>.md`, so without it the second run silently overwrites the first
+(`scripts/codex-review.mjs:229`). Anyone repeating this pattern must separate the directories.
 
-After the review passes, open the PR and merge. **Merging deploys** (`src/` is outside the ignore
-list) and the production build runs `prisma db push` against the live database. The visitor-visible
-change is shorter `<title>` tags sitewide, FAQs on 8 more glossary pages, and a corrected date on
-`/investment`.
+Result: `aeo-audit.mjs` 2 high / 4 medium / 2 low, `structured-data.ts` 0 high / 2 medium / 1 low.
+**`--target` reviews the whole file, not the branch diff**, so 10 of the 11 findings are
+pre-existing on `main` and were deliberately kept out of a reviewed diff. They are logged as two
+follow-up tasks (aeo-audit parsing robustness; JSON-LD identity duplication).
+
+One finding was branch-introduced and is fixed: `hardCodesBrand` tested for the exact long brand
+plus the exact `" | Waypoint"` string, so `Why Waypoint Works` and `Foo |Waypoint` both passed the
+gate while still rendering the brand twice. It now tests the bare word. Verified zero false
+positives first (no article title or `metaTitle` contains the word), then confirmed both cases
+fail the gate against a throwaway article.
+
+A separate self-review pass — **labelled as such, since Codex cannot read CLAUDE.md, memory, or
+this file** — found what Codex structurally could not: CONTENT-STANDARDS §14 and the glossary route
+comment still documented the old `"%s | Waypoint Franchise Advisors"` template this branch
+replaced, so the rule and its enforcement disagreed. Both corrected.
 
 ---
 
@@ -73,7 +84,9 @@ all 8 new term pages serve 4 FAQ entries. `npm test` 291 unit + 19 auth green, `
 
 ## Open work, ranked
 
-1. **Codex review** (above). Blocking.
+1. ~~**Codex review.** Blocking.~~ Done 2026-08-04, merged. Two follow-ups came out of it and are
+   tracked separately: `aeo-audit.mjs` parsing robustness (it can pass while skipping checks it
+   claims to run) and JSON-LD identity duplication in `structured-data.ts`. Neither blocks anything.
 2. **Differentiate more glossary terms**, evidence-first. Use the MCP:
    `queries_for_page` on `https://www.waypointfranchise.com/glossary` with `days: 90` names exactly
    which terms the index is absorbing.
