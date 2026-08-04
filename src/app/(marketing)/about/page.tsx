@@ -119,45 +119,13 @@ export default async function AboutPage() {
   return (
     <>
       {videoSchema && <JsonLd data={videoSchema} />}
-      <JsonLd
-        data={{
-            "@context": "https://schema.org",
-            "@type": "Person",
-            "@id": "https://www.waypointfranchise.com/about#kelsey",
-            "name": "Kelsey Stuart",
-            "url": "https://www.waypointfranchise.com/about",
-            "jobTitle": "Franchise Advisor",
-            "description": "Former Bloomin' Blinds franchisor and franchisee who lost money and learned from it. Now helping professionals find the franchise that actually fits their life.",
-            "image": "https://www.waypointfranchise.com/images/kelsey-trail-selfie.jpg",
-            "worksFor": {
-              "@type": "Organization",
-              "@id": "https://www.waypointfranchise.com/#business",
-              "name": "Waypoint Franchise Advisors",
-              "url": "https://www.waypointfranchise.com"
-            },
-            "sameAs": [
-              "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
-              "https://www.franchoice.com/kelsey-stuart",
-              "https://www.facebook.com/kelsey.stuart.94",
-              "https://www.instagram.com/franchise_match_maker/",
-              "https://x.com/__Waypoint",
-              "https://www.youtube.com/@Waypoint-Franchise",
-              "https://www.tiktok.com/@waypoint007",
-              "https://www.pinterest.com/waypointfranchise/"
-            ],
-            "knowsAbout": [
-              "franchise consulting",
-              "franchise ownership",
-              "franchise due diligence",
-              "Franchise Disclosure Document (FDD)",
-              "franchise investment evaluation",
-              "home services franchises",
-              "restoration franchises",
-              "semi-absentee franchise ownership",
-              "SBA franchise financing"
-            ]
-        }}
-      />
+      {/* No Person node here on purpose. The root layout emits `personSchema`
+          (the authoritative /about#kelsey Person) on EVERY page. This page used
+          to hand-roll a second Person under that same @id, which merged into one
+          node carrying two conflicting descriptions and its own stale copy of
+          the sameAs list. Its unique content (the portrait image and the "SBA
+          franchise financing" topic) now lives on personSchema in
+          lib/structured-data.ts. Do not reintroduce a page-scoped copy. */}
       {/* Hero */}
       <section className="relative pt-10 pb-36 sm:py-20 md:py-24 overflow-hidden">
         <Image

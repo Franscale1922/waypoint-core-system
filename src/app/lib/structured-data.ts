@@ -27,12 +27,12 @@ export const localBusinessSchema = {
   ],
   email: "kelsey@waypointfranchise.com",
   telephone: "+1-214-995-1062",
-  founder: {
-    "@type": "Person",
-    name: "Kelsey Stuart",
-    jobTitle: "Franchise Advisor",
-    url: `${SITE_URL}/about`,
-  },
+  // Reference the Person node by @id instead of inlining a second Kelsey. A `url`
+  // does NOT establish node identity, so an inline Person is an anonymous node:
+  // the founder relationship would never resolve to the authoritative
+  // /about#kelsey Person that carries worksFor, sameAs and knowsAbout. Same
+  // reference-by-@id idiom as worksFor, brand and publisher below.
+  founder: { "@id": `${SITE_URL}/about#kelsey` },
   address: {
     "@type": "PostalAddress",
     addressLocality: "Whitefish",
@@ -66,10 +66,16 @@ export const localBusinessSchema = {
   // permit self-serving review markup on a business's own LocalBusiness/Organization
   // entity (it is ignored for rich results and can trigger a Search Console flag).
   // Testimonials live as on-page content instead.
+  // sameAs is IDENTITY EVIDENCE, so #business and #kelsey carry DISJOINT sets.
+  // These lists were previously identical, which told crawlers that two
+  // deliberately distinct @id nodes were the same entity. Waypoint-branded
+  // channels belong here; Kelsey's personal profiles belong on the Person.
+  // Do not re-merge them.
+  //
+  // Note: there is no Waypoint-branded Facebook page, so the business
+  // intentionally carries no Facebook signal. facebook.com/kelsey.stuart.94 is a
+  // personal profile and is not identity evidence for the business.
   sameAs: [
-    "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
-    "https://www.franchoice.com/kelsey-stuart",
-    "https://www.facebook.com/kelsey.stuart.94",
     "https://www.instagram.com/franchise_match_maker/",
     "https://x.com/__Waypoint",
     "https://www.youtube.com/@Waypoint-Franchise",
@@ -89,6 +95,9 @@ export const personSchema = {
   description:
     "Former Bloomin' Blinds franchisor who helped grow a $40M franchise system with 200+ locations, and former franchisee who learned from failure firsthand. Based in Whitefish, Montana. Now helping corporate professionals and career changers find the right franchise through Waypoint Franchise Advisors, a free consulting service.",
   url: `${SITE_URL}/about`,
+  // Portrait: gives the Person node a visual entity anchor. Folded in from the
+  // duplicate Person that /about used to hand-roll under this same @id.
+  image: `${SITE_URL}/images/kelsey-trail-selfie.jpg`,
   email: "kelsey@waypointfranchise.com",
   telephone: "+1-214-995-1062",
   address: {
@@ -102,15 +111,13 @@ export const personSchema = {
     { "@type": "Organization", name: "FranChoice" },
     { "@type": "Organization", name: "International Franchise Association (IFA)" }
   ],
+  // Kelsey's PERSONAL profiles only. The Waypoint-branded channels live on
+  // #business. See the note on localBusinessSchema.sameAs: these two lists are
+  // deliberately disjoint and must not be re-merged.
   sameAs: [
     "https://www.linkedin.com/in/kelsey-stuart-014b7b50/",
     "https://www.franchoice.com/kelsey-stuart",
     "https://www.facebook.com/kelsey.stuart.94",
-    "https://www.instagram.com/franchise_match_maker/",
-    "https://x.com/__Waypoint",
-    "https://www.youtube.com/@Waypoint-Franchise",
-    "https://www.tiktok.com/@waypoint007",
-    "https://www.pinterest.com/waypointfranchise/",
     "https://www.crunchbase.com/person/kelsey-stuart-7ebb",
   ],
   knowsAbout: [
@@ -122,6 +129,7 @@ export const personSchema = {
     "home services franchises",
     "restoration franchises",
     "semi-absentee franchise ownership",
+    "SBA franchise financing",
   ],
 };
 
@@ -159,11 +167,10 @@ export const franchiseConsultingServiceSchema = {
     "Free, personalized franchise consulting for corporate professionals and career changers. Kelsey Stuart evaluates your capital, goals, and life situation, then curates 3–4 franchise concepts that fit. No pitch, no pressure. Brands pay the referral fee; candidates pay nothing.",
   url: `${SITE_URL}/process`,
   serviceType: "Franchise Consulting",
-  provider: {
-    "@type": "Person",
-    "@id": `${SITE_URL}/about#kelsey`,
-    name: "Kelsey Stuart",
-  },
+  // Reference-by-@id only, matching `brand` below and `founder` on #business.
+  // Re-stating @type/name here was harmless (it merged cleanly) but it is one
+  // more place a future edit could let the Person's details drift.
+  provider: { "@id": `${SITE_URL}/about#kelsey` },
   // Reference the business by @id only (no explicit @type). The `brand` property
   // accepts an Organization, and #business is a LocalBusiness (⊂ Organization), so
   // this stays valid WITHOUT re-typing #business as a Brand, which would otherwise
