@@ -392,26 +392,26 @@ describe("an authored reviewCadence overrides every inference", () => {
     }
   });
 
-  it("survives a refresh instead of being erased by it", async () => {
-    // The refresh replaces frontmatter wholesale with model output and pins four fields back. The
-    // model is never told this field exists, so an unpinned reviewCadence is silently DELETED by
-    // the first refresh, returning the article to the slug guess the field was added to correct.
-    // Nothing would notice for a year.
-    //
-    // Driven through the REAL serializer, because the bytes committed to main are what a later run
-    // parses; asserting on the frontmatter object would check something adjacent to the artifact.
+  it("reaches the committed BYTES, and is still read back as a cadence", async () => {
+    // The full path an override actually takes: the real merge the handler calls, then the real
+    // serializer, then parsed back the way a later run parses it off disk. The bytes on main are
+    // what schedules the next refresh, so asserting on the intermediate object would check
+    // something adjacent to the artifact rather than the artifact.
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
     const { serializeArticle } = await import("@/lib/githubArticleCommit");
 
     const original = withCadence("some-article", "Going Deeper", 2, "strategic").frontmatter;
-    // What the model returns: the same article, minus the field it was never told about.
-    const modelOutput = { ...original };
-    delete (modelOutput as Record<string, unknown>).reviewCadence;
+    // What the model returns: the fields it owns, and nothing about a field it was never told of.
+    const merged = mergeRefreshedFrontmatter(original, {
+      title: "New title",
+      excerpt: "New excerpt",
+      faqs: [],
+    });
 
-    // The pin, as src/inngest/functions.ts applies it.
-    if (original.reviewCadence !== undefined) modelOutput.reviewCadence = original.reviewCadence;
+    const committed = matter(serializeArticle(merged, "Body.\n", "2026-08-04"));
 
-    const committed = matter(serializeArticle(modelOutput, "Body.\n", "2026-08-04"));
     expect(committed.data.reviewCadence).toBe("strategic");
+    // Round-tripped, the article is still never stale. Without the override it would be 730.
     expect(
       getRefreshCadenceDays({
         slug: "some-article",
@@ -422,35 +422,45 @@ describe("an authored reviewCadence overrides every inference", () => {
     ).toBeNull();
   });
 
-  it("cannot be invented by the model on an article that never declared one", async () => {
-    // The other half of the pin. If the model emits a reviewCadence the author never wrote, it is
-    // deleted rather than committed, which is why nothing validates this field on the write path:
-    // it can only ever hold a value that already passed the pre-push gate.
-    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+  it("is preserved by NOT being a model-owned field, which is the whole mechanism", async () => {
+    // There is no explicit pin to assert. mergeRefreshedFrontmatter starts from the original and
+    // takes only MODEL_OWNED_FIELDS from the model, so preservation is the default and a field the
+    // model invents is dropped. Both halves come free, and the single thing that would break them
+    // is somebody adding this field to that list.
+    //
+    // Asserted against the real exported list rather than the source text, because that list IS
+    // the contract: if reviewCadence ever appears on it, the model can rewrite an article's
+    // schedule, and nothing validates this field on the write path precisely because it cannot.
+    const { MODEL_OWNED_FIELDS } = await import("@/lib/contentRefresh");
 
-    const original = articleFor("some-article", "Going Deeper", 2).frontmatter;
-    const modelOutput = { ...original, reviewCadence: "strategic" };
-
-    if (original.reviewCadence !== undefined) modelOutput.reviewCadence = original.reviewCadence;
-    else delete (modelOutput as Record<string, unknown>).reviewCadence;
-
-    const committed = matter(serializeArticle(modelOutput, "Body.\n", "2026-08-04"));
-    expect(committed.data.reviewCadence).toBeUndefined();
+    expect(MODEL_OWNED_FIELDS).not.toContain("reviewCadence");
+    // The tripwire: a list that stopped naming anything would pass the assertion above vacuously.
+    expect(MODEL_OWNED_FIELDS.length).toBeGreaterThan(0);
   });
 
-  it("is pinned by the refresh handler itself, not merely by the two tests above", () => {
-    // STRUCTURAL GUARD, in the style of tests/unit/background-work-coverage.test.ts.
-    //
-    // The two tests above replicate the pin to drive the real serializer, which proves the bytes
-    // round-trip but would keep passing if somebody deleted the pin from the handler tomorrow.
-    // The pin lives inside an Inngest step that a unit test cannot invoke, so the honest check is
-    // against the source: both halves must be there, because preserving the author's value and
-    // refusing the model's are what together make this field un-forgeable.
-    const src = readFileSync(join(process.cwd(), "src", "inngest", "functions.ts"), "utf8");
-    const pinned = new Set([...src.matchAll(/newFrontmatter\.(\w+)\s*=/g)].map((m) => m[1]));
+  it("survives the real merge, not just the real serializer", async () => {
+    // End-to-end through the actual function the handler calls, with model output that omits the
+    // field (which it always will: the prompt never mentions it) and separately invents one.
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
 
-    expect(pinned).toContain("reviewCadence");
-    expect(src).toMatch(/delete\s+newFrontmatter\.reviewCadence/);
+    const original = withCadence("some-article", "Going Deeper", 2, "strategic").frontmatter;
+
+    const preserved = mergeRefreshedFrontmatter(original, {
+      title: "New title",
+      excerpt: "New excerpt",
+      faqs: [],
+    });
+    expect(preserved.reviewCadence).toBe("strategic");
+
+    // And on an article that never declared one, a model-invented value does not reach the commit.
+    const never = articleFor("some-article", "Going Deeper", 2).frontmatter;
+    const invented = mergeRefreshedFrontmatter(never, {
+      title: "New title",
+      excerpt: "New excerpt",
+      faqs: [],
+      reviewCadence: "strategic",
+    });
+    expect(invented.reviewCadence).toBeUndefined();
   });
 
   it("is not fooled by a value inherited from Object.prototype", () => {

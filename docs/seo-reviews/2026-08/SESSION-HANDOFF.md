@@ -14,14 +14,35 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `ed22c03` — PR **#29 (FAQ entry validation) merged 2026-08-04**; #27, #26, #23, #22 before it, all deployed green; #24/#25 before those |
+| `main` | `4b4f9ea` — PR **#42 (canonical slug binding) merged 2026-08-04**. Eleven commits landed after `ed22c03`: #28, #30, #31, #32, #33, #34, #35, #37, #39, #42 and a docs commit, all deployed green |
+| `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
 | `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
 | `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`), deployed green. Safe to delete the remote branch now that #26 is off it |
 | `claude/beautiful-napier-ede2fc` | **merged as #26** (`18bf899`), deployed green, after a rebase onto `main` |
-| `claude/competent-easley-9eec18` | **PR #23 open**, aeo-audit gate hardening, base `main`, checks green. Merging is a go-live |
+| `fix/content-refresh-ref-idempotency` | **merged as #39** (`2e4513f`), deployed green. **Remote branch still exists** — `--delete-branch` did not take, because `gh` cannot run its post-merge local checkout while `main` is checked out in the primary worktree. Safe to delete |
+| `claude/quirky-lumiere-fc6b90` | **abandoned**, PR **#36 closed** in favour of #39. **Remote branch still exists**, safe to delete. Do not reopen #36: it was cut before #34 and #37 landed in the same file |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
+
+### The AI content-refresh write path is now gated five ways (2026-08-04)
+
+`src/lib/githubArticleCommit.ts` went from having no gate in front of it to five, across five PRs in
+one day, several of them running concurrently in different sessions. In merge order:
+
+| PR | What it closed |
+|---|---|
+| **#32** `4d48ff9` | Frontmatter dates. `serializeArticle` stamps both; no model-authored date survives |
+| **#34** `4b29f56` | The branch name is encoded per path segment, and `getConfig` rejects one that needs it |
+| **#37** `902408e` | The required non-date fields (`title`, `excerpt`, `faqs`), which nothing stamps |
+| **#39** `2e4513f` | Idempotency. A lost reply to the ref PATCH no longer produces a second identical commit |
+| **#42** `4b4f9ea` | The slug, which becomes a repository path, is canonical and bound to the frontmatter |
+
+**Read this before touching that file.** Five sessions edited it the same day and `main` moved twice
+underneath #39 alone. `git fetch` and re-read it rather than trusting any local copy or this table.
+
+The one finding still open against it is the last-writer-wins overlay — see
+`ADVERSARIAL-REVIEW-write-path-2026-08-04.md` beside this file, and item 2 under "Open work" below.
 
 ---
 
@@ -290,18 +311,29 @@ session or cause harm.
    accessibility set; overlapping tier intervals). All verified real and enumerated in
    `ADVERSARIAL-REVIEW-2026-08-04.md`. The parity gate belongs in `verify-schema.mjs` and is scoped
    work to agree, not a bolt-on.
-2. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
+2. **The content refresh can overwrite a newer human edit to the same article.** The commit path
+   lays its blobs over whatever HEAD currently holds and carries no record of the revision the
+   payload was generated from, so it cannot tell that the file moved underneath it. Verified
+   pre-existing, byte-identical at `4d48ff9`, and the last finding still open against that file
+   after #32/#34/#37/#39/#42 — full write-up in `ADVERSARIAL-REVIEW-write-path-2026-08-04.md`.
+   Scoped work to agree, not a bolt-on: carrying each target's expected source blob SHA and
+   aborting on mismatch is the contained fix, but publishing through a branch and a PR instead of
+   straight to `main` is the better one and **changes what the monthly refresh is**, so it is a
+   product decision. Ranked here rather than first because the window is narrow (monthly, minutes
+   long) and overwriting articles is the job the refresh exists to do.
+
+3. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
    and unenforced by any check — `aeo-audit` does not test for item numbers at all. Was 52; the AUV
    entry fixed 2. This is a contained cleanup in one file, plus a candidate gate to add to the audit
    so it cannot regress. Not SEO work, so it was deliberately not folded into these branches.
-3. **`freight franchise cost`** — 16 impressions at position 89.4, no coverage. Needs a sourced
+4. **`freight franchise cost`** — 16 impressions at position 89.4, no coverage. Needs a sourced
    investment range first; invent no figures.
-4. **Territory cluster (~19 impressions, pages at 75–86) and `b2b franchises` (16 at 80.8).** Pages
+5. **Territory cluster (~19 impressions, pages at 75–86) and `b2b franchises` (16 at 80.8).** Pages
    exist and are not competitive. Deliberately ranked below the above: moving a position-80 page to
    page 1 is a long haul for low volume.
-5. **Three Phase-2 article drafts** still held on `aeo/phase2-drafts-reinvention-spouse`. Publishing
+6. **Three Phase-2 article drafts** still held on `aeo/phase2-drafts-reinvention-spouse`. Publishing
    is its own go-live decision.
-6. **September re-measure.** Two experiments now run together: the 18 differentiated glossary terms
+7. **September re-measure.** Two experiments now run together: the 18 differentiated glossary terms
    from PR #21, and whether the built-out AUV page moves off position 37. AUV is the cleaner test,
    because it is the only term page with demand behind it.
 

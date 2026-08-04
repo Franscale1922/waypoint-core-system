@@ -1366,10 +1366,12 @@ import {
     articleIdentityMatchesFile,
     discoverArticles,
     isStale,
+    mergeRefreshedFrontmatter,
     passesComplianceCheck,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
 import { commitRefreshedArticles, validateArticlePayload, ArticleCommitPayload } from "@/lib/githubArticleCommit";
+import path from "path";
 
 const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 
@@ -1456,14 +1458,11 @@ export const contentRefreshFunction = inngest.createFunction(
         for (const article of staleArticles) {
             // Re-assert the identity invariant rather than trusting that discovery established it,
             // because this run may not be the one that established it. `load-all-articles` keeps
-            // its ID deliberately (see above), so a run that began before this deployed replays
-            // its OLD cached result: articles carrying the frontmatter-derived slug that discovery
-            // would now refuse, with discovery's own check bypassed because discovery never runs
-            // again. This is the guard for exactly that window.
-            //
-            // Stated as a positive invariant rather than a repeat of the discovery rule, so it
-            // holds whatever produced the article, and checked before the model call so a
-            // violation costs no OpenAI spend.
+            // its step ID deliberately (see above), so a run that began before this deployed
+            // replays its OLD cached result: articles carrying the frontmatter-derived slug that
+            // discovery would now refuse, with discovery's own check bypassed because discovery
+            // never runs again. This is the guard for exactly that window, and it runs before the
+            // model call so a violation costs no OpenAI spend.
             if (!articleIdentityMatchesFile(article)) {
                 failed.push({
                     slug: article.slug,
@@ -1474,6 +1473,17 @@ export const contentRefreshFunction = inngest.createFunction(
                 });
                 continue;
             }
+
+            // The file this refresh overwrites is the file it READ, named by its own path on disk.
+            //
+            // This now agrees with `article.slug` by construction, because discovery derives that
+            // from the filename too and refuses any article where the two disagree. It is kept
+            // because the two answer different questions and fail independently: discovery decides
+            // what an article IS, and this decides where a payload GOES. Recomputing the
+            // destination from the path means the guard in validateArticlePayload still compares
+            // two independently derived values rather than one value against itself, which is what
+            // makes that guard capable of failing at all.
+            const destinationSlug = path.basename(article.filePath, ".md");
 
             const result = await step.run(`refresh-${article.slug}`, async () => {
                 const settings = await prisma.systemSettings.findUnique({
@@ -1531,42 +1541,33 @@ export const contentRefreshFunction = inngest.createFunction(
                     };
                 }
 
-                const newFrontmatter = parsed.data as typeof article.frontmatter;
+                // Start from the ORIGINAL frontmatter and overwrite only what the model owns, so a
+                // field survives a refresh by default instead of only when somebody remembered to
+                // pin it. This replaced four explicit pins that silently deleted `checklistSlug`
+                // and `escapeKit` from every article they touched. See mergeRefreshedFrontmatter
+                // in src/lib/contentRefresh.ts for why the direction matters and why a field the
+                // model omits is deleted rather than inherited.
+                const newFrontmatter = mergeRefreshedFrontmatter(
+                    article.frontmatter,
+                    parsed.data as Record<string, unknown>,
+                );
                 const newBody = parsed.content;
 
-                // Safety guard: ensure relatedSlugs are preserved
-                newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
-                // Pinned from the DERIVED identity, not from `frontmatter.slug`.
-                // discoverArticles derives this from the filename and is what
-                // commitRefreshedArticles builds the write path out of, so
-                // pinning the same value is what keeps the committed frontmatter
-                // and the path it is committed to describing one article. Pinning
-                // `frontmatter.slug` instead reintroduced that gap: on a file
-                // with no slug field at all it assigns an explicit `undefined`,
-                // which is a key `matter.stringify` throws on.
-                newFrontmatter.slug = article.slug;
-                newFrontmatter.category = article.frontmatter.category;
-                newFrontmatter.tier = article.frontmatter.tier;
-                // reviewCadence is scheduling metadata, not content, so it is pinned like the
-                // taxonomy above rather than taken from model output. Left unpinned it was simply
-                // ERASED: `newFrontmatter` is the model's frontmatter wholesale, the model is never
-                // told this field exists, and so the first refresh of an article silently deleted
-                // the override and returned it to the slug guess it was added to correct. The
-                // damage would surface a year later as an article refreshed on the wrong cadence.
-                //
-                // Assigned conditionally because `matter.stringify` throws on a key holding an
-                // explicit `undefined`, and most articles have no cadence to pin back. The delete
-                // is the other half: it stops the model INVENTING a value, which is also why
-                // nothing validates this field on the write path. It can only ever hold a value
+                // No explicit pin for `reviewCadence`. mergeRefreshedFrontmatter above starts from
+                // the ORIGINAL and takes only MODEL_OWNED_FIELDS from the model, so the field is
+                // preserved by default AND a value the model invents is ignored. That is both
+                // halves of what an explicit pin would have to do, generically, which is also why
+                // nothing validates this field on the write path: it can only ever hold a value
                 // that already passed the pre-push gate on a human's article.
-                if (article.frontmatter.reviewCadence !== undefined) {
-                    newFrontmatter.reviewCadence = article.frontmatter.reviewCadence;
-                } else {
-                    delete newFrontmatter.reviewCadence;
-                }
 
-                // Compliance check before writing
-                const { passes, violations } = passesComplianceCheck(newBody);
+                // Compliance check before writing. Every field the model wrote, not just
+                // the body: the excerpt and the FAQ answers are published too.
+                const { passes, violations } = passesComplianceCheck({
+                    title: newFrontmatter.title,
+                    excerpt: newFrontmatter.excerpt,
+                    faqs: newFrontmatter.faqs,
+                    body: newBody,
+                });
                 if (!passes) {
                     return {
                         success: false as const,
@@ -1577,30 +1578,35 @@ export const contentRefreshFunction = inngest.createFunction(
                 }
 
                 // Frontmatter dates AND required fields, checked against the exact bytes the commit
-                // would write. commitRefreshedArticles refuses the WHOLE batch if anything invalid
+                // would write, plus the slug that decides which file those bytes replace.
+                // commitRefreshedArticles refuses the WHOLE batch if anything invalid
                 // reaches it, which is the right behaviour at the write boundary and the wrong one
                 // here: a single bad article would take the month's other refreshes down with it,
                 // and the summary email below would never send. So the article is dropped instead,
                 // the same way a compliance violation is, and it shows up under "Failed" in that
                 // email.
                 //
-                // Dropping is deliberately NOT backfilling. The four fields above are pinned back
-                // to the original because the model must not change an article's identity or
-                // taxonomy; title, excerpt and faqs are the opposite case, the very content the
-                // refresh exists to update, so there is no correct value to substitute. A response
-                // missing one of them is malformed, which makes its body suspect too, and shipping
-                // a suspect body under a salvaged title would be a worse outcome than skipping the
-                // month. The article keeps the good version already on disk and retries next
-                // cadence.
+                // Dropping is deliberately NOT backfilling, and the merge above is what makes that
+                // reachable. Every field the model does not own is preserved from the original
+                // because it must not change an article's identity, taxonomy or editorial wiring;
+                // title, excerpt and faqs are the opposite case, the very content the refresh
+                // exists to update, so there is no correct value to substitute. A response missing
+                // one of them is malformed, which makes its body suspect too, and shipping a
+                // suspect body under a salvaged title would be a worse outcome than skipping the
+                // month. mergeRefreshedFrontmatter deletes an omitted one rather than inheriting
+                // it, precisely so the absence arrives here as a named missing-field error. The
+                // article keeps the good version already on disk and retries next cadence.
                 const payloadErrors = validateArticlePayload({
-                    slug: article.slug,
+                    slug: destinationSlug,
                     frontmatter: newFrontmatter,
                     body: newBody,
                 }).errors;
                 if (payloadErrors.length > 0) {
                     return {
                         success: false as const,
-                        reason: `Invalid frontmatter: ${payloadErrors.join(" | ")}`,
+                        // "payload", not "frontmatter": these errors now also cover the slug, which
+                        // is the destination rather than a field in the file.
+                        reason: `Invalid article payload: ${payloadErrors.join(" | ")}`,
                         frontmatter: null,
                         body: null,
                     };
@@ -1612,7 +1618,9 @@ export const contentRefreshFunction = inngest.createFunction(
             if (result.success && result.frontmatter && result.body) {
                 refreshed.push(article.slug);
                 toCommit.push({
-                    slug: article.slug,
+                    // The same destination the validation above was run against, so the bytes that
+                    // were checked and the path they land on were decided together.
+                    slug: destinationSlug,
                     frontmatter: result.frontmatter,
                     body: result.body,
                 });
@@ -1623,8 +1631,12 @@ export const contentRefreshFunction = inngest.createFunction(
 
         // ── Step 4: Commit all refreshed articles to GitHub (single atomic commit) ──
         if (toCommit.length > 0) {
+            // The outcome is returned into the step, not swallowed. This function retries once, so
+            // this step can run twice against a HEAD that already carries the work; the status is
+            // how somebody reading the run history tells "committed" from "the retry found its own
+            // batch already on main and stood down". See src/lib/githubArticleCommit.ts.
             await step.run("commit-to-github", async () => {
-                await commitRefreshedArticles(toCommit);
+                return await commitRefreshedArticles(toCommit);
             });
         }
 
