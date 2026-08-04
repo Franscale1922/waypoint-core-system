@@ -56,27 +56,31 @@ function toVideoUploadDate(raw: unknown): string | undefined {
 
 async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
   try {
+    // Two deliberate choices here, and they depend on each other.
+    //
+    // 1. The deadline. A Vimeo connection that is accepted and then stalls before
+    //    headers throws nothing, so the catch below cannot help and this server
+    //    component blocks until Vercel kills the function -- 300s by default, and
+    //    nothing in this repo overrides it. That is a stalled /about for a real
+    //    visitor. AbortSignal.timeout rejects with a TimeoutError, which the catch
+    //    turns into the same empty-meta fallback a Vimeo outage already produces.
+    //    5s is ~10x the slowest healthy oEmbed response measured (0.20-0.52s), so
+    //    it costs a healthy fetch nothing.
+    //
+    // 2. No `next: { revalidate }`. It looked merely redundant beside the
+    //    page-level `revalidate = 3600` above, but it was worse: it gave this
+    //    fetch its own cache entry, and Next drops the abort signal whenever it
+    //    refreshes a STALE entry ("don't pass through signal when revalidating",
+    //    patch-fetch.js). The hourly stale refresh is exactly when Vimeo gets
+    //    re-contacted, so the fetch-level cache disarmed the deadline on the very
+    //    path it was added for. Without it Next marks the fetch auto-no-cache at
+    //    runtime, no stale entry ever exists, and the signal always applies.
+    //    This does NOT make the page dynamic: Next explicitly exempts
+    //    auto-no-cache from the ISR dynamic switch, so /about stays statically
+    //    generated and cached by the page-level revalidate.
     const res = await fetch(
       `https://vimeo.com/api/oembed.json?url=https://vimeo.com/${videoId}&width=1280`,
-      {
-        next: { revalidate: 3600 },
-        // Bound the wait. A Vimeo connection that is accepted and then stalls
-        // before headers throws nothing, so the catch below cannot help and this
-        // server component blocks until Vercel kills the function -- 300s by
-        // default, and nothing in this repo overrides it. That is a stalled
-        // /about for a real visitor. AbortSignal.timeout rejects the fetch with a
-        // TimeoutError, which the catch turns into the same empty-meta fallback a
-        // Vimeo outage already produces. 5s is ~10x the slowest healthy oEmbed
-        // response measured (0.20-0.52s), so it costs a healthy fetch nothing.
-        //
-        // `signal` does not weaken the revalidate cache above: Next builds the
-        // fetch cache key from a field allowlist that has no `signal` in it, and
-        // its cache opt-out keys only off `cache`/`fetchCache`. Next does drop
-        // `signal` when it revalidates an already-cached stale entry, so this
-        // deadline covers the cache-miss render -- which is the render a visitor
-        // actually waits on.
-        signal: AbortSignal.timeout(5000),
-      }
+      { signal: AbortSignal.timeout(5000) }
     );
     if (!res.ok) return {};
     const data = await res.json();
