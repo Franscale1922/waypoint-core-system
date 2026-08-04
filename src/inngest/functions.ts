@@ -1366,6 +1366,7 @@ import {
     getAllArticles,
     isStale,
     passesComplianceCheck,
+    mergeRefreshedFrontmatter,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
 import { commitRefreshedArticles, validateArticlePayload, ArticleCommitPayload } from "@/lib/githubArticleCommit";
@@ -1428,14 +1429,14 @@ export const contentRefreshFunction = inngest.createFunction(
 
                 // Parse the AI response: it should be a complete .md file
                 const parsed = matter(text);
-                const newFrontmatter = parsed.data as typeof article.frontmatter;
                 const newBody = parsed.content;
 
-                // Safety guard: ensure relatedSlugs are preserved
-                newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
-                newFrontmatter.slug = article.frontmatter.slug;
-                newFrontmatter.category = article.frontmatter.category;
-                newFrontmatter.tier = article.frontmatter.tier;
+                // Merge onto the original rather than adopting the model's frontmatter.
+                // Adopting it dropped every key the prompt does not send back, including
+                // checklistSlug (42 of 45 articles) and escapeKit, and admitted any key
+                // the model invented. Only title, excerpt and faqs come from the model;
+                // slug, relatedSlugs, category and tier are preserved by construction.
+                const newFrontmatter = mergeRefreshedFrontmatter(article.frontmatter, parsed.data);
 
                 // Compliance check before writing. Every field the model wrote, not just
                 // the body: the excerpt and the FAQ answers are published too.

@@ -8,6 +8,8 @@ import {
   findProfitabilityViolations,
   findBrandNameViolations,
   passesComplianceCheck,
+  mergeRefreshedFrontmatter,
+  type ArticleFrontmatter,
 } from "@/lib/contentRefresh";
 import identityMap from "@/lib/match-workspace/brand-identity-map.json";
 
@@ -210,5 +212,143 @@ describe("the articles on main", () => {
         )
       );
     expect(hits).toEqual([]);
+  });
+});
+
+describe("scan cost on unvalidated model output", () => {
+  // The gate reads whatever GPT-4o returned, inside an Inngest function with a 10-minute
+  // budget for the whole batch. Expressed as one regex spanning a sentence, the earnings
+  // rules went quadratic: the 200k no-terminator case below took 46 seconds.
+  it.each([
+    ["200k with no sentence terminator", "x".repeat(200_000)],
+    ["200k of near-money tokens", "profit " + "$1,".repeat(50_000)],
+    ["200k of digits and commas", "earnings of " + "1,".repeat(50_000)],
+    ["a realistic long article", "Investment runs $150,000 to $350,000. ".repeat(2_000)],
+  ])("scans %s in under a second", (_label, text) => {
+    const started = performance.now();
+    findProfitabilityViolations(text);
+    findBrandNameViolations(text);
+    expect(performance.now() - started).toBeLessThan(1_000);
+  });
+});
+
+describe("bypasses found by the round-1 adversarial review", () => {
+  it.each([
+    // A figure with no currency sign is still a figure.
+    "Owners typically earn 150K per year.",
+    "Owners typically earn 150,000 per year.",
+    // Verbs the first pass dropped as too common, which are safe once a figure is required.
+    "A top operator can clear $150,000 annually.",
+    "Most owners pocket $90,000 after debt service.",
+    // Section 1 bans the W-2 comparison, and it carries no figure at all.
+    "This franchise can replace your salary within two years.",
+    "Most owners expect it to replace their corporate income.",
+  ])("now flags %j", (text) => {
+    expect(findProfitabilityViolations(text)).not.toHaveLength(0);
+  });
+
+  it.each([
+    // The retirement accounts are all over the funding articles; "401k" is not a figure.
+    "You can roll a 401k into the business without income tax.",
+    "Most people with substantial 401k balances accumulated them as employees.",
+    // The ban is on the projection, not on writing about the subject.
+    "How long until a franchise replaces a W-2 income?",
+    // "Return" as an imperative verb, beside a royalty percentage Section 1 permits.
+    "Return the signed acknowledgment before paying the 6% royalty.",
+  ])("does not flag %j", (text) => {
+    expect(findProfitabilityViolations(text)).toEqual([]);
+  });
+
+  it.each([
+    ["markdown emphasis inside the name", "Molly **Maid** is one example."],
+    ["a non-breaking space", "Molly\u00a0Maid is one example."],
+    ["a line wrap", "Molly\nMaid is one example."],
+  ])("finds a brand name through %s", (_label, text) => {
+    expect(findBrandNameViolations(text)).toContain("molly maid");
+  });
+
+  it("finds a brand name written with a curly apostrophe", () => {
+    // GPT-4o emits these by default; the registry stores the straight form.
+    expect(findBrandNameViolations("Bishop\u2019s Cuts is one example.")).toContain("bishop's");
+  });
+});
+
+describe("mergeRefreshedFrontmatter", () => {
+  const original = {
+    title: "Old Title",
+    slug: "a-slug",
+    date: "2026-01-01",
+    category: "Going Deeper",
+    tier: 2,
+    excerpt: "Old excerpt.",
+    relatedSlugs: ["other-slug"],
+    checklistSlug: "franchise-readiness",
+    escapeKit: true,
+    updatedAt: "2026-02-02",
+  } satisfies ArticleFrontmatter;
+
+  it("keeps frontmatter the prompt never sends back", () => {
+    // checklistSlug drives the email-capture CTA on 42 of 45 articles, escapeKit on 12,
+    // and updatedAt feeds dateModified. Adopting the model's object dropped all three.
+    const merged = mergeRefreshedFrontmatter(original, { title: "New Title" });
+    expect(merged.checklistSlug).toBe("franchise-readiness");
+    expect(merged.escapeKit).toBe(true);
+    expect(merged.updatedAt).toBe("2026-02-02");
+  });
+
+  it("takes the three fields the model owns", () => {
+    const merged = mergeRefreshedFrontmatter(original, {
+      title: "New Title",
+      excerpt: "New excerpt.",
+      faqs: [{ q: "Q?", a: "A." }],
+    });
+    expect(merged.title).toBe("New Title");
+    expect(merged.excerpt).toBe("New excerpt.");
+    expect(merged.faqs).toEqual([{ q: "Q?", a: "A." }]);
+  });
+
+  it("refuses structural fields the model must not move", () => {
+    const merged = mergeRefreshedFrontmatter(original, {
+      slug: "hijacked",
+      relatedSlugs: ["hijacked"],
+      category: "hijacked",
+      tier: 99,
+      date: "1999-01-01",
+    });
+    expect(merged.slug).toBe("a-slug");
+    expect(merged.relatedSlugs).toEqual(["other-slug"]);
+    expect(merged.category).toBe("Going Deeper");
+    expect(merged.tier).toBe(2);
+    expect(merged.date).toBe("2026-01-01");
+  });
+
+  it("admits no key the model invented", () => {
+    // An unchecked key is serialized to disk and can reach the rendered page without ever
+    // passing the compliance check.
+    const merged = mergeRefreshedFrontmatter(original, {
+      video: { description: "Molly Maid is lucrative." },
+      metaDescription: "A lucrative category.",
+    });
+    expect(merged.video).toBeUndefined();
+    expect(merged.metaDescription).toBeUndefined();
+    expect(Object.keys(merged).sort()).toEqual(Object.keys(original).sort());
+  });
+
+  it("keeps the original value rather than destroying it on a malformed field", () => {
+    for (const bad of [undefined, null, "not an object", 42, []]) {
+      const merged = mergeRefreshedFrontmatter(original, bad);
+      expect(merged.title).toBe("Old Title");
+      expect(merged.excerpt).toBe("Old excerpt.");
+    }
+    expect(mergeRefreshedFrontmatter(original, { title: "   ", faqs: [{ q: 7 }] })).toMatchObject({
+      title: "Old Title",
+    });
+  });
+
+  it("drops malformed faq entries rather than writing them to disk", () => {
+    const merged = mergeRefreshedFrontmatter(original, {
+      faqs: [{ q: "Good?", a: "Yes." }, { q: 7 }, null, { a: "orphan" }],
+    });
+    expect(merged.faqs).toEqual([{ q: "Good?", a: "Yes." }]);
   });
 });
