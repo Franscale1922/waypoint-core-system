@@ -37,6 +37,8 @@ import * as aeoAudit from "../../scripts/aeo-audit.mjs";
 
 const TODAY = "2026-08-04";
 const BODY = "Refreshed body copy.\n";
+/** Blob SHA these fixtures claim to be based on; the mocked tree reports the same. */
+const BASE_SHA = "a".repeat(40);
 
 /** Exactly 160 characters: the last excerpt length that is allowed through. */
 const EXCERPT_AT_LIMIT = "x".repeat(EXCERPT_MAX);
@@ -441,13 +443,38 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
     process.env.GITHUB_REPO_NAME = "waypoint-core-system";
     process.env.GITHUB_BRANCH = "main";
 
-    fetchMock = vi.fn(async () =>
-      ({
-        ok: true,
-        json: async () => ({ object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" }),
-        text: async () => "",
-      }) as unknown as Response,
-    );
+    // Answers per endpoint. The commit path reads `GET /git/trees/{sha}?recursive=1` and iterates
+    // `tree` as a LIST to compare each article's blob against the one it was generated from, so the
+    // old single-shape stub (which returned `tree: { sha }` to everything) would throw inside the
+    // code under test. Method disambiguates GET /git/trees/{sha} from POST /git/trees.
+    fetchMock = vi.fn(async (url: unknown, init?: { method?: string }) => {
+      const target = String(url);
+      const method = init?.method ?? "GET";
+      let body: unknown = {};
+
+      if (method === "GET" && target.includes("/git/ref/heads/")) {
+        body = { object: { sha: "refsha" } };
+      } else if (method === "GET" && target.includes("/git/commits/")) {
+        body = { tree: { sha: "treesha" } };
+      } else if (method === "GET" && target.includes("/git/trees/")) {
+        body = {
+          tree: ["alpha", "beta"].map((slug) => ({
+            path: `content/articles/${slug}.md`,
+            sha: BASE_SHA,
+            type: "blob",
+          })),
+          truncated: false,
+        };
+      } else if (target.endsWith("/git/blobs")) {
+        body = { sha: "blobsha" };
+      } else if (target.endsWith("/git/trees")) {
+        body = { sha: "newtreesha" };
+      } else if (target.endsWith("/git/commits")) {
+        body = { sha: "newsha" };
+      }
+
+      return { ok: true, json: async () => body, text: async () => "" } as unknown as Response;
+    });
     vi.stubGlobal("fetch", fetchMock);
   });
 
@@ -459,7 +486,9 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
 
   it("commits a valid batch, so the negative assertions below mean something", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    await commitRefreshedArticles([{ slug: "alpha", frontmatter: validFrontmatter(), body: BODY }]);
+    await commitRefreshedArticles([
+      { slug: "alpha", frontmatter: validFrontmatter(), body: BODY, baseBlobSha: BASE_SHA },
+    ]);
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
   });
 
@@ -480,8 +509,8 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
     // date backstop, this branch is genuinely reachable from outside.
     await expect(
       commitRefreshedArticles([
-        { slug: "alpha", frontmatter: validFrontmatter(), body: BODY },
-        { slug: "beta", frontmatter: makeFrontmatter(), body: BODY },
+        { slug: "alpha", frontmatter: validFrontmatter(), body: BODY, baseBlobSha: BASE_SHA },
+        { slug: "beta", frontmatter: makeFrontmatter(), body: BODY, baseBlobSha: BASE_SHA },
       ]),
     ).rejects.toThrow(/Refusing to commit/);
 
@@ -493,7 +522,9 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
   it("names the offending article, so the failure is traceable to a slug", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
     await expect(
-      commitRefreshedArticles([{ slug: "beta", frontmatter: withoutField("faqs"), body: BODY }]),
+      commitRefreshedArticles([
+        { slug: "beta", frontmatter: withoutField("faqs"), body: BODY, baseBlobSha: BASE_SHA },
+      ]),
     ).rejects.toThrow(/content\/articles\/beta\.md/);
   });
 

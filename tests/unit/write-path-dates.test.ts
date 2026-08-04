@@ -56,6 +56,23 @@ function modelFrontmatter(extra: Record<string, unknown> = {}) {
   } as never;
 }
 
+/**
+ * The blob SHA every fixture article claims to have been generated from.
+ *
+ * The commit path refuses to overwrite a file whose blob on the branch is not the one the refresh
+ * read, so a batch only commits when this matches what the mocked tree reports. Tests that want the
+ * happy path use it on both sides; the conflict tests deliberately make them differ.
+ */
+const BASE_SHA = "a".repeat(40);
+
+/** An article whose recorded base SHA agrees with the branch, i.e. the non-conflicting case. */
+const payload = (slug: string) => ({
+  slug,
+  frontmatter: modelFrontmatter(),
+  body: BODY,
+  baseBlobSha: BASE_SHA,
+});
+
 describe("serializeArticle: both dates are stamped, never taken from the model", () => {
   it.each([
     ["a future date", { updatedAt: "9999-12-31" }],
@@ -99,7 +116,7 @@ describe("serializeArticle: both dates are stamped, never taken from the model",
 describe("validateArticlePayload: what the boundary checks", () => {
   it("passes a stamped article and returns the exact bytes that will be committed", async () => {
     const { validateArticlePayload, serializeArticle } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = payload("alpha");
 
     const { errors, content } = validateArticlePayload(article, { today: TODAY });
 
@@ -109,7 +126,7 @@ describe("validateArticlePayload: what the boundary checks", () => {
 
   it("names the article and its provenance, so the summary email is actionable", async () => {
     const { validateArticlePayload } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = payload("alpha");
 
     // Nothing is wrong with this payload, so assert on the label the guard WOULD use by running
     // the same rules against content that is wrong in the one way stamping cannot reach.
@@ -294,6 +311,52 @@ describe("branchRefPaths", () => {
   });
 });
 
+/**
+ * A Git Data API stub that answers per endpoint instead of returning one merged object for
+ * everything.
+ *
+ * The old single-shape stub returned `tree: { sha }` to every caller, which happened to satisfy both
+ * the commit read and the tree write because nothing ever inspected it. The CAS reads
+ * `GET /git/trees/{sha}?recursive=1` and iterates `tree` as a LIST of entries, so a stub that keeps
+ * answering with an object would throw inside the code under test and every one of these tests would
+ * fail for a reason that has nothing to do with what it is asserting.
+ *
+ * Method is what disambiguates the two collision pairs: `GET /git/trees/{sha}` vs `POST /git/trees`,
+ * and `GET /git/commits/{sha}` vs `POST /git/commits`. Matching on the URL alone silently routes the
+ * write to the read branch.
+ */
+function githubApiMock(
+  options: { entries?: { path: string; sha: string; type: string }[]; truncated?: boolean } = {},
+) {
+  const entries = options.entries ?? ["alpha", "beta", "gamma"].map((slug) => ({
+    path: `content/articles/${slug}.md`,
+    sha: BASE_SHA,
+    type: "blob",
+  }));
+
+  return vi.fn(async (url: unknown, init?: { method?: string }) => {
+    const target = String(url);
+    const method = init?.method ?? "GET";
+    let payload: unknown = {};
+
+    if (method === "GET" && target.includes("/git/ref/heads/")) {
+      payload = { object: { sha: "refsha" } };
+    } else if (method === "GET" && target.includes("/git/commits/")) {
+      payload = { tree: { sha: "treesha" } };
+    } else if (method === "GET" && target.includes("/git/trees/")) {
+      payload = { tree: entries, truncated: options.truncated ?? false };
+    } else if (target.endsWith("/git/blobs")) {
+      payload = { sha: "blobsha" };
+    } else if (target.endsWith("/git/trees")) {
+      payload = { sha: "newtreesha" };
+    } else if (target.endsWith("/git/commits")) {
+      payload = { sha: "newsha" };
+    }
+
+    return { ok: true, json: async () => payload, text: async () => "" } as unknown as Response;
+  });
+}
+
 describe("commitRefreshedArticles: nothing is written when validation fails", () => {
   const ORIGINAL_ENV = { ...process.env };
   let fetchMock: ReturnType<typeof vi.fn>;
@@ -304,14 +367,8 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     process.env.GITHUB_REPO_NAME = "waypoint-core-system";
     process.env.GITHUB_BRANCH = "main";
 
-    // Minimal Git Data API: ref -> commit -> blob -> tree -> commit -> ref PATCH.
-    fetchMock = vi.fn(async () =>
-      ({
-        ok: true,
-        json: async () => ({ object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" }),
-        text: async () => "",
-      }) as unknown as Response,
-    );
+    // Minimal Git Data API: ref -> commit -> tree read -> blob -> tree -> commit -> ref PATCH.
+    fetchMock = githubApiMock();
     vi.stubGlobal("fetch", fetchMock);
   });
 
@@ -324,7 +381,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
 
   it("commits the exact bytes it validated", async () => {
     const { commitRefreshedArticles, serializeArticle } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = payload("alpha");
 
     await commitRefreshedArticles([article]);
 
@@ -363,7 +420,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     });
 
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const article = { slug: "alpha", frontmatter: modelFrontmatter(), body: BODY };
+    const article = payload("alpha");
 
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/not a real calendar day/);
     await expect(commitRefreshedArticles([article])).rejects.toThrow(/main was not\s+advanced/);
@@ -386,7 +443,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     process.env.GITHUB_BRANCH = "release/1.0";
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
 
-    await commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]);
+    await commitRefreshedArticles([payload("alpha")]);
 
     const urls = fetchMock.mock.calls.map(([url]) => String(url));
     // The trap in the fix itself: encodeURIComponent over the whole value yields `release%2F1.0`,
@@ -405,7 +462,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
 
     await expect(
-      commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]),
+      commitRefreshedArticles([payload("alpha")]),
     ).rejects.toThrow(/Refusing to use GITHUB_BRANCH/);
     // The consequence that matters: rejected on configuration, before a blob exists or any ref moved.
     expect(fetchMock).not.toHaveBeenCalled();
@@ -419,7 +476,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
    */
   it("names the offending variable without echoing what was in it", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const batch = [payload("alpha")];
     const secretish = "ghp_NOTAREALTOKEN&pretend=this=leaked";
 
     process.env.GITHUB_BRANCH = secretish;
@@ -445,7 +502,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
       const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
 
       await expect(
-        commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]),
+        commitRefreshedArticles([payload("alpha")]),
       ).rejects.toThrow(/Refusing to use GITHUB_BRANCH/);
       expect(fetchMock).not.toHaveBeenCalled();
     },
@@ -453,7 +510,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
 
   it("refuses an owner or repo that would retarget the request the same way", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const batch = [payload("alpha")];
 
     process.env.GITHUB_REPO_OWNER = "Franscale1922/evil";
     await expect(commitRefreshedArticles(batch)).rejects.toThrow(/Refusing to use GITHUB_REPO_OWNER/);
@@ -467,17 +524,20 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
 
   it("still accepts the default and other ordinary branch names", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const batch = [payload("alpha")];
 
     delete process.env.GITHUB_BRANCH; // the documented default
-    await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+    // `committed`, not merely "did not throw": the batch has to have actually been written. A
+    // conflict skip also resolves, so asserting on resolution alone would now pass even if the CAS
+    // were silently rejecting every article.
+    await expect(commitRefreshedArticles(batch)).resolves.toMatchObject({ committed: ["alpha"] });
     expect(fetchMock.mock.calls.map(([url]) => String(url))).toContain(
       "https://api.github.com/repos/Franscale1922/waypoint-core-system/git/ref/heads/main",
     );
 
     for (const branch of ["main", "feature/JIRA-12_v2.1", "v2.0.x", "_staging"]) {
       process.env.GITHUB_BRANCH = branch;
-      await expect(commitRefreshedArticles(batch)).resolves.toBeUndefined();
+      await expect(commitRefreshedArticles(batch)).resolves.toMatchObject({ committed: ["alpha"] });
     }
   });
 
@@ -496,7 +556,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
    */
   it("accepts only branch names that already encode to themselves", async () => {
     const { commitRefreshedArticles, encodeRefForPath } = await import("@/lib/githubArticleCommit");
-    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const batch = [payload("alpha")];
 
     const candidates = [
       "main", "release/1.0", "feature/JIRA-12_v2.1", "v2.0.x", "_staging", "a..b",
@@ -531,11 +591,7 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
     });
 
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    const batch = ["alpha", "beta", "gamma"].map((slug) => ({
-      slug,
-      frontmatter: modelFrontmatter(),
-      body: BODY,
-    }));
+    const batch = ["alpha", "beta", "gamma"].map(payload);
 
     // "frontmatter problem", not "frontmatter date problem": the boundary now reports date and
     // required-field failures through the same counter, so the message can no longer claim every

@@ -29,6 +29,17 @@ export interface Article {
   frontmatter: ArticleFrontmatter;
   body: string;
   filePath: string;
+  /**
+   * The exact bytes read off disk, before gray-matter split them into frontmatter and body.
+   *
+   * Kept because `frontmatter` + `body` cannot be recombined into them: gray-matter normalises key
+   * order, quoting and whitespace on the way out, so re-serializing produces bytes that are
+   * equivalent but not identical. The commit path hashes this to prove the file it is about to
+   * overwrite is still the file the refresh was based on (see `gitBlobSha` in
+   * githubArticleCommit.ts), and a hash of re-serialized bytes would never match the blob git
+   * actually stores.
+   */
+  raw: string;
 }
 
 // ─── Article Discovery ────────────────────────────────────────────────────────
@@ -54,6 +65,7 @@ export function getAllArticles(): Article[] {
       frontmatter: data as ArticleFrontmatter,
       body: content,
       filePath,
+      raw,
     };
   });
 }

@@ -19,6 +19,7 @@
  *                      needing URL-encoding is rejected at startup. See getConfig.
  */
 
+import { createHash } from "crypto";
 import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
 import { validateFrontmatterDates, utcDayString } from "./frontmatterDates.mjs";
@@ -31,6 +32,32 @@ export interface ArticleCommitPayload {
   slug: string;
   frontmatter: ArticleFrontmatter;
   body: string;
+  /**
+   * Git blob SHA of the article file this refresh was based on, as it existed when the content was
+   * read off disk. Checked against the blob actually on the branch before anything is overwritten.
+   *
+   * REQUIRED, deliberately, even though an optional field would have spared the call sites. The
+   * check it feeds is the only thing standing between a concurrent human edit and silent data loss,
+   * and an optional field makes forgetting it indistinguishable from not needing it: the batch would
+   * commit, the run would report success, and the overwrite would be invisible. Required means
+   * TypeScript refuses to compile a caller that has not thought about it.
+   */
+  baseBlobSha: string;
+}
+
+/**
+ * What a commit actually did, as opposed to what it was asked to do.
+ *
+ * `conflicted` is not an error list. Those articles were valid; somebody else's newer version of
+ * them is simply already on the branch, so the refresh stood down. The caller folds them into the
+ * summary email's failure section so a skip is always visible to a human. A silent skip would
+ * trade one invisible outcome for another.
+ */
+export interface CommitOutcome {
+  committed: string[];
+  conflicted: { slug: string; reason: string }[];
+  /** null when every article conflicted, because then no commit was created at all. */
+  commitSha: string | null;
 }
 
 interface GitHubConfig {
@@ -78,6 +105,33 @@ export function encodeRefForPath(ref: string): string {
  * an unencoded one, and deleting the encoding would not turn anything red. Asserting on this
  * function directly is what actually guards it.
  */
+/**
+ * Git's blob object ID for a UTF-8 file: `sha1("blob " + byteLength + "\0" + bytes)`.
+ *
+ * Reimplemented rather than asked of GitHub because the whole point is to hash bytes that only this
+ * process has: the file as it was when the refresh read it, minutes and one model call ago. Asking
+ * GitHub for that SHA would mean asking about the file as it is NOW, which is precisely the value
+ * being checked against and would make the comparison tautological.
+ *
+ * The header is not decoration. It is what makes this a git object ID rather than a content hash,
+ * and `byteLength` is the length in BYTES, not characters: an article with a single non-ASCII
+ * character (every em dash, curly quote and accented brand name in the corpus) makes those two
+ * numbers differ, and a plain `.length` here would mismatch every such file and report a conflict
+ * that does not exist. Hashing the Buffer rather than the string is the same guard from the other
+ * side.
+ *
+ * SHA-1 is not a security choice here and its collision weakness does not apply: this compares an
+ * object ID against git's own object ID for the same content, so it must be exactly the algorithm
+ * git uses. An attacker able to author colliding article bodies already has commit access.
+ */
+export function gitBlobSha(content: string): string {
+  const bytes = Buffer.from(content, "utf-8");
+  return createHash("sha1")
+    .update(`blob ${bytes.byteLength}\0`)
+    .update(bytes)
+    .digest("hex");
+}
+
 export function branchRefPaths(branch: string): { read: string; update: string } {
   const ref = encodeRefForPath(branch);
   return { read: `/git/ref/heads/${ref}`, update: `/git/refs/heads/${ref}` };
@@ -217,7 +271,11 @@ export function serializeArticle(
  * check something adjacent to the artifact instead of the artifact.
  */
 export function validateArticlePayload(
-  article: ArticleCommitPayload,
+  // Only the three fields that become bytes. `baseBlobSha` is about WHERE the result may safely be
+  // written, which is the commit boundary's business and not this function's, and demanding it here
+  // would force the per-article caller in src/inngest/functions.ts to compute a hash purely to
+  // satisfy a signature that ignores it.
+  article: Pick<ArticleCommitPayload, "slug" | "frontmatter" | "body">,
   { today = utcDayString() }: { today?: string } = {},
 ): { errors: string[]; content: string } {
   // The underlying messages are written for somebody editing a file by hand ("Quote the value in
@@ -275,8 +333,8 @@ export function validateArticlePayload(
 export async function commitRefreshedArticles(
   articles: ArticleCommitPayload[],
   commitMessage?: string
-): Promise<void> {
-  if (articles.length === 0) return;
+): Promise<CommitOutcome> {
+  if (articles.length === 0) return { committed: [], conflicted: [], commitSha: null };
 
   const config = getConfig();
 
@@ -319,11 +377,102 @@ export async function commitRefreshedArticles(
   );
   const baseTreeSha = commitData.tree.sha;
 
+  // ── 2a. Compare-and-swap: drop any article the branch has moved on from ───
+  //
+  // Everything below overwrites `content/articles/<slug>.md` wholesale, and until this existed it
+  // did so with no idea what it was overwriting. Three facts combine into silent data loss without
+  // this check:
+  //
+  //   1. The content being written was generated from `process.cwd()/content/articles` (see
+  //      getAllArticles), which in a deployed function is the LAST DEPLOY's copy of the file, not
+  //      whatever is on the branch now.
+  //   2. Step 4 builds its tree on `base_tree`, so a path this batch names is replaced outright.
+  //      Nothing compares it to what is already there.
+  //   3. GitHub's own protection does not cover this. The PATCH in step 6 omits `force`, which
+  //      defaults to false and refuses a non-fast-forward, but that guards the BRANCH POINTER, not
+  //      file contents. Replacing someone's edit to a file while still descending from their commit
+  //      is a perfectly good fast-forward, so the ref update succeeds and the edit is gone.
+  //
+  // The retry is what made it silent rather than merely possible. This runs inside a `step.run` on
+  // a function configured `retries: 1` (src/inngest/functions.ts). If an editor's commit lands
+  // between step 1 and step 6, the PATCH is refused, the step throws, and Inngest retries. The
+  // retry re-reads HEAD, rebuilds on their commit, and applies the same stale bytes, which now IS a
+  // fast-forward. Attempt one fails loudly; attempt two overwrites them and reports success.
+  //
+  // So each article carries the blob SHA of the file it was generated from, and that has to still be
+  // the blob on the branch. Anything else means the file changed underneath this run, and this run's
+  // version is built on a copy that no longer exists. It stands down for that article rather than
+  // guessing whose version is right. The article keeps the newer content and comes back round at
+  // the next cadence.
+  //
+  // Fixing the CAS also removes the duplicate-commit case, without a second mechanism: if step 6
+  // succeeded but its response was lost, the retry reads the new HEAD, finds this run's own bytes on
+  // every path, matches none of the base SHAs, and commits nothing.
+  const baseTree = await githubRequest<{
+    tree: { path: string; sha: string; type: string }[];
+    truncated: boolean;
+  }>(`/git/trees/${baseTreeSha}?recursive=1`, config);
+
+  // Fail closed. A truncated tree is missing paths, and a missing path is indistinguishable here
+  // from a deleted file: both look like "no blob for this article". Guessing in that state is
+  // exactly the silent overwrite this check exists to prevent, so the batch stops instead. GitHub
+  // truncates around 100k entries; this repo is three orders of magnitude short of that, so if this
+  // ever fires something is wrong that a fallback would only hide.
+  if (baseTree.truncated) {
+    throw new Error(
+      `Refusing to commit: GitHub truncated the tree listing for ${baseTreeSha}, so the current ` +
+        `blob SHA of each article cannot be established. Nothing was written and ${config.branch} ` +
+        `was not advanced.`,
+    );
+  }
+
+  const blobShaByPath = new Map(
+    baseTree.tree.filter((entry) => entry.type === "blob").map((entry) => [entry.path, entry.sha]),
+  );
+
+  const conflicted: { slug: string; reason: string }[] = [];
+  const survivors = prepared.filter(({ article }) => {
+    const path = `content/articles/${article.slug}.md`;
+    const currentSha = blobShaByPath.get(path);
+
+    if (currentSha === undefined) {
+      conflicted.push({
+        slug: article.slug,
+        reason:
+          `${path} no longer exists on ${config.branch}. It was deleted or renamed after this ` +
+          `refresh read it, so re-creating it here would silently revert that.`,
+      });
+      return false;
+    }
+
+    if (currentSha !== article.baseBlobSha) {
+      conflicted.push({
+        slug: article.slug,
+        reason:
+          `${path} changed on ${config.branch} after this refresh read it (expected blob ` +
+          `${article.baseBlobSha.slice(0, 7)}, found ${currentSha.slice(0, 7)}). Committing would ` +
+          `overwrite that newer version with content generated from the older one, so this article ` +
+          `was skipped and keeps the newer version.`,
+      });
+      return false;
+    }
+
+    return true;
+  });
+
+  if (survivors.length === 0) {
+    return {
+      committed: [],
+      conflicted,
+      commitSha: null,
+    };
+  }
+
   // ── 3. Create blobs for each updated article ─────────────────────────────
   // Uses the content validated in step 0, never a re-serialization of it: serializing twice would
   // mean the bytes that were checked are not necessarily the bytes that get committed.
   const blobs = await Promise.all(
-    prepared.map(async ({ article: { slug }, content }) => {
+    survivors.map(async ({ article: { slug }, content }) => {
       const encoded = Buffer.from(content, "utf-8").toString("base64");
 
       const blob = await githubRequest<{ sha: string }>(
@@ -358,8 +507,10 @@ export async function commitRefreshedArticles(
   const commitDate = new Date().toLocaleDateString("en-US", {
     month: "short", day: "numeric", year: "numeric",
   });
+  // survivors.length, not articles.length: a conflict-skipped article is not in this commit, and a
+  // message counting it would misreport the commit's own contents in git history.
   const message = commitMessage
-    ?? `chore: content refresh, ${articles.length} article(s) updated (${commitDate})`;
+    ?? `chore: content refresh, ${survivors.length} article(s) updated (${commitDate})`;
 
   const newCommit = await githubRequest<{ sha: string }>(
     "/git/commits",
@@ -375,6 +526,12 @@ export async function commitRefreshedArticles(
   );
 
   // ── 6. Advance the branch ref to the new commit ───────────────────────────
+  //
+  // `force` is deliberately absent: it defaults to false, which makes GitHub refuse a
+  // non-fast-forward update. That is a second, independent guard and not a substitute for the CAS
+  // above. This one protects the branch pointer against a commit that landed since step 1, the CAS
+  // protects the file contents. Adding `force: true` here would disable the half GitHub gives for
+  // free while leaving the harder half looking intact.
   await githubRequest(
     refPaths.update,
     config,
@@ -383,4 +540,10 @@ export async function commitRefreshedArticles(
       body: JSON.stringify({ sha: newCommit.sha }),
     }
   );
+
+  return {
+    committed: survivors.map(({ article }) => article.slug),
+    conflicted,
+    commitSha: newCommit.sha,
+  };
 }

@@ -1368,7 +1368,7 @@ import {
     passesComplianceCheck,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
-import { commitRefreshedArticles, validateArticlePayload, ArticleCommitPayload } from "@/lib/githubArticleCommit";
+import { commitRefreshedArticles, validateArticlePayload, gitBlobSha, ArticleCommitPayload } from "@/lib/githubArticleCommit";
 
 const NOTIFY_EMAIL = "kelsey@waypointfranchise.com";
 
@@ -1525,6 +1525,12 @@ export const contentRefreshFunction = inngest.createFunction(
                     slug: article.slug,
                     frontmatter: result.frontmatter,
                     body: result.body,
+                    // Hashed from the bytes this refresh actually read, so the commit boundary can
+                    // prove the file has not changed underneath the run before it overwrites it.
+                    // `article.raw` and not a re-serialization of the parsed halves: gray-matter
+                    // normalises key order and quoting, so those bytes would hash to something git
+                    // has never stored and every article would look like a conflict.
+                    baseBlobSha: gitBlobSha(article.raw),
                 });
             } else {
                 failed.push({ slug: article.slug, reason: result.reason ?? "Unknown error" });
@@ -1532,10 +1538,22 @@ export const contentRefreshFunction = inngest.createFunction(
         }
 
         // ── Step 4: Commit all refreshed articles to GitHub (single atomic commit) ──
+        //
+        // The commit can decline individual articles that changed on the branch after this run read
+        // them. Those come back as `conflicted` rather than as a throw, because they are not
+        // failures of this run, since somebody else's newer version is already published, and they
+        // are moved into `failed` so the summary email names them. A skip nobody is told about would be
+        // as bad as the overwrite it prevents.
         if (toCommit.length > 0) {
-            await step.run("commit-to-github", async () => {
-                await commitRefreshedArticles(toCommit);
+            const outcome = await step.run("commit-to-github", async () => {
+                return await commitRefreshedArticles(toCommit);
             });
+
+            for (const { slug, reason } of outcome.conflicted) {
+                const index = refreshed.indexOf(slug);
+                if (index !== -1) refreshed.splice(index, 1);
+                failed.push({ slug, reason });
+            }
         }
 
         // ── Step 5: Send summary email via Resend ─────────────────────────────
