@@ -193,6 +193,27 @@ Any claim that can change year over year must include an "as of [year]" qualifie
 | Process/structural articles (FDD, Discovery Day, agreements) | Every 24 months or when regulation changes |
 | Strategic/mindset articles | No scheduled review |
 
+The automated monthly refresh normally infers which row an article belongs to from its
+slug, by looking for financing words in it. That inference is right for most articles and
+wrong for two kinds:
+
+- Articles that honestly belong to two rows. "Cost and Operational Efficiency Franchises"
+  is both a cost article and a category analysis, and this table does not say which wins.
+- Articles where a cadence word is not about money at all. In "Why Improvising Early Costs
+  You", "Costs" is a verb.
+
+When the slug would get it wrong, say so in frontmatter:
+
+```yaml
+reviewCadence: strategic
+```
+
+Valid values, one per row above: `investment-and-cost`, `financing`, `category-analysis`,
+`process`, `strategic`. The field is **optional** and overrides the inference completely.
+Omit it unless the inference is wrong; most articles should not carry it. A value outside
+that list fails the pre-push gate, because an ignored typo would silently leave the article
+on the cadence the field was added to change.
+
 ---
 
 ## Section 7 — The Island Test
