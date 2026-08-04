@@ -705,6 +705,60 @@ describe("commitRefreshedArticles: a retry does not commit the same batch twice"
   });
 
   /**
+   * A caller does not get to author batch identity.
+   *
+   * The trailer is derived from the article bytes precisely so it cannot be claimed, and the
+   * failure a forged one produces is the quiet kind: some later batch reads it, decides it is
+   * already published, and returns success having written nothing at all.
+   */
+  it("refuses a caller-supplied message that forges the trailer, before any request", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const spy = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
+    vi.stubGlobal("fetch", spy);
+
+    await expect(
+      commitRefreshedArticles([alphaArticle()], "chore: refresh\n\nRefresh-Batch: deadbeefdeadbeef"),
+    ).rejects.toThrow(/Refusing a commit message containing a "Refresh-Batch:" line/);
+
+    expect(spy).not.toHaveBeenCalled();
+    expect(gh.createdCommits).toBe(0);
+  });
+
+  /**
+   * The trailer has to be a LINE, not a substring.
+   *
+   * Prose that merely quotes one must not answer for it. This module's own "could not find out"
+   * error quotes the trailer, so a message that pasted that error in would otherwise be read as
+   * proof the batch had landed, and the real articles would never be published.
+   */
+  it("does not accept a trailer quoted inside prose as proof the batch landed", async () => {
+    const { commitRefreshedArticles, computeBatchId, serializeArticle } =
+      await import("@/lib/githubArticleCommit");
+    const article = alphaArticle();
+    const batchId = computeBatchId([
+      { slug: article.slug, content: serializeArticle(article.frontmatter, article.body) },
+    ]);
+
+    // A commit that talks ABOUT the batch without carrying it.
+    const decoy = createFakeGitHub();
+    vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
+      const res = await decoy.handle(String(url), init);
+      if (methodOf(init) === "GET" && pathOf(url).endsWith("/commits")) {
+        return jsonResponse(200, [
+          { sha: "commit-base", commit: { message: `chore: retry notes (Refresh-Batch: ${batchId}) still unresolved` } },
+        ]);
+      }
+      return res;
+    }));
+
+    const outcome = await commitRefreshedArticles([article]);
+
+    // Not fooled: it went ahead and published.
+    expect(outcome.status).toBe("committed");
+    expect(decoy.createdCommits).toBe(1);
+  });
+
+  /**
    * The second, independent read on "already landed", and the one that still works when the batch
    * id does not — a retry that crossed midnight UTC re-stamps the date, derives a different id, and
    * would sail past the trailer check. The tree comparison catches it because the bytes, not the

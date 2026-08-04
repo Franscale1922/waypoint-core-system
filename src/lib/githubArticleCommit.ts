@@ -249,6 +249,20 @@ export function batchTrailer(batchId: string): string {
 }
 
 /**
+ * Does this commit message claim to carry `batchId`?
+ *
+ * A whole LINE has to match, not a substring anywhere in the message. The difference matters
+ * because a false positive here is silent: the run decides the work is already published, returns
+ * success, and the articles never land. Matching a line means prose that merely quotes a trailer,
+ * including this module's own error messages when somebody pastes one into a commit, cannot be
+ * mistaken for the trailer itself.
+ */
+function carriesBatch(message: string, batchId: string): boolean {
+  const trailer = batchTrailer(batchId);
+  return message.split("\n").some((line) => line.trim() === trailer);
+}
+
+/**
  * A stable name for one exact set of article bytes.
  *
  * Stable is the whole requirement: a retry re-derives it from the same payload (Inngest replays
@@ -347,6 +361,18 @@ export async function commitRefreshedArticles(
     return { status: "nothing-to-do", batchId: null, commitSha: null, articles: 0 };
   }
 
+  // The trailer is how a retry identifies its own work, so a caller does not get to write one. A
+  // message carrying a forged or copied `Refresh-Batch:` line would let one batch answer for
+  // another, and the failure it produces is the quiet kind: a later batch decides it is already
+  // published and returns success having written nothing. Refused here, before any request.
+  if (commitMessage?.includes(`${BATCH_TRAILER_KEY}:`)) {
+    throw new Error(
+      `Refusing a commit message containing a "${BATCH_TRAILER_KEY}:" line. That trailer is how a ` +
+        `retry recognises work it already published, and it is derived from the article bytes ` +
+        `rather than supplied. Pass a summary without it; the trailer is appended automatically.`,
+    );
+  }
+
   const config = getConfig();
 
   // ── 0. Serialize and validate EVERYTHING before touching GitHub ──────────
@@ -400,7 +426,7 @@ export async function commitRefreshedArticles(
     config
   );
   const alreadyApplied = recentCommits.find((entry) =>
-    entry.commit.message.includes(batchTrailer(batchId))
+    carriesBatch(entry.commit.message, batchId)
   );
   if (alreadyApplied) {
     return {
