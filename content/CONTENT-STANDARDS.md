@@ -482,7 +482,7 @@ A malformed date costs more than it looks: it removes the article's publication 
 
 ### No future dates, and no scheduled publishing
 
-A date may be at most **one day ahead of today**, and that one day exists only to absorb the timezone gap: dates are stamped in UTC while articles are written in Mountain time, so an evening edit on the 4th is already the 5th in UTC. Anything further ahead is rejected.
+A date may be at most **one day ahead of today (UTC)**. That one day is slack for two machines disagreeing about the current day, not a timezone allowance: Mountain time runs behind UTC, so a locally-written date lags UTC and never leads it. Anything further ahead is rejected.
 
 - ❌ `updatedAt: "9999-12-31"` — real day, valid YAML, and still wrong
 

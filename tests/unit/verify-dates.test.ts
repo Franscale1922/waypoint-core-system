@@ -377,6 +377,45 @@ describe("verifyArticleDates: raw text and the parser disagreeing", () => {
     expect(errors[0]).toContain("REFUSES to parse");
   });
 
+  /**
+   * The OPTIONAL field is the exposure, and this is a regression test for a hole that was real.
+   *
+   * A quoted key is invisible to the `^key:` raw scan. For `date` that is harmless: the field is
+   * required, so raw scanning failing to see it fails the file. For `updatedAt` it was not, because
+   * "not seen" and "not present" were the same state: the future and ordering rules had no value to
+   * test, and the parser cross-check declined to look at a field the raw stage had not validated.
+   * The guard reported a clean pass while production received the value.
+   *
+   * Found by a Codex round-1 adversarial review and reproduced before fixing.
+   */
+  it("rejects an updatedAt written as a QUOTED key, which the raw scan cannot see", () => {
+    // The premise, asserted rather than assumed: the parser really does produce the value.
+    expect(matter('---\ndate: "2026-08-04"\n"updatedAt": "9999-12-31"\n---\nB\n').data.updatedAt).toBe(
+      "9999-12-31",
+    );
+    writeArticle("alpha.md", ['date: "2026-08-04"', '"updatedAt": "9999-12-31"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("never saw");
+  });
+
+  it("rejects a quoted-key updatedAt even when the day itself is fine", () => {
+    // The defect is that NO rule was applied to it, not that the value happened to be bad.
+    writeArticle("alpha.md", ['date: "2026-01-15"', '"updatedAt": "2026-01-20"']);
+    const { errors } = verifyArticleDates(dir);
+    expect(errors).toHaveLength(1);
+    expect(errors[0]).toContain("never saw");
+  });
+
+  it("does not invent an updatedAt for the articles that genuinely have none", () => {
+    // The guard against the fix above overcorrecting: 41 of the 45 real articles carry no
+    // updatedAt, and every one of them must still pass.
+    writeArticle("alpha.md", ['date: "2026-01-15"']);
+    const { errors, checkedDates } = verifyArticleDates(dir);
+    expect(errors).toEqual([]);
+    expect(checkedDates).toBe(1);
+  });
+
   it("reports the raw error, not the parser one, when both would fire", () => {
     // The cross-check runs only on a clean file, so the actionable message wins.
     writeArticle("alpha.md", ["date: 2026-02-30"]);

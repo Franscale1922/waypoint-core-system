@@ -81,10 +81,19 @@ export const DATE_FIELDS = [
 /**
  * How far ahead of today a date may be dated before it is rejected, in days.
  *
- * One day, not zero. Dates are stamped from `toISOString()`, which is UTC, while articles are
- * authored in Mountain time: an evening edit on the 4th is already the 5th in UTC, so a zero
- * tolerance would reject a date that is simply today's, seen from the other side of midnight.
- * Anything beyond that is not clock skew, it is a wrong date.
+ * This was originally justified as covering the UTC/Mountain gap, and that reasoning was BACKWARDS.
+ * Mountain is UTC-6/-7, so a local date always lags UTC or equals it, never leads it: an evening
+ * edit on the 4th Mountain time is already the 5th in UTC, which makes the author's "today" of the
+ * 4th a PAST date, needing no tolerance at all. A Mountain author cannot produce a legitimately
+ * future date by timezone alone. (Codex round-1 review caught the error.)
+ *
+ * What the day actually buys is slack between the machine that stamps a date and the machine that
+ * later checks it, which need not agree on the current day. That is a real if small concern, and it
+ * is the honest reason this is 1 rather than 0.
+ *
+ * The cost is equally honest: one day of genuinely future metadata is permitted. Setting this to 0
+ * is a one-line change and would be strictly tighter, at the price of failing any push whose
+ * checking clock happens to sit a day behind the writing one.
  */
 export const FUTURE_TOLERANCE_DAYS = 1;
 
@@ -314,8 +323,32 @@ export function crossCheckAgainstParser({ raw, label, validated }) {
 
   for (const { key } of DATE_FIELDS) {
     const expected = validated[key];
-    if (expected === undefined) continue;
     const actual = data?.[key];
+
+    // The raw stage saw no such key, but the parser did. Skipping this case was a real hole, found
+    // by a Codex round-1 review and reproduced: `"updatedAt": "9999-12-31"` with a QUOTED key is
+    // invisible to the `^key:` scan, so an optional field read as absent raised nothing, the future
+    // and ordering rules had no value to test, and this loop then declined to look because there
+    // was nothing to compare against. The guard reported clean while production received
+    // 9999-12-31.
+    //
+    // An optional field is the whole exposure: `date` is required, so raw scanning failing to see
+    // it already fails the file before this runs. Anything js-yaml resolves that `^key:` cannot
+    // match is caught here generically, rather than by teaching the raw scanner every YAML spelling
+    // of a key, which is the game this module is deliberately not playing.
+    if (expected === undefined) {
+      if (actual !== undefined) {
+        errors.push(
+          `${label}: the YAML parser produces a "${key}" of ` +
+            `${JSON.stringify(String(actual))} that the raw frontmatter scan never saw, so none ` +
+            `of the date rules were applied to it and the value reaches production unchecked. ` +
+            `Write it as a plain top-level key, ${key}: "YYYY-MM-DD", not as a quoted key or a ` +
+            `merge.`,
+        );
+      }
+      continue;
+    }
+
     if (actual !== expected) {
       errors.push(
         `${label}: the raw frontmatter reads "${key}" as "${expected}", but the YAML parser ` +
@@ -404,9 +437,9 @@ export function validateFrontmatterDates(raw, { label, today = utcDayString() })
       errors.push(
         `${label}: "${key}" is in the FUTURE (${key}: "${value}", today is ${today} UTC). ` +
           `It would ship as a dateModified and a sitemap lastModified for a day that has not ` +
-          `happened yet. Dates may run at most ${FUTURE_TOLERANCE_DAYS} day ahead, which covers ` +
-          `the UTC/Mountain gap and nothing else. This site does not schedule or future-date ` +
-          `publishing.`,
+          `happened yet. Dates may run at most ${FUTURE_TOLERANCE_DAYS} day ahead, which is slack ` +
+          `for clock disagreement between machines and nothing else. This site does not schedule ` +
+          `or future-date publishing.`,
       );
     }
   }

@@ -165,8 +165,8 @@ describe("the rules the commit boundary applies", () => {
   });
 
   it("allows exactly one day of slack and no more", () => {
-    // The slack exists for the UTC/Mountain gap: an evening edit on the 4th is already the 5th in
-    // UTC. Two days ahead is not clock skew, it is a wrong date.
+    // The slack is for two machines disagreeing about the current day, NOT for the UTC/Mountain
+    // gap, which runs the other way: Mountain lags UTC, so a local date never leads it.
     expect(check({ date: "2026-01-15", updatedAt: addUtcDays(TODAY, 1) }).errors).toEqual([]);
     expect(check({ date: "2026-01-15", updatedAt: addUtcDays(TODAY, 2) }).errors).toHaveLength(1);
     expect(check({ date: addUtcDays(TODAY, 2) }).errors[0]).toContain("FUTURE");
