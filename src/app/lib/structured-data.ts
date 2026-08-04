@@ -72,8 +72,27 @@ export function toWww(url: string): string {
  * time keeps both correct.
  */
 const ISO_DATE_ONLY = /^(\d{4})-(\d{2})-(\d{2})$/;
-const ISO_DATE_TIME =
-  /^(\d{4})-(\d{2})-(\d{2})T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?$/;
+
+/**
+ * Build the datetime pattern once, with the trailing timezone designator either
+ * optional or required. Two callers need the identical Y-M-D capture shape and
+ * differ ONLY in whether that offset may be omitted:
+ *
+ *   isValidSchemaDate   optional, because a schema.org Date/DateTime accepts both
+ *   isVideoUploadDate   required, because Google reads VideoObject.uploadDate as
+ *                       an instant and flags a value with no timezone
+ *
+ * Written as one source rather than two literals differing by a single "?": a
+ * later fix applied to one copy and not the other is exactly the drift this
+ * avoids, and it would be invisible until a date shipped wrong.
+ */
+function isoDateTimePattern(timezone: "required" | "optional"): RegExp {
+  const tz = `(?:Z|[+-]\\d{2}:\\d{2})${timezone === "optional" ? "?" : ""}`;
+  return new RegExp(`^(\\d{4})-(\\d{2})-(\\d{2})T\\d{2}:\\d{2}(?::\\d{2}(?:\\.\\d+)?)?${tz}$`);
+}
+
+const ISO_DATE_TIME = isoDateTimePattern("optional");
+const ISO_DATE_TIME_TZ = isoDateTimePattern("required");
 
 /** True when Y-M-D name a real calendar day, catching the silent rollover. */
 function isRealCalendarDay(year: string, month: string, day: string): boolean {
@@ -86,18 +105,23 @@ function isRealCalendarDay(year: string, month: string, day: string): boolean {
   );
 }
 
+/**
+ * Both gates a matched datetime still has to clear. `new Date()` DOES reject an
+ * out-of-range time (25:00, 12:60) but silently rolls over an out-of-range DAY,
+ * so neither check alone is sufficient.
+ */
+function isRealDateTime(match: RegExpExecArray, value: string): boolean {
+  return (
+    !Number.isNaN(new Date(value).getTime()) &&
+    isRealCalendarDay(match[1], match[2], match[3])
+  );
+}
+
 function isValidSchemaDate(value: string): boolean {
   const dateOnly = ISO_DATE_ONLY.exec(value);
   if (dateOnly) return isRealCalendarDay(dateOnly[1], dateOnly[2], dateOnly[3]);
   const dateTime = ISO_DATE_TIME.exec(value);
-  if (dateTime) {
-    // Date.parse DOES reject an out-of-range time (25:00, 12:60) but silently
-    // rolls over an out-of-range DAY, so both checks are needed.
-    return (
-      !Number.isNaN(new Date(value).getTime()) &&
-      isRealCalendarDay(dateTime[1], dateTime[2], dateTime[3])
-    );
-  }
+  if (dateTime) return isRealDateTime(dateTime, value);
   return false;
 }
 
@@ -374,45 +398,222 @@ export const franchiseConsultingServiceSchema = {
 };
 
 /**
- * VideoObject schema factory.
+ * Accept ONLY a timezone-qualified ISO 8601 datetime, for VideoObject.uploadDate.
+ *
+ * schemaDate is deliberately NOT reused here even though it validates dates: it
+ * also accepts a bare YYYY-MM-DD, which is a perfectly good schema.org Date but
+ * the wrong thing for a video. Google reads uploadDate as an instant and flags a
+ * value carrying no time and no timezone, so a date-only value silently costs
+ * the rich result the property was added to earn. Otherwise the gates are the
+ * same two isValidSchemaDate applies.
+ */
+function isVideoUploadDate(value: unknown): value is string {
+  if (typeof value !== "string") return false;
+  const match = ISO_DATE_TIME_TZ.exec(value);
+  return match !== null && isRealDateTime(match, value);
+}
+
+/**
+ * Return an absolute http(s) URL in its normalized form, or undefined.
+ *
+ * Parsed with the WHATWG URL parser rather than pattern-matched, for two
+ * reasons. A regex tight enough to be meaningful rejects legitimate URLs: the
+ * live Vimeo thumbnail this site depends on carries a "?region=us" query string,
+ * and refusing it would take the only VideoObject on the site off the page. And
+ * the parser is what actually settles the scheme, so a "javascript:" URL and a
+ * bare relative path are both refused by the same gate rather than by extra
+ * special cases.
+ *
+ * It returns the parsed `href` rather than a boolean because the parser is
+ * LENIENT about things it then fixes: it strips surrounding whitespace and
+ * percent-encodes a literal space, so `" https://cdn.example/thumb 1.jpg "`
+ * validates as a URL whose href is clean. Answering only yes/no and then
+ * emitting the caller's original string would ship exactly the raw, unencoded
+ * value the check just approved. Emit what was validated, not what was passed.
+ * The three live URLs round-trip through this byte-identically.
+ */
+function absoluteHttpUrl(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return undefined;
+    return parsed.href;
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * True for an ISO 8601 duration, the form schema.org expects for
+ * VideoObject.duration (e.g. PT3M30S).
+ *
+ * The two (?!$) lookaheads carry the whole weight of this pattern. Every
+ * component group is optional, so without them a bare "P" or "PT" matches and
+ * ships as a duration with no duration in it.
+ *
+ * The week form is a separate ALTERNATIVE, not another optional group. ISO 8601
+ * does not allow PnW to combine with calendar or time components, so folding it
+ * into the sequence accepts "P1W1D", which no consumer is obliged to parse.
+ *
+ * Minutes are deliberately NOT capped at 59: a 90-minute video is legitimately
+ * PT90M0S, which is exactly what the about page's own secondsToISO8601 emits.
+ * Lowercase is rejected rather than upcased, matching how schemaDate treats an
+ * unquoted date. Normalizing input here would hide the authoring mistake instead
+ * of reporting it.
+ */
+const ISO_DURATION =
+  /^P(?:\d+W|(?!$)(?:\d+Y)?(?:\d+M)?(?:\d+D)?(?:T(?!$)(?:\d+H)?(?:\d+M)?(?:\d+(?:[.,]\d+)?S)?)?)$/;
+
+function iso8601Duration(value: unknown): string | undefined {
+  return typeof value === "string" && ISO_DURATION.test(value) ? value : undefined;
+}
+
+/** A required string property is only satisfied by actual, non-blank text. */
+function isNonEmptyString(value: unknown): value is string {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
+/** The normalizer form of isNonEmptyString, for the optional-property table. */
+function nonEmptyText(value: unknown): string | undefined {
+  return isNonEmptyString(value) ? value : undefined;
+}
+
+/**
+ * Describe a bad value in a warning without dumping a whole transcript into the
+ * build log. A Date is called out by name because it means something specific:
+ * the YAML frontmatter was UNQUOTED, so js-yaml already rolled over any
+ * impossible day and the authored value is unrecoverable, exactly as in
+ * schemaDate.
+ */
+function describeBadValue(value: unknown): string {
+  if (value === undefined) return "missing";
+  if (value instanceof Date) return "an UNQUOTED frontmatter date (quote it, e.g. uploadDate: \"2026-03-17T01:57:41Z\")";
+  const asText = typeof value === "string" ? value : String(value);
+  return JSON.stringify(asText.length > 80 ? `${asText.slice(0, 80)}...` : asText);
+}
+
+/**
+ * VideoObject schema factory. Returns the node, or undefined when the video
+ * cannot be described validly.
  *
  * Google requires `name`, `description`, `thumbnailUrl`, and `uploadDate` for a
- * video to be eligible for video rich results and AI/Ask-YouTube surfacing.
+ * video to be eligible for video rich results and AI/Ask-YouTube surfacing. Any
+ * one of those being invalid drops the WHOLE node: a VideoObject missing a
+ * required field earns no rich result anyway, so emitting a partial one adds
+ * invalid markup to the page and buys nothing. An invalid OPTIONAL field drops
+ * only that property, because the rest of the node is still eligible.
+ *
+ * Every field is re-checked at runtime despite the types below, because the
+ * article path reaches here through an `as ArticleVideo` cast over markdown
+ * frontmatter (src/lib/articles.ts). The declared types are a compile-time
+ * convenience for well-typed callers, not a guarantee about what arrives.
+ *
+ * Omit-and-warn rather than throw, for the same reason as schemaDate. The
+ * article route is statically generated, so a warning lands in the build log
+ * where it is seen; the about page revalidates hourly against the Vimeo API, so
+ * throwing would break an ISR revalidation over a third-party hiccup.
  *
  * IMPORTANT: pass `transcript` ONLY when a real, verified transcript of the
  * spoken content is available. Never fabricate spoken words; an inaccurate
  * transcript misrepresents what was said and breaks trust/E-E-A-T.
  */
-export function videoObjectSchema({
-  name,
-  description,
-  thumbnailUrl,
-  uploadDate,
-  duration,
-  embedUrl,
-  contentUrl,
-  transcript,
-}: {
-  name: string;
-  description: string;
-  thumbnailUrl: string;
-  uploadDate: string;
-  duration?: string;
-  embedUrl?: string;
-  contentUrl?: string;
-  transcript?: string;
-}) {
+export function videoObjectSchema(
+  {
+    name,
+    description,
+    thumbnailUrl,
+    uploadDate,
+    duration,
+    embedUrl,
+    contentUrl,
+    transcript,
+  }: {
+    name: string;
+    description: string;
+    thumbnailUrl: string;
+    uploadDate: string;
+    duration?: string;
+    embedUrl?: string;
+    contentUrl?: string;
+    transcript?: string;
+  },
+  context = "an unnamed page",
+) {
+  // Collect every required failure before warning, so one bad frontmatter block
+  // produces one actionable warning naming all of them rather than a drip of
+  // four that each look like a separate problem.
+  const required: string[] = [];
+  const normalizedThumbnail = absoluteHttpUrl(thumbnailUrl);
+  if (!isNonEmptyString(name)) required.push(`name: ${describeBadValue(name)}`);
+  if (!isNonEmptyString(description)) required.push(`description: ${describeBadValue(description)}`);
+  if (normalizedThumbnail === undefined) {
+    required.push(`thumbnailUrl: ${describeBadValue(thumbnailUrl)} (need an absolute http(s) URL)`);
+  }
+  if (!isVideoUploadDate(uploadDate)) {
+    required.push(
+      `uploadDate: ${describeBadValue(uploadDate)} (need a timezone-qualified ISO 8601 ` +
+        `datetime, e.g. 2026-03-17T01:57:41Z; a bare date is not enough)`,
+    );
+  }
+  if (required.length > 0) {
+    console.warn(
+      `[structured-data] Dropped the entire VideoObject for ${context}. Google requires name, ` +
+        `description, thumbnailUrl and uploadDate, and these are invalid: ${required.join("; ")}. ` +
+        `A partial VideoObject earns no rich result, so the node was omitted rather than ` +
+        `shipped invalid.`,
+    );
+    return undefined;
+  }
+  // Unreachable: an undefined thumbnail always populates `required` above. It is
+  // restated because TypeScript cannot infer that from the length check, and the
+  // emitted node must use the NORMALIZED url rather than the raw argument.
+  if (normalizedThumbnail === undefined) return undefined;
+
+  // Optional properties degrade one at a time: an unusable duration should not
+  // cost the video its eligibility, but it should not ship as garbage either.
+  // Typed with explicit optional keys rather than Record<string, string>: an
+  // index signature would spread into the returned literal and collide with
+  // `thumbnailUrl`, which is a string ARRAY.
+  const optional: {
+    duration?: string;
+    embedUrl?: string;
+    contentUrl?: string;
+    transcript?: string;
+  } = {};
+  // Every checker is a NORMALIZER rather than a predicate, so what gets emitted
+  // is always the value that was validated. See absoluteHttpUrl: answering
+  // yes/no and then emitting the caller's original string would ship raw,
+  // unencoded input that the check had silently cleaned up before approving.
+  const addOptional = (
+    key: "duration" | "embedUrl" | "contentUrl" | "transcript",
+    value: unknown,
+    normalize: (candidate: unknown) => string | undefined,
+    expectation: string,
+  ) => {
+    if (value === undefined || value === null) return;
+    const normalized = normalize(value);
+    if (normalized !== undefined) {
+      optional[key] = normalized;
+      return;
+    }
+    console.warn(
+      `[structured-data] Dropped the optional VideoObject property "${key}" for ${context}: ` +
+        `${describeBadValue(value)} is not ${expectation}. The rest of the node still ships.`,
+    );
+  };
+  addOptional("duration", duration, iso8601Duration, "an ISO 8601 duration (e.g. PT3M30S)");
+  addOptional("embedUrl", embedUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("contentUrl", contentUrl, absoluteHttpUrl, "an absolute http(s) URL");
+  addOptional("transcript", transcript, nonEmptyText, "non-empty text");
+
   return {
     "@context": "https://schema.org",
     "@type": "VideoObject",
     name,
     description,
-    thumbnailUrl: [thumbnailUrl],
+    thumbnailUrl: [normalizedThumbnail],
     uploadDate,
-    ...(duration ? { duration } : {}),
-    ...(embedUrl ? { embedUrl } : {}),
-    ...(contentUrl ? { contentUrl } : {}),
-    ...(transcript ? { transcript } : {}),
+    ...optional,
     publisher: {
       "@type": "Organization",
       "@id": `${SITE_URL}/#business`,
@@ -449,11 +650,19 @@ type JsonLdNode = Record<string, unknown>;
  * per-node `@context` (the wrapper carries the one authoritative context), so
  * existing schemas that include `@context` and new builder nodes that don't can
  * be mixed freely. Emit the result in a single <script type="application/ld+json">.
+ *
+ * Nullish nodes are ACCEPTED and filtered out. Node factories that validate
+ * their input return undefined when the input cannot be described validly
+ * (videoObjectSchema does), and destructuring that undefined here would turn one
+ * bad optional field into a page or build failure. Callers used to guard at
+ * every call site instead, which works only for as long as every future caller
+ * remembers to. Dropping silently is right because the factory has already
+ * warned about the specific field it rejected.
  */
-export function jsonLdGraph(...nodes: JsonLdNode[]) {
+export function jsonLdGraph(...nodes: (JsonLdNode | null | undefined)[]) {
   return {
     "@context": "https://schema.org",
-    "@graph": nodes.map((node) => {
+    "@graph": nodes.filter((node): node is JsonLdNode => node != null).map((node) => {
       const { "@context": _ctx, ...rest } = node as JsonLdNode & { "@context"?: unknown };
       return rest;
     }),

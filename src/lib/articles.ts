@@ -59,6 +59,11 @@ export function getArticleBySlug(slug: string): { meta: Article; content: string
     content,
     relatedSlugs: (data.relatedSlugs as string[]) ?? [],
     faqs: (data.faqs as { q: string; a: string }[] | undefined) ?? undefined,
+    // This `as` is an assertion, NOT a validation boundary: js-yaml will hand
+    // back whatever the frontmatter says, including a Date for an unquoted
+    // uploadDate. videoObjectSchema() in app/lib/structured-data.ts re-checks
+    // every field at runtime and drops the node (or the property) on a bad
+    // value, so do not add a second, drifting validator here.
     video: (data.video as ArticleVideo | undefined) ?? undefined,
   };
 }

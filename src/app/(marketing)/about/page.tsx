@@ -103,18 +103,27 @@ export default async function AboutPage() {
     "Waypoint Franchise Advisors founder Kelsey Stuart explains, in about three minutes, what honest, no-pitch franchise consulting actually looks like and how he helps people decide whether franchise ownership fits their life.";
   // Only emit VideoObject schema when Vimeo gives us a real upload date and
   // thumbnail (both required by schema.org). Never fabricate these values.
+  //
+  // videoObjectSchema validates all of this and returns undefined on a bad
+  // value, so this pre-check is no longer what keeps invalid markup off the
+  // page. It stays because a failed oEmbed fetch returns {} (see the catch in
+  // getVimeoMeta), and that is an expected third-party outage rather than an
+  // authoring mistake: warning about it hourly would be noise, not signal.
   const videoSchema =
     vimeo.uploadDate && (thumbnailUrl)
-      ? videoObjectSchema({
-          name: videoName,
-          description: videoDescription,
-          thumbnailUrl: thumbnailUrl,
-          uploadDate: vimeo.uploadDate,
-          duration: vimeo.duration,
-          embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
-          contentUrl: `https://vimeo.com/${VIDEO_ID}`,
-          transcript: VIDEO_TRANSCRIPT,
-        })
+      ? videoObjectSchema(
+          {
+            name: videoName,
+            description: videoDescription,
+            thumbnailUrl: thumbnailUrl,
+            uploadDate: vimeo.uploadDate,
+            duration: vimeo.duration,
+            embedUrl: `https://player.vimeo.com/video/${VIDEO_ID}`,
+            contentUrl: `https://vimeo.com/${VIDEO_ID}`,
+            transcript: VIDEO_TRANSCRIPT,
+          },
+          "https://www.waypointfranchise.com/about",
+        )
       : null;
   return (
     <>
