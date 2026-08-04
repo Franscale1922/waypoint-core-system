@@ -10,7 +10,12 @@ import {
   webPageSchema,
   schemaDate,
   videoObjectSchema,
+  validFaqEntries,
+  faqPageSchema,
+  scorecardFaqSchema,
+  scorecardFaqs,
 } from "@/app/lib/structured-data";
+import { getAllArticles, getArticleBySlug } from "@/lib/articles";
 
 /**
  * Guards for the JSON-LD entity graph. scripts/verify-schema.mjs is a static
@@ -585,4 +590,358 @@ describe("videoObjectSchema", () => {
     silenceWarn();
     expect(videoObjectSchema({ ...LIVE, duration: bad }, "ctx")).not.toHaveProperty("duration");
   });
+});
+
+/**
+ * faqPageSchema has twelve callers at two very different trust levels. Eleven pass
+ * internal constants from src/data (industries, financing methods, the glossary) or
+ * literals defined in the page itself. The twelfth is the article route, which
+ * reaches here through `data.faqs as {q,a}[]` over markdown frontmatter
+ * (src/lib/articles.ts) and is the reason any of this validation exists: every one
+ * of the 45 articles carries a `faqs:` block, so the untrusted path is not a corner
+ * of the site, it is the whole content library.
+ *
+ * Both failure modes below were reproduced against the unguarded code before these
+ * guards were written, not inferred from reading it.
+ */
+describe("validFaqEntries", () => {
+  const silenceWarn = () => vi.spyOn(console, "warn").mockImplementation(() => {});
+  const GOOD = [
+    { q: "What does a franchise consultant cost?", a: "Nothing to you. The franchisor pays." },
+    { q: "Can I finance this?", a: "Most candidates use a rollover or an SBA loan." },
+  ];
+
+  it("passes clean entries through untouched and silently", () => {
+    const warn = silenceWarn();
+    expect(validFaqEntries(GOOD, "ctx")).toEqual(GOOD);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("treats absent FAQs as 'no FAQs here', not as a defect", () => {
+    const warn = silenceWarn();
+    expect(validFaqEntries(undefined, "ctx")).toEqual([]);
+    expect(validFaqEntries(null, "ctx")).toEqual([]);
+    // An article with no `faqs:` block is the normal case for most of the site and
+    // must not add noise to every build.
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * The exact YAML mistakes that reach here as data. Each row is a distinct
+   * authoring slip, not a restatement of one.
+   */
+  it.each([
+    ["a stray '-' parses as null", null],
+    ["an empty mapping value parses as undefined", undefined],
+    ["a bare string list item, not a {q,a} mapping", "Can I finance this?"],
+    ["a nested list", ["Can I finance this?"]],
+    ["a number", 42],
+  ])("drops a malformed entry (%s) and keeps the valid ones", (_label, rotten) => {
+    const warn = silenceWarn();
+    const entries = validFaqEntries(
+      [GOOD[0], rotten, GOOD[1]] as unknown as { q: string; a: string }[],
+      "ctx",
+    );
+    // The surviving entries are BOTH good ones, in their original order: one bad
+    // Q&A must not cost the page the rest.
+    expect(entries).toEqual(GOOD);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("ctx");
+    // Position is the only identifier a frontmatter list has.
+    expect(warn.mock.calls[0][0]).toContain("entry 1");
+  });
+
+  /**
+   * The first confirmed failure mode: an entry with `q` but no `a` emitted a
+   * Question whose acceptedAnswer had no `text` at all, because JSON.stringify
+   * drops undefined values. Invalid FAQPage markup, shipped silently.
+   */
+  it.each([
+    ["missing a", { q: "Can I finance this?" }],
+    ["missing q", { a: "Most candidates use a rollover." }],
+    ["missing both", {}],
+    ["blank a", { q: "Can I finance this?", a: "   " }],
+    ["blank q", { q: "  ", a: "Yes." }],
+    ["non-string a", { q: "Can I finance this?", a: 42 }],
+    ["a is an unquoted frontmatter date", { q: "When?", a: new Date("2026-03-17") }],
+  ])("drops an entry with an unusable field (%s)", (_label, rotten) => {
+    const warn = silenceWarn();
+    const entries = validFaqEntries(
+      [GOOD[0], rotten] as unknown as { q: string; a: string }[],
+      "ctx",
+    );
+    expect(entries).toEqual([GOOD[0]]);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Raised by Codex against this diff. `trim()` strips only characters carrying
+   * the Unicode White_Space property, and U+200B ZERO WIDTH SPACE was removed
+   * from it, so a trim-based emptiness check called an invisible string "text".
+   * The result renders as a blank accordion button and a Question node whose
+   * name says nothing.
+   */
+  it.each([
+    ["zero width space U+200B", "​"],
+    ["zero width non-joiner U+200C", "‌"],
+    ["word joiner U+2060", "⁠"],
+    ["left-to-right mark U+200E", "‎"],
+    ["soft hyphen U+00AD", "­"],
+    ["mixed invisibles and ordinary space", " ​ ⁠ "],
+  ])("drops an entry whose q is only invisible characters (%s)", (_label, invisible) => {
+    const warn = silenceWarn();
+    // Non-vacuous, and the reason each row is here: trim() does NOT clear these,
+    // so the old check called every one of them "text". U+3000 and U+FEFF are
+    // deliberately NOT in this table because trim() already removed them, which
+    // this assertion would have wrongly claimed otherwise. It caught exactly
+    // that mistake when U+3000 was first listed here.
+    expect(invisible.trim().length).toBeGreaterThan(0);
+    expect(validFaqEntries(
+      [{ q: invisible, a: "A real answer." }] as unknown as { q: string; a: string }[],
+      "ctx",
+    )).toEqual([]);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([
+    ["ideographic space U+3000", "　"],
+    ["byte order mark U+FEFF", "﻿"],
+    ["tab", "	"],
+  ])("still drops the blanks trim already handled (%s)", (_label, blank) => {
+    silenceWarn();
+    // The new guard must be a strict SUPERSET of the old one. These rows would
+    // have been rejected before the change too, and a regex that traded them
+    // away for the zero-width cases would be no better than what it replaced.
+    expect(blank.trim().length).toBe(0);
+    expect(validFaqEntries(
+      [{ q: blank, a: "A real answer." }] as unknown as { q: string; a: string }[],
+      "ctx",
+    )).toEqual([]);
+  });
+
+  it("still accepts visible text that merely contains an invisible character", () => {
+    const warn = silenceWarn();
+    // The guard must reject strings with NO visible characters, not strings that
+    // happen to carry one, or a legitimate question would be dropped.
+    const entry = { q: "Can I​finance this?", a: "Yes." };
+    expect(validFaqEntries([entry], "ctx")).toEqual([entry]);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("describes a null entry as null, not as the word \"null\" in quotes", () => {
+    const warn = silenceWarn();
+    validFaqEntries([null] as unknown as { q: string; a: string }[], "ctx");
+    // String(null) then JSON.stringify would render the null VALUE as `"null"`,
+    // which reads like the author typed that word into the frontmatter.
+    expect(warn.mock.calls[0][0]).toContain("null is not a {q, a} mapping");
+    expect(warn.mock.calls[0][0]).not.toContain('"null"');
+  });
+
+  it("names both unusable fields in ONE warning, not one warning each", () => {
+    const warn = silenceWarn();
+    validFaqEntries([{}] as unknown as { q: string; a: string }[], "ctx");
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("q:");
+    expect(warn.mock.calls[0][0]).toContain("a:");
+  });
+
+  it("warns about a non-array FAQ block instead of throwing on it", () => {
+    const warn = silenceWarn();
+    // `faqs: some string` in frontmatter. Array.prototype.forEach does not exist
+    // on it, so the unguarded code would have thrown.
+    expect(validFaqEntries("not a list" as unknown as { q: string; a: string }[], "ctx")).toEqual([]);
+    expect(warn).toHaveBeenCalledTimes(1);
+    expect(warn.mock.calls[0][0]).toContain("non-array");
+  });
+
+  it("rejects every malformed shape it is given, proving the table is not vacuous", () => {
+    silenceWarn();
+    // If the guard were removed, this would return 5 entries rather than 0. The
+    // it.each rows above each mix in valid entries, so this is the one assertion
+    // that would still fail if the filter degraded to `items.filter(Boolean)`.
+    const allBad = [null, undefined, "x", {}, { q: "only a question" }];
+    expect(validFaqEntries(allBad as unknown as { q: string; a: string }[], "ctx")).toEqual([]);
+  });
+});
+
+describe("faqPageSchema", () => {
+  const silenceWarn = () => vi.spyOn(console, "warn").mockImplementation(() => {});
+  const GOOD = [
+    { q: "What does a franchise consultant cost?", a: "Nothing to you. The franchisor pays." },
+    { q: "Can I finance this?", a: "Most candidates use a rollover or an SBA loan." },
+  ];
+
+  it("emits one Question per valid entry, anchored to the page", () => {
+    const warn = silenceWarn();
+    const node = faqPageSchema(GOOD, `${SITE_URL}/resources/x`) as Record<string, unknown>;
+    expect(node["@type"]).toBe("FAQPage");
+    expect(node["@id"]).toBe(`${SITE_URL}/resources/x#faq`);
+    expect(node["isPartOf"]).toEqual({ "@id": `${SITE_URL}/#website` });
+    expect(node["inLanguage"]).toBe("en-US");
+    expect(node["mainEntity"]).toEqual([
+      {
+        "@type": "Question",
+        name: GOOD[0].q,
+        acceptedAnswer: { "@type": "Answer", text: GOOD[0].a },
+      },
+      {
+        "@type": "Question",
+        name: GOOD[1].q,
+        acceptedAnswer: { "@type": "Answer", text: GOOD[1].a },
+      },
+    ]);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("stays a floating node with no @id when no url is passed", () => {
+    silenceWarn();
+    const node = faqPageSchema(GOOD) as Record<string, unknown>;
+    expect(node).not.toHaveProperty("@id");
+    expect(node).not.toHaveProperty("isPartOf");
+  });
+
+  /**
+   * The guard that matters most for markup validity: a Question is only emitted
+   * for an entry that survived validation, so no `name: undefined` or
+   * `text: undefined` can reach the JSON.
+   */
+  it("never emits a Question with a missing name or an Answer with missing text", () => {
+    silenceWarn();
+    const node = faqPageSchema(
+      [{ q: "Can I finance this?" }, GOOD[0], null] as unknown as { q: string; a: string }[],
+      `${SITE_URL}/resources/x`,
+    ) as Record<string, unknown>;
+    const questions = node["mainEntity"] as { name: unknown; acceptedAnswer: { text: unknown } }[];
+    expect(questions).toHaveLength(1);
+    for (const question of questions) {
+      expect(typeof question.name).toBe("string");
+      expect(typeof question.acceptedAnswer.text).toBe("string");
+    }
+    // And the emitted JSON has no hollow Answer, which is what actually shipped
+    // before: JSON.stringify drops undefined, leaving {"@type":"Answer"}.
+    expect(JSON.stringify(node)).not.toContain('{"@type":"Answer"}');
+  });
+
+  /**
+   * The second confirmed failure mode. A stray "-" in a YAML faqs list parsed as
+   * null, and destructuring it threw a TypeError that took the whole article
+   * render down. Reproduced against the unguarded code as
+   * "Cannot destructure property 'q' of 'object null' as it is null."
+   */
+  it("does not throw on a null entry, which used to take the page down", () => {
+    silenceWarn();
+    expect(() =>
+      faqPageSchema([null] as unknown as { q: string; a: string }[], `${SITE_URL}/resources/x`),
+    ).not.toThrow();
+  });
+
+  it.each([
+    ["every entry malformed", [null, "x", {}]],
+    ["an empty list", []],
+  ])("drops the whole node rather than shipping an empty mainEntity (%s)", (_label, items) => {
+    const warn = silenceWarn();
+    const node = faqPageSchema(items as unknown as { q: string; a: string }[], `${SITE_URL}/x`);
+    // An FAQPage whose mainEntity is [] is itself invalid markup, so there is
+    // nothing worth emitting.
+    expect(node).toBeUndefined();
+    expect(warn.mock.calls.at(-1)?.[0]).toContain("Dropped the entire FAQPage");
+  });
+
+  it("is safe to hand straight to jsonLdGraph when it drops the node", () => {
+    silenceWarn();
+    const dropped = faqPageSchema([] as { q: string; a: string }[], `${SITE_URL}/x`);
+    const graph = jsonLdGraph(localBusinessSchema, dropped) as {
+      "@graph": Record<string, unknown>[];
+    };
+    expect(graph["@graph"]).toHaveLength(1);
+    expect(graph["@graph"][0]["@id"]).toBe(`${SITE_URL}/#business`);
+  });
+
+  it("names the page in its warning, defaulting to the url when no context is given", () => {
+    const warn = silenceWarn();
+    faqPageSchema([null] as unknown as { q: string; a: string }[], `${SITE_URL}/resources/x`);
+    expect(warn.mock.calls[0][0]).toContain(`${SITE_URL}/resources/x`);
+  });
+
+  it("prefers an explicit context over the url, which is how the article route names its slug", () => {
+    const warn = silenceWarn();
+    faqPageSchema(
+      [null] as unknown as { q: string; a: string }[],
+      `${SITE_URL}/resources/x`,
+      'article "fdd-decoded"',
+    );
+    expect(warn.mock.calls[0][0]).toContain('article "fdd-decoded"');
+  });
+
+  /**
+   * Lockstep. The article route renders its visible FAQ from validFaqEntries and
+   * its markup from faqPageSchema, and Google only honours FAQPage markup whose
+   * Q&A is present on the page. If the two filters ever disagreed, the page would
+   * emit questions the reader cannot see. This asserts they cannot.
+   */
+  it("emits exactly the entries validFaqEntries keeps, so markup and visible FAQ agree", () => {
+    silenceWarn();
+    const messy = [GOOD[0], null, { q: "no answer" }, GOOD[1], "bare string"] as unknown as {
+      q: string;
+      a: string;
+    }[];
+    const visible = validFaqEntries(messy, "ctx");
+    const node = faqPageSchema(messy, `${SITE_URL}/resources/x`) as Record<string, unknown>;
+    const questions = node["mainEntity"] as { name: string }[];
+    // Non-vacuous: the fixture really does lose entries, so this is not comparing
+    // two untouched lists.
+    expect(messy).toHaveLength(5);
+    expect(visible).toHaveLength(2);
+    expect(questions.map((question) => question.name)).toEqual(visible.map(({ q }) => q));
+  });
+
+  /**
+   * The real site, not a fixture. scorecardFaqSchema is built at module scope from
+   * a trusted constant, so if validation were too strict it would silently become
+   * undefined and the scorecard page would quietly lose its FAQ markup.
+   */
+  it("still builds the real scorecard FAQ node from its trusted constant", () => {
+    expect(scorecardFaqs.length).toBeGreaterThan(0);
+    expect(scorecardFaqSchema).toBeDefined();
+    const questions = (scorecardFaqSchema as Record<string, unknown>)["mainEntity"] as unknown[];
+    expect(questions).toHaveLength(scorecardFaqs.length);
+  });
+});
+
+/**
+ * The regression guard that matters for a live site: this validation was added to
+ * an untrusted path that 45 published articles already travel, so the first thing
+ * to prove is that it changes NOTHING about what they emit today. A guard that
+ * quietly dropped a real Q&A would cost the site FAQ markup it currently earns.
+ *
+ * It doubles as a content check: an article that later ships a malformed `faqs:`
+ * block fails here, at the point the mistake is cheap to fix, instead of merely
+ * warning into a build log nobody reads.
+ */
+describe("the published articles against the FAQ validator", () => {
+  // Read through the real accessor, cast and all, so this covers the actual
+  // production path rather than a reimplementation of it.
+  const articles = getAllArticles().map((meta) => ({
+    slug: meta.slug,
+    faqs: getArticleBySlug(meta.slug)?.faqs,
+  }));
+  const withFaqs = articles.filter((article) => article.faqs !== undefined);
+
+  it("finds the FAQ blocks, so the per-article assertions are not vacuous", () => {
+    expect(articles.length).toBeGreaterThanOrEqual(45);
+    expect(withFaqs.length).toBe(articles.length);
+  });
+
+  it.each(withFaqs.map((article) => [article.slug, article.faqs] as const))(
+    "%s keeps every FAQ entry it publishes",
+    (_slug, faqs) => {
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+      const raw = faqs as { q: string; a: string }[];
+      expect(Array.isArray(raw)).toBe(true);
+      expect(raw.length).toBeGreaterThan(0);
+      // Nothing dropped, nothing warned: the validator is a no-op on real content.
+      expect(validFaqEntries(raw, "regression")).toEqual(raw);
+      expect(warn).not.toHaveBeenCalled();
+    },
+  );
 });
