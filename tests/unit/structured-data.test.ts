@@ -9,6 +9,7 @@ import {
   jsonLdGraph,
   webPageSchema,
   schemaDate,
+  videoObjectSchema,
 } from "@/app/lib/structured-data";
 
 /**
@@ -289,5 +290,244 @@ describe("schemaDate (used by the hand-rolled Article nodes)", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     schemaDate("nope", `${SITE_URL}/resources/some-article`);
     expect(warn.mock.calls[0][0]).toContain("/resources/some-article");
+  });
+});
+
+/**
+ * videoObjectSchema has two callers with very different trust levels. The about
+ * page builds its object from the Vimeo oEmbed API; the article route gets one
+ * out of markdown frontmatter through an `as ArticleVideo` cast that enforces
+ * nothing at runtime, so its declared `string` types are a fiction. These tests
+ * exercise the untrusted path, and pin the trusted one against regression.
+ */
+describe("videoObjectSchema", () => {
+  /**
+   * The REAL values the live about page receives, captured from the Vimeo oEmbed
+   * response for video 1174270863 on 2026-08-04: `upload_date` "2026-03-17
+   * 01:57:41" and `duration` 204, as normalized by that page's own
+   * toVideoUploadDate/secondsToISO8601 helpers. This is the regression fixture
+   * for the only VideoObject actually on the site.
+   */
+  const LIVE = {
+    name: "Kelsey Stuart on what honest franchise consulting actually looks like",
+    description: "What honest, no-pitch franchise consulting actually looks like.",
+    thumbnailUrl:
+      "https://i.vimeocdn.com/video/2134803942-aaf25817575a9a51d5162ec0b3de4af5986faedf1bfb3597e853e15e9d09f1bb-d_1280?region=us",
+    uploadDate: "2026-03-17T01:57:41Z",
+    duration: "PT3M24S",
+    embedUrl: "https://player.vimeo.com/video/1174270863",
+    contentUrl: "https://vimeo.com/1174270863",
+  };
+
+  type VideoInput = Parameters<typeof videoObjectSchema>[0];
+  const silenceWarn = () => vi.spyOn(console, "warn").mockImplementation(() => {});
+
+  it("emits a complete node for the values the live about page actually receives", () => {
+    const warn = silenceWarn();
+    const node = videoObjectSchema(LIVE, "ctx");
+    expect(node).toMatchObject({
+      "@type": "VideoObject",
+      name: LIVE.name,
+      uploadDate: LIVE.uploadDate,
+      duration: LIVE.duration,
+      embedUrl: LIVE.embedUrl,
+      contentUrl: LIVE.contentUrl,
+    });
+    // thumbnailUrl is emitted as an ARRAY, and the query string survives intact.
+    expect(node?.thumbnailUrl).toEqual([LIVE.thumbnailUrl]);
+    expect(node?.publisher["@id"]).toBe(`${SITE_URL}/#business`);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("accepts a thumbnail URL carrying a query string, because the live one has one", () => {
+    // Not hypothetical: the Vimeo CDN thumbnail ends in "?region=us". A URL check
+    // pattern-matched tightly enough to be meaningful rejects this, which would
+    // silently remove the only VideoObject on the site. Asserting the fixture
+    // really contains a query string keeps this from passing vacuously.
+    expect(LIVE.thumbnailUrl).toContain("?");
+    expect(videoObjectSchema(LIVE, "ctx")).toBeDefined();
+  });
+
+  it("keeps its own @context for standalone use, and jsonLdGraph still strips it", () => {
+    expect(videoObjectSchema(LIVE, "ctx")).toMatchObject({ "@context": "https://schema.org" });
+    const graph = jsonLdGraph(videoObjectSchema(LIVE, "ctx")!) as {
+      "@graph": Record<string, unknown>[];
+    };
+    expect(graph["@graph"][0]).not.toHaveProperty("@context");
+  });
+
+  it("throws if an undefined node reaches jsonLdGraph, which is why the caller filters", () => {
+    // resources/[slug] builds the node into a variable and spreads it only when
+    // defined. This is the crash that guard prevents, pinned here so a refactor
+    // back to an inline call fails in the suite rather than at build time.
+    expect(() => jsonLdGraph(undefined as never)).toThrow();
+  });
+
+  /**
+   * The single most important row is the date-only one. schemaDate accepts a
+   * bare YYYY-MM-DD, which is why it is NOT reused here: Google reads uploadDate
+   * as an instant and flags a value with no time and no timezone.
+   */
+  it.each([
+    ["date-only, the schemaDate divergence", "2026-08-03"],
+    ["datetime with no timezone", "2026-08-03T12:00:00"],
+    ["prose", "next Tuesday"],
+    ["year only", "2026"],
+    ["loose numeric", "2026-8-3"],
+    ["impossible day, silently rolled over by JS", "2026-02-30T12:00:00Z"],
+    ["Feb 29 in a non-leap year", "2026-02-29T12:00:00Z"],
+    ["out-of-range time", "2026-08-03T25:00:00Z"],
+    ["empty", ""],
+  ])("drops the WHOLE node for a bad uploadDate (%s)", (_label, bad) => {
+    const warn = silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, uploadDate: bad }, "ctx")).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain("uploadDate");
+  });
+
+  it.each([
+    ["UTC Z", "2026-08-03T12:00:00Z"],
+    ["negative offset", "2026-08-03T20:00:00-07:00"],
+    ["positive offset", "2026-08-03T04:00:00+02:00"],
+    ["no seconds", "2026-08-03T12:00Z"],
+    ["fractional seconds", "2026-08-03T12:00:00.500Z"],
+    ["a real leap day, so the rollover check is not over-broad", "2024-02-29T00:00:00Z"],
+  ])("accepts a timezone-qualified uploadDate (%s)", (_label, good) => {
+    const warn = silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, uploadDate: good }, "ctx")).toMatchObject({
+      uploadDate: good,
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("rejects a Date, since an unquoted uploadDate has already rolled over in YAML", () => {
+    // Round 3 of the Codex review added this detail: an unquoted uploadDate rolls
+    // over exactly as a frontmatter `date` does, so by the time it reaches here
+    // the authored value is unrecoverable and cannot be checked.
+    const warn = silenceWarn();
+    const rolledOver = new Date("2026-02-30T12:00:00Z");
+    expect(rolledOver.getUTCMonth()).toBe(2); // March: YAML already rolled it
+    expect(
+      videoObjectSchema({ ...LIVE, uploadDate: rolledOver as unknown as string }, "ctx"),
+    ).toBeUndefined();
+    expect(warn.mock.calls[0][0]).toContain("UNQUOTED");
+  });
+
+  it.each([
+    ["prose", "not a url"],
+    ["site-relative path", "/images/thumb.jpg"],
+    ["protocol-relative", "//example.com/thumb.jpg"],
+    ["script scheme", "javascript:alert(1)"],
+    ["data URI", "data:image/png;base64,iVBORw0KGgo="],
+    ["empty", ""],
+  ])("drops the WHOLE node for a bad thumbnailUrl (%s)", (_label, bad) => {
+    const warn = silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, thumbnailUrl: bad }, "ctx")).toBeUndefined();
+    expect(warn.mock.calls[0][0]).toContain("thumbnailUrl");
+  });
+
+  it.each([
+    ["name empty", { name: "" }],
+    ["name whitespace only", { name: "   " }],
+    ["name non-string", { name: 42 as unknown as string }],
+    ["name missing", { name: undefined as unknown as string }],
+    ["description empty", { description: "" }],
+    ["description whitespace only", { description: "\n\t " }],
+    ["description missing", { description: undefined as unknown as string }],
+  ])("drops the WHOLE node for invalid required text (%s)", (_label, override) => {
+    const warn = silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, ...override }, "ctx")).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+  });
+
+  it("warns ONCE naming every failed field, not once per field", () => {
+    const warn = silenceWarn();
+    expect(
+      videoObjectSchema(
+        { ...LIVE, name: "", thumbnailUrl: "nope", uploadDate: "2026-08-03" },
+        "ctx",
+      ),
+    ).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+    const message = warn.mock.calls[0][0] as string;
+    for (const field of ["name", "thumbnailUrl", "uploadDate"]) {
+      expect(message).toContain(field);
+    }
+  });
+
+  it("names the context so the offending page is identifiable", () => {
+    const warn = silenceWarn();
+    videoObjectSchema({ ...LIVE, uploadDate: "nope" }, `${SITE_URL}/resources/some-article`);
+    expect(warn.mock.calls[0][0]).toContain("/resources/some-article");
+  });
+
+  /**
+   * An invalid OPTIONAL field costs only that property. The rest of the node is
+   * still rich-result eligible, so dropping all of it over a cosmetic value
+   * Google does not require would be the worse trade.
+   */
+  it.each([
+    ["duration", "three minutes"],
+    ["embedUrl", "not a url"],
+    ["contentUrl", "/relative"],
+    ["transcript", "   "],
+  ])("drops ONLY the invalid optional property %s, keeping the node", (field, bad) => {
+    const warn = silenceWarn();
+    const node = videoObjectSchema({ ...LIVE, [field]: bad } as VideoInput, "ctx");
+    expect(node).toBeDefined();
+    expect(node).not.toHaveProperty(field);
+    // Everything else is untouched, so the node stays eligible.
+    expect(node).toMatchObject({ name: LIVE.name, uploadDate: LIVE.uploadDate });
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain(field);
+  });
+
+  it("stays silent when an optional property is simply absent", () => {
+    const warn = silenceWarn();
+    const node = videoObjectSchema(
+      {
+        name: LIVE.name,
+        description: LIVE.description,
+        thumbnailUrl: LIVE.thumbnailUrl,
+        uploadDate: LIVE.uploadDate,
+      },
+      "ctx",
+    );
+    expect(node).toBeDefined();
+    expect(node).not.toHaveProperty("duration");
+    expect(node).not.toHaveProperty("transcript");
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ["minutes and seconds", "PT3M30S"],
+    ["hours", "PT1H2M3S"],
+    ["zero length", "PT0M0S"],
+    ["over 60 minutes, which is legal ISO 8601", "PT90M0S"],
+    ["days", "P1D"],
+    ["fractional seconds", "PT1.5S"],
+  ])("accepts a valid ISO 8601 duration (%s)", (_label, good) => {
+    const warn = silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, duration: good }, "ctx")).toMatchObject({
+      duration: good,
+    });
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  /**
+   * "P" and "PT" are the cases the two (?!$) lookaheads exist for: every
+   * component group is optional, so without them a duration with no duration in
+   * it matches and ships.
+   */
+  it.each([
+    ["bare designator", "P"],
+    ["time designator with no time", "PT"],
+    ["missing leading P", "3M30S"],
+    ["lowercase", "pt3m30s"],
+    ["prose", "three minutes"],
+    ["bare seconds count", "204"],
+  ])("rejects a malformed duration (%s)", (_label, bad) => {
+    silenceWarn();
+    expect(videoObjectSchema({ ...LIVE, duration: bad }, "ctx")).not.toHaveProperty("duration");
   });
 });
