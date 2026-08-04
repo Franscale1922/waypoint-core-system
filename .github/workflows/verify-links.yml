@@ -51,6 +51,13 @@ jobs:
       # named here runs in the pre-push hook and silently never runs in CI.
       - name: Verify required fields, AI write path (unit tests)
         run: npx vitest run --project unit tests/unit/write-path-fields.test.ts
+      # Which of the filename and the frontmatter `slug:` field is an article's
+      # identity. The live site reads the FILENAME and the refresh used to prefer
+      # the FIELD, so a file whose frontmatter contradicted its own name armed the
+      # monthly refresh to commit a duplicate under the other name months later.
+      # Listed by name for the same reason as every job above.
+      - name: Verify article slug identity (unit tests)
+        run: npx vitest run --project unit tests/unit/article-slug-identity.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

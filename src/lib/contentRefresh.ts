@@ -44,17 +44,56 @@ export function getAllArticles(): Article[] {
     .readdirSync(ARTICLES_DIR)
     .filter((f) => f.endsWith(".md"));
 
-  return files.map((file) => {
+  return files.flatMap((file) => {
     const filePath = path.join(ARTICLES_DIR, file);
     const raw = fs.readFileSync(filePath, "utf-8");
     const { data, content } = matter(raw);
 
-    return {
-      slug: data.slug ?? file.replace(/\.md$/, ""),
-      frontmatter: data as ArticleFrontmatter,
-      body: content,
-      filePath,
-    };
+    // Identity comes from the FILENAME, never from frontmatter.
+    //
+    // This value is not a label: githubArticleCommit.ts interpolates it into
+    // `content/articles/${slug}.md` and PATCHes the branch ref with the result,
+    // so it IS the write path. Preferring `data.slug` meant a file whose
+    // frontmatter disagreed with its own name would be refreshed into a
+    // DIFFERENT path than the one it was read from: a new file appears, the
+    // original is left untouched and stale, the site serves the same article
+    // under two URLs, and because the original never changes, every later run
+    // re-processes it and re-writes the duplicate forever.
+    //
+    // The filename is also what the live site already treats as authoritative.
+    // src/lib/articles.ts derives every slug it serves with this same
+    // expression and ignores frontmatter.slug entirely, so a divergent
+    // frontmatter slug was never any article's real URL. It could only ever
+    // misdirect this pipeline.
+    const slug = file.replace(/\.md$/, "");
+
+    // A frontmatter slug that disagrees with the filename is a content bug, and
+    // the refresh declines to touch the article rather than propagating it.
+    //
+    // Skipping rather than throwing is deliberate and matches how a compliance
+    // violation and an invalid field already behave here: one malformed file
+    // must not take the month's entire batch down and suppress the summary
+    // email. The article keeps the good version already on disk and retries next
+    // cadence. scripts/aeo-audit.mjs fails the push on exactly this divergence,
+    // so it should never reach this far; this is the backstop for content that
+    // predates that gate.
+    if (data.slug !== undefined && data.slug !== slug) {
+      console.warn(
+        `[contentRefresh] Skipping "${file}": frontmatter slug ` +
+          `"${String(data.slug)}" does not match the filename. The filename is ` +
+          `authoritative. Fix the frontmatter, or rename the file.`,
+      );
+      return [];
+    }
+
+    return [
+      {
+        slug,
+        frontmatter: data as ArticleFrontmatter,
+        body: content,
+        filePath,
+      },
+    ];
   });
 }
 
@@ -86,12 +125,28 @@ export function getRefreshCadenceDays(article: Article): number | null {
 
   if (STRATEGIC_SLUGS.has(slug)) return null;
 
-  // Financing / investment / cost → 12 months
+  // Industry Spotlights category → 18 months.
+  //
+  // Checked BEFORE the financing keywords below, because a curated frontmatter
+  // field must beat a guess made from the slug string. Those keywords match a
+  // substring ANYWHERE in the slug, so a spotlight on a cost-sensitive segment
+  // (`...-cost-...`, `...-fees-...`) would otherwise be pulled onto the 365-day
+  // financing cadence and refreshed 183 days early on every cycle, purely
+  // because of how its title happens to read. No article on disk hits this
+  // today. The ordering is here so content authoring cannot create it.
+  if (category === "Industry Spotlights" || tier === 3) return 548;
+
+  // Financing / investment / cost → 12 months.
+  //
+  // Still a slug heuristic, and still ahead of the Going Deeper branch on
+  // purpose. Financing material (SBA terms, ROBS rules, fee structures) goes
+  // stale materially faster than the 730-day process cadence, and three current
+  // Going Deeper articles rely on this ordering to stay on 365. This is
+  // deliberately NOT the wholesale reorder of putting every category branch
+  // first: that would push those three to 730 and let real rate and rule
+  // changes sit unreviewed for two years, trading a latent bug for a live one.
   const FINANCING_KEYWORDS = ["funding", "cost", "fee", "sba", "robs", "financing", "investment"];
   if (FINANCING_KEYWORDS.some((kw) => slug.includes(kw))) return 365;
-
-  // Industry Spotlights category → 18 months
-  if (category === "Industry Spotlights" || tier === 3) return 548;
 
   // Remaining Going Deeper process articles → 24 months
   if (category === "Going Deeper" || tier === 2) return 730;

@@ -259,8 +259,33 @@ export function auditArticle(raw, file) {
   // is what the `missingExcerpt` bucket below has always keyed on.
   const excerptLen = classifyExcerpt(data.excerpt).length;
 
+  // A frontmatter `slug` that disagrees with its own filename.
+  //
+  // The two are not redundant copies of one fact, they are read by different
+  // halves of the system, and this is the only place that makes them agree.
+  // src/lib/articles.ts serves the site off the FILENAME and ignores this field
+  // entirely, while src/lib/contentRefresh.ts used to prefer the FIELD and hand
+  // it to githubArticleCommit.ts, which interpolates it into
+  // `content/articles/${slug}.md` and PATCHes `main` with the result. A
+  // divergence therefore published nothing wrong today and quietly armed the
+  // automated refresh to write a duplicate file months later, leaving the
+  // original stale and serving one article under two URLs.
+  //
+  // That write path has since been changed to derive identity from the filename,
+  // so this gate is no longer what prevents the duplicate. It is what stops the
+  // divergence being AUTHORED, at the point a human can still tell which of the
+  // two was the intended name. Nothing downstream can recover that intent.
+  //
+  // An absent slug field is fine and stays fine: the filename is authoritative,
+  // so the field is optional. Only a present-and-contradictory value fails.
+  const slugMismatch =
+    data.slug !== undefined && data.slug !== slug
+      ? { file: `content/articles/${slug}.md`, frontmatter: String(data.slug), filename: slug }
+      : null;
+
   return {
     f: slug,
+    slugMismatch,
     words,
     h2: h2s.length,
     h2q,
@@ -569,6 +594,7 @@ export function auditAll({
 
   const parseErrors = rows.filter((r) => r.parseError);
   const malformedFaqs = rows.filter((r) => r.faqsMalformed);
+  const slugMismatches = rows.filter((r) => r.slugMismatch).map((r) => r.slugMismatch);
 
   const missingExcerpt = rows.filter((r) => r.excerptLen === null);
   const tooLong = rows
@@ -619,6 +645,9 @@ export function auditAll({
 
   if (parseErrors.length) failures.push(`${parseErrors.length} article(s) have unparseable front matter`);
   if (malformedFaqs.length) failures.push(`${malformedFaqs.length} article(s) have a non-list faqs field`);
+  if (slugMismatches.length) {
+    failures.push(`${slugMismatches.length} article(s) have a frontmatter slug that contradicts the filename`);
+  }
   if (tooLong.length || missingExcerpt.length) {
     failures.push(`${tooLong.length} excerpt(s) over ${EXCERPT_MAX}, ${missingExcerpt.length} unparseable`);
   }
@@ -637,6 +666,7 @@ export function auditAll({
     rows,
     parseErrors,
     malformedFaqs,
+    slugMismatches,
     missingExcerpt,
     tooLong,
     tooShort,
@@ -674,6 +704,15 @@ function main() {
   if (a.parseErrors.length) {
     console.log(`Front matter that failed to parse: ${a.parseErrors.length}`);
     for (const r of a.parseErrors) console.log(`  ${r.parseError}`);
+    console.log("");
+  }
+
+  if (a.slugMismatches.length) {
+    console.log(`Frontmatter slug contradicts the filename: ${a.slugMismatches.length}`);
+    for (const m of a.slugMismatches) {
+      console.log(`  ${m.file}: frontmatter says "${m.frontmatter}", filename says "${m.filename}"`);
+    }
+    console.log(`  The filename is authoritative. Fix the frontmatter, or rename the file.`);
     console.log("");
   }
 

@@ -1471,7 +1471,15 @@ export const contentRefreshFunction = inngest.createFunction(
 
                 // Safety guard: ensure relatedSlugs are preserved
                 newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
-                newFrontmatter.slug = article.frontmatter.slug;
+                // Pinned from the DERIVED identity, not from `frontmatter.slug`.
+                // getAllArticles derives this from the filename and is what
+                // commitRefreshedArticles builds the write path out of, so
+                // pinning the same value is what keeps the committed frontmatter
+                // and the path it is committed to describing one article. Pinning
+                // `frontmatter.slug` instead reintroduced that gap: on a file
+                // with no slug field at all it assigns an explicit `undefined`,
+                // which is a key `matter.stringify` throws on.
+                newFrontmatter.slug = article.slug;
                 newFrontmatter.category = article.frontmatter.category;
                 newFrontmatter.tier = article.frontmatter.tier;
 
