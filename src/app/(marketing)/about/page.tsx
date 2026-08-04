@@ -65,8 +65,22 @@ async function getVimeoMeta(videoId: string): Promise<VimeoMeta> {
       // never answers does not: without a deadline it blocks this render until
       // the host gives up, which during `next build` means stalling a deploy on
       // a third-party hang. The abort surfaces as a throw, so it lands in the
-      // same catch as any other failure and degrades to VIMEO_FALLBACK.
-      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
+      // same catch as any other failure and degrades to VIMEO_FALLBACK. Nothing
+      // in this repo sets maxDuration, so the host would not step in until 300s.
+      //
+      // Deliberately no `next: { revalidate }` beside the signal. It looked
+      // merely redundant next to the page-level `revalidate = 3600`, but it was
+      // worse than redundant: it gave this fetch its own cache entry, and Next
+      // drops the abort signal whenever it refreshes a STALE one ("don't pass
+      // through signal when revalidating", patch-fetch.js). The hourly stale
+      // refresh is exactly when Vimeo gets re-contacted, so the fetch-level
+      // cache disarmed the deadline on the very path it was added for. Without
+      // it the fetch is auto-no-cache at runtime, no stale entry ever exists,
+      // and the signal always applies. This does NOT make the page dynamic:
+      // Next exempts auto-no-cache from the ISR dynamic switch, and the build
+      // route table confirms /about still prerenders static with a 1h
+      // revalidate.
+      { signal: AbortSignal.timeout(5000) }
     );
     // {} here and in the catch below is "we learned nothing", NOT "this video has
     // no metadata". The caller reads VIMEO_FALLBACK for anything left unset, so a
