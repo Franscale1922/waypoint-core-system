@@ -397,8 +397,35 @@ describe("commitRefreshedArticles: nothing is written when validation fails", ()
 
     await expect(
       commitRefreshedArticles([{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }]),
-    ).rejects.toThrow(/GITHUB_BRANCH="release#1"/);
+    ).rejects.toThrow(/Refusing to use GITHUB_BRANCH/);
     // The consequence that matters: rejected on configuration, before a blob exists or any ref moved.
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  /**
+   * This error is thrown inside an Inngest step, so it reaches failure telemetry and the monthly
+   * summary email. The values that trigger it are, by the check's own premise, most likely
+   * mis-mapped environment variables, so the rejected bytes could be anything that got pointed at
+   * the wrong name. The message names the variable and states the rule; it must not quote the value.
+   */
+  it("names the offending variable without echoing what was in it", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const batch = [{ slug: "alpha", frontmatter: modelFrontmatter(), body: BODY }];
+    const secretish = "ghp_NOTAREALTOKEN&pretend=this=leaked";
+
+    process.env.GITHUB_BRANCH = secretish;
+    const error = await commitRefreshedArticles(batch).catch((e: Error) => e);
+
+    expect(error).toBeInstanceOf(Error);
+    const message = (error as Error).message;
+    expect(message).toContain("GITHUB_BRANCH");
+    expect(message).toContain("not a plain slash-separated name");
+    // The whole point. Neither the value nor any recognisable run of it survives into the message.
+    expect(message).not.toContain(secretish);
+    expect(message).not.toContain("ghp_");
+    expect(message).not.toContain("NOTAREALTOKEN");
+    // Length is reported instead, which is diagnostic without being a disclosure.
+    expect(message).toContain(`${secretish.length} character(s)`);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

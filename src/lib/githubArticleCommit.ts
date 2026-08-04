@@ -98,12 +98,23 @@ const SAFE_REF_SEGMENT = /^[A-Za-z0-9_][A-Za-z0-9._-]*$/;
 /** GitHub owners and repos are `[A-Za-z0-9._-]` only, so they never legitimately need encoding. */
 const SAFE_OWNER_OR_REPO = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 
+/**
+ * The value is named but never echoed, deliberately.
+ *
+ * This error is thrown from inside an Inngest step, so its message lands in failure telemetry and
+ * the monthly summary email. The whole premise of the check above is that a value reaching it is
+ * probably a mis-mapped environment variable rather than an intentional target, which means the
+ * thing being echoed could be whatever was mapped there by mistake, including a credential. The
+ * variable name plus the rule is what makes the failure actionable; the bytes add nothing an
+ * operator looking at their own configuration does not already have.
+ */
 function rejectConfigValue(envVar: string, value: string): Error {
   return new Error(
-    `Refusing to use ${envVar}="${value}": it is not a plain slash-separated name. This function ` +
-      `PATCHes a branch ref directly, so a value that needs URL-encoding here is treated as a ` +
-      `misconfigured environment variable rather than an intentional target. Allowed per ` +
-      `slash-separated segment: letters, digits, "." "_" "-", starting with a letter, digit or "_".`,
+    `Refusing to use ${envVar} (${value.length} character(s)): it is not a plain slash-separated ` +
+      `name. This function PATCHes a branch ref directly, so a value that needs URL-encoding here ` +
+      `is treated as a misconfigured environment variable rather than an intentional target. ` +
+      `Allowed per slash-separated segment: letters, digits, "." "_" "-", starting with a letter, ` +
+      `digit or "_". The value itself is withheld on purpose; see the note above this function.`,
   );
 }
 
