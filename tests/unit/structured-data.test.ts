@@ -216,16 +216,33 @@ describe("webPageSchema dateModified", () => {
     });
   });
 
-  it("accepts a Date object, which unquoted frontmatter yields at runtime", () => {
-    // articles.ts casts frontmatter with `as string`, but gray-matter returns a
-    // Date for an UNQUOTED YAML date. Dropping that would be a regression.
+  /**
+   * A Date means the frontmatter date was UNQUOTED, and YAML has already
+   * silently rolled over any impossible day before this code runs: unquoted
+   * `2026-02-30` arrives as March 2. The authored value is unrecoverable, so
+   * accepting it would launder a corrupted date into published metadata. An
+   * earlier version of this file did exactly that.
+   */
+  it("rejects a Date object rather than laundering an unrecoverable value", () => {
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     const node = webPageSchema({
       ...base,
       dateModified: new Date("2026-08-03T00:00:00Z") as unknown as string,
     });
-    expect(node).toMatchObject({ dateModified: "2026-08-03T00:00:00.000Z" });
-    expect(warn).not.toHaveBeenCalled();
+    expect(node).not.toHaveProperty("dateModified");
+    expect(warn).toHaveBeenCalledOnce();
+    // The warning must name the cause and the fix, not just report a drop.
+    expect(warn.mock.calls[0][0]).toContain("UNQUOTED");
+  });
+
+  it("rejects a Date even when it looks valid, because rollover is undetectable here", () => {
+    // This is the corrupted case: `date: 2026-02-30` unquoted reaches us as a
+    // perfectly valid Date for March 2, indistinguishable from an authored one.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const rolledOver = new Date("2026-02-30");
+    expect(rolledOver.getUTCMonth()).toBe(2); // March: YAML already rolled it
+    expect(schemaDate(rolledOver, "ctx")).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
   });
 });
 

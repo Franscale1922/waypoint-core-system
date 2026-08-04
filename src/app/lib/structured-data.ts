@@ -118,14 +118,25 @@ function isValidSchemaDate(value: string): boolean {
  */
 export function schemaDate(value: unknown, context: string): string | undefined {
   if (value === undefined || value === null) return undefined;
-  // gray-matter turns an UNQUOTED frontmatter date into a Date object, so this
-  // can arrive as a Date despite the declared string type (articles.ts casts
-  // with `as string`). Normalize it rather than dropping a legitimate date.
+  if (typeof value === "string" && isValidSchemaDate(value)) return value;
+
+  // A Date here means the YAML frontmatter date was UNQUOTED, and it is
+  // deliberately REJECTED rather than normalized. js-yaml has already applied
+  // its own rollover by this point: unquoted 2026-02-30 arrives as March 2 and
+  // 2026-13-01 as January 2027, with the authored value unrecoverable. Accepting
+  // it would launder a corrupted date into published metadata, silently and with
+  // no way to detect it downstream. Rejecting costs nothing today (every article
+  // quotes its dates) and the fix is one keystroke.
   if (value instanceof Date) {
-    if (!Number.isNaN(value.getTime())) return value.toISOString();
-  } else if (typeof value === "string" && isValidSchemaDate(value)) {
-    return value;
+    console.warn(
+      `[structured-data] Dropped an UNQUOTED frontmatter date for ${context}. YAML parsed it ` +
+        `into a Date and already rolled over any impossible day (2026-02-30 becomes March 2), ` +
+        `so the authored value cannot be recovered or checked. Quote the date in frontmatter, ` +
+        `e.g. date: "2026-02-28".`,
+    );
+    return undefined;
   }
+
   console.warn(
     `[structured-data] Dropped invalid date ${JSON.stringify(String(value))} for ` +
       `${context}. Expected ISO 8601 (YYYY-MM-DD or a full datetime). Emitting it would ` +
