@@ -116,8 +116,24 @@ function isValidSchemaDate(value: string): boolean {
  * Dropping the property keeps the markup valid and the page up, and the warning
  * makes the bad value loud in the build log.
  */
-export function schemaDate(value: unknown, context: string): string | undefined {
-  if (value === undefined || value === null) return undefined;
+export function schemaDate(
+  value: unknown,
+  context: string,
+  { required = false }: { required?: boolean } = {},
+): string | undefined {
+  if (value === undefined || value === null) {
+    // Absence is normal for an OPTIONAL date (most pages are evergreen and carry
+    // no dateModified), so staying silent there keeps the build log usable. A
+    // required date is a different event and must not be silent: an Article
+    // missing datePublished loses rich-result eligibility with no other signal.
+    if (required) {
+      console.warn(
+        `[structured-data] Missing REQUIRED date for ${context}. The node ships without it, ` +
+          `which costs rich-result eligibility. Add the date to the source frontmatter.`,
+      );
+    }
+    return undefined;
+  }
   if (typeof value === "string" && isValidSchemaDate(value)) return value;
 
   // A Date here means the YAML frontmatter date was UNQUOTED, and it is

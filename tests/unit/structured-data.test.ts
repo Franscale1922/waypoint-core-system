@@ -264,10 +264,25 @@ describe("schemaDate (used by the hand-rolled Article nodes)", () => {
     expect(warn).toHaveBeenCalledTimes(2);
   });
 
-  it("returns undefined without warning when there is simply no date", () => {
+  it("stays silent for an absent OPTIONAL date, so the build log stays usable", () => {
+    // Most pages are evergreen and carry no dateModified. Warning on each would
+    // bury the warnings that matter.
     const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(schemaDate(undefined, "ctx")).toBeUndefined();
     expect(warn).not.toHaveBeenCalled();
+  });
+
+  it("warns for an absent REQUIRED date, which is a defect rather than a default", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(schemaDate(undefined, "ctx", { required: true })).toBeUndefined();
+    expect(warn).toHaveBeenCalledOnce();
+    expect(warn.mock.calls[0][0]).toContain("REQUIRED");
+  });
+
+  it("does not treat an empty string as absent, since that is a malformed value", () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(schemaDate("", "ctx")).toBeUndefined();
+    expect(warn.mock.calls[0][0]).toContain("Dropped invalid date");
   });
 
   it("names the context in the warning so the offending page is identifiable", () => {

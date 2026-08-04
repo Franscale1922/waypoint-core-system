@@ -53,8 +53,9 @@ export default async function ArticlePage({ params }: Props) {
   // Both dates come from markdown frontmatter, which nothing validates, so they
   // go through schemaDate: a typo is dropped with a build warning rather than
   // shipped as invalid structured data. Computed once so a bad value warns once.
-  const datePublished = schemaDate(meta.date, articleUrl);
-  const dateModified = schemaDate(meta.updatedAt ?? meta.date, articleUrl);
+  // datePublished is required for Article rich results, so its absence warns.
+  const datePublished = schemaDate(meta.date, articleUrl, { required: true });
+  const dateModified = schemaDate(meta.updatedAt ?? meta.date, articleUrl, { required: true });
   // One connected graph: Article + its WebPage (distinct @ids) joined to #website,
   // plus optional FAQ/Video and breadcrumbs, all via the shared helpers/escaping.
   const articleGraph = jsonLdGraph(
