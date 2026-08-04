@@ -1365,6 +1365,7 @@ import matter from "gray-matter";
 import {
     getAllArticles,
     isStale,
+    mergeRefreshedFrontmatter,
     passesComplianceCheck,
 } from "@/lib/contentRefresh";
 import { buildSystemPrompt, buildUserPrompt } from "@/lib/contentRefreshPrompt";
@@ -1466,14 +1467,17 @@ export const contentRefreshFunction = inngest.createFunction(
                     };
                 }
 
-                const newFrontmatter = parsed.data as typeof article.frontmatter;
+                // Start from the ORIGINAL frontmatter and overwrite only what the model owns, so a
+                // field survives a refresh by default instead of only when somebody remembered to
+                // pin it. This replaced four explicit pins that silently deleted `checklistSlug`
+                // and `escapeKit` from every article they touched. See mergeRefreshedFrontmatter
+                // in src/lib/contentRefresh.ts for why the direction matters and why a field the
+                // model omits is deleted rather than inherited.
+                const newFrontmatter = mergeRefreshedFrontmatter(
+                    article.frontmatter,
+                    parsed.data as Record<string, unknown>,
+                );
                 const newBody = parsed.content;
-
-                // Safety guard: ensure relatedSlugs are preserved
-                newFrontmatter.relatedSlugs = article.frontmatter.relatedSlugs;
-                newFrontmatter.slug = article.frontmatter.slug;
-                newFrontmatter.category = article.frontmatter.category;
-                newFrontmatter.tier = article.frontmatter.tier;
 
                 // Compliance check before writing
                 const { passes, violations } = passesComplianceCheck(newBody);
@@ -1494,14 +1498,16 @@ export const contentRefreshFunction = inngest.createFunction(
                 // the same way a compliance violation is, and it shows up under "Failed" in that
                 // email.
                 //
-                // Dropping is deliberately NOT backfilling. The four fields above are pinned back
-                // to the original because the model must not change an article's identity or
-                // taxonomy; title, excerpt and faqs are the opposite case, the very content the
-                // refresh exists to update, so there is no correct value to substitute. A response
-                // missing one of them is malformed, which makes its body suspect too, and shipping
-                // a suspect body under a salvaged title would be a worse outcome than skipping the
-                // month. The article keeps the good version already on disk and retries next
-                // cadence.
+                // Dropping is deliberately NOT backfilling, and the merge above is what makes that
+                // reachable. Every field the model does not own is preserved from the original
+                // because it must not change an article's identity, taxonomy or editorial wiring;
+                // title, excerpt and faqs are the opposite case, the very content the refresh
+                // exists to update, so there is no correct value to substitute. A response missing
+                // one of them is malformed, which makes its body suspect too, and shipping a
+                // suspect body under a salvaged title would be a worse outcome than skipping the
+                // month. mergeRefreshedFrontmatter deletes an omitted one rather than inheriting
+                // it, precisely so the absence arrives here as a named missing-field error. The
+                // article keeps the good version already on disk and retries next cadence.
                 const payloadErrors = validateArticlePayload({
                     slug: article.slug,
                     frontmatter: newFrontmatter,

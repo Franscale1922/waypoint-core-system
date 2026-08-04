@@ -31,6 +31,92 @@ export interface Article {
   filePath: string;
 }
 
+// ─── Frontmatter Ownership ───────────────────────────────────────────────────
+
+/**
+ * The ONLY frontmatter fields the refresh takes from model output.
+ *
+ * These three are the content the refresh exists to rewrite. Everything else in an article's
+ * frontmatter is either identity (`slug`), taxonomy (`category`, `tier`), editorial wiring
+ * (`relatedSlugs`, `checklistSlug`, `escapeKit`) or provenance (`date`, `updatedAt`), and a language
+ * model has no standing to author any of it.
+ *
+ * NOT on this list, deliberately:
+ *
+ *   `date` and `updatedAt`, because `serializeArticle` in src/lib/githubArticleCommit.ts stamps
+ *   both at the moment of the commit and ignores whatever it was handed. Pinning them here as well
+ *   would imply the value flowing through this function matters, and it does not.
+ */
+export const MODEL_OWNED_FIELDS = ["title", "excerpt", "faqs"] as const;
+
+/**
+ * Build the frontmatter for a refreshed article: start from the ORIGINAL and overwrite only the
+ * fields the model legitimately owns.
+ *
+ * THE DIRECTION IS THE WHOLE POINT, AND IT USED TO RUN THE OTHER WAY
+ * ------------------------------------------------------------------
+ * This previously took the model's frontmatter wholesale and pinned four fields back onto it
+ * (`relatedSlugs`, `slug`, `category`, `tier`). That construction is subtractive: a field survives a
+ * refresh only if somebody remembered to name it, so every field nobody named was silently deleted
+ * from the committed file.
+ *
+ * Two were, and it was not theoretical. `checklistSlug` (on 42 of 45 articles) and `escapeKit` (on
+ * 12) appear nowhere in src/lib/contentRefreshPrompt.ts, so the model had no reason to emit them and
+ * they were simply lost. src/app/(marketing)/resources/[slug]/page.tsx gates two CTAs on exactly
+ * those keys, so a refreshed article quietly stopped rendering its email capture and its escape kit.
+ * Nothing failed: every required field was still present, so the commit passed every gate in front
+ * of it and the monthly summary email reported the article as refreshed.
+ *
+ * Inverting it makes preservation the DEFAULT. A field added to an article next year survives a
+ * refresh without anyone touching this file, which is the actual root cause fixed rather than the
+ * two symptoms.
+ *
+ * It also closes a second hole in the same stroke. A field the model INVENTS is no longer copied
+ * through: only the three names above are read from its output, so a hallucinated `author` or
+ * `noindex` cannot reach `main`. The doc comment on `serializeArticle` describes that passthrough as
+ * a live problem, and this is where it stops.
+ *
+ * ABSENCE IS PROPAGATED, NEVER BACKFILLED
+ * ---------------------------------------
+ * When the model omits one of the three, the field is DELETED from the result rather than left at
+ * its original value. That looks wrong at a glance and is load-bearing.
+ *
+ * The original article always has a valid `title`, so inheriting it would produce frontmatter that
+ * passes `validateRequiredFields` cleanly and commits a suspect new body under the old title. The
+ * caller in src/inngest/functions.ts is explicit that this is the worse outcome: a response missing
+ * one of these is malformed, which makes its body suspect too, so the article is skipped and keeps
+ * the good version already on disk. Deleting the key is what lets the validator SEE the absence and
+ * report it as a specific missing-field error instead of a generic one.
+ *
+ * Assigning `undefined` would not do the same job. js-yaml refuses to dump a key whose value is
+ * explicitly undefined, so the article would still be skipped, but via a serialization failure whose
+ * message says nothing about which field the model dropped.
+ *
+ * `modelData` is a plain `Record` rather than a Partial<ArticleFrontmatter> because it is unvalidated
+ * model output: typing it as the target shape would be a claim about bytes nobody has checked yet.
+ * Validation happens downstream, against the serialized file, in `validateArticlePayload`.
+ *
+ * NO EM DASHES IN THIS FILE. It lives under src/, which scripts/aeo-audit.mjs scans, and one here
+ * would fail the very push that adds it (CONTENT-STANDARDS Section 11).
+ */
+export function mergeRefreshedFrontmatter(
+  original: ArticleFrontmatter,
+  modelData: Record<string, unknown>,
+): ArticleFrontmatter {
+  const merged: Record<string, unknown> = { ...original };
+
+  for (const field of MODEL_OWNED_FIELDS) {
+    if (Object.hasOwn(modelData, field)) {
+      merged[field] = modelData[field];
+    } else {
+      // See the header: delete rather than inherit, so the absence reaches the validator.
+      delete merged[field];
+    }
+  }
+
+  return merged as ArticleFrontmatter;
+}
+
 // ─── Article Discovery ────────────────────────────────────────────────────────
 
 const ARTICLES_DIR = path.join(
