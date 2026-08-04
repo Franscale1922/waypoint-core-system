@@ -209,6 +209,51 @@ describe("commitRefreshedArticles: a file that moved underneath the run is not o
     expect(wrote(fetchMock)).toEqual({ blobs: 0, patched: false });
   });
 
+  it("caps blob creation concurrency instead of firing every request at once", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const slugs = Array.from({ length: 12 }, (_, i) => `article-${i}`);
+
+    let inFlight = 0;
+    let maxInFlight = 0;
+    fetchMock = vi.fn(async (url: unknown, init?: { method?: string }) => {
+      const target = String(url);
+      const method = init?.method ?? "GET";
+
+      if (method === "GET" && target.includes("/git/ref/heads/")) {
+        return { ok: true, json: async () => ({ object: { sha: "refsha" } }) } as unknown as Response;
+      }
+      if (method === "GET" && target.includes("/git/commits/")) {
+        return { ok: true, json: async () => ({ tree: { sha: "treesha" } }) } as unknown as Response;
+      }
+      if (method === "GET" && target.includes("/git/trees/")) {
+        return {
+          ok: true,
+          json: async () => ({
+            tree: slugs.map((slug) => ({ path: `content/articles/${slug}.md`, sha: BASE_SHA, type: "blob" })),
+            truncated: false,
+          }),
+        } as unknown as Response;
+      }
+      if (target.endsWith("/git/blobs")) {
+        inFlight++;
+        maxInFlight = Math.max(maxInFlight, inFlight);
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        inFlight--;
+        return { ok: true, json: async () => ({ sha: "blobsha" }) } as unknown as Response;
+      }
+      if (target.endsWith("/git/trees")) return { ok: true, json: async () => ({ sha: "newtreesha" }) } as unknown as Response;
+      if (target.endsWith("/git/commits")) return { ok: true, json: async () => ({ sha: "newsha" }) } as unknown as Response;
+      return { ok: true, json: async () => ({}) } as unknown as Response;
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const outcome = await commitRefreshedArticles(slugs.map((slug) => payload(slug)));
+
+    expect(outcome.committed).toEqual(slugs);
+    expect(maxInFlight).toBeGreaterThan(1);
+    expect(maxInFlight).toBeLessThanOrEqual(5);
+  });
+
   /**
    * The duplicate-commit case, which this fixes without a second mechanism.
    *

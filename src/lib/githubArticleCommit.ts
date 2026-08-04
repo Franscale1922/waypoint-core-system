@@ -124,6 +124,33 @@ export function encodeRefForPath(ref: string): string {
  * object ID against git's own object ID for the same content, so it must be exactly the algorithm
  * git uses. An attacker able to author colliding article bodies already has commit access.
  */
+/**
+ * Runs `fn` over `items` with at most `limit` calls in flight at once.
+ *
+ * `Promise.all(items.map(fn))` fires every request in the same tick. That is fine at today's corpus
+ * size (45 articles) but has no ceiling: GitHub's secondary rate limits kick in around 100 concurrent
+ * requests, and a batch that size would also mean one flaky request aborts the rest via
+ * `Promise.all`'s reject-on-first-failure semantics, discarding work that already succeeded.
+ */
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = new Array(items.length);
+  let next = 0;
+
+  async function worker() {
+    while (next < items.length) {
+      const index = next++;
+      results[index] = await fn(items[index]);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, worker));
+  return results;
+}
+
 export function gitBlobSha(content: string): string {
   const bytes = Buffer.from(content, "utf-8");
   return createHash("sha1")
@@ -471,27 +498,29 @@ export async function commitRefreshedArticles(
   // ── 3. Create blobs for each updated article ─────────────────────────────
   // Uses the content validated in step 0, never a re-serialization of it: serializing twice would
   // mean the bytes that were checked are not necessarily the bytes that get committed.
-  const blobs = await Promise.all(
-    survivors.map(async ({ article: { slug }, content }) => {
-      const encoded = Buffer.from(content, "utf-8").toString("base64");
+  //
+  // Bounded rather than Promise.all over the whole batch: unbounded concurrency risks GitHub's
+  // secondary rate limits as the corpus grows past today's 45 articles, and Promise.all's
+  // reject-on-first-failure would discard every blob already created by the rest of the batch.
+  const blobs = await mapWithConcurrency(survivors, 5, async ({ article: { slug }, content }) => {
+    const encoded = Buffer.from(content, "utf-8").toString("base64");
 
-      const blob = await githubRequest<{ sha: string }>(
-        "/git/blobs",
-        config,
-        {
-          method: "POST",
-          body: JSON.stringify({ content: encoded, encoding: "base64" }),
-        }
-      );
+    const blob = await githubRequest<{ sha: string }>(
+      "/git/blobs",
+      config,
+      {
+        method: "POST",
+        body: JSON.stringify({ content: encoded, encoding: "base64" }),
+      }
+    );
 
-      return {
-        path: `content/articles/${slug}.md`,
-        mode: "100644" as const,
-        type: "blob" as const,
-        sha: blob.sha,
-      };
-    })
-  );
+    return {
+      path: `content/articles/${slug}.md`,
+      mode: "100644" as const,
+      type: "blob" as const,
+      sha: blob.sha,
+    };
+  });
 
   // ── 4. Create a new tree with all updated files ───────────────────────────
   const newTree = await githubRequest<{ sha: string }>(
