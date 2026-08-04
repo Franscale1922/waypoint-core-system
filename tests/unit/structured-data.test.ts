@@ -674,6 +674,15 @@ describe("validFaqEntries", () => {
     expect(warn).toHaveBeenCalledTimes(1);
   });
 
+  it("describes a null entry as null, not as the word \"null\" in quotes", () => {
+    const warn = silenceWarn();
+    validFaqEntries([null] as unknown as { q: string; a: string }[], "ctx");
+    // String(null) then JSON.stringify would render the null VALUE as `"null"`,
+    // which reads like the author typed that word into the frontmatter.
+    expect(warn.mock.calls[0][0]).toContain("null is not a {q, a} mapping");
+    expect(warn.mock.calls[0][0]).not.toContain('"null"');
+  });
+
   it("names both unusable fields in ONE warning, not one warning each", () => {
     const warn = silenceWarn();
     validFaqEntries([{}] as unknown as { q: string; a: string }[], "ctx");
