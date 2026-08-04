@@ -468,9 +468,27 @@ function iso8601Duration(value: unknown): string | undefined {
   return typeof value === "string" && ISO_DURATION.test(value) ? value : undefined;
 }
 
-/** A required string property is only satisfied by actual, non-blank text. */
+/**
+ * A required string property is only satisfied by actual, VISIBLE text.
+ *
+ * The character class covers everything that occupies no visible space: ordinary
+ * whitespace, Unicode space separators, and the format/control categories.
+ * `trim()` alone is NOT enough, because it strips only characters carrying the
+ * Unicode White_Space property, and U+200B ZERO WIDTH SPACE was removed from
+ * that property. A question consisting of nothing but U+200B passed a
+ * trim-based check and shipped as a blank accordion button plus a Question node
+ * with no meaningful name.
+ *
+ * The literal lives INSIDE the function deliberately. Hoisting it to a
+ * module-level `const` puts it in the temporal dead zone for `scorecardFaqSchema`
+ * above, which is itself a module-scope const that calls faqPageSchema at import
+ * time and therefore reaches this function before any later declaration is
+ * initialized. That throws "Cannot access ... before initialization" and takes
+ * every page down at import. Verified by doing exactly that and watching the
+ * suite fail.
+ */
 function isNonEmptyString(value: unknown): value is string {
-  return typeof value === "string" && value.trim().length > 0;
+  return typeof value === "string" && value.replace(/[\s\p{Cf}\p{Cc}\p{Zs}]/gu, "").length > 0;
 }
 
 /** The normalizer form of isNonEmptyString, for the optional-property table. */
@@ -487,6 +505,9 @@ function nonEmptyText(value: unknown): string | undefined {
  */
 function describeBadValue(value: unknown): string {
   if (value === undefined) return "missing";
+  // Unquoted, because String(null) followed by JSON.stringify renders the null
+  // VALUE as the string "null", which reads like the author typed that word.
+  if (value === null) return "null";
   if (value instanceof Date) return "an UNQUOTED frontmatter date (quote it, e.g. uploadDate: \"2026-03-17T01:57:41Z\")";
   const asText = typeof value === "string" ? value : String(value);
   return JSON.stringify(asText.length > 80 ? `${asText.slice(0, 80)}...` : asText);
@@ -782,20 +803,113 @@ export function collectionPageSchema({
 }
 
 /**
+ * Filter a raw FAQ list down to the entries that can be described validly,
+ * warning about each one dropped.
+ *
+ * EXPORTED because the article route needs the same surviving set for its
+ * VISIBLE FAQ as for its markup. Google only honours FAQPage markup whose Q&A is
+ * present on the page, so filtering the schema alone would emit questions the
+ * reader cannot see; and the visible render destructures these entries too, so
+ * filtering the schema alone would still crash the page on a null entry. One
+ * filter, both consumers.
+ *
+ * Article FAQs arrive from markdown frontmatter through an `as` cast
+ * (src/lib/articles.ts), so the declared type is a compile-time convenience, not
+ * a guarantee. A list item written as a bare string instead of a `{q, a}`
+ * mapping, or a stray `-` that YAML parses as null, reaches here as data.
+ *
+ * Drops the ENTRY, not the whole node: one malformed Q&A should not cost a page
+ * the rest of its valid ones. Contrast videoObjectSchema, where a missing
+ * required field drops everything, because a partial VideoObject earns no rich
+ * result at all whereas a shorter FAQ list is still perfectly eligible.
+ */
+export function validFaqEntries(
+  items: { q: string; a: string }[] | null | undefined,
+  context = "an unnamed page",
+): { q: string; a: string }[] {
+  if (!Array.isArray(items)) {
+    // undefined/null is how callers say "no FAQs here", which is not a defect.
+    // Anything else is a frontmatter shape mistake worth naming.
+    if (items != null) {
+      console.warn(
+        `[structured-data] Ignored a non-array FAQ list for ${context}: ${describeBadValue(items)}. ` +
+          `Expected a YAML list of {q, a} mappings.`,
+      );
+    }
+    return [];
+  }
+
+  const valid: { q: string; a: string }[] = [];
+  items.forEach((entry, index) => {
+    // Position is included in every warning because a frontmatter FAQ list has
+    // no other stable identifier, and a dropped entry with an unusable `q` has
+    // nothing quotable to point the author at.
+    if (entry == null || typeof entry !== "object" || Array.isArray(entry)) {
+      console.warn(
+        `[structured-data] Dropped FAQ entry ${index} for ${context}: ${describeBadValue(entry)} is not ` +
+          `a {q, a} mapping. A list item written as a bare string (- "Can I finance this?") or a ` +
+          `stray "-" parses this way. The other entries still ship.`,
+      );
+      return;
+    }
+
+    const { q, a } = entry as { q?: unknown; a?: unknown };
+    // Collect both failures before warning, so an entry missing everything
+    // produces one actionable warning rather than two that look unrelated.
+    const bad: string[] = [];
+    if (!isNonEmptyString(q)) bad.push(`q: ${describeBadValue(q)}`);
+    if (!isNonEmptyString(a)) bad.push(`a: ${describeBadValue(a)}`);
+    if (bad.length > 0) {
+      console.warn(
+        `[structured-data] Dropped FAQ entry ${index} for ${context}. A Question needs non-empty ` +
+          `q and a, and these are invalid: ${bad.join("; ")}. Emitting it would put a Question with ` +
+          `no name, or an Answer with no text, into the markup. The other entries still ship.`,
+      );
+      return;
+    }
+    // Unreachable: both pushes above already guarantee these are strings. It is
+    // restated because TypeScript cannot infer that from the length check.
+    if (!isNonEmptyString(q) || !isNonEmptyString(a)) return;
+    valid.push({ q, a });
+  });
+  return valid;
+}
+
+/**
  * FAQPage node built from a flat {q,a}[] array: the one shape used everywhere FAQ
  * content appears (articles, the FAQ page, scorecard, comparison, financing, and
  * the industry/category pages). Returns a node WITHOUT `@context` so it composes
- * inside `jsonLdGraph(...)`.
+ * inside `jsonLdGraph(...)`, or undefined when no valid entry survives.
  *
  * Pass `url` (the page's canonical) to anchor the node in the graph with a stable
  * `@id` + `isPartOf #website` + `inLanguage`. Always pass it for page-level FAQs so
  * the FAQPage isn't a floating, unlinked node. The visible on-page FAQ MUST be
- * rendered from the same array (Google requires the Q&A to be present on the page).
+ * rendered from the same array (Google requires the Q&A to be present on the page);
+ * where that array is untrusted, render it from validFaqEntries so the two agree.
+ *
+ * `context` names the page in warnings. It defaults to `url`, which is already a
+ * precise locator for the eleven callers that pass one; the article route passes
+ * its slug because its FAQs come from frontmatter and the author needs naming.
  */
-export function faqPageSchema(items: { q: string; a: string }[], url?: string) {
+export function faqPageSchema(
+  items: { q: string; a: string }[],
+  url?: string,
+  context?: string,
+) {
+  const where = context ?? url ?? "an unnamed page";
+  const entries = validFaqEntries(items, where);
+  if (entries.length === 0) {
+    const received = Array.isArray(items) ? items.length : 0;
+    console.warn(
+      `[structured-data] Dropped the entire FAQPage for ${where}: no valid {q, a} entries survived ` +
+        `(received ${received}). An FAQPage whose mainEntity is empty is itself invalid markup, so ` +
+        `the node was omitted rather than shipped hollow.`,
+    );
+    return undefined;
+  }
   const node: Record<string, unknown> = {
     "@type": "FAQPage",
-    mainEntity: items.map(({ q, a }) => ({
+    mainEntity: entries.map(({ q, a }) => ({
       "@type": "Question",
       name: q,
       acceptedAnswer: { "@type": "Answer", text: a },

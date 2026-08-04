@@ -14,7 +14,8 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `18bf899` — PRs #22 and #26 **merged and deployed green 2026-08-04**; #24/#25 before them |
+| `main` | `ed22c03` — PR **#29 (FAQ entry validation) merged 2026-08-04**; #27, #26, #23, #22 before it, all deployed green; #24/#25 before those |
+| `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
 | `seo/auv-cluster` | **merged as #24** (`c4dd163`), branch deleted |
 | `seo/structured-data-entity-graph` | **merged as #22** (`aaa8437`), deployed green. Safe to delete the remote branch now that #26 is off it |
@@ -138,6 +139,59 @@ and a null entry throws during render. Found by the same Codex round and deliber
 keep PR #26 to one concern. A background session was started on it 2026-08-04; if that work did not
 land, this is the highest-value item left in this area. It depends on the stack above, so check what
 has merged before branching.
+
+---
+
+## ✅ FAQ entry validation — PR #29, merged 2026-08-04
+
+Closes the sibling finding Codex raised during #26 and that #26 deliberately declined as out of
+scope. All 45 articles carry a `faqs:` block reaching `faqPageSchema` through
+`data.faqs as {q,a}[]`, and that cast is not a validation boundary. Both failure modes were
+**reproduced against the unguarded code first**: an entry missing `a` shipped `{"@type":"Answer"}`
+with no text, and a stray `-` parsed as null threw and took the article render down.
+
+**The part worth carrying forward: validating the schema alone would not have fixed the crash.** The
+visible FAQ section renders from the same array and destructures the same entries, so the page still
+died one component later. `validFaqEntries` is exported and the article route filters ONCE, feeding
+both the markup and the visible section, which also makes the lockstep Google requires structural
+rather than a convention. Proven before/after in a browser on identical content: pre-change returned
+*"This page couldn't load"*, post-change rendered with 4 valid Q&As in both.
+
+**No article was malformed.** 181 entries across 45 articles pass untouched. This was a latent
+hazard, not a live defect, and the commit says so rather than overclaiming.
+
+### Three method notes
+
+1. **Reviewing the diff as a patch file is what found anything.** Two whole-file `--target` runs
+   returned eight findings, every one pre-existing. Targeting `git diff > x.patch` returned four, all
+   about the actual change, two of which were fixed. This confirms the technique recorded in
+   `ADVERSARIAL-REVIEW-2026-08-04.md`; treat whole-file review as near-useless for reviewing a diff.
+2. **The regression gate was not running in CI.** `verify-links.yml` selects test files BY NAME and
+   `structured-data.test.ts` was not listed, so the new per-article gate ran only in the pre-push
+   hook — which `githubArticleCommit.ts` bypasses entirely by writing through the GitHub API. Now
+   listed as "Verify Article FAQ blocks", **verified to run and to fail**: a stray `-` injected into
+   a real article made the exact CI command exit 1, and exit 0 once restored.
+3. **A module-scope `const` regex is a temporal dead zone hazard here.** `scorecardFaqSchema` is a
+   module-scope const that calls `faqPageSchema` at import time, so it reaches `isNonEmptyString`
+   before any later declaration initializes. Hoisting the invisible-character regex out of the
+   function threw "Cannot access before initialization" and would have taken every page down at
+   import. The regex lives inside the function on purpose; do not tidy it out.
+
+### Declined, with the measurement behind each
+
+- **"Enforce exactly 4 FAQs"** per `content/new-article-checklist.md`. Counted: 44 articles have
+  exactly 4, and `should-you-buy-a-car-wash-franchise.md` has **5**. Asserting it would fail the
+  build on existing content. Whether the standard or that article is wrong is a **content decision**,
+  still open.
+- **Codex round 2's High, "stored XSS via MDX".** Both preconditions are real (production CSP carries
+  `'unsafe-inline'`; the GPT-4o refresh commits with only an FTC-language check). The conclusion is
+  not: five vectors were tested against a real article and **none executed**. React strips `onerror`,
+  blocks `javascript:` URLs, renders script children inert, and the MDX expression never evaluated.
+  Recorded as an architectural concern about MDX being executable, **not** as a vulnerability. Do not
+  re-raise it as one without a working proof of concept.
+- **`contentUrl` pointing at a Vimeo watch page** (`about/page.tsx`, live on `main`) and **slug
+  containment on the article route** are both real and both spun into their own tasks rather than
+  folded into this diff.
 
 ---
 
