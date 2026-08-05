@@ -58,7 +58,13 @@ async function subscribeOne(email: string, firstName?: string): Promise<"ok" | "
         body: JSON.stringify({
           email,
           ...(firstName ? { first_name: firstName } : {}),
-          reactivate_existing: true,
+          // Never resurrect someone who left. The `unsubscribed: false` filters
+          // below read OUR tables, which by definition cannot see an opt-out
+          // recorded on beehiiv's side, so this flag was the one thing deciding
+          // whether a beehiiv unsubscribe survived a re-run of this script. It
+          // did not. New addresses still subscribe normally; only reactivation
+          // of an existing inactive subscriber is refused.
+          reactivate_existing: false,
           send_welcome_email: false,
           utm_source: "waypoint-crm-backfill",
         }),
@@ -120,8 +126,38 @@ async function main() {
     queue.push({ email, firstName: row.name?.split(" ")[0] || undefined, source: "escape-kit" });
   }
 
-  console.log(`Found ${queue.length} unique emails to subscribe:\n`);
-  queue.forEach(({ email, source }) => console.log(`  ${source.padEnd(12)} ${email}`));
+  // The canonical opt-out record, which the three queries above cannot see. They
+  // filter on each source table's own `unsubscribed` flag, and an opt-out that
+  // reached us any other way (a beehiiv unsubscribe, a bounce, a complaint, a
+  // domain rule) never touches those flags. So a person who left the newsletter
+  // still arrives here looking eligible.
+  //
+  // reactivate_existing: false does NOT cover this. It refuses to revive an
+  // existing INACTIVE subscriber, but a deleted beehiiv subscriber is gone
+  // rather than inactive, so a plain subscribe would mint a brand new active
+  // subscription for somebody who opted out.
+  const suppressedRows = await (prisma as any).suppressionList.findMany({
+    select: { email: true, domain: true },
+  });
+  const suppressedEmails = new Set<string>(
+    suppressedRows.map((r: any) => r.email?.toLowerCase().trim()).filter(Boolean)
+  );
+  const suppressedDomains = new Set<string>(
+    suppressedRows.map((r: any) => r.domain?.toLowerCase().trim()).filter(Boolean)
+  );
+
+  const eligible = queue.filter(({ email }) => {
+    const domain = email.split("@")[1] ?? "";
+    return !suppressedEmails.has(email) && !(domain && suppressedDomains.has(domain));
+  });
+  const skipped = queue.length - eligible.length;
+
+  if (skipped > 0) {
+    console.log(`Skipping ${skipped} suppressed address(es): opt-out, bounce, complaint or domain rule.\n`);
+  }
+
+  console.log(`Found ${eligible.length} unique emails to subscribe:\n`);
+  eligible.forEach(({ email, source }) => console.log(`  ${source.padEnd(12)} ${email}`));
   console.log();
 
   if (!LIVE) {
@@ -130,15 +166,33 @@ async function main() {
     return;
   }
 
-  let ok = 0; let errors = 0;
-  for (const { email, firstName } of queue) {
+  let ok = 0; let errors = 0; let raced = 0;
+  for (const { email, firstName } of eligible) {
+    // Re-read immediately before the call. The snapshot above can be minutes old
+    // by the time a long queue reaches this address, and an opt-out webhook
+    // landing mid-run would otherwise be overwritten by a subscribe this script
+    // had already decided to make. One indexed lookup per address is nothing
+    // next to the 1.1s pause below.
+    const domain = email.split("@")[1] ?? "";
+    const nowSuppressed = await (prisma as any).suppressionList.findFirst({
+      where: { OR: [{ email }, ...(domain ? [{ domain }] : [])] },
+      select: { id: true },
+    });
+    if (nowSuppressed) {
+      console.log(`  ⏭   ${email}: suppressed during this run, skipping`);
+      raced++;
+      continue;
+    }
+
     const result = await subscribeOne(email, firstName);
     if (result === "ok") ok++;
     else if (result === "error") errors++;
     await sleep(1100); // ~1 req/sec — safe for Beehiiv API
   }
 
-  console.log(`\n✅  Done. Subscribed: ${ok} | Errors: ${errors}\n`);
+  console.log(
+    `\n✅  Done. Subscribed: ${ok} | Errors: ${errors}${raced > 0 ? ` | Skipped mid-run: ${raced}` : ""}\n`
+  );
   await prisma.$disconnect();
 }
 

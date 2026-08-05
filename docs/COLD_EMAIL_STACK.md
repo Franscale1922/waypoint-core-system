@@ -1078,6 +1078,55 @@ BEEHIIV_API_KEY
 BEEHIIV_PUBLICATION_ID=pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d
 ```
 
+#### Opt-out sync (beehiiv → our SuppressionList)
+
+beehiiv keeps its own unsubscribe state. Without this, someone who left the newsletter
+stayed mailable by every nurture sequence and by cold outreach, because both read
+`SuppressionList` and nothing wrote beehiiv's opt-outs into it.
+
+`/api/webhooks/beehiiv` receives `subscription.deleted` and
+`newsletter_list_subscription.unsubscribed` and writes a `SuppressionList` row, with the
+reason recording which one it was: `beehiiv-unsubscribe` for a recipient-initiated
+withdrawal, `beehiiv-deleted` for a record that no longer exists. Both events are
+subscribed because beehiiv's docs do not settle which fires on an ordinary unsubscribe.
+`subscription.paused` is deliberately ignored: a pause is temporary and the write is not.
+
+Including `subscription.deleted` is a deliberate over-reach. An operator tidying the
+beehiiv list fires the same event, and that permanently suppresses the address. It is
+included because the two errors are not symmetric: missing a real opt-out means mailing
+someone who told us to stop, while over-suppressing only costs a lead. The distinct reason
+is what makes those rows findable if beehiiv is ever confirmed to fire the unsubscribe
+event on every genuine opt-out.
+
+An `active` answer from beehiiv only refuses the event if that subscription **predates**
+it. One created afterwards is either our own resurrection or a deliberate re-signup, and
+suppressing is the safe reading of both. This matters because a deleted subscriber can be
+re-added by any form submission that lands before the webhook does, which
+`reactivate_existing: false` cannot prevent (there is no inactive record to refuse).
+
+**These opt-outs are irreversible by design.** `unsuppressEmail` clears only reason
+`"unsubscribed"`, so the admin resubscribe tool will refuse them. Undoing one takes a
+manual database edit.
+
+**Registration (both steps are required before it does anything):**
+1. Set `BEEHIIV_WEBHOOK_SECRET` in Vercel to a freshly generated random string.
+2. Register the webhook with beehiiv (`POST /v2/publications/{pub_id}/webhooks`) with:
+   ```
+   url: https://www.waypointfranchise.com/api/webhooks/beehiiv?secret=BEEHIIV_WEBHOOK_SECRET
+   event_types: ["subscription.deleted", "newsletter_list_subscription.unsubscribed"]
+   ```
+
+The secret sits in the URL because beehiiv's create-webhook API accepts only `url`,
+`event_types` and `description`: there is no custom-header field, so a Bearer token is not
+available. This is the same constraint TidyCal has. beehiiv documents no payload signature
+either (verified against its docs 2026-08-05; absence from the docs is not proof none
+exists), so **treat that URL as a credential** and rotate it if it leaks. As a second
+line, the handler re-checks every claim against beehiiv's own API and refuses to suppress
+any address beehiiv still reports as `active`.
+
+**Known gap:** there is no reconciliation sweep. A webhook beehiiv fails to deliver is a
+permanent silent miss. Acceptable at a zero-subscriber list; revisit once the list is real.
+
 ---
 
 ### RepliQ — Personalized Video Outreach

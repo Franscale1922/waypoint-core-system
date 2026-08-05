@@ -31,6 +31,16 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   "auth/[...nextauth]/route.ts": "NextAuth's own endpoints — this IS the sign-in flow.",
   "inngest/route.ts": "Inngest handler; verified by INNGEST_SIGNING_KEY.",
   "webhooks/apify/route.ts": "External webhook; guarded by its own shared secret.",
+  // beehiiv's create-webhook API takes only a url, event_types and a description:
+  // there is no custom-header field, so a Bearer token is not available and the
+  // secret rides in the query string, as TidyCal's does. beehiiv also publishes no
+  // payload signature, so that secret is the ONLY primary control on this route.
+  // Because a write here is irreversible by design (unsuppressEmail refuses any
+  // reason but "unsubscribed"), the handler additionally re-checks the claim
+  // against beehiiv's own API and refuses any address beehiiv still reports as
+  // active. Rotate this secret like a credential, not like a URL.
+  "webhooks/beehiiv/route.ts":
+    "External webhook; guarded by BEEHIIV_WEBHOOK_SECRET (query param, fail-closed) plus an API re-check.",
   "webhooks/clay/route.ts": "External webhook; guarded by CLAY_WEBHOOK_SECRET (fail-closed).",
   "webhooks/inbound/route.ts": "External webhook; guarded by its own shared secret.",
   "webhooks/resend/route.ts": "External webhook; guarded by its own signature check.",

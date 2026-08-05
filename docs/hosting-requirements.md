@@ -77,6 +77,7 @@ month.
 | `INNGEST_EVENT_KEY` | Inngest dashboard → production app |
 | `TIDYCAL_WEBHOOK_SECRET` | TidyCal dashboard → Webhooks |
 | `RESEND_WEBHOOK_SECRET` | Resend dashboard → Webhooks → signing secret |
+| `BEEHIIV_WEBHOOK_SECRET` | Self-generated; put it in the webhook URL registered with beehiiv (see below) |
 
 ---
 

@@ -74,6 +74,15 @@ export async function subscribeToBeehiiv(
           // Adding a genuinely new subscriber is unaffected. Someone who left
           // and wants back in re-joins through beehiiv, which is the only place
           // that opt-out was ever recorded.
+          //
+          // KNOW WHAT THIS DOES NOT COVER. It refuses to revive an INACTIVE
+          // subscription. A subscriber beehiiv has DELETED is gone rather than
+          // inactive, so the call below simply creates a new active one and this
+          // flag never comes into play. That gap is why the opt-out webhook
+          // (/api/webhooks/beehiiv) does not trust a bare "this address is
+          // active" answer: it compares the subscription's creation time against
+          // the opt-out event, because an address we resurrected ourselves would
+          // otherwise look like proof that the opt-out was stale.
           reactivate_existing: false,
           send_welcome_email: false,   // Waypoint's own nurture handles welcome comms
           utm_source: "waypoint-crm",  // track origin in beehiiv analytics
