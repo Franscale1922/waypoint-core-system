@@ -1085,10 +1085,24 @@ stayed mailable by every nurture sequence and by cold outreach, because both rea
 `SuppressionList` and nothing wrote beehiiv's opt-outs into it.
 
 `/api/webhooks/beehiiv` receives `subscription.deleted` and
-`newsletter_list_subscription.unsubscribed` and writes a `SuppressionList` row with reason
-`beehiiv-unsubscribe`. Both events are subscribed because beehiiv's docs do not settle
-which one fires on an ordinary unsubscribe. `subscription.paused` is deliberately ignored:
-a pause is temporary and the write here is not.
+`newsletter_list_subscription.unsubscribed` and writes a `SuppressionList` row, with the
+reason recording which one it was: `beehiiv-unsubscribe` for a recipient-initiated
+withdrawal, `beehiiv-deleted` for a record that no longer exists. Both events are
+subscribed because beehiiv's docs do not settle which fires on an ordinary unsubscribe.
+`subscription.paused` is deliberately ignored: a pause is temporary and the write is not.
+
+Including `subscription.deleted` is a deliberate over-reach. An operator tidying the
+beehiiv list fires the same event, and that permanently suppresses the address. It is
+included because the two errors are not symmetric: missing a real opt-out means mailing
+someone who told us to stop, while over-suppressing only costs a lead. The distinct reason
+is what makes those rows findable if beehiiv is ever confirmed to fire the unsubscribe
+event on every genuine opt-out.
+
+An `active` answer from beehiiv only refuses the event if that subscription **predates**
+it. One created afterwards is either our own resurrection or a deliberate re-signup, and
+suppressing is the safe reading of both. This matters because a deleted subscriber can be
+re-added by any form submission that lands before the webhook does, which
+`reactivate_existing: false` cannot prevent (there is no inactive record to refuse).
 
 **These opt-outs are irreversible by design.** `unsuppressEmail` clears only reason
 `"unsubscribed"`, so the admin resubscribe tool will refuse them. Undoing one takes a

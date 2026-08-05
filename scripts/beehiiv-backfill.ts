@@ -166,15 +166,33 @@ async function main() {
     return;
   }
 
-  let ok = 0; let errors = 0;
+  let ok = 0; let errors = 0; let raced = 0;
   for (const { email, firstName } of eligible) {
+    // Re-read immediately before the call. The snapshot above can be minutes old
+    // by the time a long queue reaches this address, and an opt-out webhook
+    // landing mid-run would otherwise be overwritten by a subscribe this script
+    // had already decided to make. One indexed lookup per address is nothing
+    // next to the 1.1s pause below.
+    const domain = email.split("@")[1] ?? "";
+    const nowSuppressed = await (prisma as any).suppressionList.findFirst({
+      where: { OR: [{ email }, ...(domain ? [{ domain }] : [])] },
+      select: { id: true },
+    });
+    if (nowSuppressed) {
+      console.log(`  ⏭   ${email}: suppressed during this run, skipping`);
+      raced++;
+      continue;
+    }
+
     const result = await subscribeOne(email, firstName);
     if (result === "ok") ok++;
     else if (result === "error") errors++;
     await sleep(1100); // ~1 req/sec — safe for Beehiiv API
   }
 
-  console.log(`\n✅  Done. Subscribed: ${ok} | Errors: ${errors}\n`);
+  console.log(
+    `\n✅  Done. Subscribed: ${ok} | Errors: ${errors}${raced > 0 ? ` | Skipped mid-run: ${raced}` : ""}\n`
+  );
   await prisma.$disconnect();
 }
 

@@ -64,7 +64,17 @@ const BEEHIIV_API_BASE = "https://api.beehiiv.com/v2";
  * clear: an opt-out we learned about second-hand cannot be reversed from our
  * side, because nothing in this system can verify the person asked to come back.
  */
-export const BEEHIIV_OPT_OUT_REASON = "beehiiv-unsubscribe";
+export const BEEHIIV_OPT_OUT_REASONS: Record<string, string> = {
+  // A recipient-initiated withdrawal.
+  "newsletter_list_subscription.unsubscribed": "beehiiv-unsubscribe",
+  // A record that no longer exists, which is NOT the same statement. Kept
+  // distinct so the provenance survives in the data: if beehiiv is ever
+  // confirmed to fire the unsubscribe event on every genuine opt-out, these rows
+  // are the ones to revisit, and they can be found without guessing. Both values
+  // are equally irreversible today, since unsuppressEmail clears only
+  // "unsubscribed" and neither of these is that.
+  "subscription.deleted": "beehiiv-deleted",
+};
 
 /**
  * The events that mean "this person no longer wants the newsletter".
@@ -90,21 +100,40 @@ export const BEEHIIV_OPT_OUT_REASON = "beehiiv-unsubscribe";
  * to fire newsletter_list_subscription.unsubscribed on every genuine unsubscribe,
  * drop this one and the over-reach goes with it.
  */
-const OPT_OUT_EVENTS = new Set([
-  "subscription.deleted",
-  "newsletter_list_subscription.unsubscribed",
+const OPT_OUT_EVENTS = new Set(Object.keys(BEEHIIV_OPT_OUT_REASONS));
+
+/**
+ * Every status beehiiv documents. An answer outside this set means we are not
+ * reading the API we think we are, so it is treated as no answer at all rather
+ * than quietly falling through to "not active, therefore opted out".
+ */
+const KNOWN_STATUSES = new Set([
+  "validating",
+  "invalid",
+  "pending",
+  "active",
+  "inactive",
+  "needs_attention",
+  "paused",
 ]);
 
-type ConfirmResult = "opted-out" | "still-active" | "cannot-verify";
+type ConfirmResult =
+  | { verdict: "opted-out" }
+  | { verdict: "cannot-verify" }
+  /** createdAt is Unix seconds, as beehiiv reports it. */
+  | { verdict: "still-active"; createdAt: number };
 
 /**
  * Asks beehiiv whether this address really is off the list.
  *
- * "still-active" is the only answer that refuses the webhook. Absence is
- * reported as opted-out because a deleted subscription is genuinely gone, and
- * every other status beehiiv publishes (inactive, paused, pending, invalid,
- * validating, needs_attention) means the address is not currently receiving the
- * newsletter.
+ * Absence is reported as opted-out because a deleted subscription is genuinely
+ * gone. Every documented status other than active means the address is not
+ * currently receiving the newsletter, so those are opted-out too.
+ *
+ * Anything the shape of the reply does not account for is cannot-verify, never
+ * opted-out. A degraded API answering 200 with `{}` or `{"data":[{}]}` would
+ * otherwise read as consent withdrawal and write a permanent suppression off a
+ * response that said nothing at all.
  */
 async function confirmOptOutWithBeehiiv(
   email: string,
@@ -127,17 +156,40 @@ async function confirmOptOutWithBeehiiv(
       console.error(
         `[beehiiv-webhook] verification lookup failed: ${res.status} ${await res.text()}`
       );
-      return "cannot-verify";
+      return { verdict: "cannot-verify" };
     }
 
-    const payload = (await res.json()) as { data?: Array<{ status?: string }> };
-    const match = payload.data?.[0];
+    const payload = (await res.json()) as unknown;
+    const data = (payload as { data?: unknown })?.data;
 
-    if (match?.status === "active") return "still-active";
-    return "opted-out";
+    // No data array at all is a malformed reply, not an empty result set.
+    if (!Array.isArray(data)) {
+      console.error("[beehiiv-webhook] verification reply had no data array");
+      return { verdict: "cannot-verify" };
+    }
+
+    if (data.length === 0) return { verdict: "opted-out" };
+
+    const match = data[0] as { status?: unknown; created?: unknown };
+
+    if (typeof match?.status !== "string" || !KNOWN_STATUSES.has(match.status)) {
+      console.error(`[beehiiv-webhook] verification reply had unusable status: ${String(match?.status)}`);
+      return { verdict: "cannot-verify" };
+    }
+
+    if (match.status !== "active") return { verdict: "opted-out" };
+
+    // Active, so the age of this subscription decides whether it is evidence.
+    // Without a creation time there is nothing to compare against.
+    if (typeof match.created !== "number" || !Number.isFinite(match.created)) {
+      console.error("[beehiiv-webhook] active subscription carried no usable created timestamp");
+      return { verdict: "cannot-verify" };
+    }
+
+    return { verdict: "still-active", createdAt: match.created };
   } catch (err) {
     console.error("[beehiiv-webhook] verification lookup threw:", err);
-    return "cannot-verify";
+    return { verdict: "cannot-verify" };
   }
 }
 
@@ -148,10 +200,15 @@ export async function POST(req: Request) {
   try {
     const body = (await req.json()) as {
       event_type?: string;
+      event_timestamp?: unknown;
       data?: { email?: string };
     };
 
     const eventType = body.event_type ?? "";
+    const eventTimestamp =
+      typeof body.event_timestamp === "number" && Number.isFinite(body.event_timestamp)
+        ? body.event_timestamp
+        : null;
 
     // beehiiv sends every subscribed event type to the same URL. Anything that
     // is not an opt-out is acknowledged and dropped, so beehiiv does not retry
@@ -191,18 +248,7 @@ export async function POST(req: Request) {
 
     const confirmation = await confirmOptOutWithBeehiiv(email, apiKey, publicationId);
 
-    if (confirmation === "still-active") {
-      // beehiiv contradicts the payload. Either the payload is forged, or the
-      // person genuinely resubscribed after opting out. Both mean "do not
-      // suppress": the second is a newer consent decision than this event.
-      // Acknowledged rather than errored, since a retry reaches the same answer.
-      console.warn(
-        `[beehiiv-webhook] refusing ${eventType}: beehiiv still reports this address active`
-      );
-      return NextResponse.json({ success: true, action: "ignored:still-active" });
-    }
-
-    if (confirmation === "cannot-verify") {
+    if (confirmation.verdict === "cannot-verify") {
       // Retryable on purpose. Writing on an unchecked claim would let a leaked
       // URL secret suppress an active subscriber irreversibly, and swallowing
       // the event would drop a real opt-out. A 5xx does neither.
@@ -212,13 +258,50 @@ export async function POST(req: Request) {
       );
     }
 
+    if (confirmation.verdict === "still-active") {
+      // An active subscription only DISPROVES this event if it already existed
+      // when the event fired. One created afterwards proves nothing, and that is
+      // the case that used to lose real opt-outs: a departed subscriber whose
+      // beehiiv record was deleted could be re-added by any form submission that
+      // landed before this webhook did (a plain subscribe mints a new active
+      // record, which reactivate_existing: false does not prevent because there
+      // is no inactive record to refuse). The webhook then read the address as
+      // active and dropped the opt-out for good.
+      //
+      // So only an older subscription refuses. A newer one is either our own
+      // resurrection or a deliberate re-signup, and suppressing is the safe
+      // reading of both: the first must be undone, and the second still leaves
+      // the person on beehiiv's own list receiving what they just asked for.
+      if (eventTimestamp === null) {
+        // beehiiv always stamps its events. An opt-out without one cannot be
+        // ordered against the subscription, and treating that as "suppress
+        // anyway" would let a forger skip the check by omitting the field.
+        console.error(`[beehiiv-webhook] ${eventType} carried no usable event_timestamp`);
+        return NextResponse.json(
+          { success: false, reason: "Event carried no timestamp; cannot order against subscription" },
+          { status: 400 }
+        );
+      }
+
+      if (confirmation.createdAt <= eventTimestamp) {
+        console.warn(
+          `[beehiiv-webhook] refusing ${eventType}: beehiiv reports an active subscription predating the event`
+        );
+        return NextResponse.json({ success: true, action: "ignored:still-active" });
+      }
+
+      console.warn(
+        `[beehiiv-webhook] ${eventType}: active subscription postdates the opt-out, suppressing anyway`
+      );
+    }
+
     // create-only. An existing row is left exactly as it is, because every other
     // reason outranks this one: overwriting "unsubscribed" would quietly convert
     // a reversible opt-out into a permanent one, and overwriting "bounce" or
     // "complaint" would downgrade a deliverability record into a preference.
     await prisma.suppressionList.upsert({
       where: { email },
-      create: { email, reason: BEEHIIV_OPT_OUT_REASON },
+      create: { email, reason: BEEHIIV_OPT_OUT_REASONS[eventType] },
       update: {},
     });
 
