@@ -52,6 +52,13 @@ export async function POST(req: Request) {
     const guard = await guardCapture({
       req,
       route: "archetype-complete",
+      preserveLead: () =>
+        notifyCrm({
+          name,
+          email: parsed.data.email.trim().toLowerCase(),
+          source: "Franchise Archetype Quiz",
+          notes: "Captured during a degraded request; no email was sent.",
+        }),
       email: parsed.data.email,
     });
     if (!guard.proceed) return guard.response;

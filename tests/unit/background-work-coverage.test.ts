@@ -48,7 +48,16 @@ function walk(dir: string): string[] {
  */
 function isAccountedFor(src: string, index: number): boolean {
   const preceding = src.slice(Math.max(0, index - 220), index);
-  return /afterResponse\s*\(/.test(preceding) || /\bawait\s*$/.test(preceding.trimEnd() + " ");
+  return (
+    /afterResponse\s*\(/.test(preceding) ||
+    /\bawait\s*$/.test(preceding.trimEnd() + " ") ||
+    // `preserveLead: () => notifyCrm(...)` passed to guardCapture. The callback
+    // IS scheduled, just not here: guardCapture hands it to afterResponse on its
+    // infrastructure-failure path (src/lib/lead-capture.ts, limiterUnavailable).
+    // Deliberately anchored to the immediately-preceding arrow so it only excuses
+    // a callback in that exact position, never a bare call somewhere below one.
+    /preserveLead:\s*\(\s*\)\s*=>\s*$/.test(preceding.trimEnd() + " ".repeat(0))
+  );
 }
 
 describe("request background work is always scheduled or awaited", () => {

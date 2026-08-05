@@ -92,6 +92,19 @@ export interface CaptureGuardOptions {
    * missing; they already refuse to start a second nurture sequence themselves.
    */
   idempotency?: { model: string; where?: Record<string, unknown> };
+  /**
+   * Pushes the lead somewhere that does NOT depend on our database, run only
+   * when the guard refuses for an INFRASTRUCTURE reason.
+   *
+   * The limiter fails closed, which is right: unmetered mail to strangers is
+   * worse than a refused form. But the limiter shares a database with the row
+   * write, so its outage refuses every capture, and the CRM is an external
+   * webhook that is still perfectly healthy in that window. Without this, a
+   * Neon blip silently costs Kelsey every lead that arrives during it, where
+   * before this change they still reached the CRM. Deliberately NOT run for a
+   * rate-limit or duplicate refusal: those are working as intended.
+   */
+  preserveLead?: () => Promise<unknown>;
 }
 
 export type CaptureDecision =
@@ -115,7 +128,7 @@ const noopRelease = async () => {};
  * and dedup queries agree with each other.
  */
 export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDecision> {
-  const { req, route, idempotency } = opts;
+  const { req, route, idempotency, preserveLead } = opts;
 
   if (typeof opts.email !== "string" || !EMAIL_SHAPE.test(opts.email.trim())) {
     return {
@@ -134,7 +147,11 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
   // record of and they cannot opt out of.
   //
   // The IP counter is charged per ATTEMPT, ahead of everything else, so a flood
-  // cannot make us do database work just to discover it is a flood.
+  // cannot make us do database work just to discover it is a flood. Note it is
+  // SKIPPED, not merely un-bucketed, when no proxy header identifies a client:
+  // collapsing every anonymous request into one shared key would let a single
+  // attacker exhaust the window for everybody. Vercel always sets these headers,
+  // so in production this is the identified path.
   const ip = clientIpFrom(req.headers);
   try {
     if (ip) {
@@ -143,7 +160,7 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
       if (!perIp.allowed) return { proceed: false, response: tooMany(route, "ip", perIp.retryAfterSeconds) };
     }
   } catch (err) {
-    return { proceed: false, response: limiterUnavailable(route, err) };
+    return { proceed: false, response: limiterUnavailable(route, err, preserveLead) };
   }
 
   // ── Idempotency, in two halves ───────────────────────────────────────────
@@ -186,15 +203,17 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
     schedulePrune(perDay.count);
     if (!perDay.allowed) return { proceed: false, response: tooMany(route, "email-day", perDay.retryAfterSeconds) };
   } catch (err) {
-    return { proceed: false, response: limiterUnavailable(route, err) };
+    return { proceed: false, response: limiterUnavailable(route, err, preserveLead) };
   }
 
   if (!idempotency) return { proceed: true, email, release: noopRelease };
 
   // The atomic half. An INSERT against a unique constraint is the operation the
-  // read above is missing: of three concurrent requests exactly one wins, and
-  // the losers are duplicates rather than three rows, three copies of the email
-  // and three independent nurture sequences.
+  // read above is missing: of three concurrent requests one wins and the losers
+  // are duplicates, rather than three rows, three copies of the email and three
+  // independent nurture sequences. The window is epoch-aligned, so two requests
+  // landing either side of a boundary take different locks and both proceed;
+  // the durable nurtureStep check is what covers that seam.
   const lockKey = `${idempotency.model}|${JSON.stringify(idempotency.where ?? {})}|${email}`;
   let bucket: Date | null;
   try {
@@ -224,8 +243,14 @@ function duplicate(route: string): NextResponse {
   return NextResponse.json({ success: true, deduplicated: true });
 }
 
-function limiterUnavailable(route: string, err: unknown): NextResponse {
+function limiterUnavailable(
+  route: string,
+  err: unknown,
+  preserveLead?: () => Promise<unknown>
+): NextResponse {
   console.error(`[${route}] rate limiter unavailable; refusing the request:`, err);
+  // The refusal stands, but the lead does not have to die with it.
+  if (preserveLead) afterResponse(`[${route}] CRM sync (degraded)`, preserveLead);
   return NextResponse.json(
     { error: "We couldn't process that just now. Please try again in a few minutes." },
     { status: 503, headers: { "Retry-After": "300" } }
@@ -262,8 +287,13 @@ export function resendFailed(label: string, result: { error?: unknown } | null |
  */
 export async function markDelivered(model: string, id: string, label: string): Promise<void> {
   try {
+    // updateMany with `nurtureStep: 0`, not update, so this only ever ADVANCES.
+    // A quiz retake reuses an existing row that may already be at step 2 or 3,
+    // and an unconditional write rewound it: harmless to the sequences, which
+    // are driven by step.sleep, but it showed a mid-sequence lead as "Step 1"
+    // on the admin dashboard.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (prisma as any)[model].update({ where: { id }, data: { nurtureStep: 1 } });
+    await (prisma as any)[model].updateMany({ where: { id, nurtureStep: 0 }, data: { nurtureStep: 1 } });
   } catch (err) {
     // Non-fatal: the email is already delivered, and under-recording it only
     // risks one duplicate on a resubmit. Failing the response here would be

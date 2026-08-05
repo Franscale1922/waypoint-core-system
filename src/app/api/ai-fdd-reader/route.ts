@@ -36,6 +36,15 @@ export async function POST(req: Request) {
     const guard = await guardCapture({
       req,
       route: "ai-fdd-reader",
+      // A limiter outage refuses the form, but the CRM is an external webhook
+      // that is still up, so the lead does not have to die with the request.
+      preserveLead: () =>
+        notifyCrm({
+          name: name || "Website Visitor",
+          email: String(body.email).trim().toLowerCase(),
+          source: "AI Paperwork Reader",
+          notes: "Captured during a degraded request; no email was sent.",
+        }),
       email: body.email,
       idempotency: { model: MODEL },
     });

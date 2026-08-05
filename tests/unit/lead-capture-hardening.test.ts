@@ -119,7 +119,7 @@ describe("a failed subscriber send is reported to the visitor", () => {
 
     expect(h.sendEvent).not.toHaveBeenCalled();
     // Leaving nurtureStep at 0 is what lets the visitor's retry through.
-    expect(h.db.checklistDownload.update).not.toHaveBeenCalled();
+    expect(h.db.checklistDownload.updateMany).not.toHaveBeenCalled();
   });
 
   it("still succeeds when only Kelsey's internal notification fails", async () => {
@@ -138,8 +138,10 @@ describe("a failed subscriber send is reported to the visitor", () => {
 
     await POST(post({ email: EMAIL }));
 
-    expect(h.db.checklistDownload.update).toHaveBeenCalledWith({
-      where: { id: ID },
+    // updateMany scoped to nurtureStep 0, so this only ever advances: a quiz
+    // retake reuses a row that may already be further along.
+    expect(h.db.checklistDownload.updateMany).toHaveBeenCalledWith({
+      where: { id: ID, nurtureStep: 0 },
       data: { nurtureStep: 1 },
     });
   });
@@ -570,5 +572,46 @@ describe("a send that REJECTS, rather than resolving with an error", () => {
     expect(h.db.rateLimitBucket.deleteMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ scope: "lock" }) })
     );
+  });
+});
+
+describe("a database outage refuses the form without losing the lead", () => {
+  it("still pushes the lead to the CRM when the limiter is unreachable", async () => {
+    // notifyCrm is an external webhook and is healthy in this window. Before
+    // this hook, failing the limiter closed meant the visitor got a 503 and
+    // Kelsey got nothing, where previously the lead still reached the CRM.
+    h.db.rateLimitBucket.upsert.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL, name: "Test Prospect" }));
+    await runScheduled();
+
+    expect(res.status).toBe(503);
+    expect(h.emailSend).not.toHaveBeenCalled();
+    expect(h.notifyCrm).toHaveBeenCalledTimes(1);
+    expect(h.notifyCrm.mock.calls[0][0]).toMatchObject({ email: EMAIL });
+  });
+
+  it("does NOT push a lead when the refusal is a rate limit", async () => {
+    // A throttled request is the limiter working. Treating it as degraded would
+    // feed Kelsey's CRM every attempt of an attack.
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(res.status).toBe(429);
+    expect(h.notifyCrm).not.toHaveBeenCalled();
+  });
+
+  it("does NOT push a lead for a duplicate", async () => {
+    h.db.checklistDownload.findFirst.mockResolvedValue({ id: "already_delivered" });
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    await POST(post({ email: EMAIL }));
+    await runScheduled();
+
+    expect(h.notifyCrm).not.toHaveBeenCalled();
   });
 });

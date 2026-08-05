@@ -23,7 +23,20 @@ export async function POST(req: Request) {
     // is the same unauthenticated inbox-bombing shape as the lead magnets, so it
     // takes the same limits. No idempotency key: two genuine messages are two
     // different messages, and swallowing the second would lose an enquiry.
-    const guard = await guardCapture({ req, route: "contact", email: body.email });
+    const guard = await guardCapture({
+      req,
+      route: "contact",
+      email: body.email,
+      // The enquiry itself is what must survive a degraded request here.
+      preserveLead: () =>
+        notifyCrm({
+          name,
+          email: String(body.email).trim().toLowerCase(),
+          phone: phone || undefined,
+          source: "Contact Form",
+          notes: String(message).slice(0, 500),
+        }),
+    });
     if (!guard.proceed) return guard.response;
     const email = guard.email;
 
