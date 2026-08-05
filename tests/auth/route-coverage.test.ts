@@ -72,12 +72,12 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   // separate reason: resolve() already looks the id up in that route's own
   // model, so a cross-route replay returns not-found, and a POST suppresses
   // every list regardless. The binding would buy nothing.
-  "unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "escape-kit-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "scorecard-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "archetype-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "escape-kit-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "scorecard-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "archetype-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
 };
 
 function walk(dir: string): string[] {

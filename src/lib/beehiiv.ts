@@ -84,7 +84,15 @@ export async function subscribeToBeehiiv(
     if (!res.ok) {
       const body = await res.text();
       console.error(`[beehiiv] Subscribe failed for ${email}: ${res.status} ${body}`);
-      return "failed";
+      // "failed" means A RETRY COULD WORK, because that is the only thing the
+      // caller can act on: the newsletter route turns it into "please try
+      // again". A 5xx or a network error qualifies. A 4xx does not, and the
+      // distinction matters right now because reactivate_existing is false, so
+      // an address that previously left the list is EXPECTED to be refused, and
+      // showing that visitor an error would be both wrong and confusing. Every
+      // 4xx is still logged above, which is the right channel for a bad key or
+      // a malformed request: those need an operator, not a retrying visitor.
+      return res.status >= 500 ? "failed" : "skipped";
     }
 
     console.log(`[beehiiv] Subscribed: ${email}`);

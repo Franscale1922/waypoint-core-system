@@ -61,13 +61,25 @@ describe("a beehiiv-side unsubscribe is not undone by our sync", () => {
 });
 
 describe("a failed sync is reported, not swallowed", () => {
-  it("reports failed on a non-2xx, without throwing", async () => {
+  it("reports failed on a 5xx, without throwing", async () => {
     globalThis.fetch = vi
       .fn()
       .mockResolvedValue({ ok: false, status: 500, text: async () => "boom" }) as never;
     const { subscribeToBeehiiv } = await import("@/lib/beehiiv");
 
     await expect(subscribeToBeehiiv(EMAIL)).resolves.toBe("failed");
+  });
+
+  it("does NOT report failed on a 4xx, which a retry cannot fix", async () => {
+    // With reactivate_existing false, an address that already left the list is
+    // EXPECTED to be refused. Turning that into "please try again" for the
+    // visitor would be both wrong and confusing. It is still logged.
+    globalThis.fetch = vi
+      .fn()
+      .mockResolvedValue({ ok: false, status: 400, text: async () => "already unsubscribed" }) as never;
+    const { subscribeToBeehiiv } = await import("@/lib/beehiiv");
+
+    await expect(subscribeToBeehiiv(EMAIL)).resolves.toBe("skipped");
   });
 
   it("reports failed on a network error, without throwing", async () => {
