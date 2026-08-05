@@ -69,6 +69,16 @@ jobs:
       # Listed by name for the same reason as every job above.
       - name: Verify article slug identity (unit tests)
         run: npx vitest run --project unit tests/unit/article-slug-identity.test.ts
+      # The third decision a commit makes, after WHAT is written and WHERE: may
+      # it overwrite the file it is pointed at, or has that file moved since the
+      # refresh read it. Listed by name for the same reason as every job above,
+      # and it matters more here than anywhere else on this path: the pre-push
+      # hook cannot see the refresh at all, because it commits through the GitHub
+      # API rather than through git, so this workflow is the only place these
+      # ever run. It also cross-checks the blob hash against `git hash-object`
+      # for every article on disk.
+      - name: Verify concurrent-edit guard, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-cas.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

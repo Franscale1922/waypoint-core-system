@@ -24,11 +24,55 @@
  *      nothing to say and no commit is created.
  *   3. An ambiguous failure of the ref PATCH, one where GitHub may have applied the update and
  *      lost the reply, is resolved by re-reading the ref rather than assumed to be a failure.
+ *   4. The compare-and-swap in step 2a recognises an article whose intended bytes are ALREADY the
+ *      blob on the branch, which is what a partial first attempt leaves behind. Without it a retry
+ *      would read its own work as somebody else's edit and report a successful batch as a total
+ *      failure.
  *
  * Two things are checked, because a commit is two decisions: WHAT is written (the serialized bytes,
  * whose dates are stamped and then validated) and WHERE it is written (the slug, which becomes the
  * path of a tree entry and is validated against SLUG_PATTERN, bound to the frontmatter slug, and
  * checked for collisions across the batch).
+ *
+ * There is a third question underneath both of them, and it is the one a compare-and-swap answers:
+ * whether the file being replaced is still the file this content was generated FROM. See step 2a.
+ * Do not read the absent `force` on the ref PATCH as covering that; it does not, for the reason
+ * spelled out there.
+ *
+ * A NOTE ON RULESETS, because the failure is loud but its cause is not
+ * -------------------------------------------------------------------
+ * This function PATCHes a branch ref directly, with a personal access token. A repository ruleset
+ * or a branch protection rule on the target branch that requires a pull request, a passing status
+ * check, or signed commits therefore makes EVERY refresh fail with 403, permanently. That status
+ * is deliberately not in `isAmbiguousStatus` and deliberately not retried by the rate-limit
+ * handling below: GitHub has decided, and it will decide the same way every time. Retrying it
+ * would burn the function's whole 10-minute budget on a request that cannot succeed.
+ *
+ * If that ever happens, the fix is NOT to weaken the ruleset or to add `force`. It is to publish
+ * through a branch and a pull request instead of straight to the default branch, which changes
+ * what the monthly refresh IS and is a product decision rather than a code change.
+ *
+ * Verified 2026-08-05: this repository has no rulesets (`gh api .../rulesets` returns `[]`) and no
+ * branch protection on `main`. So this is a hazard to recognise, not a live condition.
+ *
+ * THE ONE CASE THE COMPARE-AND-SWAP STILL CANNOT SEE, and why it was left open
+ * ---------------------------------------------------------------------------
+ * Step 2a compares FILE CONTENTS, so it catches an edit to an article. It does not constrain which
+ * commit the branch is at, so it cannot see a force-reset: an operator moves the branch back to an
+ * ancestor to remove bad commits, this function reads that older HEAD, finds each article's blob
+ * exactly as it expects, and fast-forwards, resurrecting whatever the reset removed elsewhere in
+ * the tree.
+ *
+ * Closing that needs an expected-head operation, and REST cannot express one: the ref PATCH takes
+ * no expected-oid, and reading the ref first is a check, not a compare-and-swap. GraphQL
+ * `createCommitOnBranch(expectedHeadOid:)` is genuinely atomic and would close it.
+ *
+ * Deliberately not done here. It replaces the entire blobs/tree/commit/ref sequence with one
+ * mutation, which is a rewrite of this module rather than an addition to it, and the idempotency
+ * machinery above is built around the intermediate objects that sequence creates. The window is
+ * also narrow and operator-initiated, unlike the editor-edit window this file exists to close.
+ * Recorded because the option was raised in review and a later reader should not have to rediscover
+ * either the option or the reason.
  *
  * Required env vars:
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
@@ -43,6 +87,7 @@ import matter from "gray-matter";
 import { ArticleFrontmatter } from "./contentRefresh";
 import { validateFrontmatterDates, utcDayString } from "./frontmatterDates.mjs";
 import { validateRequiredFields } from "./frontmatterFields.mjs";
+import { gitBlobSha } from "./gitBlobSha";
 import { validFaqEntries } from "@/app/lib/structured-data";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -51,13 +96,44 @@ export interface ArticleCommitPayload {
   slug: string;
   frontmatter: ArticleFrontmatter;
   body: string;
+  /**
+   * The git blob SHA of the article file this payload's content was generated FROM.
+   *
+   * Checked against the blob actually on the branch immediately before anything is overwritten
+   * (step 2a). A mismatch means the file moved underneath the run and this payload is built on a
+   * version that no longer exists.
+   *
+   * REQUIRED, deliberately, though an optional field would have spared the call sites. The check
+   * it feeds is the only thing standing between a concurrent human edit and silent data loss, and
+   * an optional field makes forgetting it indistinguishable from not needing it: the batch would
+   * commit, the run would report success, and the overwrite would be invisible. Required means the
+   * compiler refuses a caller that has not thought about it.
+   */
+  baseBlobSha: string;
 }
+
+/**
+ * The part of a payload that becomes bytes, which is all the validation needs.
+ *
+ * Named rather than inlined as a `Pick` at the one call site because two functions take it and the
+ * point of the narrowing is easy to undo by accident: widening either of them back to
+ * `ArticleCommitPayload` would compile, and would silently make `validateArticlePayload`
+ * unreachable from the per-article caller that has no blob SHA to hand yet.
+ */
+type ArticlePayloadContent = Pick<ArticleCommitPayload, "slug" | "frontmatter" | "body">;
 
 interface GitHubConfig {
   token: string;
   owner: string;
   repo: string;
   branch: string;
+  /**
+   * How this module waits between attempts at a rate-limited request. Injectable so tests can
+   * assert the backoff schedule without really sleeping, and defaulted in `getConfig` so
+   * production never has to think about it. Not part of the exported surface: it is a seam, not a
+   * setting.
+   */
+  sleep: (ms: number) => Promise<void>;
 }
 
 /**
@@ -75,12 +151,33 @@ export interface CommitOutcome {
     | "already-applied"
     /** The branch already contains these bytes, so committing would have been a no-op. */
     | "no-changes"
+    /** Every article stood down at the compare-and-swap. Nothing was written. */
+    | "stood-down"
     /** There were no articles to commit. */
     | "nothing-to-do";
   batchId: string | null;
   /** The commit carrying this batch: the new one, the one found, or HEAD. */
   commitSha: string | null;
+  /** How many payloads this call was handed. Not how many were written; see `applied`. */
   articles: number;
+  /**
+   * Slugs whose intended bytes are on the branch as of this outcome, whether this call wrote them
+   * or found them already there.
+   */
+  applied: string[];
+  /**
+   * Articles this call declined to write because the file had moved underneath the run.
+   *
+   * NOT an error list. These payloads were valid; somebody else's newer version of the file is
+   * already published, so the refresh stood down rather than guessing whose version is right. The
+   * caller reports them to a human, because a skip nobody is told about would be as bad as the
+   * overwrite it prevents.
+   *
+   * ALWAYS PRESENT, possibly empty. The caller still has to tolerate it being absent, because this
+   * object is memoized across an Inngest step boundary and a run that completed that step before
+   * this field existed replays the older shape.
+   */
+  stoodDown: { slug: string; reason: string }[];
 }
 
 // ─── Slug: the destination path, not a label ─────────────────────────────────
@@ -176,7 +273,7 @@ function slugFormatErrors(value: unknown, field: string): string[] {
  * check as `undefined` and is dropped from the refresh rather than committed to a guessed path.
  * All 45 articles currently carry one, and the corpus test asserts it stays that way.
  */
-function slugErrors(article: ArticleCommitPayload): string[] {
+function slugErrors(article: ArticlePayloadContent): string[] {
   const formatProblems = [
     ...slugFormatErrors(article.slug, "payload slug"),
     ...slugFormatErrors(article.frontmatter?.slug, "frontmatter slug"),
@@ -277,7 +374,10 @@ function rejectConfigValue(envVar: string, value: string): Error {
   );
 }
 
-function getConfig(): GitHubConfig {
+/** The default wait: a real timer. Overridden only by tests, through `commitRefreshedArticles`. */
+const realSleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+
+function getConfig(overrides: { sleep?: (ms: number) => Promise<void> } = {}): GitHubConfig {
   const token = process.env.GITHUB_TOKEN;
   const owner = process.env.GITHUB_REPO_OWNER;
   const repo = process.env.GITHUB_REPO_NAME;
@@ -295,7 +395,7 @@ function getConfig(): GitHubConfig {
     throw rejectConfigValue("GITHUB_BRANCH", branch);
   }
 
-  return { token, owner, repo, branch };
+  return { token, owner, repo, branch, sleep: overrides.sleep ?? realSleep };
 }
 
 function describeCause(cause: unknown): string {
@@ -337,58 +437,157 @@ function isAmbiguousStatus(status: number): boolean {
   return status >= 500 || status === 408;
 }
 
+// ─── Rate limits: the one refusal that is worth waiting out ──────────────────
+
+/** Attempts for a single request, INCLUDING the first. Three waits at most. */
+export const RATE_LIMIT_MAX_ATTEMPTS = 4;
+/** The longest single wait honoured from a header, however large the header says. */
+export const RATE_LIMIT_MAX_WAIT_MS = 60_000;
+/** Total added wait across every retry of one request. The function's own budget is 10 minutes. */
+export const RATE_LIMIT_TOTAL_BUDGET_MS = 120_000;
+/**
+ * Spread added on top of the server's own figure.
+ *
+ * Blob creation fires the whole batch in one tick, so a secondary rate limit refuses them all at
+ * once with the same `retry-after`, and an unjittered retry would send them all again in one tick
+ * too. Small, and only ever added, so it cannot retry EARLIER than the server asked.
+ */
+export const RATE_LIMIT_JITTER_MS = 250;
+
+/**
+ * How long to wait before retrying this response, or `null` for "do not retry".
+ *
+ * 403 IS TWO DIFFERENT ANSWERS AND ONLY ONE OF THEM IS TEMPORARY. GitHub returns it both for a
+ * secondary rate limit, which clears on its own, and for a refusal that never will: a ruleset
+ * requiring a pull request, a token without `contents: write`, an archived repository. Retrying
+ * the second kind spends the function's entire 10-minute budget waiting for an answer that is
+ * already final, and it would do so on the monthly run that most needs to fail fast and say why.
+ *
+ * So the evidence, not the status, decides. A `retry-after` header is GitHub explicitly saying
+ * "again later". Exhausted `x-ratelimit-remaining` with a reset still in the future says the same
+ * thing implicitly. A 403 carrying neither is a decision, and is left to `isAmbiguousStatus` and
+ * the throw path, unretried.
+ *
+ * A reset in the PAST is deliberately NOT retried either. The window it names has already closed,
+ * so the exhausted counter is stale evidence, and the likelier reading of a 403 that arrives with
+ * it is a permission refusal that happens to carry rate-limit headers, as every GitHub response
+ * does.
+ *
+ * Pure, and exported, because the header parsing is the part that rots: it is worth asserting
+ * directly rather than only through a retry loop that has to be provoked into running.
+ */
+export function rateLimitDelayMs(
+  status: number,
+  headers: { get(name: string): string | null } | undefined,
+  now: number,
+): number | null {
+  if (status !== 403 && status !== 429) return null;
+  if (!headers) return null;
+
+  const cap = (ms: number) => Math.min(Math.max(ms, 0), RATE_LIMIT_MAX_WAIT_MS);
+
+  const retryAfter = headers.get("retry-after");
+  if (retryAfter !== null && retryAfter.trim() !== "") {
+    // Delta-seconds is what GitHub sends. An HTTP-date is also legal per RFC 9110, and parsing it
+    // costs one line, so a compliant proxy in front of the API cannot turn a retryable refusal
+    // into a permanent one.
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds)) return cap(seconds * 1000);
+    const at = Date.parse(retryAfter);
+    if (Number.isFinite(at)) return cap(at - now);
+    return null;
+  }
+
+  if (headers.get("x-ratelimit-remaining") !== "0") return null;
+  const reset = Number(headers.get("x-ratelimit-reset"));
+  if (!Number.isFinite(reset)) return null;
+  const waitMs = reset * 1000 - now;
+  return waitMs > 0 ? cap(waitMs) : null;
+}
+
 async function githubRequest<T>(
   path: string,
   config: GitHubConfig,
   options: RequestInit = {}
 ): Promise<T> {
-  let res: Response;
+  let attempt = 0;
+  let waited = 0;
 
-  try {
-    res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}${path}`, {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${config.token}`,
-        Accept: "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-        "Content-Type": "application/json",
-        ...(options.headers ?? {}),
-      },
-    });
-  } catch (cause) {
-    // No response at all: DNS, TLS, a dropped socket, a client-side timeout. For a read this is
-    // just a failure. For the ref PATCH it is the case this module exists to survive, because the
-    // request may well have been applied and only the reply lost.
-    throw new GitHubRequestError(
-      `GitHub API request to ${path} failed before any response was received: ${describeCause(cause)}`,
-      { ambiguous: true, cause }
-    );
-  }
+  for (;;) {
+    attempt += 1;
+    let res: Response;
 
-  if (!res.ok) {
-    let body: string;
     try {
-      body = await res.text();
+      res = await fetch(`https://api.github.com/repos/${config.owner}/${config.repo}${path}`, {
+        ...options,
+        headers: {
+          Authorization: `Bearer ${config.token}`,
+          Accept: "application/vnd.github+json",
+          "X-GitHub-Api-Version": "2022-11-28",
+          "Content-Type": "application/json",
+          ...(options.headers ?? {}),
+        },
+      });
     } catch (cause) {
-      // The status is what classifies this, so a body we could not read costs nothing but detail.
-      body = `<response body unreadable: ${describeCause(cause)}>`;
+      // No response at all: DNS, TLS, a dropped socket, a client-side timeout. For a read this is
+      // just a failure. For the ref PATCH it is the case this module exists to survive, because the
+      // request may well have been applied and only the reply lost.
+      //
+      // Deliberately NOT retried here, and the rate-limit loop below is exactly why that is not an
+      // inconsistency. A rate-limit refusal is GitHub telling us it did not act; this is GitHub
+      // telling us nothing at all. Re-sending a write whose outcome is unknown is the double-commit
+      // this module was built to prevent, so it goes up to the caller that knows what to do about
+      // it.
+      throw new GitHubRequestError(
+        `GitHub API request to ${path} failed before any response was received: ${describeCause(cause)}`,
+        { ambiguous: true, cause }
+      );
     }
-    throw new GitHubRequestError(`GitHub API error ${res.status} on ${path}: ${body}`, {
-      status: res.status,
-      ambiguous: isAmbiguousStatus(res.status),
-    });
-  }
 
-  try {
-    return (await res.json()) as T;
-  } catch (cause) {
-    // GitHub accepted the request, the status says so, and the connection died while the reply
-    // was being read. For a write, the write landed; only our copy of the answer did not.
-    throw new GitHubRequestError(
-      `GitHub API returned ${res.status} on ${path} but the response body could not be read: ` +
-        describeCause(cause),
-      { status: res.status, ambiguous: true, cause }
-    );
+    if (!res.ok) {
+      const delay = rateLimitDelayMs(res.status, res.headers, Date.now());
+
+      if (delay !== null && attempt < RATE_LIMIT_MAX_ATTEMPTS) {
+        const wait = delay + Math.floor(Math.random() * RATE_LIMIT_JITTER_MS);
+        if (waited + wait <= RATE_LIMIT_TOTAL_BUDGET_MS) {
+          waited += wait;
+          await config.sleep(wait);
+          continue;
+        }
+      }
+
+      let body: string;
+      try {
+        body = await res.text();
+      } catch (cause) {
+        // The status is what classifies this, so a body we could not read costs nothing but detail.
+        body = `<response body unreadable: ${describeCause(cause)}>`;
+      }
+      // The attempt count is in the message because the two failures read identically otherwise,
+      // and they call for opposite responses: a rate limit that outlasted the budget means run it
+      // again later, a refusal on the first attempt means fix the configuration.
+      const tried =
+        attempt > 1 ? ` after ${attempt} attempts and ${Math.round(waited / 1000)}s of backoff` : "";
+      throw new GitHubRequestError(
+        `GitHub API error ${res.status} on ${path}${tried}: ${body}`,
+        {
+          status: res.status,
+          ambiguous: isAmbiguousStatus(res.status),
+        }
+      );
+    }
+
+    try {
+      return (await res.json()) as T;
+    } catch (cause) {
+      // GitHub accepted the request, the status says so, and the connection died while the reply
+      // was being read. For a write, the write landed; only our copy of the answer did not.
+      throw new GitHubRequestError(
+        `GitHub API returned ${res.status} on ${path} but the response body could not be read: ` +
+          describeCause(cause),
+        { status: res.status, ambiguous: true, cause }
+      );
+    }
   }
 }
 
@@ -475,7 +674,11 @@ export function serializeArticle(
  * checked because this function is exported and its result is a path in a tree.
  */
 export function validateArticlePayload(
-  article: ArticleCommitPayload,
+  // Only the three fields that become bytes. `baseBlobSha` decides WHERE the result may safely be
+  // written, which is the commit boundary's business rather than this function's, and requiring it
+  // here would force the per-article caller in src/inngest/functions.ts to produce a hash purely to
+  // satisfy a signature that ignores it.
+  article: ArticlePayloadContent,
   { today = utcDayString() }: { today?: string } = {},
 ): { errors: string[]; content: string } {
   // The underlying messages are written for somebody editing a file by hand ("Quote the value in
@@ -569,6 +772,13 @@ function carriesBatch(message: string, batchId: string): boolean {
  * in the history without needing the commit SHA it never received. So this hashes content, not a
  * clock and not a counter.
  *
+ * `prepared` here is what the run PUBLISHES, not everything it was handed: the compare-and-swap in
+ * step 2a runs first and removes any article that stood down. That keeps the identifier a true name
+ * for the commit's contents, and it stays stable across a retry for as long as the stand-down set
+ * is, which is exactly as long as it should. Hashing the full payload set instead would name a
+ * batch that was never committed, and the retry would then find that name in history and stand down
+ * over articles it had never published.
+ *
  * Entries are length-prefixed rather than delimiter-joined so no slug or body can impersonate a
  * different batch by containing the delimiter, and sorted by slug so batch order does not change
  * the name. Sorting is by code unit, not `localeCompare`, which is locale-dependent and would make
@@ -657,10 +867,20 @@ async function confirmRefAdvanced(
  */
 export async function commitRefreshedArticles(
   articles: ArticleCommitPayload[],
-  commitMessage?: string
+  commitMessage?: string,
+  // The wait between attempts at a rate-limited request, injectable so a test can assert the
+  // backoff without spending it. Nothing in production passes this.
+  options: { sleep?: (ms: number) => Promise<void> } = {},
 ): Promise<CommitOutcome> {
   if (articles.length === 0) {
-    return { status: "nothing-to-do", batchId: null, commitSha: null, articles: 0 };
+    return {
+      status: "nothing-to-do",
+      batchId: null,
+      commitSha: null,
+      articles: 0,
+      applied: [],
+      stoodDown: [],
+    };
   }
 
   // The trailer is how a retry identifies its own work, so a caller does not get to write one. A
@@ -675,7 +895,7 @@ export async function commitRefreshedArticles(
     );
   }
 
-  const config = getConfig();
+  const config = getConfig(options);
 
   // ── 0. Serialize and validate EVERYTHING before touching GitHub ──────────
   // This runs first, before the ref is read and long before it is advanced, because it is the last
@@ -733,12 +953,6 @@ export async function commitRefreshedArticles(
     );
   }
 
-  // Computed only once the batch is known to name distinct files, so the identity of a batch is
-  // never derived from one that would have been refused anyway.
-  const batchId = computeBatchId(
-    prepared.map(({ article, content }) => ({ slug: article.slug, content }))
-  );
-
   // ── 1. Get current HEAD commit SHA ───────────────────────────────────────
   const refPaths = branchRefPaths(config.branch);
   const refData = await githubRequest<{ object: { sha: string } }>(
@@ -747,28 +961,6 @@ export async function commitRefreshedArticles(
   );
   const latestCommitSha = refData.object.sha;
 
-  // ── 1a. Did an earlier attempt already publish this exact batch? ──────────
-  // The case this covers is the one where the SHA is not to hand: a previous run advanced the ref,
-  // lost the reply, and could not re-read it either, so it threw and Inngest retried. That retry is
-  // here, holding the same bytes and no memory of the commit they went into. The trailer is the
-  // only handle it has, and looking for it BEFORE creating a blob means an already-applied batch
-  // costs one GET rather than a duplicate commit and the production deploy behind it.
-  const recentCommits = await githubRequest<{ sha: string; commit: { message: string } }[]>(
-    `/commits?sha=${encodeURIComponent(latestCommitSha)}&per_page=${BATCH_LOOKBACK}`,
-    config
-  );
-  const alreadyApplied = recentCommits.find((entry) =>
-    carriesBatch(entry.commit.message, batchId)
-  );
-  if (alreadyApplied) {
-    return {
-      status: "already-applied",
-      batchId,
-      commitSha: alreadyApplied.sha,
-      articles: articles.length,
-    };
-  }
-
   // ── 2. Get the tree SHA of that commit ───────────────────────────────────
   const commitData = await githubRequest<{ tree: { sha: string } }>(
     `/git/commits/${latestCommitSha}`,
@@ -776,13 +968,225 @@ export async function commitRefreshedArticles(
   );
   const baseTreeSha = commitData.tree.sha;
 
+  // ── 2a. Compare-and-swap: is each file still the file we generated FROM? ──
+  //
+  // Everything below replaces `content/articles/<slug>.md` wholesale, and until this existed it did
+  // so with no idea what it was replacing. Three facts combine into silent data loss without it:
+  //
+  //   1. The content being written was generated from `process.cwd()/content/articles` (see
+  //      discoverArticles), which in a deployed function is the LAST BUILD's copy of the file, not
+  //      whatever is on the branch now.
+  //   2. Step 4 builds its tree on `base_tree`, so a path this batch names is replaced outright.
+  //      Nothing compares it to what is already there.
+  //   3. GITHUB'S OWN PROTECTION DOES NOT COVER THIS, AND IT LOOKS LIKE IT DOES. The PATCH in step
+  //      6 omits `force`, which defaults to false, and GitHub's docs say leaving it out "will make
+  //      sure you're not overwriting work". That guards the BRANCH POINTER, not file contents.
+  //      Replacing somebody's edit to a file while still descending from the commit that made it
+  //      is a perfectly good fast-forward, so the ref update succeeds and the edit is gone.
+  //
+  // The retry is what made it silent rather than merely possible. This runs inside a `step.run` on
+  // a function configured `retries: 1` (src/inngest/functions.ts). If an editor's commit lands
+  // between step 1 and step 6, the PATCH is refused as a non-fast-forward, the step throws, and
+  // Inngest retries. The retry re-reads HEAD, rebuilds on their commit, and applies the same stale
+  // bytes, which now IS a fast-forward. Attempt one fails loudly; attempt two overwrites them and
+  // reports success.
+  //
+  // So each payload carries the blob SHA of the file it was generated from, and that has to still
+  // be the blob on the branch. Anything else means the file moved underneath this run and this
+  // run's version is built on a copy that no longer exists. The article stands down rather than
+  // guessing whose version is right; it keeps the newer content and comes back at the next cadence.
+  //
+  // `?recursive=1` IS LOAD-BEARING AND ITS ABSENCE IS CATASTROPHIC RATHER THAN DEGRADING. Without
+  // it GitHub returns only top-level entries, so `content` arrives as a single `type: "tree"` entry
+  // and this map gets ZERO article paths. Every article would then stand down, forever, while the
+  // run reported success and blamed the articles in the summary email: strictly worse than the bug
+  // being fixed. tests/unit/write-path-cas.test.ts pins it, because a mock that ignores the query
+  // string cannot tell the two reads apart and this stayed green under exactly that mock once.
+  const baseTree = await githubRequest<{
+    tree: { path: string; sha: string; type: string; mode: string }[];
+    truncated: boolean;
+  }>(`/git/trees/${baseTreeSha}?recursive=1`, config);
+
+  // Fail closed. A truncated listing is missing paths, and a missing path is indistinguishable
+  // here from a deleted file: both read as "no blob for this article". Standing every article down
+  // on that basis would be wrong, and trusting the gap would be the silent overwrite this check
+  // exists to prevent, so the batch stops instead. GitHub truncates around 100k entries; this
+  // repository has ~700, so if this ever fires something is wrong that a fallback would only hide.
+  if (baseTree.truncated) {
+    throw new Error(
+      `Refusing to commit: GitHub truncated the tree listing for ${baseTreeSha}, so the current ` +
+        `blob of each article cannot be established and a stale overwrite could not be detected. ` +
+        `Nothing was written: no blobs were created and ${config.branch} was not advanced.`,
+    );
+  }
+
+  const entryByPath = new Map(baseTree.tree.map((entry) => [entry.path, entry]));
+
+  /** Articles whose file is unchanged since this run read it. These are the ones to write. */
+  const writeSet: typeof prepared = [];
+  /** Articles whose intended bytes are ALREADY the blob on the branch. Not written, not a problem. */
+  const alreadyOnBranch: typeof prepared = [];
+  const stoodDown: { slug: string; reason: string }[] = [];
+
+  for (const item of prepared) {
+    const { article, path, content } = item;
+    const entry = entryByPath.get(path);
+
+    if (entry === undefined) {
+      stoodDown.push({
+        slug: article.slug,
+        reason:
+          `${path} no longer exists on ${config.branch}. It was deleted or renamed after this ` +
+          `refresh read it, so re-creating it here would silently revert that.`,
+      });
+      continue;
+    }
+
+    // Step 3 hard-codes `mode: "100644"` on the tree entry it writes, so the path must already hold
+    // exactly that: a plain, non-executable blob. Anything else and the commit would be changing
+    // something it was never asked to change.
+    //
+    // Three shapes reach this. A submodule (`type: "commit"`) and a symlink (`mode: "120000"`) are
+    // not files at all, and the SHA comparison below would be reading an object of a different kind.
+    // An executable blob (`mode: "100755"`) IS a file, and is caught for a subtler reason: writing
+    // over it would silently clear the executable bit, an edit nobody requested and nothing would
+    // report. All 45 articles are 100644 today (verified 2026-08-05), so this cannot fire on the
+    // current corpus.
+    //
+    // Checked by looking the entry UP rather than by filtering the listing, which is what makes this
+    // branch reachable from a test. The previous attempt filtered on `type === "blob"`, and deleting
+    // that filter left every test green, because a filtered-out entry and an absent one are
+    // indistinguishable once the map is built.
+    if (entry.type !== "blob" || entry.mode !== "100644") {
+      stoodDown.push({
+        slug: article.slug,
+        reason:
+          `${path} on ${config.branch} is not the plain file this refresh writes (type ` +
+          `"${entry.type}", mode "${entry.mode}", expected type "blob" mode "100644"). Committing ` +
+          `over it would change more than the article's contents.`,
+      });
+      continue;
+    }
+
+    // THE BASE ARM IS TESTED FIRST AND THE ORDER IS LOAD-BEARING.
+    //
+    // When a refresh produces output byte-identical to its input, the base SHA and the output SHA
+    // are THE SAME VALUE and both arms match. Testing output first would label an untouched
+    // article "already applied by this run", and a batch of nothing but no-ops would report
+    // `already-applied` when the honest answer is `no-changes`. Taking the base arm first makes it
+    // an ordinary write that step 4a then collapses to `no-changes` on the tree comparison.
+    if (entry.sha === article.baseBlobSha) {
+      writeSet.push(item);
+      continue;
+    }
+
+    // The branch already holds exactly what this run intended to write, so an earlier attempt of
+    // this run published it. That is NOT a conflict, and calling it one is the defect that stopped
+    // the previous attempt shipping: after a partial batch, the retry would find its own bytes on
+    // every path it had committed, match no base SHA, mark them all conflicted, and email
+    // "0 updated / N failed" for work that committed and deployed correctly. This arm is what
+    // preserves the distinction #39 exists to make.
+    if (entry.sha === gitBlobSha(content)) {
+      alreadyOnBranch.push(item);
+      continue;
+    }
+
+    stoodDown.push({
+      slug: article.slug,
+      reason:
+        `${path} changed on ${config.branch} after this refresh read it (expected blob ` +
+        `${article.baseBlobSha.slice(0, 7)}, found ${entry.sha.slice(0, 7)}). Committing would ` +
+        `overwrite that newer version with content generated from the older one, so this article ` +
+        `stood down and keeps the newer version.`,
+    });
+  }
+
+  // Everything this run is responsible for publishing: what it will write, plus what an earlier
+  // attempt already wrote. Deliberately excludes stand-downs, which nothing published.
+  const published = [...writeSet, ...alreadyOnBranch];
+
+  if (published.length === 0) {
+    return {
+      status: "stood-down",
+      batchId: null,
+      commitSha: null,
+      articles: articles.length,
+      applied: [],
+      stoodDown,
+    };
+  }
+
+  // ── 2b. Batch identity, and did an earlier attempt already publish it? ────
+  //
+  // BOTH OF THESE MOVED HERE FROM AHEAD OF STEP 1, AND THE MOVE IS REQUIRED RATHER THAN TIDYING.
+  // #39 derives the batch identity from the exact bytes being committed, which is what lets a
+  // retry recognise its own work. Before the compare-and-swap existed, that set was always every
+  // payload. Now it is not: a batch can commit a SUBSET of what it was handed.
+  //
+  // Left where it was, the id would be hashed over payloads that were never committed, and the
+  // failure is the quiet kind. Attempt one stands article A down and commits {B,C} under a trailer
+  // naming {A,B,C}; the retry re-derives that same id from the same payloads, finds the trailer
+  // before reading any tree, and returns `already-applied` with nothing to report. A never appears
+  // anywhere, and the summary email lists it as refreshed.
+  //
+  // Hashing over `published` fixes both halves at once: the trailer names what is actually on the
+  // branch, and it stays STABLE across a retry for as long as the stand-down set is stable, which
+  // is exactly when it should.
+  //
+  // #39's guarantee is unharmed. What it promises is that already-applied work is recognised
+  // BEFORE A BLOB IS CREATED, not before any request at all, and reading a tree creates nothing.
+  //
+  // AND THE TRAILER NO LONGER DECIDES WHETHER TO WRITE. It answers a narrower question now, and
+  // only once step 2a has established there is nothing to write.
+  //
+  // A trailer in history proves a commit carrying these bytes EXISTED. It says nothing about what
+  // the branch holds today, and the two answers come apart the moment anything moves a file back.
+  // Raised by review and reproduced: attempt one commits and loses its reply badly enough to throw,
+  // the article is then restored to its pre-refresh bytes, and the retry arrives. Step 2a correctly
+  // puts the article in the write set; a trailer scan allowed to override that returns
+  // `already-applied` and writes nothing, so the run reports the refresh as published while the
+  // branch holds the old content. That is this module's own failure mode wearing a different hat.
+  //
+  // So the bytes decide, and the trailer is consulted only to name WHICH commit carries them, which
+  // is the one thing the bytes cannot say. Nothing is lost: whenever there is work to do, doing it
+  // is right regardless of what history claims. Skipping the scan on the ordinary path also saves a
+  // request per run.
+  const batchId = computeBatchId(
+    published.map(({ article, content }) => ({ slug: article.slug, content }))
+  );
+  const appliedSlugs = published.map(({ article }) => article.slug);
+
+  if (writeSet.length === 0) {
+    // Every surviving article's bytes are ALREADY the blob on the branch, so there is nothing to
+    // write whatever history says. The only open question is which commit put them there.
+    const recentCommits = await githubRequest<{ sha: string; commit: { message: string } }[]>(
+      `/commits?sha=${encodeURIComponent(latestCommitSha)}&per_page=${BATCH_LOOKBACK}`,
+      config
+    );
+    const carrier = recentCommits.find((entry) => carriesBatch(entry.commit.message, batchId));
+    // No trailer in the window means the commit is unknown, not that the bytes are absent. HEAD is
+    // reported rather than a SHA invented.
+    return {
+      status: "already-applied",
+      batchId,
+      commitSha: carrier?.sha ?? latestCommitSha,
+      articles: articles.length,
+      applied: appliedSlugs,
+      stoodDown,
+    };
+  }
+
   // ── 3. Create blobs for each updated article ─────────────────────────────
   // Uses the content validated in step 0, never a re-serialization of it: serializing twice would
   // mean the bytes that were checked are not necessarily the bytes that get committed. Same
   // reasoning for `path`, which is the one built and checked for collisions in step 0b rather than
   // a second interpolation of the slug.
+  //
+  // Over the write set, not over `prepared`: an article that stood down must not have its bytes
+  // laid over the newer version, which is the entire point of step 2a, and one already on the
+  // branch would cost a request to produce a blob that is already there.
   const blobs = await Promise.all(
-    prepared.map(async ({ path, content }) => {
+    writeSet.map(async ({ path, content }) => {
       const encoded = Buffer.from(content, "utf-8").toString("base64");
 
       const blob = await githubRequest<{ sha: string }>(
@@ -823,17 +1227,26 @@ export async function commitRefreshedArticles(
   // anything and still costs a production deploy plus the `prisma db push` that rides along with
   // it. Blobs created above are unreferenced and GitHub collects them.
   if (newTree.sha === baseTreeSha) {
-    return { status: "no-changes", batchId, commitSha: latestCommitSha, articles: articles.length };
+    return {
+      status: "no-changes",
+      batchId,
+      commitSha: latestCommitSha,
+      articles: articles.length,
+      applied: appliedSlugs,
+      stoodDown,
+    };
   }
 
   // ── 5. Create the commit ──────────────────────────────────────────────────
   const commitDate = new Date().toLocaleDateString("en-US", {
     month: "short", day: "numeric", year: "numeric",
   });
+  // writeSet.length, not articles.length: an article that stood down at step 2a is not in this
+  // commit, and a message counting it would misdescribe the commit's own contents in git history.
   const summary = commitMessage
-    ?? `chore: content refresh, ${articles.length} article(s) updated (${commitDate})`;
+    ?? `chore: content refresh, ${writeSet.length} article(s) updated (${commitDate})`;
   // The trailer goes on every commit this function makes, including one with a caller-supplied
-  // message, because step 1a of the NEXT attempt is the only thing that can see it.
+  // message, because step 2b of the NEXT attempt is the only thing that can see it.
   const message = `${summary}\n\n${batchTrailer(batchId)}\n`;
 
   const newCommit = await githubRequest<{ sha: string }>(
@@ -871,5 +1284,12 @@ export async function commitRefreshedArticles(
     await confirmRefAdvanced(config, refPaths.read, newCommit.sha, batchId, error);
   }
 
-  return { status: "committed", batchId, commitSha: newCommit.sha, articles: articles.length };
+  return {
+    status: "committed",
+    batchId,
+    commitSha: newCommit.sha,
+    articles: articles.length,
+    applied: appliedSlugs,
+    stoodDown,
+  };
 }

@@ -1,5 +1,6 @@
 import { beforeEach, afterEach, vi } from "vitest";
 import { createHash } from "crypto";
+import { gitBlobSha } from "@/lib/gitBlobSha";
 
 /**
  * The fake Git Data API, shared by every suite that drives commitRefreshedArticles.
@@ -25,10 +26,19 @@ export function shortHash(input: string): string {
   return createHash("sha256").update(input).digest("hex").slice(0, 12);
 }
 
-export function jsonResponse(status: number, payload: unknown): Response {
+export function jsonResponse(
+  status: number,
+  payload: unknown,
+  // Real responses always carry headers, and the production code reads them to tell a rate-limit
+  // refusal from a permanent one. A double without them would make every 403 look permanent, so
+  // this always provides a Headers, empty by default.
+  headers: Record<string, string> = {},
+): Response {
+  const lower = new Map(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));
   return {
     ok: status >= 200 && status < 300,
     status,
+    headers: { get: (name: string) => lower.get(name.toLowerCase()) ?? null },
     json: async () => payload,
     text: async () => JSON.stringify(payload),
   } as unknown as Response;
@@ -58,16 +68,25 @@ export function createFakeGitHub(initialFiles: Record<string, string> = {}) {
 
   const baseEntries: Record<string, string> = {};
   for (const [path, content] of Object.entries(initialFiles)) {
-    const sha = `blob-${shortHash(content)}`;
+    // REAL git blob object IDs, not a convenient stand-in. The compare-and-swap in
+    // commitRefreshedArticles compares a locally computed `gitBlobSha` against what it reads back
+    // from a tree, so a fake that invented its own SHA scheme would make every article look changed
+    // and no test could distinguish a working check from a broken one.
+    const sha = gitBlobSha(content);
     blobs.set(sha, content);
     baseEntries[path] = sha;
   }
+
+  /** Per-path overrides so a test can put something that is not a regular file at a path. */
+  const entryOverrides = new Map<string, { type?: string; mode?: string; sha?: string }>();
+  let truncated = false;
   const baseTree = treeShaOf(baseEntries);
   trees.set(baseTree, baseEntries);
   commits.set("commit-base", { tree: baseTree, message: "base commit", parents: [] });
 
   let head = "commit-base";
   let commitSeq = 0;
+  let editSeq = 0;
 
   async function handle(url: string | URL, init: RequestInit = {}): Promise<Response> {
     const parsed = new URL(String(url));
@@ -101,9 +120,68 @@ export function createFakeGitHub(initialFiles: Record<string, string> = {}) {
       return jsonResponse(200, { sha, tree: { sha: commit.tree } });
     }
 
+    // Reading a tree. THE `recursive` QUERY PARAMETER IS HONOURED, and that is the entire reason
+    // this handler is worth having rather than stubbing.
+    //
+    // Real GitHub returns only TOP-LEVEL entries without it, so `content/articles/x.md` is not in
+    // the listing at all: `content` is, as a single `type: "tree"` entry. A fake that ignored the
+    // query string, as the previous attempt's did, answers both reads identically, and dropping
+    // `?recursive=1` from production then leaves every test green while the refresh silently stops
+    // writing anything. Modelling the difference is what makes that mutation detectable.
+    if (method === "GET" && path.startsWith("/git/trees/")) {
+      const sha = path.slice("/git/trees/".length);
+      const entries = trees.get(sha);
+      if (!entries) return jsonResponse(404, { message: "Not Found" });
+
+      const decorate = (p: string, blobSha: string) => ({
+        path: p,
+        mode: "100644",
+        type: "blob",
+        sha: blobSha,
+        ...(entryOverrides.get(p) ?? {}),
+      });
+
+      let tree: { path: string; mode: string; type: string; sha: string }[];
+
+      if (parsed.searchParams.get("recursive")) {
+        // Directories appear in a recursive listing too, exactly as git reports them.
+        const dirs = new Set<string>();
+        for (const p of Object.keys(entries)) {
+          const parts = p.split("/");
+          for (let i = 1; i < parts.length; i += 1) dirs.add(parts.slice(0, i).join("/"));
+        }
+        tree = [
+          ...[...dirs].map((d) => ({
+            path: d,
+            mode: "040000",
+            type: "tree",
+            sha: `tree-dir-${shortHash(d)}`,
+          })),
+          ...Object.entries(entries).map(([p, blobSha]) => decorate(p, blobSha)),
+        ];
+      } else {
+        const top = new Map<string, { path: string; mode: string; type: string; sha: string }>();
+        for (const [p, blobSha] of Object.entries(entries)) {
+          const [head, ...rest] = p.split("/");
+          if (rest.length === 0) top.set(head, decorate(p, blobSha));
+          else if (!top.has(head)) {
+            top.set(head, {
+              path: head,
+              mode: "040000",
+              type: "tree",
+              sha: `tree-dir-${shortHash(head)}`,
+            });
+          }
+        }
+        tree = [...top.values()];
+      }
+
+      return jsonResponse(200, { sha, tree, truncated });
+    }
+
     if (method === "POST" && path === "/git/blobs") {
       const content = Buffer.from(body.content, "base64").toString("utf-8");
-      const sha = `blob-${shortHash(content)}`;
+      const sha = gitBlobSha(content);
       blobs.set(sha, content);
       return jsonResponse(201, { sha });
     }
@@ -135,6 +213,30 @@ export function createFakeGitHub(initialFiles: Record<string, string> = {}) {
     get head() { return head; },
     /** How many commit OBJECTS were created. The retry tests exist to keep this at 1. */
     get createdCommits() { return commitSeq; },
+    /** Make the next tree read report a truncated listing, which must fail the batch closed. */
+    setTruncated: (value: boolean) => { truncated = value; },
+    /**
+     * Put something other than a regular file at a path: a submodule (`type: "commit"`) or a
+     * symlink (`mode: "120000"`). Git can hold either at a path an article expects to occupy.
+     */
+    setTreeEntry: (path: string, entry: { type?: string; mode?: string; sha?: string }) => {
+      entryOverrides.set(path, entry);
+    },
+    /** Overwrite a file directly, as a concurrent human editor would. Returns its new blob SHA. */
+    writeFile: (path: string, content: string) => {
+      const sha = gitBlobSha(content);
+      blobs.set(sha, content);
+      const entries = { ...(trees.get(commits.get(head)!.tree) ?? {}), [path]: sha };
+      const treeSha = treeShaOf(entries);
+      trees.set(treeSha, entries);
+      // A SEPARATE counter from `commitSeq`. `createdCommits` means "commits the production code
+      // created", and the retry tests exist to hold it at 1; letting a simulated human edit bump it
+      // would quietly break the one number those tests are about.
+      const commitSha = `commit-edit-${++editSeq}`;
+      commits.set(commitSha, { tree: treeSha, message: `edit ${path}`, parents: [head] });
+      head = commitSha;
+      return sha;
+    },
     messageOf: (sha: string) => commits.get(sha)?.message,
     fileAt: (commitSha: string, path: string) => {
       const commit = commits.get(commitSha);
@@ -146,6 +248,32 @@ export function createFakeGitHub(initialFiles: Record<string, string> = {}) {
 }
 
 export type FakeGitHub = ReturnType<typeof createFakeGitHub>;
+
+// ─── Seeding the branch a commit runs against ─────────────────────────────────
+//
+// Every payload now carries the blob SHA of the file it was generated from, and the commit refuses
+// to overwrite a path whose blob does not match. So a batch can only commit against a branch that
+// actually HOLDS those files: an empty fake makes every article stand down, which is correct
+// behaviour and useless as a fixture. These three keep that setup to one line per suite and, more
+// importantly, keep the seeded bytes and the payload's SHA derived from ONE source, so they cannot
+// drift apart and turn a real regression into a fixture bug.
+
+/** Plausible prior contents of an article file. The bytes do not matter; their identity does. */
+export function baseArticleFile(slug: string): string {
+  return `---\ntitle: Previously published ${slug}\nslug: ${slug}\n---\n\nThe version already on the branch.\n`;
+}
+
+/** A seed map for `createFakeGitHub`, covering every slug a batch is about to write. */
+export function seedArticles(...slugs: string[]): Record<string, string> {
+  return Object.fromEntries(
+    slugs.map((slug) => [`content/articles/${slug}.md`, baseArticleFile(slug)]),
+  );
+}
+
+/** The `baseBlobSha` a payload must carry to match what `seedArticles` put on the branch. */
+export function baseBlobShaFor(slug: string): string {
+  return gitBlobSha(baseArticleFile(slug));
+}
 
 export const methodOf = (init?: RequestInit) => init?.method ?? "GET";
 export const pathOf = (url: unknown) => new URL(String(url)).pathname;

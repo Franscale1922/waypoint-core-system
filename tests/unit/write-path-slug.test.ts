@@ -4,7 +4,13 @@ import { join } from "node:path";
 import matter from "gray-matter";
 
 import { DEFAULT_ARTICLES_DIR } from "../../scripts/verify-dates.mjs";
-import { createFakeGitHub, useGitHubEnv, type FakeGitHub } from "./helpers/fake-github";
+import {
+  baseBlobShaFor,
+  createFakeGitHub,
+  seedArticles,
+  useGitHubEnv,
+  type FakeGitHub,
+} from "./helpers/fake-github";
 
 /**
  * WHERE the AI content refresh writes, as opposed to what it writes.
@@ -50,7 +56,14 @@ const BASE_FRONTMATTER = {
 
 /** The two slugs travel separately in one payload, so the fixture sets them separately. */
 function payload(slug: unknown, frontmatterSlug: unknown = slug) {
-  return { slug, frontmatter: { ...BASE_FRONTMATTER, slug: frontmatterSlug }, body: BODY } as never;
+  return {
+    slug,
+    frontmatter: { ...BASE_FRONTMATTER, slug: frontmatterSlug },
+    body: BODY,
+    // Matches what `seedArticles` puts on the branch for a well-formed slug. A malformed one is
+    // refused long before the compare-and-swap, so the value there is irrelevant rather than wrong.
+    baseBlobSha: typeof slug === "string" ? baseBlobShaFor(slug) : "",
+  } as never;
 }
 
 /**
@@ -239,7 +252,9 @@ describe("commitRefreshedArticles: nothing is written when the destination is wr
     // stub. A flat stub answers every endpoint with one shape, which is not merely imprecise: the
     // batch-identity lookup reads `/commits` as an ARRAY, so a stub returning an object fails as a
     // TypeError inside production code rather than as an honest assertion.
-    gh = createFakeGitHub();
+    gh = createFakeGitHub(
+      seedArticles("franchise-costs", "franchise-financing", "franchise-costs-2026"),
+    );
     fetchMock = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
     vi.stubGlobal("fetch", fetchMock);
   });

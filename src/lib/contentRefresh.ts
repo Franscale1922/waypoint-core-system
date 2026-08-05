@@ -10,6 +10,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import identityMap from "./match-workspace/brand-identity-map.json";
+import { gitBlobSha } from "./gitBlobSha";
 import {
   REVIEW_CADENCES,
   REVIEW_CADENCE_FIELD,
@@ -56,6 +57,32 @@ export interface Article {
   frontmatter: ArticleFrontmatter;
   body: string;
   filePath: string;
+  /**
+   * The git blob SHA of the file this article was read from, hashed from the bytes on disk before
+   * gray-matter split them.
+   *
+   * The commit path compares this against the blob currently on the branch and refuses to
+   * overwrite a file that has moved underneath the run. See the compare-and-swap in
+   * src/lib/githubArticleCommit.ts for what the comparison protects.
+   *
+   * THE HASH IS TAKEN HERE, AT THE READ, and the raw bytes are then dropped. Two reasons, and both
+   * of them bite if this is moved:
+   *
+   *   1. `frontmatter` + `body` cannot be recombined into the bytes that were read. gray-matter
+   *      normalises key order, quoting and whitespace when it stringifies, so a hash taken later
+   *      from the parsed halves describes a file git has never stored, and every article would
+   *      report a conflict that does not exist.
+   *   2. This object crosses an Inngest step boundary, where it is memoized as JSON. Carrying the
+   *      raw bytes as well would roughly double the size of that memoized payload (45 files) to
+   *      produce a 40-character string.
+   *
+   * WHAT IT PINS, precisely: the file as of the DEPLOYED commit, not as of the branch tip.
+   * discoverArticles reads process.cwd()/content/articles, which in a deployed function is the
+   * last build's copy. So an article edited on the branch after that build stands down at the
+   * commit boundary, which is correct rather than a false alarm: this run's content really was
+   * generated from bytes that are no longer current.
+   */
+  baseBlobSha: string;
 }
 
 // ─── Frontmatter Ownership ───────────────────────────────────────────────────
@@ -68,11 +95,17 @@ export interface Article {
  * (`relatedSlugs`, `checklistSlug`, `escapeKit`) or provenance (`date`, `updatedAt`), and a language
  * model has no standing to author any of it.
  *
- * NOT on this list, deliberately:
+ * NOT on this list, deliberately, and the two are excluded for OPPOSITE reasons since #46:
  *
- *   `date` and `updatedAt`, because `serializeArticle` in src/lib/githubArticleCommit.ts stamps
- *   both at the moment of the commit and ignores whatever it was handed. Pinning them here as well
- *   would imply the value flowing through this function matters, and it does not.
+ *   `updatedAt`, because `serializeArticle` in src/lib/githubArticleCommit.ts stamps it at the
+ *   moment of the commit and ignores whatever it was handed. Pinning it here as well would imply
+ *   the value flowing through this function matters, and it does not.
+ *
+ *   `date`, because nothing downstream stamps it any more. It is the publication date, preserved
+ *   from the original article, and THIS FUNCTION is now what keeps a model-authored one out: the
+ *   value reaching the commit path is the one already on disk precisely because `date` is absent
+ *   from this list. That guarantee used to live in the overwrite in `serializeArticle`, and its
+ *   docblock explains why it moved. Adding a date field here would reopen the hole silently.
  */
 export const MODEL_OWNED_FIELDS = ["title", "excerpt", "faqs"] as const;
 
@@ -280,6 +313,9 @@ export function discoverArticles(): ArticleDiscovery {
         frontmatter: data as ArticleFrontmatter,
         body: content,
         filePath,
+        // Hashed from `raw`, the bytes just read, and not from `data` + `content`. See the field's
+        // doc comment on the Article interface for why the parsed halves cannot substitute.
+        baseBlobSha: gitBlobSha(raw),
       },
     ];
   });

@@ -12,7 +12,16 @@ import {
   validateRequiredFields,
 } from "@/lib/frontmatterFields.mjs";
 import { validFaqEntries } from "@/app/lib/structured-data";
+import {
+  baseBlobShaFor,
+  createFakeGitHub,
+  seedArticles,
+  useGitHubEnv,
+  type FakeGitHub,
+} from "./helpers/fake-github";
 import * as aeoAudit from "../../scripts/aeo-audit.mjs";
+
+let gh: FakeGitHub;
 
 /**
  * The required NON-DATE frontmatter fields, on the AI content-refresh write path.
@@ -92,6 +101,9 @@ const at = (slug: string, frontmatter: unknown) => ({
   slug,
   frontmatter: { ...(frontmatter as object), slug } as never,
   body: BODY,
+  // Matches what `seedArticles` put on the branch, so these fixtures exercise the FIELD rule they
+  // were written for rather than standing down at the compare-and-swap first.
+  baseBlobSha: baseBlobShaFor(slug),
 });
 
 /** Run the shared rules over the bytes matter.stringify really emits, never a hand-written string. */
@@ -426,7 +438,7 @@ describe("validateArticlePayload: dates and fields are both enforced", () => {
   it("passes a well-formed article", async () => {
     const { validateArticlePayload } = await import("@/lib/githubArticleCommit");
     const { errors } = validateArticlePayload(
-      { slug: "alpha", frontmatter: validFrontmatter(), body: BODY },
+      at("alpha", validFrontmatter()),
       { today: TODAY },
     );
     expect(errors).toEqual([]);
@@ -455,43 +467,25 @@ describe("validateArticlePayload: dates and fields are both enforced", () => {
 });
 
 describe("commitRefreshedArticles: a bad field stops the batch before any network call", () => {
-  const ORIGINAL_ENV = { ...process.env };
+  useGitHubEnv();
   let fetchMock: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    process.env.GITHUB_TOKEN = "test-token";
-    process.env.GITHUB_REPO_OWNER = "Franscale1922";
-    process.env.GITHUB_REPO_NAME = "waypoint-core-system";
-    process.env.GITHUB_BRANCH = "main";
-
-    // One shape answers ref, commit, blob, tree and the ref PATCH, because none of the assertions
-    // in this file care which. `/commits` is the exception: the commit path scans it for a previous
-    // attempt's `Refresh-Batch:` trailer, so it has to be a LIST. Returning the catch-all object
-    // there fails as `recentCommits.find is not a function`, which says nothing about the batch
-    // this file is really testing. Every other test here refuses before any request, so this only
-    // matters for the one below that lets a valid batch through.
-    fetchMock = vi.fn(async (url: unknown) =>
-      ({
-        ok: true,
-        json: async () =>
-          new URL(String(url)).pathname.endsWith("/commits")
-            ? []
-            : { object: { sha: "refsha" }, tree: { sha: "treesha" }, sha: "newsha" },
-        text: async () => "",
-      }) as unknown as Response,
-    );
+    // The shared stateful fake, replacing a one-shape stub this block used to hand-roll.
+    //
+    // That stub answered every endpoint with `{object, tree, sha}`, and the comment on it recorded
+    // one endpoint it had already had to special-case: `/commits` must be a LIST or the trailer
+    // scan fails as `recentCommits.find is not a function`. Reading a TREE is the second such
+    // endpoint, and it fails the same illegible way. Rather than special-case a second shape, this
+    // now drives the fake every other write-path suite drives, which models all of them.
+    gh = createFakeGitHub(seedArticles("alpha", "beta"));
+    fetchMock = vi.fn((url: unknown, init?: RequestInit) => gh.handle(String(url), init));
     vi.stubGlobal("fetch", fetchMock);
-  });
-
-  afterEach(() => {
-    process.env = { ...ORIGINAL_ENV };
-    vi.unstubAllGlobals();
-    vi.resetModules();
   });
 
   it("commits a valid batch, so the negative assertions below mean something", async () => {
     const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
-    await commitRefreshedArticles([{ slug: "alpha", frontmatter: validFrontmatter(), body: BODY }]);
+    await commitRefreshedArticles([at("alpha", validFrontmatter())]);
     expect(fetchMock.mock.calls.some(([, init]) => init?.method === "PATCH")).toBe(true);
   });
 
@@ -512,7 +506,7 @@ describe("commitRefreshedArticles: a bad field stops the batch before any networ
     // date backstop, this branch is genuinely reachable from outside.
     await expect(
       commitRefreshedArticles([
-        { slug: "alpha", frontmatter: validFrontmatter(), body: BODY },
+        at("alpha", validFrontmatter()),
         at("beta", makeFrontmatter()),
       ]),
     ).rejects.toThrow(/Refusing to commit/);

@@ -1445,6 +1445,12 @@ export const contentRefreshFunction = inngest.createFunction(
         });
 
         const refreshed: string[] = [];
+        // Articles the commit boundary declined to overwrite because the file moved underneath this
+        // run. Kept apart from `failed` on purpose: a stand-down means a human's newer version is
+        // already published and `main` is correct, which is the opposite of a pipeline problem, and
+        // filing it under failures would make every month Kelsey edits an article read as a broken
+        // run. See the summary email below.
+        const stoodDown: { slug: string; reason: string }[] = [];
         // Seeded with discovery's refusals so they are reported rather than merely logged. These
         // are keyed by FILE, not slug: the whole reason the article was dropped is that those two
         // disagree, so naming the slug would print the value that is wrong.
@@ -1478,6 +1484,28 @@ export const contentRefreshFunction = inngest.createFunction(
                         `identity "${article.slug}" does not match its file ${article.filePath}. ` +
                         `Refusing to refresh: the commit path would write a different file than ` +
                         `this article was read from.`,
+                });
+                continue;
+            }
+
+            // The same window, one field along, and it fails closed for the same reason.
+            //
+            // `baseBlobSha` is what lets the commit boundary prove the file has not moved underneath
+            // this run, and it is produced by discoverArticles. A run that started before this
+            // deployed replays `load-all-articles` from cache and hands back articles from a version
+            // of that function which did not set it. Reaching the commit path without one would mean
+            // hashing `undefined`, which throws out of the step and takes the whole month's batch
+            // down with it. Refusing the article instead costs one line in the summary email and
+            // that article's cadence, and it CANNOT be relaxed into a default: a payload whose base
+            // SHA is guessed is a payload with no compare-and-swap at all.
+            if (typeof article.baseBlobSha !== "string" || article.baseBlobSha === "") {
+                failed.push({
+                    slug: article.slug,
+                    reason:
+                        `no base blob SHA for ${article.filePath}. This article was loaded by an ` +
+                        `older version of the refresh, before the commit path could detect a ` +
+                        `concurrent edit, so it is skipped rather than overwritten blind. It will ` +
+                        `be picked up normally on the next run.`,
                 });
                 continue;
             }
@@ -1631,6 +1659,10 @@ export const contentRefreshFunction = inngest.createFunction(
                     slug: destinationSlug,
                     frontmatter: result.frontmatter,
                     body: result.body,
+                    // The blob SHA of the file this content was generated FROM, so the commit
+                    // boundary can prove that file has not moved underneath the run before it
+                    // replaces it. Guarded above, so this is a string by the time it gets here.
+                    baseBlobSha: article.baseBlobSha,
                 });
             } else {
                 failed.push({ slug: article.slug, reason: result.reason ?? "Unknown error" });
@@ -1643,9 +1675,29 @@ export const contentRefreshFunction = inngest.createFunction(
             // this step can run twice against a HEAD that already carries the work; the status is
             // how somebody reading the run history tells "committed" from "the retry found its own
             // batch already on main and stood down". See src/lib/githubArticleCommit.ts.
-            await step.run("commit-to-github", async () => {
+            const outcome = await step.run("commit-to-github", async () => {
                 return await commitRefreshedArticles(toCommit);
             });
+
+            // The commit can decline individual articles whose file changed after this run read
+            // them. Those are not failures of this run: somebody's newer version is already
+            // published. They are moved out of `refreshed` so the summary cannot claim work that
+            // did not happen, and reported in their own section so a human knows a revision was
+            // deliberately skipped.
+            //
+            // `?? []` IS LOAD-BEARING, for the same reason as the baseBlobSha guard above. This step
+            // is memoized. A run that completed `commit-to-github` before this deployed replays an
+            // outcome with no `stoodDown` field at all, and iterating undefined would throw on the
+            // resume of a run whose commit had already SUCCEEDED.
+            const stoodDownHere = outcome.stoodDown ?? [];
+            const stoodDownSlugs = new Set(stoodDownHere.map((s) => s.slug));
+            // Matching on slug is sound because `refreshed` carries `article.slug` and the payload
+            // carries `destinationSlug`, and those two agree by construction: discovery derives the
+            // slug from the filename and articleIdentityMatchesFile re-asserts it above.
+            for (let i = refreshed.length - 1; i >= 0; i -= 1) {
+                if (stoodDownSlugs.has(refreshed[i])) refreshed.splice(i, 1);
+            }
+            stoodDown.push(...stoodDownHere);
         }
 
         // ── Step 5: Send summary email via Resend ─────────────────────────────
@@ -1662,6 +1714,12 @@ export const contentRefreshFunction = inngest.createFunction(
                 // which is indistinguishable from a healthy month. Throwing marks the Inngest run
                 // failed, which is itself monitored, so the degraded channel surfaces through a
                 // path that does not depend on the channel that is degraded.
+                //
+                // Keyed on `failed` alone, NOT on `stoodDown`. A stand-down means somebody's newer
+                // version of the article is already published and `main` is correct, so an
+                // undelivered report of one is the same tolerable loss as an undelivered all-clear.
+                // Failing the run over it would turn the ordinary act of editing an article into an
+                // alert.
                 if (failed.length > 0) {
                     throw new Error(
                         `Content refresh had ${failed.length} failure(s) and no Resend API key to ` +
@@ -1684,6 +1742,17 @@ export const contentRefreshFunction = inngest.createFunction(
                 "",
                 `✅ Refreshed (${refreshed.length}):`,
                 ...refreshed.map((s) => `  • ${s}`),
+                // Its own section rather than folded into Failed, deliberately. A stand-down says
+                // the reader's own edit was newer and was kept, which is the system working; under
+                // a red X it reads as a broken pipeline, and every month Kelsey touches an article
+                // would look like a month the refresh went wrong.
+                ...(stoodDown.length > 0
+                    ? [
+                        "",
+                        `⏸ Stood down, your edit was newer (${stoodDown.length}):`,
+                        ...stoodDown.map((s) => `  • ${s.slug}: ${s.reason}`),
+                    ]
+                    : []),
                 "",
                 failed.length > 0
                     ? `❌ Failed (${failed.length}):\n${failed.map((f) => `  • ${f.slug}: ${f.reason}`).join("\n")}`
@@ -1719,12 +1788,27 @@ export const contentRefreshFunction = inngest.createFunction(
             }
         });
 
+        // Stand-downs are reported HERE as well as in the email, and the duplication is the point.
+        //
+        // The email is a single channel with two ways to fail silently: no Resend key, and a send
+        // Resend rejects in its result rather than by throwing. Both are already handled for
+        // `failed`, by throwing, which is deliberately not done for a stand-down: standing down is
+        // the ordinary consequence of somebody editing an article, and failing the month's run over
+        // it would turn routine editing into an alert.
+        //
+        // That left stand-downs reachable only through a channel that can quietly disappear, which
+        // review flagged. The run's own return value is durable, is what the Inngest history shows,
+        // and costs nothing. Two of the four stand-down reasons are anomalies rather than routine
+        // edits, a deleted file and a path holding something that is not a regular file, and those
+        // are exactly the ones somebody would go looking for after the fact.
         return {
             status: "Complete",
             refreshed: refreshed.length,
             failed: failed.length,
+            stoodDown: stoodDown.length,
             skipped: articles.length - staleArticles.length,
             slugs: refreshed,
+            stoodDownDetail: stoodDown,
         };
     }
 );

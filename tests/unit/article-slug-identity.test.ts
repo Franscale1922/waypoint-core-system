@@ -198,6 +198,9 @@ describe("articleIdentityMatchesFile re-checks what discovery established", () =
   // bypassed because discovery never runs again.
   const article = (slug: string, filePath: string): Article => ({
     slug,
+    // Not what this fixture is about: these tests ask whether an article's identity matches its
+    // file, which is settled long before the commit boundary compares any blob.
+    baseBlobSha: "0".repeat(40),
     frontmatter: {
       title: "T",
       slug,
@@ -236,6 +239,8 @@ function withDeclaredCadence(slug: string, category: string, tier: number): Arti
 function articleFor(slug: string, category: string, tier: number): Article {
   return {
     slug,
+    // Irrelevant to cadence, which is what this fixture feeds.
+    baseBlobSha: "0".repeat(40),
     frontmatter: {
       title: "T",
       slug,
@@ -418,6 +423,7 @@ describe("an authored reviewCadence overrides every inference", () => {
         frontmatter: committed.data as Article["frontmatter"],
         body: "",
         filePath: "/content/articles/some-article.md",
+        baseBlobSha: "0".repeat(40),
       }),
     ).toBeNull();
   });
