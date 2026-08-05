@@ -58,7 +58,13 @@ async function subscribeOne(email: string, firstName?: string): Promise<"ok" | "
         body: JSON.stringify({
           email,
           ...(firstName ? { first_name: firstName } : {}),
-          reactivate_existing: true,
+          // Never resurrect someone who left. The `unsubscribed: false` filters
+          // below read OUR tables, which by definition cannot see an opt-out
+          // recorded on beehiiv's side, so this flag was the one thing deciding
+          // whether a beehiiv unsubscribe survived a re-run of this script. It
+          // did not. New addresses still subscribe normally; only reactivation
+          // of an existing inactive subscriber is refused.
+          reactivate_existing: false,
           send_welcome_email: false,
           utm_source: "waypoint-crm-backfill",
         }),

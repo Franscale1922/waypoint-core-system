@@ -1078,6 +1078,40 @@ BEEHIIV_API_KEY
 BEEHIIV_PUBLICATION_ID=pub_8ea1ac6a-23e9-4e14-b0ad-06854119620d
 ```
 
+#### Opt-out sync (beehiiv → our SuppressionList)
+
+beehiiv keeps its own unsubscribe state. Without this, someone who left the newsletter
+stayed mailable by every nurture sequence and by cold outreach, because both read
+`SuppressionList` and nothing wrote beehiiv's opt-outs into it.
+
+`/api/webhooks/beehiiv` receives `subscription.deleted` and
+`newsletter_list_subscription.unsubscribed` and writes a `SuppressionList` row with reason
+`beehiiv-unsubscribe`. Both events are subscribed because beehiiv's docs do not settle
+which one fires on an ordinary unsubscribe. `subscription.paused` is deliberately ignored:
+a pause is temporary and the write here is not.
+
+**These opt-outs are irreversible by design.** `unsuppressEmail` clears only reason
+`"unsubscribed"`, so the admin resubscribe tool will refuse them. Undoing one takes a
+manual database edit.
+
+**Registration (both steps are required before it does anything):**
+1. Set `BEEHIIV_WEBHOOK_SECRET` in Vercel to a freshly generated random string.
+2. Register the webhook with beehiiv (`POST /v2/publications/{pub_id}/webhooks`) with:
+   ```
+   url: https://www.waypointfranchise.com/api/webhooks/beehiiv?secret=BEEHIIV_WEBHOOK_SECRET
+   event_types: ["subscription.deleted", "newsletter_list_subscription.unsubscribed"]
+   ```
+
+The secret sits in the URL because beehiiv's create-webhook API accepts only `url`,
+`event_types` and `description`: there is no custom-header field, so a Bearer token is not
+available. This is the same constraint TidyCal has. beehiiv also publishes no payload
+signature, so **treat that URL as a credential** and rotate it if it leaks. As a second
+line, the handler re-checks every claim against beehiiv's own API and refuses to suppress
+any address beehiiv still reports as `active`.
+
+**Known gap:** there is no reconciliation sweep. A webhook beehiiv fails to deliver is a
+permanent silent miss. Acceptable at a zero-subscriber list; revisit once the list is real.
+
 ---
 
 ### RepliQ — Personalized Video Outreach

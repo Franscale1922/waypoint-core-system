@@ -123,6 +123,7 @@ Set all of these in Vercel → Project → Settings → Environment Variables (P
 | `INNGEST_SIGNING_KEY` | Authenticates Inngest webhook calls to the app | Inngest dashboard → production app |
 | `INNGEST_EVENT_KEY` | Allows app to send events to Inngest | Inngest dashboard → production app |
 | `TIDYCAL_WEBHOOK_SECRET` | Validates TidyCal booking webhooks | TidyCal dashboard → Webhooks |
+| `BEEHIIV_WEBHOOK_SECRET` | Validates beehiiv opt-out webhooks; beehiiv cannot send auth headers, so it rides in the URL | Self-generated, then registered with beehiiv |
 | `NEXT_PUBLIC_GA_ID` | Google Analytics 4 Measurement ID | GA4 → Admin → Data Streams |
 
 ### Local Development
