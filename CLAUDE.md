@@ -159,19 +159,32 @@ over 300 turns are 43% of sessions but **84% of all tokens**. (Dollars are
 API-equivalent — a proxy for subscription quota, not a bill.)
 
 **So a `▶ SWITCH` boundary means: finish, update the handoff doc, emit the
-paste-block, end the session.** Switching in place is the exception, justified only
-when the remaining phase is short (~20 turns or fewer). **Backstop:** a phase that
-passes ~300k context is itself a boundary even with no switch — 21% of long sessions
-contain no switch at all, and those are the ones that run to 800k.
+paste-block, end the session.** There are two cases and they have different maths —
+don't collapse them:
+
+- **A switch is due.** Handing off is cheaper **immediately, at zero remaining turns**:
+  re-writing a 272k prefix at the 2× cache-write rate costs **~$2.72**, already more
+  than an entire fresh session's **~$0.94** cold start (94k preamble × 2×). There is no
+  turn count at which switching in place is the cheaper option. Do it anyway only for a
+  non-token reason — a couple of turns left and re-establishing context by hand would
+  cost more than it saves — and say that is why.
+- **No switch is due (the context backstop).** A phase passing ~300k context is a
+  boundary in its own right: 21% of long sessions contain no switch at all and are
+  exactly the ones that run to 800k. Continuing costs nothing up front here, so the
+  threshold is real — hand off once **more than ~10 turns** remain ($0.136/turn to
+  continue at 272k, vs $0.94 once plus $0.047/turn fresh). Over 100 further turns that
+  is **≈$7.9 fresh against ≈$18.6 continuing**.
 
 **The old "~65k break-even, when unsure switch" rule was wrong and is retired.** It
 compared two *one-time* costs and ignored that switching in place leaves you at high
-context for **every remaining turn**. At the 272k median turn: switching costs ~$2.72
-once then ≥$0.136/turn and rising; a fresh session costs ~$0.57 once then ~$0.047/turn
-from a 94k base — **repaying in ~6 turns** (≈$8.6 vs ≈$22.7 over 100 further turns).
-**When unsure, hand off.** A **subagent** still leaves the parent's cache intact and
-wins on a small brief, but measured subagent cost is 0.1–0.3% of spend — that is a
-latency and quality call, not a budget one.
+context for **every remaining turn**. **When unsure, hand off.** A **subagent** still
+leaves the parent's cache intact and wins on a small brief, but measured subagent cost
+is 0.1–0.3% of spend — that is a latency and quality call, not a budget one.
+
+_Every figure above is derived from this account's own measured constants (94k preamble,
+272k median turn, ~900 tok/turn growth, 2× write / 0.1× read). If those drift, re-derive
+rather than copying these numbers forward — carrying a stale constant into fresh-looking
+prose is how the retired rule survived as long as it did._
 
 **Close every session with a fenced paste-block** — the one-line task, the literal
 `/model` and `/effort` commands on separate lines, a pointer to the handoff doc, and
