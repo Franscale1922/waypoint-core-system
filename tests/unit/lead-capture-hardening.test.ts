@@ -554,3 +554,21 @@ describe("a suppression lookup failure must not destroy quiz answers", () => {
     expect(h.db.scorecardSubmission.delete).toHaveBeenCalledWith({ where: { id: ID } });
   });
 });
+
+describe("a send that REJECTS, rather than resolving with an error", () => {
+  it("hands the reservation back so the retry is not deduplicated", async () => {
+    // The `let release` hoisted above each route's try block exists only for
+    // this path: a network-layer rejection skips every release inside the try,
+    // and a retained lock answers the visitor's retry with a deduplicated
+    // success for mail that was never delivered.
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockRejectedValueOnce(new Error("socket hang up"));
+    const { POST } = await import("@/app/api/capture-email/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(500);
+    expect(h.db.rateLimitBucket.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expect.objectContaining({ scope: "lock" }) })
+    );
+  });
+});
