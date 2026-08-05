@@ -55,6 +55,25 @@
  * Verified 2026-08-05: this repository has no rulesets (`gh api .../rulesets` returns `[]`) and no
  * branch protection on `main`. So this is a hazard to recognise, not a live condition.
  *
+ * THE ONE CASE THE COMPARE-AND-SWAP STILL CANNOT SEE, and why it was left open
+ * ---------------------------------------------------------------------------
+ * Step 2a compares FILE CONTENTS, so it catches an edit to an article. It does not constrain which
+ * commit the branch is at, so it cannot see a force-reset: an operator moves the branch back to an
+ * ancestor to remove bad commits, this function reads that older HEAD, finds each article's blob
+ * exactly as it expects, and fast-forwards, resurrecting whatever the reset removed elsewhere in
+ * the tree.
+ *
+ * Closing that needs an expected-head operation, and REST cannot express one: the ref PATCH takes
+ * no expected-oid, and reading the ref first is a check, not a compare-and-swap. GraphQL
+ * `createCommitOnBranch(expectedHeadOid:)` is genuinely atomic and would close it.
+ *
+ * Deliberately not done here. It replaces the entire blobs/tree/commit/ref sequence with one
+ * mutation, which is a rewrite of this module rather than an addition to it, and the idempotency
+ * machinery above is built around the intermediate objects that sequence creates. The window is
+ * also narrow and operator-initiated, unlike the editor-edit window this file exists to close.
+ * Recorded because the option was raised in review and a later reader should not have to rediscover
+ * either the option or the reason.
+ *
  * Required env vars:
  *   GITHUB_TOKEN:      fine-grained personal access token (contents: write)
  *   GITHUB_REPO_OWNER: e.g. "Franscale1922"
@@ -1023,19 +1042,28 @@ export async function commitRefreshedArticles(
       continue;
     }
 
-    // A path can be occupied by something that is not a regular file: a submodule (`type: commit`)
-    // or a symlink (`mode: 120000`). Writing a 100644 blob over either one is a structural change
-    // to the repository that no article refresh has any business making, and the SHA comparison
-    // below would be comparing against an object of a different kind. Checked by looking the entry
-    // up rather than by filtering the list, so this branch is reachable from a test: the previous
-    // attempt filtered on `type === "blob"` and deleting that filter left every test green.
+    // Step 3 hard-codes `mode: "100644"` on the tree entry it writes, so the path must already hold
+    // exactly that: a plain, non-executable blob. Anything else and the commit would be changing
+    // something it was never asked to change.
+    //
+    // Three shapes reach this. A submodule (`type: "commit"`) and a symlink (`mode: "120000"`) are
+    // not files at all, and the SHA comparison below would be reading an object of a different kind.
+    // An executable blob (`mode: "100755"`) IS a file, and is caught for a subtler reason: writing
+    // over it would silently clear the executable bit, an edit nobody requested and nothing would
+    // report. All 45 articles are 100644 today (verified 2026-08-05), so this cannot fire on the
+    // current corpus.
+    //
+    // Checked by looking the entry UP rather than by filtering the listing, which is what makes this
+    // branch reachable from a test. The previous attempt filtered on `type === "blob"`, and deleting
+    // that filter left every test green, because a filtered-out entry and an absent one are
+    // indistinguishable once the map is built.
     if (entry.type !== "blob" || entry.mode !== "100644") {
       stoodDown.push({
         slug: article.slug,
         reason:
-          `${path} is not a regular file on ${config.branch} (type "${entry.type}", mode ` +
-          `"${entry.mode}"). The refresh writes ordinary blobs and will not replace something ` +
-          `else with one.`,
+          `${path} on ${config.branch} is not the plain file this refresh writes (type ` +
+          `"${entry.type}", mode "${entry.mode}", expected type "blob" mode "100644"). Committing ` +
+          `over it would change more than the article's contents.`,
       });
       continue;
     }
@@ -1108,39 +1136,40 @@ export async function commitRefreshedArticles(
   // #39's guarantee is unharmed. What it promises is that already-applied work is recognised
   // BEFORE A BLOB IS CREATED, not before any request at all, and reading a tree creates nothing.
   //
-  // The trailer is now the second opinion rather than the primary mechanism: step 2a recognises
-  // already-published bytes directly, and this recognises the COMMIT that carries them, which is
-  // the part the bytes cannot tell us. Neither makes the other redundant, and a future reader
-  // should not delete one on the assumption that it does.
+  // AND THE TRAILER NO LONGER DECIDES WHETHER TO WRITE. It answers a narrower question now, and
+  // only once step 2a has established there is nothing to write.
+  //
+  // A trailer in history proves a commit carrying these bytes EXISTED. It says nothing about what
+  // the branch holds today, and the two answers come apart the moment anything moves a file back.
+  // Raised by review and reproduced: attempt one commits and loses its reply badly enough to throw,
+  // the article is then restored to its pre-refresh bytes, and the retry arrives. Step 2a correctly
+  // puts the article in the write set; a trailer scan allowed to override that returns
+  // `already-applied` and writes nothing, so the run reports the refresh as published while the
+  // branch holds the old content. That is this module's own failure mode wearing a different hat.
+  //
+  // So the bytes decide, and the trailer is consulted only to name WHICH commit carries them, which
+  // is the one thing the bytes cannot say. Nothing is lost: whenever there is work to do, doing it
+  // is right regardless of what history claims. Skipping the scan on the ordinary path also saves a
+  // request per run.
   const batchId = computeBatchId(
     published.map(({ article, content }) => ({ slug: article.slug, content }))
   );
   const appliedSlugs = published.map(({ article }) => article.slug);
 
-  const recentCommits = await githubRequest<{ sha: string; commit: { message: string } }[]>(
-    `/commits?sha=${encodeURIComponent(latestCommitSha)}&per_page=${BATCH_LOOKBACK}`,
-    config
-  );
-  const carrier = recentCommits.find((entry) => carriesBatch(entry.commit.message, batchId));
-  if (carrier) {
-    return {
-      status: "already-applied",
-      batchId,
-      commitSha: carrier.sha,
-      articles: articles.length,
-      applied: appliedSlugs,
-      stoodDown,
-    };
-  }
-
   if (writeSet.length === 0) {
-    // Every surviving article's bytes are already the blob on the branch, but no commit in the
-    // lookback window claims them. Which commit put them there is unknown, so HEAD is reported
-    // rather than invented. Nothing to write either way.
+    // Every surviving article's bytes are ALREADY the blob on the branch, so there is nothing to
+    // write whatever history says. The only open question is which commit put them there.
+    const recentCommits = await githubRequest<{ sha: string; commit: { message: string } }[]>(
+      `/commits?sha=${encodeURIComponent(latestCommitSha)}&per_page=${BATCH_LOOKBACK}`,
+      config
+    );
+    const carrier = recentCommits.find((entry) => carriesBatch(entry.commit.message, batchId));
+    // No trailer in the window means the commit is unknown, not that the bytes are absent. HEAD is
+    // reported rather than a SHA invented.
     return {
       status: "already-applied",
       batchId,
-      commitSha: latestCommitSha,
+      commitSha: carrier?.sha ?? latestCommitSha,
       articles: articles.length,
       applied: appliedSlugs,
       stoodDown,

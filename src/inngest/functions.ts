@@ -1788,12 +1788,27 @@ export const contentRefreshFunction = inngest.createFunction(
             }
         });
 
+        // Stand-downs are reported HERE as well as in the email, and the duplication is the point.
+        //
+        // The email is a single channel with two ways to fail silently: no Resend key, and a send
+        // Resend rejects in its result rather than by throwing. Both are already handled for
+        // `failed`, by throwing, which is deliberately not done for a stand-down: standing down is
+        // the ordinary consequence of somebody editing an article, and failing the month's run over
+        // it would turn routine editing into an alert.
+        //
+        // That left stand-downs reachable only through a channel that can quietly disappear, which
+        // review flagged. The run's own return value is durable, is what the Inngest history shows,
+        // and costs nothing. Two of the four stand-down reasons are anomalies rather than routine
+        // edits, a deleted file and a path holding something that is not a regular file, and those
+        // are exactly the ones somebody would go looking for after the fact.
         return {
             status: "Complete",
             refreshed: refreshed.length,
             failed: failed.length,
+            stoodDown: stoodDown.length,
             skipped: articles.length - staleArticles.length,
             slugs: refreshed,
+            stoodDownDetail: stoodDown,
         };
     }
 );

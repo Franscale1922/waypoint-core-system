@@ -184,7 +184,7 @@ describe("the compare-and-swap: an unchanged file is written, a changed one is n
     const outcome = await commitRefreshedArticles([payload("alpha")]);
 
     expect(outcome.status).toBe("stood-down");
-    expect(outcome.stoodDown[0].reason).toMatch(/is not a regular file on main/);
+    expect(outcome.stoodDown[0].reason).toMatch(/is not the plain file this refresh writes/);
     expect(gh.createdCommits).toBe(0);
   });
 });
@@ -248,6 +248,70 @@ describe("the compare-and-swap: a retry does not mistake its own bytes for someb
     expect(retry.applied.sort()).toEqual(["alpha", "beta"]);
     expect(retry.stoodDown).toEqual([]);
     expect(gh.createdCommits).toBe(1);
+  });
+
+  /**
+   * The trailer names WHAT WAS COMMITTED, not what was handed in.
+   *
+   * A batch that stands an article down commits a subset of itself, and the identifier is hashed
+   * over that subset. The consequence is visible only later: a subsequent run whose batch no longer
+   * includes the stood-down article derives the same identifier and can still point at the commit
+   * that published the rest. Hashed over every payload instead, the two runs disagree, and the
+   * second one loses track of a commit that is sitting in plain sight.
+   *
+   * This needs HEAD to have moved since, or the fallback-to-HEAD answer and the correct answer are
+   * the same SHA and the test proves nothing.
+   */
+  it("derives the batch identity from what was committed, so a later run can still find that commit", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    gh.writeFile(articlePath("alpha"), "---\nslug: alpha\n---\nA human got here first.\n");
+
+    const first = await commitRefreshedArticles([payload("alpha"), payload("beta")]);
+    expect(first.applied).toEqual(["beta"]);
+
+    // Time passes and the branch moves on for unrelated reasons.
+    gh.writeFile("docs/unrelated.md", "something else entirely\n");
+    expect(gh.head).not.toBe(first.commitSha);
+
+    // A later run, by which point alpha is no longer due, so the batch is beta alone.
+    const later = await commitRefreshedArticles([payload("beta")]);
+
+    expect(later.status).toBe("already-applied");
+    expect(later.commitSha).toBe(first.commitSha);
+  });
+
+  /**
+   * A TRAILER IN HISTORY IS NOT EVIDENCE THE BYTES ARE ON THE BRANCH NOW.
+   *
+   * Raised by the Codex round-2 review and reproduced here before it was fixed. The trailer says a
+   * commit carrying this batch EXISTED; the compare-and-swap knows what the branch holds TODAY, and
+   * those answers diverge the moment anything moves the file back.
+   *
+   * The sequence: attempt one commits and loses its reply badly enough to throw, the article is then
+   * restored to its pre-refresh bytes, and the retry arrives. The compare-and-swap correctly puts
+   * the article in the write set, and an unguarded trailer scan then overrides it, returns
+   * `already-applied`, and writes nothing. The refresh is reported as published while the branch
+   * holds the old content, which is this whole file's failure mode wearing a different hat.
+   *
+   * The trailer is now consulted ONLY when the compare-and-swap has already established there is
+   * nothing to write, where its one remaining job is naming which commit carries the bytes.
+   */
+  it("commits anyway when an old trailer matches but the bytes are no longer on the branch", async () => {
+    const { commitRefreshedArticles } = await import("@/lib/githubArticleCommit");
+    const batch = [payload("alpha")];
+
+    const first = await commitRefreshedArticles(batch);
+    expect(first.status).toBe("committed");
+
+    // Somebody puts the article back the way it was, so the branch no longer holds what attempt one
+    // wrote, while attempt one's commit is still in the lookback window carrying its trailer.
+    gh.writeFile(articlePath("alpha"), baseArticleFile("alpha"));
+
+    const retry = await commitRefreshedArticles(batch);
+
+    expect(retry.status).toBe("committed");
+    expect(gh.fileAt(gh.head, articlePath("alpha"))).toBe(await outputFor("alpha"));
+    expect(gh.createdCommits).toBe(2);
   });
 
   /**

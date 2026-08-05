@@ -1026,33 +1026,49 @@ describe("commitRefreshedArticles: a retry does not commit the same batch twice"
    *
    * Prose that merely quotes one must not answer for it. This module's own "could not find out"
    * error quotes the trailer, so a message that pasted that error in would otherwise be read as
-   * proof the batch had landed, and the real articles would never be published.
+   * proof of which commit carries the batch.
+   *
+   * THE SETUP CHANGED WHEN THE COMPARE-AND-SWAP LANDED, and it had to. This test used to seed the
+   * branch with the article's PRE-refresh bytes, which now puts it in the write set, and the trailer
+   * is no longer consulted at all when there is work to do. The assertion still passed and proved
+   * nothing: replacing the line match with `message.includes(trailer)` left it green.
+   *
+   * So the branch here already holds exactly what the payload would write. That is the one state in
+   * which the trailer is still asked anything, and what it is asked is narrow: not WHETHER the bytes
+   * are published, which the tree already settled, but WHICH commit published them. A decoy that
+   * merely quotes the trailer must not be able to answer that, so the outcome reports HEAD.
    */
-  it("does not accept a trailer quoted inside prose as proof the batch landed", async () => {
+  it("does not accept a trailer quoted inside prose as the commit that carries the batch", async () => {
     const { commitRefreshedArticles, computeBatchId, serializeArticle } =
       await import("@/lib/githubArticleCommit");
     const article = alphaArticle();
-    const batchId = computeBatchId([
-      { slug: article.slug, content: serializeArticle(article.frontmatter, article.body) },
-    ]);
+    const published = serializeArticle(article.frontmatter, article.body);
+    const batchId = computeBatchId([{ slug: article.slug, content: published }]);
 
-    // A commit that talks ABOUT the batch without carrying it.
-    const decoy = createFakeGitHub(seedArticles("alpha"));
+    // The branch already holds the refreshed bytes, so nothing needs writing and the only open
+    // question is which commit put them there.
+    const decoy = createFakeGitHub({ "content/articles/alpha.md": published });
     vi.stubGlobal("fetch", vi.fn(async (url: unknown, init?: RequestInit) => {
       const res = await decoy.handle(String(url), init);
       if (methodOf(init) === "GET" && pathOf(url).endsWith("/commits")) {
         return jsonResponse(200, [
-          { sha: "commit-base", commit: { message: `chore: retry notes (Refresh-Batch: ${batchId}) still unresolved` } },
+          { sha: "commit-decoy", commit: { message: `chore: retry notes (Refresh-Batch: ${batchId}) still unresolved` } },
         ]);
       }
       return res;
     }));
 
-    const outcome = await commitRefreshedArticles([article]);
+    // A base SHA matching nothing on the branch, so the article reaches the output-SHA arm rather
+    // than the write set: the state in which the trailer is consulted at all.
+    const outcome = await commitRefreshedArticles([
+      { ...article, baseBlobSha: "0".repeat(40) },
+    ]);
 
-    // Not fooled: it went ahead and published.
-    expect(outcome.status).toBe("committed");
-    expect(decoy.createdCommits).toBe(1);
+    expect(outcome.status).toBe("already-applied");
+    // Not fooled: the decoy did not get to claim authorship, so HEAD is reported instead.
+    expect(outcome.commitSha).toBe("commit-base");
+    expect(outcome.commitSha).not.toBe("commit-decoy");
+    expect(decoy.createdCommits).toBe(0);
   });
 
   /**
