@@ -30,7 +30,7 @@ none was taken on the tool's word.
 
 ---
 
-## Still open — two findings nothing has closed
+## Still open — one finding, after the publication-date reset was closed
 
 **A retry can overwrite a newer edit to the same article.** `commitRefreshedArticles` lays its blobs
 over whatever HEAD currently holds: it reads the ref, takes that commit's tree as `base_tree`, and
@@ -53,6 +53,35 @@ what the monthly refresh is**, so it is a product call, not a code cleanup.
 The window is narrow (the refresh runs monthly and takes minutes) and overwriting articles is the
 job the refresh exists to do, so this is genuinely lower severity than "High" suggests in isolation.
 It is real all the same.
+
+---
+
+## CLOSED 2026-08-05 — every refresh reset the article's PUBLICATION date
+
+**Fixed together with the scheduler it was propping up.** Kelsey decided the semantics: `date` is
+the true publication date, preserved forever; `updatedAt` carries the revision. `serializeArticle`
+now stamps only `updatedAt`, and `isStale` measures `updatedAt ?? date` with a fallback for an
+unreadable `updatedAt`.
+
+**The half that was nearly missed, and is the reason these had to ship in one commit.** `isStale`
+measured age from `date`, which worked ONLY because the refresh overwrote `date` on every run: the
+clock an article was scheduled by was reset by the run that refreshed it. The bug was load-bearing.
+Preserving `date` alone would have inverted it into something worse -- age from a frozen publication
+date only grows, so every article would go permanently stale one cadence after publication and the
+refresh would rewrite the entire corpus every month, forever, each run leaving it exactly as due as
+before. Nothing fails loudly in that state; the batch simply never shrinks.
+
+**Where the "a model cannot author a date" guarantee went.** It did not disappear with the
+overwrite, it moved to `mergeRefreshedFrontmatter`, which builds frontmatter from the ORIGINAL
+article and copies only `MODEL_OWNED_FIELDS` (title, excerpt, faqs). That relocation is asserted end
+to end rather than assumed, so the test goes red if `MODEL_OWNED_FIELDS` ever grows a date field.
+
+**No backfill was needed, because the refresh has never run.** No `chore: content refresh` commit
+exists in history, so no publication date was ever overwritten in production. Verified against the
+corpus on the day of the fix: 0 of 45 articles stale, 6 strategic and never refreshed, first due
+2026-08-21 -- so the first run that does anything is 2026-09-01 and picks up one article.
+
+The original write-up is kept below for the reasoning.
 
 ---
 
@@ -82,6 +111,30 @@ reset by the very refresh it schedules.
 
 Note the second-order effect before fixing it: because `date` is reset on every run, an article's
 cadence timer restarts each time, so preserving `date` will also change WHICH articles come due.
+
+> That last paragraph is the one that mattered, and it understated the case. Preserving `date`
+> without moving `isStale` does not merely change which articles come due -- it makes every article
+> due forever. See the CLOSED note above.
+
+### Round 1 on the fix, 2026-08-05
+
+One Medium, one Low, both verified against source.
+
+- **Low, FIXED in the same PR and introduced by it**: `updatedAt ?? date` falls back on null and
+  undefined, never on a string that is present and unreadable. An article carrying
+  `updatedAt: "not-a-date"` beside a valid `date` measured from the unreadable value, came out NaN,
+  and was classified not-due forever -- silently, because a run that finds nothing reports "No
+  articles due for refresh" rather than naming what it could not read. `isStale` now falls through
+  to the next readable value.
+- **Medium, DECLINED and folded into the CAS work instead**: with `date` preserved,
+  `serializeArticle` no longer overwrites a caller-supplied publication date, so an arbitrary caller
+  could pass `date: "1999-01-01"` for an existing slug and overwrite the real one. Not reachable
+  today -- `src/inngest/functions.ts` is the only caller and builds every payload through
+  `mergeRefreshedFrontmatter`. Codex's proposed fix is to read the existing article at the commit
+  boundary and compare, which is **the same mechanism as the `baseBlobSha` compare-and-swap already
+  prototyped in PR #41** (see `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md`). Building a bespoke
+  date comparison beside it would be a second, weaker copy of that check. Whoever lands the CAS
+  closes this for free; do not fix it separately.
 
 ---
 
