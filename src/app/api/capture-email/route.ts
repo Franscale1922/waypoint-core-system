@@ -6,30 +6,48 @@ import prisma from "../../../lib/prisma";
 import fs from "fs";
 import path from "path";
 import { inngest } from "@/inngest/client";
-import { buildUnsubscribeUrl } from "@/lib/nurture-emails";
+import { buildUnsubscribeLink } from "@/lib/nurture-emails";
 import { parseChecklistMarkdown, buildChecklistEmail } from "@/lib/checklist-email";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
+import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
 const FROM = "Kelsey at Waypoint <noreply@mail.waypointfranchise.com>";
+const LABEL = "[capture-email]";
+const MODEL = "checklistDownload";
 
 /**
  * Maps a checklistSlug to its file in content/downloads/.
  * Add new entries here as new industry-specific checklists are created.
  */
-const CHECKLIST_FILES: Record<string, string> = {
+const CHECKLIST_FILES = {
   "universal": "universal-franchise-readiness-checklist.md",
   "food-and-beverage": "food-franchise-readiness-checklist.md",
   "home-services": "home-services-franchise-readiness-checklist.md",
   "fitness-wellness": "fitness-wellness-franchise-readiness-checklist.md",
   "senior-care": "senior-care-franchise-readiness-checklist.md",
   "b2b": "b2b-franchise-readiness-checklist.md",
-};
+} as const;
 
-function loadChecklist(slug: string): string {
-  const filename = CHECKLIST_FILES[slug] ?? CHECKLIST_FILES["universal"];
-  const filePath = path.join(process.cwd(), "content", "downloads", filename);
+type ChecklistSlug = keyof typeof CHECKLIST_FILES;
+
+/**
+ * Collapses whatever arrived in the body to a slug we actually publish.
+ *
+ * This is a guard, not a convenience. `checklistType` scopes the idempotency
+ * key, so storing an unrecognised slug verbatim would let a caller mint a fresh
+ * key per request ("universal", "universal2", "zzz") and walk straight around
+ * the duplicate-delivery check while being sent the very same universal
+ * checklist every time. Unknown slugs have to converge here.
+ */
+function resolveChecklistSlug(raw: unknown): ChecklistSlug {
+  return typeof raw === "string" && raw in CHECKLIST_FILES ? (raw as ChecklistSlug) : "universal";
+}
+
+function loadChecklist(slug: ChecklistSlug): string {
+  const filePath = path.join(process.cwd(), "content", "downloads", CHECKLIST_FILES[slug]);
   try {
     return fs.readFileSync(filePath, "utf8");
   } catch {
@@ -42,7 +60,7 @@ function loadChecklist(slug: string): string {
 /**
  * Human-readable label for Kelsey's notification email.
  */
-const CHECKLIST_LABELS: Record<string, string> = {
+const CHECKLIST_LABELS: Record<ChecklistSlug, string> = {
   "universal": "Universal Franchise Readiness",
   "food-and-beverage": "Food & Beverage",
   "home-services": "Home Services",
@@ -52,17 +70,43 @@ const CHECKLIST_LABELS: Record<string, string> = {
 };
 
 export async function POST(req: Request) {
+  // Hoisted so the catch below can hand the reservation back. A send that
+  // REJECTS at the network layer, rather than resolving with { error }, skips
+  // every release inside the try; the lock would then survive, and the
+  // visitor's retry would be answered with a deduplicated success for a
+  // delivery that never happened.
+  let release: (() => Promise<void>) | null = null;
   try {
-    const { name, email, source, checklistSlug, articleSlug } = await req.json();
+    const body = await req.json();
+    const { name, source, checklistSlug, articleSlug } = body;
 
-    if (!email) {
-      return NextResponse.json({ error: "Email is required." }, { status: 400 });
-    }
+    const slug = resolveChecklistSlug(checklistSlug);
 
-    const slug = checklistSlug || "universal";
-    const firstName = name ? name.split(" ")[0] : "there";
+    // Rate limits, address validation and duplicate suppression, before this
+    // request is allowed to write a row or send anything. See @/lib/lead-capture.
+    const guard = await guardCapture({
+      req,
+      route: "capture-email",
+      // A limiter outage refuses the form, but the CRM is an external webhook
+      // that is still up, so the lead does not have to die with the request.
+      preserveLead: () =>
+        notifyCrm({
+          name: name || "Website Visitor",
+          email: String(body.email).trim().toLowerCase(),
+          source: `Checklist Download: ${CHECKLIST_LABELS[resolveChecklistSlug(checklistSlug)]}`,
+          notes: "Captured during a degraded request; no email was sent.",
+        }),
+      email: body.email,
+      idempotency: { model: MODEL, where: { checklistType: slug } },
+    });
+    if (!guard.proceed) return guard.response;
+    release = guard.release;
+    const email = guard.email;
+
+    const firstName = name ? String(name).split(" ")[0] : "there";
     const checklistContent = loadChecklist(slug);
-    const checklistLabel = CHECKLIST_LABELS[slug] ?? "Franchise Readiness";
+    const checklistLabel = CHECKLIST_LABELS[slug];
+    const isKelsey = email === TO.toLowerCase();
 
     // Write a lead record. ChecklistDownload is separate from the cold-outreach Lead model
     let downloadId: string | null = null;
@@ -78,46 +122,27 @@ export async function POST(req: Request) {
       downloadId = record.id;
     } catch (dbErr) {
       // Log but don't block email delivery if DB write fails
-      console.error("[capture-email] DB write failed:", dbErr);
+      console.error(`${LABEL} DB write failed:`, dbErr);
     }
 
     // ── Background work ────────────────────────────────────────────────────
     // All of it runs after the response is flushed, so none of it delays the
     // checklist email below. See @/lib/after-response for why bare unawaited
     // promises are not safe here.
-    afterResponse("[capture-email] CRM sync", () =>
+    afterResponse(`${LABEL} CRM sync`, () =>
       notifyCrm({
         name: name || "Website Visitor",
         email,
         source: `Checklist Download: ${checklistLabel}`,
-        notes: articleSlug ? `Article: ${articleSlug}` : undefined,
+        notes: [articleSlug ? `Article: ${articleSlug}` : null, source ? `Widget: ${source}` : null]
+          .filter(Boolean)
+          .join(" · ") || undefined,
       })
     );
 
-    // Skipped for Kelsey's own address (test submissions)
-    if (email.toLowerCase() !== TO.toLowerCase()) {
-      afterResponse("[capture-email] Beehiiv sync", () =>
-        subscribeToBeehiiv(email, name || undefined)
-      );
-    }
-
-    if (downloadId && email.toLowerCase() !== TO.toLowerCase()) {
-      afterResponse("[capture-email] Nurture trigger", () =>
-        inngest.send({
-          name: "nurture/checklist.download",
-          data: {
-            downloadId,
-            email,
-            name: name || null,
-            checklistType: slug,
-            articleSlug: articleSlug || null,
-          },
-        })
-      );
-    }
-
-    // Notify Kelsey
-    await resend.emails.send({
+    // Notify Kelsey. Best-effort on purpose: the visitor is not the right person
+    // to fail for a missing internal notification, so this is logged, not raised.
+    const notifyResult = await resend.emails.send({
       from: FROM,
       to: TO,
       replyTo: email,
@@ -132,14 +157,14 @@ export async function POST(req: Request) {
         `Hit reply to follow up directly.`,
       ].join("\n"),
     });
+    resendFailed(`${LABEL} notify`, notifyResult);
 
     // Send checklist to subscriber
-    if (email.toLowerCase() !== TO.toLowerCase()) {
-      // Build unsubscribe URL for the List-Unsubscribe header.
-      // Falls back gracefully if downloadId is null (DB write failed upstream).
-      const unsubUrl = downloadId
-        ? buildUnsubscribeUrl(downloadId)
-        : `${process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com"}/unsubscribe`;
+    if (!isKelsey) {
+      // Degrades to a mailto when the DB write above failed, rather than the old
+      // `${site}/unsubscribe`, a path with no handler, so the one email
+      // guaranteed to go out during an outage carried a dead opt-out link.
+      const unsub = buildUnsubscribeLink(downloadId, "checklist");
 
       // Build the branded HTML version from the parsed checklist markdown
       const parsed = parseChecklistMarkdown(checklistContent);
@@ -147,19 +172,15 @@ export async function POST(req: Request) {
         firstName,
         checklistLabel,
         parsed,
-        unsubscribeUrl: unsubUrl,
+        unsubscribeUrl: unsub.url,
       });
 
-      await resend.emails.send({
+      const deliveryResult = await resend.emails.send({
         from: FROM,
         to: email,
         replyTo: TO,
         subject: `Your ${checklistLabel} Checklist`,
-        headers: {
-          // RFC 8058 one-click unsubscribe: the #1 inbox provider trust signal
-          "List-Unsubscribe": `<${unsubUrl}>`,
-          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-        },
+        headers: unsub.headers,
         html: htmlBody,
         text: [
           `Hi ${firstName},`,
@@ -176,15 +197,63 @@ export async function POST(req: Request) {
           `P.O. Box 3421, Whitefish, MT 59937`,
           `waypointfranchise.com`,
           ``,
-          `To unsubscribe: ${unsubUrl}`,
+          `To unsubscribe: ${unsub.url}`,
         ].join("\n"),
       });
+
+      // The whole point of the request. Reporting success on a failed send is
+      // what left people watching an inbox that was never going to receive it.
+      if (resendFailed(`${LABEL} delivery`, deliveryResult)) {
+        // Drop the in-flight reservation so the visitor's retry is not mistaken
+        // for a duplicate of a delivery that never happened.
+        await guard.release();
+        return deliveryFailed();
+      }
+
+      // Arms idempotency, and only now: keyed on delivery rather than on the row
+      // existing, so the retry after a failed send is not suppressed.
+      if (downloadId) await markDelivered(MODEL, downloadId, LABEL);
+
+      // Queued only now. Scheduling it earlier subscribed people to the
+      // newsletter off the back of a delivery that then failed, and the
+      // callback runs post-response either way, so returning 500 did not stop
+      // it. (Kelsey's own address never reaches this branch.)
+      afterResponse(`${LABEL} Beehiiv sync`, () => subscribeToBeehiiv(email, name || undefined));
+
+      // Scheduled only after the checklist actually went out. No drip for an
+      // address that never received the thing it signed up for. Suppression is
+      // checked by ADDRESS, so an opt-out recorded on any other list stops this
+      // sequence too, which is the guarantee the unsubscribe link implies.
+      if (downloadId) {
+        const recordId = downloadId;
+        afterResponse(`${LABEL} Nurture trigger`, async () => {
+          if (await isEmailSuppressedFailClosed(email)) {
+            console.log(`${LABEL} address is suppressed; no nurture sequence started`);
+            return;
+          }
+          await inngest.send({
+            name: "nurture/checklist.download",
+            data: {
+              downloadId: recordId,
+              email,
+              name: name || null,
+              checklistType: slug,
+              articleSlug: articleSlug || null,
+            },
+          });
+        });
+      }
     }
+
+    // Kelsey's own address skips the subscriber send, so nothing consumed the
+    // reservation. Releasing keeps test submissions from blocking each other.
+    if (isKelsey) await guard.release();
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
+    if (release) await release();
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[capture-email]", message);
+    console.error(LABEL, message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

@@ -7,6 +7,8 @@ import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
 import { ScorecardSchema } from "@/app/lib/schemas";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
+import { isEmailSuppressed } from "@/lib/email-suppression";
+import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 // FROM uses the verified mail.waypointfranchise.com subdomain (apex is reserved for Google Workspace receiving).
@@ -26,7 +28,27 @@ export async function POST(req: Request) {
       );
     }
 
-    const { name, email, score, primaryDriver, biggestFear } = parsed.data;
+    const { name, score, primaryDriver, biggestFear } = parsed.data;
+
+    // Rate limits and address normalization. No idempotency key here: a retake
+    // produces a genuinely different score, so suppressing the repeat would
+    // swallow a result the visitor is waiting on. The per-address limit is what
+    // bounds abuse of this route.
+    const guard = await guardCapture({
+      req,
+      route: "scorecard-complete",
+      preserveLead: () =>
+        notifyCrm({
+          name,
+          email: parsed.data.email.trim().toLowerCase(),
+          source: "Franchise Scorecard",
+          notes: "Captured during a degraded request; no email was sent.",
+        }),
+      email: parsed.data.email,
+    });
+    if (!guard.proceed) return guard.response;
+    const email = guard.email;
+
     const firstName = name.split(" ")[0];
 
     // ── 1. Upsert lead in DB ──────────────────────────────────────────────────
@@ -69,12 +91,6 @@ export async function POST(req: Request) {
       })
     );
 
-    // ── 1c. Beehiiv subscriber sync ───────────────────────────────────────────
-    // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
-    afterResponse("[scorecard-complete] Beehiiv sync", () =>
-      subscribeToBeehiiv(email, name)
-    );
-
     // ── 2. Deduplicate: only start a new nurture sequence if none is active ───
     // "Active" = not completed and not unsubscribed. If a sequence is already
     // sleeping for this email, skip creating another one; prevents double emails
@@ -94,6 +110,12 @@ export async function POST(req: Request) {
 
     let submission = activeSubmission;
     let sequenceStarted = false;
+    // Read by the deferred nurture trigger below, which runs only once the
+    // response is flushed and so sees whatever the results send set it to.
+    // Without it a failed delivery returned 500 to the visitor and started the
+    // drip regardless, because after() had already been handed the callback:
+    // Day-3 marketing for a result they never received.
+    let delivered = false;
 
     if (!activeSubmission) {
       submission = await submissions.create({
@@ -103,7 +125,6 @@ export async function POST(req: Request) {
           score,
           primaryDriver: primaryDriver ?? null,
           biggestFear: biggestFear ?? null,
-          nurtureStep: 1,
         },
       });
 
@@ -120,6 +141,30 @@ export async function POST(req: Request) {
       const submissionId = submission.id;
       afterResponse("[scorecard-complete] Nurture trigger", async () => {
         try {
+          if (!delivered) {
+            console.error("[scorecard-complete] delivery failed; releasing the submission row instead of starting a sequence");
+            await submissions.delete({ where: { id: submissionId } });
+            return;
+          }
+          // An opt-out recorded on ANY list belongs to this person and stops the
+          // sequence before it starts. The results email above still goes out:
+          // they just asked for it.
+          // isEmailSuppressedFailClosed cannot distinguish "this person opted
+          // out" from "the lookup failed", so it must not be what decides to
+          // DESTROY the row: a transient read error would erase the quiz answers.
+          // Not sending is the fail-closed part; deleting needs a real opt-out.
+          let suppressed: boolean;
+          try {
+            suppressed = await isEmailSuppressed(email);
+          } catch (lookupErr) {
+            console.error("[scorecard-complete] suppression lookup failed; skipping the sequence but keeping the row:", lookupErr);
+            return;
+          }
+          if (suppressed) {
+            console.log("[scorecard-complete] address is suppressed; releasing the submission row");
+            await submissions.delete({ where: { id: submissionId } });
+            return;
+          }
           await inngest.send({
             name: "nurture/scorecard.complete",
             data: { submissionId, email, name, score },
@@ -143,7 +188,7 @@ export async function POST(req: Request) {
     }
 
     // ── 3. Send Email 1 immediately (scorecard results), always sent ─────────
-    await resend.emails.send({
+    const deliveryResult = await resend.emails.send({
       from: FROM,
       replyTo: REPLY_TO,
       to: email,
@@ -152,6 +197,17 @@ export async function POST(req: Request) {
       text: scoreResultsText({ name, score, primaryDriver: primaryDriver ?? "", biggestFear: biggestFear ?? "" }),
       tags: [{ name: "sequence", value: "scorecard-email-1" }],
     });
+
+    // The Resend SDK resolves with { data, error } rather than rejecting, so an
+    // unchecked await reported success for a message that never left.
+    if (resendFailed("[scorecard-complete] delivery", deliveryResult)) return deliveryFailed();
+    delivered = true;
+
+    // ── Beehiiv subscriber sync ─────────────────────────────────────────────
+    // Queued only now. Scheduled earlier it ran even when the results email
+    // failed, because after() fires post-response regardless of the status.
+    afterResponse("[scorecard-complete] Beehiiv sync", () => subscribeToBeehiiv(email, name));
+    await markDelivered("scorecardSubmission", submission.id, "[scorecard-complete]");
 
     // ── 4. Alert Kelsey for high-score submissions ────────────────────────────
     if (score >= HIGH_SCORE_THRESHOLD) {

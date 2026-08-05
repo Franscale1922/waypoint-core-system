@@ -44,6 +44,27 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   "ai-fdd-reader/route.ts": "Public site lead-magnet capture.",
   "newsletter-subscribe/route.ts": "Public site newsletter capture.",
   "contact/route.ts": "Public site contact form.",
+  // The opt-out endpoints. POST is the RFC 8058 one-click target, so it is sent
+  // by the recipient's MAIL PROVIDER and can carry no admin session by
+  // definition. The control is the HMAC in the URL, verified fail-closed before
+  // anything is written; POST holds the mutation precisely so that a GET from a
+  // scanner or link prefetcher cannot unsubscribe anyone.
+  //
+  // Know what that token can do before adding another entry here. It is
+  // HMAC(secret, recordId) with NO expiry and NO nonce, so anyone who ever saw
+  // the URL (a forwarded email, a shared inbox, a mail archive, a scanner log)
+  // can replay it forever. It is also not scoped to a list. And its blast radius
+  // grew: a POST now suppresses the address across all six lists AND the
+  // canonical SuppressionList that gates cold outreach, so one replayed token
+  // permanently silences an address on every channel, with no re-subscribe path
+  // in the app. That is the right default for an opt-out and the wrong thing to
+  // widen further without adding expiry.
+  "unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "escape-kit-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "scorecard-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  "archetype-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
 };
 
 function walk(dir: string): string[] {

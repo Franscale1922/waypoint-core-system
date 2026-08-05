@@ -4,15 +4,95 @@ import crypto from "crypto";
 // HMAC-based 1-click unsubscribe. Secret set in UNSUBSCRIBE_SECRET env var.
 // Every nurture email footer contains a unique signed URL for this download record.
 
-export function buildUnsubscribeUrl(downloadId: string): string {
+/**
+ * Which endpoint owns each list's opt-out.
+ *
+ * Every list has its OWN route because every list is its own table, and the
+ * handler looks the id up in that table. Sending an id to the wrong route is
+ * not a redirect, it is a miss: the record is simply not found, the visitor is
+ * told they "may have already been removed", and nothing is unsubscribed.
+ *
+ * That is not hypothetical. /api/escape-kit built its delivery-email link with
+ * this helper back when the route was hardcoded to the checklist endpoint, so
+ * every Escape Kit unsubscribe click since had been a silent no-op against a
+ * table that could never contain that id. Which is why `list` below is a
+ * required argument rather than a default: the compiler now asks the question
+ * at every call site instead of quietly answering it wrong.
+ */
+export const UNSUBSCRIBE_ROUTES = {
+  checklist: "/api/unsubscribe",
+  "escape-kit": "/api/escape-kit-unsubscribe",
+  "pitch-decoder": "/api/pitch-decoder-unsubscribe",
+  "ai-fdd-reader": "/api/ai-fdd-reader-unsubscribe",
+  scorecard: "/api/scorecard-unsubscribe",
+  archetype: "/api/archetype-unsubscribe",
+} as const;
+
+export type UnsubscribeList = keyof typeof UNSUBSCRIBE_ROUTES;
+
+/** Always reachable, needs no database row, and no token to verify. */
+const MAILTO_UNSUBSCRIBE = "mailto:kelsey@waypointfranchise.com?subject=Unsubscribe";
+
+function siteBase(): string {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
+}
+
+export function buildUnsubscribeUrl(recordId: string, list: UnsubscribeList): string {
   const secret = process.env.UNSUBSCRIBE_SECRET;
   if (!secret) throw new Error("UNSUBSCRIBE_SECRET env var is not set");
   const token = crypto
     .createHmac("sha256", secret)
-    .update(downloadId)
+    .update(recordId)
     .digest("hex");
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
-  return `${base}/api/unsubscribe?id=${downloadId}&token=${token}`;
+  return `${siteBase()}${UNSUBSCRIBE_ROUTES[list]}?id=${encodeURIComponent(recordId)}&token=${token}`;
+}
+
+export interface UnsubscribeLink {
+  /** For the visible footer. Always usable by a human. */
+  url: string;
+  /** Spread into `resend.emails.send({ headers })`. */
+  headers: Record<string, string>;
+  /** False when we fell back to mailto because no signed link could be built. */
+  oneClick: boolean;
+}
+
+/**
+ * The unsubscribe link and its headers for one outbound email.
+ *
+ * Degrades instead of throwing. When the database write that would have created
+ * `recordId` failed, or UNSUBSCRIBE_SECRET is unset, there is no signed link to
+ * offer, and the old code shipped `${site}/unsubscribe` anyway, a path with no
+ * handler at all, so the one email guaranteed to be sent during an outage was
+ * also the one guaranteed to carry a dead opt-out. A mailto always resolves.
+ *
+ * `List-Unsubscribe-Post` is emitted ONLY alongside an https link. That header
+ * is a promise that a bare POST to the URL unsubscribes the recipient; asserting
+ * it over a mailto is a promise the address cannot keep.
+ */
+export function buildUnsubscribeLink(recordId: string | null, list: UnsubscribeList): UnsubscribeLink {
+  if (recordId && process.env.UNSUBSCRIBE_SECRET) {
+    const url = buildUnsubscribeUrl(recordId, list);
+    return {
+      url,
+      headers: {
+        // RFC 8058 one-click: the strongest inbox-provider trust signal there is.
+        "List-Unsubscribe": `<${url}>`,
+        "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+      },
+      oneClick: true,
+    };
+  }
+
+  console.error(
+    `[nurture-emails] no signed unsubscribe link for list "${list}" ` +
+      `(recordId=${recordId ? "present" : "missing"}, secret=${process.env.UNSUBSCRIBE_SECRET ? "set" : "unset"}); ` +
+      `falling back to mailto`
+  );
+  return {
+    url: MAILTO_UNSUBSCRIBE,
+    headers: { "List-Unsubscribe": `<${MAILTO_UNSUBSCRIBE}>` },
+    oneClick: false,
+  };
 }
 
 export function verifyUnsubscribeToken(downloadId: string, token: string): boolean {

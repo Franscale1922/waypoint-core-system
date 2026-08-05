@@ -38,13 +38,18 @@ export const ScorecardSchema = z.object({
 
 // ── Archetype quiz submission (POST /api/archetype-complete) ─────────────────
 
+// Every field below is interpolated into an HTML email that Waypoint sends FROM
+// its verified domain TO whatever address the same request names. Unbounded free
+// strings there let a caller compose arbitrary markup and links, addressed to a
+// victim, over Waypoint's sending reputation. Bounds first; the route escapes
+// the values as well, because neither control should be the only one.
 export const ArchetypeSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "Name is required").max(120),
   email: z.string().email("Must be a valid email"),
-  archetype: z.string().min(1),
-  archetypeName: z.string().min(1),
-  strongFits: z.array(z.string()),
-  weakFits: z.array(z.string()),
+  archetype: z.string().min(1).max(60),
+  archetypeName: z.string().min(1).max(80),
+  strongFits: z.array(z.string().max(80)).max(12),
+  weakFits: z.array(z.string().max(80)).max(12),
 });
 
 // ── Inbound webhook (POST /api/webhooks/inbound) ─────────────────────────────
