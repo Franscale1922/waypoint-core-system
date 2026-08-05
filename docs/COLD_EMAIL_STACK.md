@@ -1108,13 +1108,46 @@ re-added by any form submission that lands before the webhook does, which
 `"unsubscribed"`, so the admin resubscribe tool will refuse them. Undoing one takes a
 manual database edit.
 
-**Registration (both steps are required before it does anything):**
+**Status: ✅ REGISTERED AND VERIFIED IN PRODUCTION 2026-08-05.** `BEEHIIV_WEBHOOK_SECRET` is set
+in Vercel (Production), and the endpoint is Active in beehiiv under Settings → Webhooks with
+both event types selected. Verified end to end against production, timestamped from the
+runtime logs:
+
+```
+12:29:36  [beehiiv] Subscribed: kelsey+whtest@waypointfranchise.com
+12:31:23  [beehiiv-webhook] suppressed kelsey+whtest@... (subscription.deleted)   POST 200
+12:32:19  [beehiiv] address is suppressed; not subscribing
+```
+
+The third line is the one that matters. It proves the row is not merely written but READ: the
+same address that had just been deleted in beehiiv was refused by a fresh subscribe attempt,
+which is exactly the resurrection path this whole feature exists to close. The auth gate was
+checked separately and fails closed, returning 401 with no secret and 403 with a wrong one.
+
+Note `kelsey+whtest@waypointfranchise.com` is now permanently suppressed as a result. That is
+correct behaviour, not a leftover to clean up, and it is a throwaway alias. Undoing it would
+take a manual database edit, since `unsuppressEmail` refuses the `beehiiv-*` reasons.
+
+**Registration (both steps are required before it does anything). Kept for a rebuild or a
+second publication:**
 1. Set `BEEHIIV_WEBHOOK_SECRET` in Vercel to a freshly generated random string.
-2. Register the webhook with beehiiv (`POST /v2/publications/{pub_id}/webhooks`) with:
+   `openssl rand -hex 32`, then
+   `pbpaste | tr -d '\n\r' | vercel env add BEEHIIV_WEBHOOK_SECRET production`. The `tr` is load
+   bearing: `verifyQuerySecret` compares exactly, so one trailing newline is a 403 on every
+   delivery, with config that looks correct. Set it BEFORE the deploy, because Vercel bakes
+   env vars in at build time.
+2. Register the webhook, either in the dashboard under Settings → Webhooks or via
+   `POST /v2/publications/{pub_id}/webhooks`:
    ```
    url: https://www.waypointfranchise.com/api/webhooks/beehiiv?secret=BEEHIIV_WEBHOOK_SECRET
    event_types: ["subscription.deleted", "newsletter_list_subscription.unsubscribed"]
    ```
+   Do NOT also select `subscription.tier.deleted`. It looks like a departure but means a
+   PREMIUM TIER ended, so it would permanently suppress paying subscribers for downgrading.
+
+Webhooks require a paid beehiiv plan. If the Webhooks section is absent or shows an upgrade
+prompt, this route can never fire and the only remaining mechanism is polling
+`GET /subscriptions?status=inactive` on a schedule.
 
 The secret sits in the URL because beehiiv's create-webhook API accepts only `url`,
 `event_types` and `description`: there is no custom-header field, so a Bearer token is not
