@@ -186,6 +186,15 @@ describe("beehiiv opt-out webhook: verification against beehiiv itself", () => {
     expect(h.db.suppressionList.upsert).toHaveBeenCalledTimes(1);
   });
 
+  it("suppresses on an exact timestamp tie, so the ambiguous second favours the opt-out", async () => {
+    h.fetch.mockResolvedValue(beehiivSays("active", EVENT_AT));
+
+    const res = await callRoute(post(optOut("subscription.deleted", "tie@example.com")));
+
+    expect(res.status).toBe(200);
+    expect(h.db.suppressionList.upsert).toHaveBeenCalledTimes(1);
+  });
+
   it("refuses an active-subscription event with no timestamp, so omitting it is not a bypass", async () => {
     h.fetch.mockResolvedValue(beehiivSays("active"));
 

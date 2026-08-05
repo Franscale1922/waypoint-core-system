@@ -27,8 +27,12 @@ import { normalizeEmail } from "@/lib/email-suppression";
  * description, and nothing else. There is no custom-header field, so the Bearer
  * token every other webhook here uses is not available. This is the same
  * constraint TidyCal has, and it gets the same answer that route already uses:
- * verifyQuerySecret. beehiiv also publishes no payload signature, so the secret
- * in the URL is the only primary control there is.
+ * verifyQuerySecret. beehiiv documents no payload signature either (checked
+ * against its webhooks overview and create-webhook reference as of 2026-08-05;
+ * absent from the docs is not proof none exists, but nothing here can rely on
+ * one it cannot find), so the secret in the URL is the only primary control
+ * there is. If beehiiv ever ships signing, it should become the primary control
+ * and this secret should drop to defence in depth.
  *
  * WHY THE PAYLOAD IS NOT TRUSTED ON ITS OWN
  * -----------------------------------------
@@ -283,7 +287,11 @@ export async function POST(req: Request) {
         );
       }
 
-      if (confirmation.createdAt <= eventTimestamp) {
+      // Strictly older, so a tie suppresses. Both stamps are whole seconds, and
+      // a subscription created in the very second somebody opted out is far more
+      // likely to be our own write racing the webhook than a genuine older
+      // subscription. Ties therefore fall toward honouring the opt-out.
+      if (confirmation.createdAt < eventTimestamp) {
         console.warn(
           `[beehiiv-webhook] refusing ${eventType}: beehiiv reports an active subscription predating the event`
         );

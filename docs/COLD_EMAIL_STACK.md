@@ -1118,8 +1118,9 @@ manual database edit.
 
 The secret sits in the URL because beehiiv's create-webhook API accepts only `url`,
 `event_types` and `description`: there is no custom-header field, so a Bearer token is not
-available. This is the same constraint TidyCal has. beehiiv also publishes no payload
-signature, so **treat that URL as a credential** and rotate it if it leaks. As a second
+available. This is the same constraint TidyCal has. beehiiv documents no payload signature
+either (verified against its docs 2026-08-05; absence from the docs is not proof none
+exists), so **treat that URL as a credential** and rotate it if it leaks. As a second
 line, the handler re-checks every claim against beehiiv's own API and refuses to suppress
 any address beehiiv still reports as `active`.
 
