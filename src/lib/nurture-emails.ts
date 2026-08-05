@@ -3,6 +3,23 @@ import crypto from "crypto";
 // ── Unsubscribe token helpers ──────────────────────────────────────────────────
 // HMAC-based 1-click unsubscribe. Secret set in UNSUBSCRIBE_SECRET env var.
 // Every nurture email footer contains a unique signed URL for this download record.
+//
+// THE TOKEN IS PERMANENT ON PURPOSE
+// ---------------------------------
+// It is HMAC(secret, recordId) and nothing else: no expiry, no nonce, no list
+// binding. That means anyone who ever saw the URL can replay it, and a replay
+// now suppresses the address everywhere. Expiry was CONSIDERED AND DECLINED
+// rather than overlooked. RFC 8058 one-click means the recipient's mail PROVIDER
+// sends the POST, sometimes long after delivery, so an expiry short enough to
+// shrink the replay window also starts rejecting genuine unsubscribes. An
+// opt-out that fails is worse than one that is replayed: it is a CAN-SPAM and
+// deliverability problem rather than a nuisance.
+//
+// The mitigation is on the other side. See unsuppressEmail in
+// email-suppression.ts and /api/admin/resubscribe: a wrong opt-out is now
+// reversible by an admin instead of needing a hand-written database edit.
+// If you ever DO add expiry, keep accepting existing tokens, or every link in
+// every inbox stops working the day it ships.
 
 /**
  * Which endpoint owns each list's opt-out.

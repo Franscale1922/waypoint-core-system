@@ -164,3 +164,123 @@ export async function suppressEmailEverywhere(email: string): Promise<number> {
   await canonical;
   return results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
 }
+
+/**
+ * The exact `reason` suppressEmailEverywhere writes. Load bearing: it is how
+ * unsuppressEmail tells a self-service opt-out apart from a bounce, a complaint
+ * or a reply classified as "not a fit", none of which a re-subscribe may clear.
+ */
+export const SELF_SERVICE_OPT_OUT_REASON = "unsubscribed";
+
+export interface UnsuppressOutcome {
+  /** False when nothing was changed. `blockedBy` then says what refused. */
+  ok: boolean;
+  /** Rows returned to mailable across the six lists. */
+  listRowsRestored: number;
+  /** True when the canonical opt-out row was actually removed. */
+  canonicalCleared: boolean;
+  /** Set only when ok is false. Names what refused, for the operator. */
+  blockedBy: string | null;
+  /**
+   * A cold outreach Lead still latched to SUPPRESSED. Reported, never cleared.
+   * See below for why.
+   */
+  latchedLead: { id: string; suppressionReason: string | null } | null;
+}
+
+/**
+ * Reverses a SELF-SERVICE opt-out, so a wrong one stops needing a hand-written
+ * database edit to undo.
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * The unsubscribe token is HMAC(secret, recordId) with no expiry and no nonce,
+ * so anyone who ever saw the URL can replay it, and a POST now suppresses the
+ * address on all six lists AND the canonical record that gates cold outreach.
+ * Tightening the token is the wrong lever: under RFC 8058 the recipient's mail
+ * provider sends that POST, sometimes long after delivery, so an expiry short
+ * enough to matter breaks real one-click unsubscribes, and a failed opt-out is a
+ * worse failure than a replayed one. Making the mistake REVERSIBLE is the fix
+ * that carries no such tradeoff.
+ *
+ * WHY IT IS SURGICAL
+ * ------------------
+ * SuppressionList is shared. The Resend webhook writes bounces and complaints
+ * into it, and the reply classifier writes "not_a_fit". Clearing it wholesale
+ * would resurrect addresses that are dead or hostile, turning a support favour
+ * into a deliverability incident. So anything that is not the exact reason
+ * suppressEmailEverywhere writes refuses, and says so.
+ *
+ * WHY THE REASON IS IN THE WHERE CLAUSE
+ * -------------------------------------
+ * The delete filters on `reason` rather than deleting the row that was just
+ * read. Between the read and the write a bounce webhook can upgrade the same row
+ * from "unsubscribed" to "bounce"; a delete by id would drop it anyway and
+ * re-open a hard-bounced address. Filtering makes that race unrepresentable.
+ *
+ * WHY THE WRITES ARE ORDERED
+ * --------------------------
+ * There is no transaction here, matching suppressEmailEverywhere and the rest of
+ * this codebase. The order is therefore load bearing: the six list flags clear
+ * FIRST and the canonical row LAST. If the second half fails, the canonical row
+ * survives, isEmailSuppressed still answers "suppressed", and cold outreach stays
+ * gated. Doing it the other way round would leave a window where the canonical
+ * record was gone but the lists still said opted-out, which is the one
+ * combination that could put mail in front of someone who asked for none.
+ */
+export async function unsuppressEmail(email: string): Promise<UnsuppressOutcome> {
+  const key = normalizeEmail(email);
+  const unchanged = { ok: false, listRowsRestored: 0, canonicalCleared: false, latchedLead: null };
+  if (!key) return { ...unchanged, blockedBy: "no address given" };
+
+  const domain = key.split("@")[1] ?? "";
+
+  const [domainEntry, addressEntry, latchedLead] = await Promise.all([
+    domain
+      ? prisma.suppressionList.findFirst({ where: { domain }, select: { id: true } })
+      : Promise.resolve(null),
+    prisma.suppressionList.findFirst({ where: { email: key }, select: { id: true, reason: true } }),
+    // Reported so the operator is not told "done" while cold outreach still
+    // refuses this address. `as any`: suppressionReason is on the schema but the
+    // generated client is only refreshed on deploy, which is why the rest of the
+    // codebase casts here too.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (prisma.lead.findFirst as any)({
+      where: { email: { equals: key, mode: "insensitive" }, status: "SUPPRESSED" },
+      select: { id: true, suppressionReason: true },
+      orderBy: { updatedAt: "desc" },
+    }) as Promise<{ id: string; suppressionReason: string | null } | null>,
+  ]);
+
+  // A domain rule outranks the address. Clearing the address row would report
+  // success over an address the domain entry still gates.
+  if (domainEntry) {
+    return { ...unchanged, blockedBy: `a domain-level suppression on ${domain}`, latchedLead };
+  }
+  if (addressEntry && addressEntry.reason !== SELF_SERVICE_OPT_OUT_REASON) {
+    return { ...unchanged, blockedBy: addressEntry.reason ?? "an unrecorded reason", latchedLead };
+  }
+
+  const results = await Promise.all(
+    SUPPRESSION_LISTS.map((list) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (prisma as any)[list].updateMany({
+        where: { email: { equals: key, mode: "insensitive" }, unsubscribed: true },
+        data: { unsubscribed: false, unsubscribedAt: null },
+      })
+    )
+  );
+  const listRowsRestored = results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
+
+  const removed = await prisma.suppressionList.deleteMany({
+    where: { email: key, reason: SELF_SERVICE_OPT_OUT_REASON },
+  });
+
+  return {
+    ok: true,
+    listRowsRestored,
+    canonicalCleared: removed.count > 0,
+    blockedBy: null,
+    latchedLead,
+  };
+}

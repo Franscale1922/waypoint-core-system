@@ -122,6 +122,21 @@ function isUniqueViolation(err: unknown): boolean {
 const LOCK_WINDOW_MS = 15 * 60 * 1000;
 
 /**
+ * A LEASE WITH AN EXPLICIT EXPIRY WAS CONSIDERED AND DECLINED.
+ *
+ * This is a fixed epoch-aligned window, not a lease, so two requests arriving
+ * either side of a boundary (12:14:59 and 12:15:01) take different locks and
+ * both proceed. That is real, and it is why the caller in lead-capture.ts leans
+ * on the durable nurtureStep marker as well as this.
+ *
+ * The cost of the seam is one duplicate email in a collision measured in
+ * milliseconds against a 15-minute window. The cost of the fix is reworking
+ * concurrency control that currently works, on the path that sends real mail to
+ * real people. Not worth it at this traffic. Revisit if these endpoints ever see
+ * enough volume for boundary collisions to stop being theoretical.
+ */
+
+/**
  * Reserves the right to deliver to `key`, returning false if someone already
  * holds it.
  *
@@ -199,6 +214,12 @@ export async function pruneRateLimitBuckets(now = Date.now()): Promise<number> {
  * portion is the LEFT. Vercel appends the real peer address last, which is why
  * the rightmost entry is the trustworthy one here; `x-real-ip`, which the
  * platform sets itself, is preferred when present.
+ *
+ * ⚠ THE RIGHTMOST HOP IS CORRECT ONLY WHILE VERCEL IS THE LAST PROXY. Put a
+ * second trusted proxy in front and the rightmost entry becomes THAT proxy's
+ * address for every request, collapsing the whole site into one bucket where
+ * IP_LIMIT throttles everybody. If another hop is ever added, this must count
+ * back a known number of trusted hops from the right instead of taking one.
  */
 export function clientIpFrom(headers: Headers): string | null {
   const realIp = headers.get("x-real-ip")?.trim();
