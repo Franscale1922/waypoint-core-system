@@ -43,7 +43,22 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
     "External webhook; guarded by BEEHIIV_WEBHOOK_SECRET (query param, fail-closed) plus an API re-check.",
   "webhooks/clay/route.ts": "External webhook; guarded by CLAY_WEBHOOK_SECRET (fail-closed).",
   "webhooks/inbound/route.ts": "External webhook; guarded by its own shared secret.",
-  "webhooks/resend/route.ts": "External webhook; guarded by its own signature check.",
+  // This entry read "guarded by its own signature check" until 2026-08-05. There is
+  // no signature check, and there never was. The route calls verifyBearer against
+  // INBOUND_WEBHOOK_SECRET, which is a string comparison against a static shared
+  // token. Instantly publishes no payload signature, so possession of that token is
+  // the entire control: whoever holds it can forge any reply, bounce or unsubscribe
+  // event, and this route writes SUPPRESSED leads and SuppressionList rows off those
+  // events. It is also not "its own" secret. The same INBOUND_WEBHOOK_SECRET guards
+  // webhooks/inbound, so a rotation has to cover both routes and a leak exposes both.
+  //
+  // The path name is historical and this route has nothing to do with Resend: the
+  // handler serves Instantly.ai (payload fields lead_email / reply_text, event_type
+  // "reply_received"), and its URL is registered in the Instantly dashboard, so the
+  // directory cannot be renamed without re-pointing that registration first. See the
+  // docblock in the route itself and docs/COLD_EMAIL_STACK.md.
+  "webhooks/resend/route.ts":
+    "External webhook (Instantly, despite the path name); guarded by INBOUND_WEBHOOK_SECRET, a static Bearer token shared with webhooks/inbound, checked fail-closed. No payload signature.",
   "webhooks/tidycal/route.ts": "External webhook; guarded by its own shared secret.",
   "leads/retrigger/route.ts": "Ops endpoint; guarded by RETRIGGER_SECRET (fail-closed).",
   "scorecard-complete/route.ts": "Public site quiz submission.",

@@ -178,9 +178,10 @@ export const SELF_SERVICE_OPT_OUT_REASON = "unsubscribed";
  * Any of these on a latched Lead refuses a re-subscribe.
  *
  * This is a second line, not the main one. Normally SuppressionList carries the
- * same signal and blocks first. It matters because the Resend webhook writes the
- * LEAD before the SuppressionList row (webhooks/resend/route.ts:89 then :97), so
- * a failure between the two leaves a known hard bounce recorded only on the
+ * same signal and blocks first. It matters because the Instantly inbound webhook
+ * (webhooks/resend/route.ts, named for Resend by history only) writes the LEAD
+ * via prisma.lead.update before the prisma.suppressionList.upsert that follows
+ * it, so a failure between the two leaves a known hard bounce recorded only on the
  * lead. Nurture's shouldSuppress checks bookedAt and REPLIED but not SUPPRESSED,
  * so without this check a reversal in that window would clear the last guard and
  * start mailing an address that is known to bounce.
