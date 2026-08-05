@@ -349,7 +349,9 @@ run it in-session and **label it plainly as self-review**, the biased last resor
 adversarial pass (a plan, a governance edit, a piece of research), stage 2 alone
 is the review.
 
-Both stages are held to these criteria:
+Between them the two stages must deliver all five. Stage 1 can only do 3–5;
+**1 and 2 are stage 2's alone**, since Codex has neither the original request nor
+this session's evidence:
 
 1. **Audit claims against evidence.** Every "passing / works / done / verified"
    statement must point to an actual tool result from this session. Re-run the
@@ -434,10 +436,12 @@ GitHub/Google-Drive **write** connectors. If the wrapper needs a capability it l
 wrapper; do not bypass it.
 
 **When to reach for it:**
-- The mandatory adversarial-review phase — as an *additional* reviewer alongside the Claude
-  one, not a replacement. They have non-overlapping blind spots; that is measured, not assumed
-  (§11-J, §11-L). Codex answers *"is this correct?"*; it cannot see CLAUDE.md, memory, or this
-  conversation, so anything **governance-bearing** still requires the Claude reviewer.
+- The mandatory adversarial-review phase — **stage 1 of two.** Codex runs first, the Claude
+  reviewer runs after it; neither replaces the other (canonical rule: "Two reviewers, in order",
+  in the `franscale-plan-budgeting` block above). They have non-overlapping blind spots; that is
+  measured, not assumed (§11-J, §11-L). Codex answers *"is this correct?"*; it cannot see
+  CLAUDE.md, memory, or this conversation, so scope completeness against the original request and
+  anything **governance-bearing** belong to the Claude stage.
 - Discovery/legwork on public source when it is worth spending Codex's pool instead of Claude's.
 
 **Rounds rotate the persona**: 1 = senior engineer, 2 = security/data-integrity, 3 = ops/SRE,
