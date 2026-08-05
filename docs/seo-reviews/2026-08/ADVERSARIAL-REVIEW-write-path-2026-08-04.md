@@ -30,7 +30,7 @@ none was taken on the tool's word.
 
 ---
 
-## Still open — the one finding nothing has closed
+## Still open — two findings nothing has closed
 
 **A retry can overwrite a newer edit to the same article.** `commitRefreshedArticles` lays its blobs
 over whatever HEAD currently holds: it reads the ref, takes that commit's tree as `base_tree`, and
@@ -53,6 +53,35 @@ what the monthly refresh is**, so it is a product call, not a code cleanup.
 The window is narrow (the refresh runs monthly and takes minutes) and overwriting articles is the
 job the refresh exists to do, so this is genuinely lower severity than "High" suggests in isolation.
 It is real all the same.
+
+---
+
+**Every refresh resets the article's PUBLICATION date.** `serializeArticle` stamps
+`{ ...frontmatter, date: today, updatedAt: today }`, so an article first published in January and
+refreshed in August reports `datePublished: 2026-08-04`. The original publication date is not
+recovered from anywhere: it is overwritten in the committed file, so each refresh destroys it
+permanently.
+
+Both consumers follow it. `resources/[slug]/page.tsx` feeds `date` to the Article node's
+`datePublished`, and `sitemap.ts` reads `updatedAt ?? date` into `lastModified`. The article
+therefore presents to Google as newly published rather than as long-standing and revised, which
+inverts the signal a content refresh is supposed to send, and it does so to the pages the refresh
+touches most often.
+
+**Verified pre-existing and still live.** `date: today` predates all of the write-path work: PR #32
+added the `updatedAt` stamp beside an overwrite that was already there, and none of #32, #34, #37,
+#39, #42 or #45 changed it. Re-read on `main` at `db78a63` before this was written, not assumed.
+
+Deliberately not folded into #32, which was scoped to making dates VALID rather than to deciding
+what they should mean. The correct semantics are almost certainly to preserve `date` as the true
+publication date and let `updatedAt` carry the revision, which is exactly what the two fields are
+for. That is a content decision rather than a code cleanup, and it is **Kelsey's call**: it changes
+what the site claims about every refreshed article, and it interacts with `isStale` in
+`src/lib/contentRefresh.ts`, which measures staleness from `date` and so currently has its clock
+reset by the very refresh it schedules.
+
+Note the second-order effect before fixing it: because `date` is reset on every run, an article's
+cadence timer restarts each time, so preserving `date` will also change WHICH articles come due.
 
 ---
 

@@ -50,8 +50,11 @@ That churn is itself the lesson: **verify a defect still exists at PUSH time, no
 read the code.** Several sessions here have built a fix for something another session had already
 landed.
 
-The one finding still open against it is the last-writer-wins overlay — see
-`ADVERSARIAL-REVIEW-write-path-2026-08-04.md` beside this file, and item 2 under "Open work" below.
+Two findings are still open against it, both in `ADVERSARIAL-REVIEW-write-path-2026-08-04.md` beside
+this file: the last-writer-wins overlay (item 2 under "Open work" below), and the fact that every
+refresh resets the article's PUBLICATION date, so a January article reports August in
+`datePublished` and in the sitemap. The second is a **content decision for Kelsey**, not a code
+cleanup, and it also resets the `isStale` clock that decides which articles come due.
 
 ---
 
