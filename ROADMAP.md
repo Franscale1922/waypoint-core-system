@@ -173,6 +173,7 @@ Execute Phases 1-4 documented in `docs/SEO_GEO_PLAYBOOK.md` (Directory Claims, A
 | `GITHUB_REPO_NAME` | `waypoint-core-system` |
 | `GITHUB_BRANCH` | `main` |
 | `TIDYCAL_WEBHOOK_SECRET` | TidyCal dashboard |
+| `BEEHIIV_WEBHOOK_SECRET` | Self-generated; lives in the beehiiv webhook URL (query param auth) |
 | `RESEND_WEBHOOK_SECRET` | Resend dashboard |
 | `INNGEST_SIGNING_KEY` / `INNGEST_EVENT_KEY` | app.inngest.com |
 | `CLAY_WEBHOOK_SECRET` | Clay dashboard |

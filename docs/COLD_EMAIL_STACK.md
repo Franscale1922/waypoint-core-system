@@ -1197,6 +1197,7 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `RESEND_API_KEY` | ✅ Set | HITL alerts, content refresh summary, system emails |
 | `TIDYCAL_API_KEY` | ✅ Set | `tidycalBookingSync` cron |
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | `/api/webhooks/tidycal` route (query param auth) |
+| `BEEHIIV_WEBHOOK_SECRET` | ✅ Set (Production) 2026-08-05 | `/api/webhooks/beehiiv` opt-out sync (query param auth; beehiiv sends no custom headers) |
 | `POSTGRES_PRISMA_URL` | ✅ Set | Prisma client (pooled) |
 | `POSTGRES_URL_NON_POOLING` | ✅ Set | Prisma migrations |
 | `INNGEST_EVENT_KEY` | ✅ Set | Inngest event publishing |
@@ -1211,6 +1212,7 @@ All variables set in Vercel → `waypoint-core-system` → Settings → Environm
 | `AUTH_GOOGLE_ID` | ✅ Set | Google OAuth for admin |
 | `AUTH_GOOGLE_SECRET` | ✅ Set | Google OAuth for admin |
 | `TIDYCAL_WEBHOOK_SECRET` | ✅ Set | Webhook auth (query param) |
+| `BEEHIIV_WEBHOOK_SECRET` | ✅ Set (Production only) | Webhook auth (query param) for the beehiiv opt-out sync. Must match the `?secret=` in the URL registered at beehiiv; an exact string compare, so whitespace breaks it. |
 | `APIFY_WEBHOOK_SECRET` | ✅ Set | Inert — Apify not used; route exists but receives no traffic |
 | `INBOUND_WEBHOOK_SECRET` | ✅ Set | Inbound reply webhook auth |
 | `HUNTER_API_KEY` | ⛔ Inert — do not upgrade | No active code path calls Hunter.io. Superseded by Evaboot as email source. |
