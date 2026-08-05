@@ -14,7 +14,7 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | `4b4f9ea` — PR **#42 (canonical slug binding) merged 2026-08-04**. Eleven commits landed after `ed22c03`: #28, #30, #31, #32, #33, #34, #35, #37, #39, #42 and a docs commit, all deployed green |
+| `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `5064f5a` (#45), everything deployed green |
 | `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
 | `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
@@ -25,10 +25,10 @@ first. The PR #21 section that used to head this file is now history and is summ
 | `claude/quirky-lumiere-fc6b90` | **abandoned**, PR **#36 closed** in favour of #39. **Remote branch still exists**, safe to delete. Do not reopen #36: it was cut before #34 and #37 landed in the same file |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
-### The AI content-refresh write path is now gated five ways (2026-08-04)
+### The AI content-refresh write path was hardened eight times in one day (2026-08-04)
 
-`src/lib/githubArticleCommit.ts` went from having no gate in front of it to five, across five PRs in
-one day, several of them running concurrently in different sessions. In merge order:
+`src/lib/githubArticleCommit.ts` went from having no gate in front of it to a stack of them, across
+eight PRs on 2026-08-04, many running concurrently in different sessions. In merge order:
 
 | PR | What it closed |
 |---|---|
@@ -36,10 +36,19 @@ one day, several of them running concurrently in different sessions. In merge or
 | **#34** `4b29f56` | The branch name is encoded per path segment, and `getConfig` rejects one that needs it |
 | **#37** `902408e` | The required non-date fields (`title`, `excerpt`, `faqs`), which nothing stamps |
 | **#39** `2e4513f` | Idempotency. A lost reply to the ref PATCH no longer produces a second identical commit |
+| **#40** `61ed643` | Preserves the frontmatter fields the refresh never owned, which it had been dropping |
 | **#42** `4b4f9ea` | The slug, which becomes a repository path, is canonical and bound to the frontmatter |
+| **#43** `8aedb55` | Compliance gaps in the refresh gate |
+| **#45** `5064f5a` | The filename is the article's identity on the write path |
 
-**Read this before touching that file.** Five sessions edited it the same day and `main` moved twice
-underneath #39 alone. `git fetch` and re-read it rather than trusting any local copy or this table.
+**Read this before touching that file, and expect it to have moved again.** Eight PRs in a day, and
+`main` moved twice underneath #39 alone while it was in review — two of the findings #39 declined as
+out of scope were closed by other sessions before it merged. `git fetch` and re-read the file rather
+than trusting any local copy, this table, or a PR description written hours ago.
+
+That churn is itself the lesson: **verify a defect still exists at PUSH time, not just when you first
+read the code.** Several sessions here have built a fix for something another session had already
+landed.
 
 The one finding still open against it is the last-writer-wins overlay — see
 `ADVERSARIAL-REVIEW-write-path-2026-08-04.md` beside this file, and item 2 under "Open work" below.
