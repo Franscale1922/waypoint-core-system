@@ -287,25 +287,36 @@ declaring the work done.
 
 Never at less than the effort the work itself got.
 
-### The reviewer is Codex, not me and not a subagent
+### Two reviewers, in order: Codex first, then Claude — neither replaces the other
 
-**For any change to CODE, the reviewer is the OpenAI Codex CLI**, run from the
-repo:
+**For any change to CODE the adversarial review has two stages, and BOTH run.**
+Stage 1 is the OpenAI Codex CLI; stage 2 is a Claude reviewer. This is not
+belt-and-braces: on 2026-08-05 (PR #44) two Codex rounds found real correctness
+defects, the session declared the review complete on Codex alone, and the Claude
+reviewer run afterwards still found two Highs — including a coverage claim
+already given to Kelsey that was **false** (11 of 18 send sites unguarded, with
+the coverage test's regex anchored to one spelling so it reported green over the
+gap).
 
-```
-codex exec --sandbox read-only - < /path/to/review-prompt.txt
-```
+**Stage 1 — Codex: "is this correct?"** Different vendor, different model, no
+memory of my reasoning — that is the independence it buys. It runs first because
+it is cheaper and catches correctness bugs before stage 2 has to.
 
-Different vendor, different model, no memory of my reasoning — that is the
-independence the rule is buying. A subagent shares my model and my blind spots,
-and some sessions forbid spawning agents at all, which is exactly when the rule
-used to collapse into self-review. **Codex REPLACES the subagent reviewer**; do
-not run both by default. Ask me first only if I have said Codex is unavailable.
-
-- **Scope: code changes, automatically.** Any repo. Run it without asking as the
-  final phase of substantive code work. **Skip it** for docs, gitlink/deploy
-  bumps, ops and content files, and one-line mechanical edits — an external
-  review there is latency and noise, and needlessly ships my code to OpenAI.
+- **I invoke Codex; Kelsey never runs it himself.** He asks for a review in plain
+  English and I run the tool. Never hand him a command to type.
+- **Where the repo has a wrapper, that wrapper is the only sanctioned call** —
+  `node scripts/codex-review.mjs --diff --round <N>` — never a hand-written
+  `codex exec`. The wrapper encodes ~12 individually-verified containment flags;
+  retyping them by hand is how the containment silently breaks. If it lacks a
+  capability, extend the wrapper. **Where the repo has no wrapper** (today only
+  waypoint-core-system has one), fall back to
+  `codex exec --sandbox read-only - < /path/to/review-prompt.txt` and say in chat
+  that the run is unwrappered. If Codex is unavailable entirely, say so and go to
+  stage 2 — never drop the external pass silently.
+- **Scope — skip stage 1** for docs, gitlink/deploy bumps, ops and content files,
+  and one-line mechanical edits: an external review there is latency and noise,
+  and needlessly ships my code to OpenAI. **Skipping Codex never skips stage 2** —
+  a governance-bearing change gets the Claude reviewer even when it is pure prose.
 - **Feed it the original request verbatim + the diff**, and prompt it to find
   fault, not to bless. Tell it not to summarize the code.
 - **Check the payload before sending.** It leaves the machine: grep the diff for
@@ -317,13 +328,28 @@ not run both by default. Ask me first only if I have said Codex is unavailable.
 - **Verify every finding against the real code before acting on it.** Codex is
   another agent, not an oracle; the grounding rule applies to its claims too.
   Reproduce it, fix it, or decline it with a stated reason.
-- **Self-review is the last resort, and must be labeled as such** — say plainly
-  in chat that it is self-review and therefore the biased option.
 
-For non-code work that still needs an adversarial pass (a plan, a governance
-edit, a piece of research), a fresh subagent is fine where the session allows it.
+**Stage 2 — Claude: "is this what was asked, and are the calls defensible?"**
+Runs after Codex, on the post-fix state. Codex never sees the original request,
+CLAUDE.md, memory, or this conversation, so three jobs are structurally
+impossible for it and belong here:
 
-The reviewer — whichever it is — must:
+- **Scope completeness** — the original request goes into the reviewer's input
+  **verbatim**; that is the input Codex lacks. List what a careful reading
+  requires that wasn't delivered.
+- **Governance-bearing decisions** — anything a rule in CLAUDE.md or a memory file
+  speaks to (adding a route to a security allowlist, a git or deploy call, a
+  research gate). Codex cannot see those rules, so it cannot judge these.
+- **Auditing the claims I made** — every "passing / works / done / verified" must
+  point to evidence actually observed this session.
+
+Use a fresh subagent where the session allows one; where agents are forbidden,
+run it in-session and **label it plainly as self-review**, the biased last resort
+— but never skip stage 2 on that basis. For non-code work that needs an
+adversarial pass (a plan, a governance edit, a piece of research), stage 2 alone
+is the review.
+
+Both stages are held to these criteria:
 
 1. **Audit claims against evidence.** Every "passing / works / done / verified"
    statement must point to an actual tool result from this session. Re-run the
