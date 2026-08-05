@@ -100,7 +100,13 @@ recommended model and effort level** before doing the work, so I know when to
 switch as I move through it. A session with no plan still lays the phases out
 first — there is nothing to annotate until it does. Model and effort are session-level in Claude Code —
 they can't be switched automatically per task — so the plan is where the
-budgeting decision gets made and I flip them by hand at each boundary.
+decision gets made and I flip them by hand at each boundary.
+
+**What this block is for.** Measured 2026-08-05, the model/effort regime governs
+**0.8%** of spend — so treat it as a **quality and control** mechanism (right tier for
+the work, and checkpoints where I can steer), **not** as the cost lever. The cost lever
+is session length, and it lives in "A phase boundary is a session boundary" below.
+Never justify a tier choice on token savings when the real reason is fit.
 
 Format each phase like this:
 
@@ -118,90 +124,78 @@ switch line when the model or effort actually changes from the previous phase
 
 ### Phase-boundary STOP gate (hard rule — do not run past a switch)
 
-Listing the switches up front is **not** enough. The failure mode is real and
-cuts **both ways**: the plan names the model/effort per phase, then execution
-barrels through every boundary still on the *previous* phase's setting — too
-light for the hard phase ahead (quality lost) **or** too heavy for the cheap
-phase ahead (budget burned, and the checkpoint skipped) — never giving me time
-to flip it. **A `▶ SWITCH` line that changes the model or effort in *either*
-direction is a hard STOP, not a heads-up.** Stepping **down** — opus→sonnet,
-xhigh→low, leaving a hard phase for a mechanical one — gates exactly like
-stepping up; "I'm only making it cheaper/faster, no need to stop" is precisely
-the rationalization this rule exists to kill. At every phase boundary whose
-`▶ SWITCH` line differs from the current session setting, you MUST:
+Listing switches up front is **not** enough: execution barrels through every
+boundary still on the *previous* phase's setting — too light for the hard phase
+ahead (quality lost) **or** too heavy for the cheap one (budget burned, checkpoint
+skipped). **A `▶ SWITCH` line that changes model or effort in *either* direction is
+a hard STOP, not a heads-up.** Down-switches gate identically to up-switches; "I'm
+only making it cheaper" is precisely the rationalization this rule exists to kill.
 
-1. **Halt before doing any of that phase's work** — do not read, edit, run, or
-   spawn anything for the new phase. End your turn.
-2. **Emit the switch as an explicit gate**, e.g.:
+At every boundary whose `▶ SWITCH` differs from the current session setting, you MUST:
+
+1. **Halt before any of that phase's work** — do not read, edit, run, or spawn
+   anything. End your turn.
+2. **Emit the gate**, e.g.:
    > ⏸ **STOP — switch before I continue.** Phase 3 needs `/model opus` ·
-   > `/effort xhigh`. Run those two commands, then reply **"go"** (or "done" /
-   > "proceed"). I will not start Phase 3 until you confirm.
+   > `/effort xhigh`. Run those two commands, then reply **"go"**.
+3. **Wait for explicit confirmation** ("go" / "done" / "proceed" / "switched").
+   Silence is not permission; "it's just a quick phase" is not a reason to skip.
 
-3. **Wait for my explicit confirmation** ("go" / "done" / "proceed" / "switched")
-   before starting the phase. My confirmation is the only thing that releases the
-   gate — a lack of response is not permission, and "it's just a quick phase" is
-   not a reason to skip the stop.
+- **One stop per changing boundary** — never batch several into one message; I flip
+  settings one boundary at a time as I reach them.
+- **No-change boundaries do not stop.** Note "no change" and continue.
+- **The gate binds even without a plan** — spawned/background sessions stop too.
+- **The final adversarial-review phase is itself a gated boundary.**
+- If you are already several phases deep on the wrong setting, stop immediately, say
+  so plainly, and name what should be re-run rather than papering over it.
 
-Rules for the gate:
-- **One stop per changing boundary.** If three consecutive phases each change the
-  setting, that is three separate stops — never batch them into one "switch all
-  of these now" message, because I flip settings one boundary at a time as I
-  reach them.
-- **No-change boundaries do not stop.** If the next phase's model AND effort match
-  the current session, note "no change" and continue without halting.
-- **Down-switches gate identically to up-switches.** Direction never decides
-  whether you stop — only *no change at all* skips the stop. Returning to a
-  mechanical phase after a hard one *feels* safe to coast through; it is not.
-- **The gate binds even without a plan.** A spawned/background session that never
-  entered plan mode still stops at each boundary and waits — it does not get to
-  run through on one setting because "there was no approval step."
-- **The final adversarial-review phase is itself a gated boundary** (it steps the
-  model/effort up) — stop and wait for the switch before running the review, same
-  as any other phase.
-- If you catch yourself already several phases deep on the wrong setting, stop
-  immediately, say so plainly, and tell me what should be re-run on the correct
-  model/effort rather than papering over it.
+### A phase boundary is a session boundary — default to ENDING, not switching
 
-### A phase boundary is a session boundary
+**Measured 2026-08-05 over 30,361 turns / 115 sessions, one week, all projects:
+switching is not where the money goes — session *length* is.** Model switches cost
+$63 of $7,906 (**0.8%**). Cache **reads** are 53.5%, because context is re-read in
+full every turn: a session costs ≈ `N × (94k + 900×N/2)` — **quadratic**. Sessions
+over 300 turns are 43% of sessions but **84% of all tokens**. (Dollars are
+API-equivalent — a proxy for subscription quota, not a bill.)
 
-**Switching isn't free — it dumps the prompt cache.** Changing model *or* effort
-mid-conversation invalidates the cached prefix; the next turn re-writes ~85% of it
-at the 1-hour cache-write rate — **2× base input**, twice uncached and ~20× a cache
-hit. Measured 2026-08-03, one session, n=1 per switch type (treat magnitudes as
-indicative): three switches at 140–280k context cost **~$5.10**, the *effort-only*
-switch the priciest at $2.68. Dollars here are API-equivalent — a proxy for
-subscription quota, not a bill.
+**So a `▶ SWITCH` boundary means: finish, update the handoff doc, emit the
+paste-block, end the session.** Switching in place is the exception, justified only
+when the remaining phase is short (~20 turns or fewer). **Backstop:** a phase that
+passes ~300k context is itself a boundary even with no switch — 21% of long sessions
+contain no switch at all, and those are the ones that run to 800k.
 
-**At a boundary, pick the cheapest of three.** A **subagent** at the target
-model/effort leaves the parent's cache intact (verified — the parent's next turn
-re-read 234k and wrote 6.7k), but the child pays its own startup, so it wins only
-when the brief is small next to the parent's context. Otherwise weigh the switch
-against a cold start, measured across 21 sessions at ~56k write + ~30k read ≈
-**$0.57**: break-even is **~65k** of accumulated context. Past that, hand off; below
-it, switch in place — **and when unsure, switch**, because a fresh session's cost to
-rebuild context is real but unmeasured and pushes the true threshold higher. Close
-every session with a fenced block I can paste into a new chat — the one-line task,
-the literal `/model` and `/effort` commands on separate lines, a pointer to the
-handoff doc, and any constraint that would do real damage if missed; it **points,
-never restates**. Update that doc before the session ends — branch and HEAD, what is
-incomplete, what failed, what is undecided. A pointer to a stale doc is how the next
-session resumes from the wrong state. Also group work so each boundary is a real
-change of task, and don't bounce between tiers inside one phase.
+**The old "~65k break-even, when unsure switch" rule was wrong and is retired.** It
+compared two *one-time* costs and ignored that switching in place leaves you at high
+context for **every remaining turn**. At the 272k median turn: switching costs ~$2.72
+once then ≥$0.136/turn and rising; a fresh session costs ~$0.57 once then ~$0.047/turn
+from a 94k base — **repaying in ~6 turns** (≈$8.6 vs ≈$22.7 over 100 further turns).
+**When unsure, hand off.** A **subagent** still leaves the parent's cache intact and
+wins on a small brief, but measured subagent cost is 0.1–0.3% of spend — that is a
+latency and quality call, not a budget one.
+
+**Close every session with a fenced paste-block** — the one-line task, the literal
+`/model` and `/effort` commands on separate lines, a pointer to the handoff doc, and
+any constraint that would do real damage if missed; it **points, never restates**.
+Update that doc first — branch and HEAD, what is incomplete, what failed, what is
+undecided. A pointer to a stale doc is how the next session resumes from the wrong
+state. Group work so each boundary is a real change of task; don't bounce between
+tiers inside one phase.
 
 ### Model roster — capability, cost, and fit
 
-**Relative cost** (vs Opus = 1×) is the durable signal; absolute prices are a
-dated snapshot — refresh from the `/model` picker + the Models API
-(https://platform.claude.com/docs/en/api/models). All 1M context except Haiku
-(200K). _Prices $/1M in·out, verified 2026-07-26._
+**Relative cost** (vs Opus = 1×) is the durable signal and the only thing to reason
+from. Absolute prices go stale and introductory rates lapse, so **no dollar figure
+is quoted here — re-verify from the `/model` picker + the Models API
+(https://platform.claude.com/docs/en/api/models) before quoting one.** All 1M
+context except Haiku (200K).
 
-| Model | Rel. cost | $/1M in·out |
-|---|---|---|
-| Haiku 4.5 | ~⅕× | $1 / $5 |
-| Sonnet 5 | **~⅖× now** (⅗× after 2026-08-31) | $3 / $15 — **intro $2/$10 thru 2026-08-31** |
-| Opus 5 | 1× | $5 / $25 |
-| Opus 4.8 | 1× (same) — Anthropic-"legacy", will retire | $5 / $25 |
-| Fable 5 | 2× | $10 / $50 |
+| Model | Rel. cost |
+|---|---|
+| Haiku 4.5 | ~⅕× |
+| Sonnet 5 | ~⅖× while introductory pricing holds, ~⅗× after — **check the picker** |
+| Opus 5 | 1× |
+| Opus 4.8 | 1× (same) — Anthropic-"legacy", will retire |
+| Fable 5 | 2× |
 
 Quirks the prices don't show. **Haiku** is not for real reasoning or coding.
 **Sonnet is literal** — state the scope you want. **Opus 4.8** is an escape hatch,
@@ -211,10 +205,11 @@ thinking, 30-day retention, classifiers that can refuse.
 ### Choosing at every pass — start at the floor, justify every move
 
 **Opus 5 @ high is the floor** — `/model opus` · `/effort high` (needs Claude Code
-≥ v2.1.219; see the alias-drift note). Down is the main cost lever and the
-disciplined default when the task doesn't need Opus-grade reasoning — take the
-tier from the matrix below, and never under-power genuinely hard or
-correctness-critical work to save tokens. **Up is an EFFORT move, not a model
+≥ v2.1.219; see the alias-drift note). Down is the disciplined default when the task
+doesn't need Opus-grade reasoning — take the tier from the matrix below, and never
+under-power genuinely hard or correctness-critical work to save tokens. **Down is a
+fit decision, not a budget one:** measured, the whole switching regime moves 0.8% of
+spend, so a tier drop chosen purely to save quota is a bad trade. **Up is an EFFORT move, not a model
 move:** the floor is already the strong Opus, so harder work means `/effort xhigh`
 (or `max`), and the only model above the floor is Fable (`/model fable`).
 **Sideways:** if Opus 5 thrashes — padding, scope drift, subagents you didn't
@@ -248,10 +243,13 @@ Notes:
   `opus-4-8` short alias.
 - **The floor is strong, so mind what it costs per task.** Opus 5 is verbose,
   self-verifies, expands scope, and reaches for subagents — same price as 4.8,
-  more tokens per task. Three mitigations, applied by default: never instruct it
-  to double-check or self-verify (it already does, and the instruction compounds
-  it); state scope explicitly and don't widen the task; cap subagent spawning on
-  cost-sensitive runs.
+  more tokens per task. Three mitigations, applied by default: don't add *generic*
+  "double-check your work" instructions mid-task (it already self-verifies, and a
+  vague instruction compounds it); state scope explicitly and don't widen the task;
+  cap subagent spawning on cost-sensitive runs. **This does not weaken the grounding
+  rule or the adversarial-review phase** — those demand *specific, evidenced* checks
+  (re-run this test, read this file, cite this observation), which is the opposite of
+  a vague self-doubt prompt. Generic doubt is the waste; named verification is the job.
 - **Effort is the within-model cost dial** — a behavioral signal, not a published
   multiplier. Set it to task difficulty, not habit:
   `xhigh` is **not** the reflexive default, and on Opus 5 `low`/`medium` are
@@ -290,13 +288,11 @@ Never at less than the effort the work itself got.
 ### Two reviewers, in order: Codex first, then Claude — neither replaces the other
 
 **For any change to CODE the adversarial review has two stages, and BOTH run.**
-Stage 1 is the OpenAI Codex CLI; stage 2 is a Claude reviewer. This is not
-belt-and-braces: on 2026-08-05 (PR #44) two Codex rounds found real correctness
-defects, the session declared the review complete on Codex alone, and the Claude
-reviewer run afterwards still found two Highs — including a coverage claim
-already given to Kelsey that was **false** (11 of 18 send sites unguarded, with
-the coverage test's regex anchored to one spelling so it reported green over the
-gap).
+Stage 1 is the OpenAI Codex CLI; stage 2 is a Claude reviewer. Not belt-and-braces:
+on PR #44 the session declared the review done on Codex alone, and the Claude pass
+afterwards still found two Highs — including a coverage claim already given to
+Kelsey that was **false** (11 of 18 send sites unguarded, the test's regex anchored
+to one spelling so it reported green over the gap).
 
 **Stage 1 — Codex: "is this correct?"** Different vendor, different model, no
 memory of my reasoning — that is the independence it buys. It runs first because
@@ -330,44 +326,33 @@ it is cheaper and catches correctness bugs before stage 2 has to.
   Reproduce it, fix it, or decline it with a stated reason.
 
 **Stage 2 — Claude: "is this what was asked, and are the calls defensible?"**
-Runs after Codex, on the post-fix state. Codex never sees the original request,
-CLAUDE.md, memory, or this conversation, so three jobs are structurally
-impossible for it and belong here:
+Runs after Codex, on the post-fix state. Use a fresh subagent where the session
+allows one; where agents are forbidden, run it in-session and **label it plainly as
+self-review**, the biased last resort — but never skip stage 2 on that basis. For
+non-code work needing an adversarial pass (a plan, a governance edit, research),
+stage 2 alone is the review.
 
-- **Scope completeness** — the original request goes into the reviewer's input
-  **verbatim**; that is the input Codex lacks. List what a careful reading
-  requires that wasn't delivered.
-- **Governance-bearing decisions** — anything a rule in CLAUDE.md or a memory file
-  speaks to (adding a route to a security allowlist, a git or deploy call, a
-  research gate). Codex cannot see those rules, so it cannot judge these.
-- **Auditing the claims I made** — every "passing / works / done / verified" must
-  point to evidence actually observed this session.
-
-Use a fresh subagent where the session allows one; where agents are forbidden,
-run it in-session and **label it plainly as self-review**, the biased last resort
-— but never skip stage 2 on that basis. For non-code work that needs an
-adversarial pass (a plan, a governance edit, a piece of research), stage 2 alone
-is the review.
-
-Between them the two stages must deliver all five. Stage 1 can only do 3–5;
-**1 and 2 are stage 2's alone**, since Codex has neither the original request nor
-this session's evidence:
+**Between them the two stages must deliver all five.** Stage 1 can only do 3–5;
+**1 and 2 are stage 2's alone**, because Codex never sees the original request,
+CLAUDE.md, memory, or this conversation:
 
 1. **Audit claims against evidence.** Every "passing / works / done / verified"
-   statement must point to an actual tool result from this session. Re-run the
-   tests fresh. Flag any green that wasn't actually observed — treat a reported
-   pass as unproven until re-run.
-2. **Check scope completeness.** Re-read the original request and list what a
-   careful reading requires that wasn't delivered.
-3. **Hunt correctness bugs** — unhandled edge cases, error paths, race conditions.
-4. **Judge test quality** — do the tests exercise real behavior, or pass by
-   construction?
-5. **Name concrete improvements** — simplification, reuse, missed opportunities —
-   ranked most-severe first.
+   points to an actual tool result from this session. Re-run the tests fresh; treat
+   a reported pass as unproven until re-observed.
+2. **Scope completeness.** The original request goes into the reviewer's input
+   **verbatim** — that is the input Codex lacks. List what a careful reading
+   requires that wasn't delivered.
+3. **Correctness bugs** — unhandled edge cases, error paths, race conditions.
+4. **Test quality** — do the tests exercise real behavior, or pass by construction?
+5. **Concrete improvements** — simplification, reuse, missed opportunities, ranked
+   most-severe first.
 
-Compose with the existing skills where they fit: `/verify` to drive the real
-flow end-to-end instead of trusting the test log, and `/code-review high` for a
-diff-level correctness pass.
+Also stage 2's alone: **governance-bearing decisions** — anything a CLAUDE.md rule or
+memory file speaks to (a security allowlist entry, a git or deploy call, a research
+gate). Codex cannot see those rules, so it cannot judge these.
+
+Compose with existing skills: `/verify` to drive the real flow end-to-end instead of
+trusting the test log, `/code-review high` for a diff-level correctness pass.
 
 **Act, don't acknowledge.** After the review, fix each finding or state
 explicitly why it's declined. "Noted" does not close a finding.
