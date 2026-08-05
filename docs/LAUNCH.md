@@ -139,7 +139,7 @@ Inngest runs the following background functions:
 
 | Function | Trigger | What It Does |
 |---|---|---|
-| `content-refresh` | Monthly cron (`0 6 1 * *`) | Rewrites stale articles with GPT-4o, commits to GitHub |
+| `content-refresh` | Monthly cron (`0 14 1 * *`) | Rewrites stale articles with GPT-4o, commits to GitHub |
 | `scorecard-complete` | Event: scorecard submission | Sends personalized scorecard email via Resend |
 | `checklist-requested` | Event: checklist download | Sends industry-specific PDF + triggers 5-email nurture sequence |
 | `nurture-sequence` | Fan-out from checklist event | Delivers 5 drip emails over 3 weeks |
@@ -322,10 +322,18 @@ See `content/CONTENT-STANDARDS.md` for all writing rules. Key rules:
 Inngest runs a monthly cron (`content-refresh` function) that:
 1. Identifies articles older than 60 days
 2. Rewrites them with GPT-4o following content standards
-3. Commits the updated `.md` files back to `main`
-4. Vercel auto-rebuilds from the commit
+3. Validates every article at the commit boundary and **refuses the whole batch** if any fails
+4. Commits the updated `.md` files back to `main` in one atomic commit
+5. Vercel auto-rebuilds from the commit
 
 No manual action required. Monitor in the Inngest dashboard.
+
+**A run that commits nothing is not necessarily a failure.** The commit step reports its outcome,
+and three of the four outcomes write nothing: `already-applied` (a retry recognised work an earlier
+attempt had already published), `no-changes` (the rewrite produced bytes identical to what is on
+`main`, so committing would only trigger a pointless rebuild), and `nothing-to-do` (no stale
+articles). Only `committed` advances the branch. Read the status in the Inngest run rather than
+inferring a broken loop from the absence of a deploy. See `src/lib/githubArticleCommit.ts`.
 
 ### Franchise Map
 

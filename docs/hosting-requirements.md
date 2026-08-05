@@ -22,6 +22,8 @@ Inngest cron fires (1st of every month)
   ↓
 GPT-4o rewrites stale articles (following content standards)
   ↓
+Every article validated at the commit boundary; the whole batch is refused if any fails
+  ↓
 Updated .md files committed to GitHub via API (single atomic commit)
   ↓
 Host detects push to main → rebuild triggered automatically
@@ -29,7 +31,16 @@ Host detects push to main → rebuild triggered automatically
 Live site updated (~2 min after commit)
 ```
 
-If step 4 doesn't happen automatically, the loop is broken.
+If the rebuild step doesn't happen automatically, the loop is broken — and that is the hard
+requirement this document exists to state.
+
+**Two later refinements, so an absent deploy is not misread as a broken loop.** The commit step can
+legitimately write nothing: a retry that recognises work an earlier attempt already published, or a
+rewrite whose bytes match what is already on `main`, both complete successfully without advancing
+the branch. Separately, `vercel.json` now carries an `ignoreCommand` that skips the build for
+commits touching only agent and review files — `content/` is **not** excluded, so the refresh loop
+above is unaffected. Neither changes the hosting requirement; both change how you diagnose a quiet
+month.
 
 ---
 
