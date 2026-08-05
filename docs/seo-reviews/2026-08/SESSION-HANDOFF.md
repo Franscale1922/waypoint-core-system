@@ -56,6 +56,10 @@ refresh resets the article's PUBLICATION date, so a January article reports Augu
 `datePublished` and in the sitemap. The second is a **content decision for Kelsey**, not a code
 cleanup, and it also resets the `isStale` clock that decides which articles come due.
 
+On the first of those, a prior attempt already exists as **draft PR #41 — read it before rebuilding,
+and do not merge it.** `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records
+what survives from it, what was decorative, and why the branch itself is not salvageable by merge.
+
 ---
 
 ## ✅ The blocking item is closed
@@ -333,6 +337,20 @@ session or cause harm.
    straight to `main` is the better one and **changes what the monthly refresh is**, so it is a
    product decision. Ranked here rather than first because the window is narrow (monthly, minutes
    long) and overwriting articles is the job the refresh exists to do.
+
+   **⚠ A first attempt exists: PR #41, left as a DRAFT on purpose. Read it before rebuilding this.**
+   It carries a working `gitBlobSha` (cross-checked against real `git hash-object`, and against
+   `git ls-tree` for all 45 articles) and a CAS that both an external Codex review and a Claude
+   review agreed was the right shape. **Do not merge it**: it was cut before #42 and has no slug
+   validation, so merging it in its own favour would revert `SLUG_PATTERN`, and it re-solves #39's
+   idempotency worse than #39 already does. `merge-tree` exits 1 with four conflicts.
+   `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records what survives, two
+   guards that were decorative (removing `?recursive=1` left every test green while silently
+   disabling the whole refresh), and the one change a second attempt most needs: compare against the
+   intended OUTPUT blob SHA as well as the base one, and classify an output match as #39's
+   `already-applied` rather than as a conflict. Both reviewers found that independently.
+   Also still undelivered from the original brief: retry/backoff on 403/429, and a note in the
+   function's docs about the ruleset failure mode.
 
 3. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
    and unenforced by any check — `aeo-audit` does not test for item numbers at all. Was 52; the AUV
