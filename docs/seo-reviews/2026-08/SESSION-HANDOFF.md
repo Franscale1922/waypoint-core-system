@@ -14,7 +14,7 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `5064f5a` (#45), everything deployed green |
+| `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `c8546b8` (#47), everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on |
 | `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
 | `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
@@ -50,14 +50,25 @@ That churn is itself the lesson: **verify a defect still exists at PUSH time, no
 read the code.** Several sessions here have built a fix for something another session had already
 landed.
 
-Two findings are still open against it, both in `ADVERSARIAL-REVIEW-write-path-2026-08-04.md` beside
-this file: the last-writer-wins overlay (item 2 under "Open work" below), and the fact that every
-refresh resets the article's PUBLICATION date, so a January article reports August in
-`datePublished` and in the sitemap. The second is a **content decision for Kelsey**, not a code
-cleanup, and it also resets the `isStale` clock that decides which articles come due.
+**Both findings that were open against it are now CLOSED**, on 2026-08-05, within about an hour of
+each other and by different sessions:
 
-On the first of those, a prior attempt already exists as **draft PR #41 — read it before rebuilding,
-and do not merge it.** `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records
+- The publication-date reset landed as **#46** (`a5ef595`). `serializeArticle` now stamps only
+  `updatedAt` and preserves `date`, and `isStale` schedules from `updatedAt ?? date`. The two had to
+  move together: the overwrite was a bug, but it was load-bearing for scheduling, and fixing the date
+  alone would have made every article permanently stale one cadence after publication.
+- The last-writer-wins overlay landed as **#47** (`c8546b8`), deployed green. Each payload carries
+  the git blob SHA of the file it was generated from, checked against the branch's tree before any
+  blob is created; an article whose file moved stands down and is reported rather than overwritten.
+
+Nothing is open against this file today. What is left is the residual noted at the bottom of #47's
+module header: a force-reset of the branch is invisible to a check that compares FILE CONTENTS, and
+closing it needs GraphQL `createCommitOnBranch(expectedHeadOid:)`, which is a rewrite of the module
+rather than an addition.
+
+**PR #41 is CLOSED** (2026-08-05), superseded by #47. It was never merged, for the reasons below.
+Its review doc is still worth reading as a record of how a green test suite hid two decorative
+guards: `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records
 what survives from it, what was decorative, and why the branch itself is not salvageable by merge.
 
 ---
@@ -327,30 +338,33 @@ session or cause harm.
    accessibility set; overlapping tier intervals). All verified real and enumerated in
    `ADVERSARIAL-REVIEW-2026-08-04.md`. The parity gate belongs in `verify-schema.mjs` and is scoped
    work to agree, not a bolt-on.
-2. **The content refresh can overwrite a newer human edit to the same article.** The commit path
-   lays its blobs over whatever HEAD currently holds and carries no record of the revision the
-   payload was generated from, so it cannot tell that the file moved underneath it. Verified
-   pre-existing, byte-identical at `4d48ff9`, and the last finding still open against that file
-   after #32/#34/#37/#39/#42 — full write-up in `ADVERSARIAL-REVIEW-write-path-2026-08-04.md`.
-   Scoped work to agree, not a bolt-on: carrying each target's expected source blob SHA and
-   aborting on mismatch is the contained fix, but publishing through a branch and a PR instead of
-   straight to `main` is the better one and **changes what the monthly refresh is**, so it is a
-   product decision. Ranked here rather than first because the window is narrow (monthly, minutes
-   long) and overwriting articles is the job the refresh exists to do.
+2. ~~**The content refresh can overwrite a newer human edit to the same article.**~~ **CLOSED
+   2026-08-05 as #47 (`c8546b8`), deployed green.** Kept here rather than deleted because two
+   sessions in a row started by re-reading this list.
 
-   **⚠ A first attempt exists: PR #41, left as a DRAFT on purpose. Read it before rebuilding this.**
-   It carries a working `gitBlobSha` (cross-checked against real `git hash-object`, and against
-   `git ls-tree` for all 45 articles) and a CAS that both an external Codex review and a Claude
-   review agreed was the right shape. **Do not merge it**: it was cut before #42 and has no slug
-   validation, so merging it in its own favour would revert `SLUG_PATTERN`, and it re-solves #39's
-   idempotency worse than #39 already does. `merge-tree` exits 1 with four conflicts.
-   `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records what survives, two
-   guards that were decorative (removing `?recursive=1` left every test green while silently
-   disabling the whole refresh), and the one change a second attempt most needs: compare against the
-   intended OUTPUT blob SHA as well as the base one, and classify an output match as #39's
-   `already-applied` rather than as a conflict. Both reviewers found that independently.
-   Also still undelivered from the original brief: retry/backoff on 403/429, and a note in the
-   function's docs about the ruleset failure mode.
+   Each payload now carries the git blob SHA of the file it was generated from, checked against the
+   branch's tree before any blob is created. A file that moved makes that article stand down; the
+   rest of the batch still commits, and the stand-down is reported in its own section of the summary
+   email and in the run's return value. Draft **#41 is closed**, superseded.
+
+   Four things worth carrying forward, because each cost a review round to find:
+
+   - **The bytes on the branch decide whether to write, never a trailer in history.** A trailer
+     proves a commit carrying those bytes existed, not that they are still there. Codex round 2
+     found this; it was reproduced before fixing. The trailer is now consulted only once the
+     compare-and-swap has established there is nothing to write, where its job is naming WHICH
+     commit carries them.
+   - **The base SHA is compared before the intended output SHA, and the order is load-bearing.**
+     A refresh producing bytes identical to its input makes both match; output-first would report a
+     batch of pure no-ops as `already-applied` instead of `no-changes`.
+   - **`?recursive=1` was confirmed catastrophic against the REAL API, not just in theory.** A
+     read-only check of this repo's own tree returns 858 entries and 45 article paths with the flag,
+     and 30 entries with **zero** article paths without it (`content` arrives as one
+     `type=tree mode=040000` entry). Without the flag every article stands down forever while the
+     run reports success. The previous attempt shipped that green.
+   - **Publishing through a branch and a PR is still the stricter design**, and is still a product
+     decision that changes what the monthly refresh IS. The compare-and-swap is the contained fix,
+     not a replacement for that choice.
 
 3. **50 remaining Section 10 violations in `src/data/glossary.ts`.** Real, documented as a hard rule,
    and unenforced by any check — `aeo-audit` does not test for item numbers at all. Was 52; the AUV
