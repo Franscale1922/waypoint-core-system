@@ -397,16 +397,36 @@ async function githubRequest<T>(
 /**
  * Serialize one article to the exact bytes that will be committed.
  *
- * BOTH dates are stamped, never taken from the caller. The caller here is a language model: the
- * refresh used to hand it an existing article and keep the frontmatter it returned, so every field
- * it invented was preserved verbatim. `date` was already overwritten; `updatedAt` was not, which
- * meant model output landed on `main` unchecked, and `main` is what the site builds from. A model
- * has no basis for authoring either value, so it no longer gets to: this is the single point where
- * the commit path turns frontmatter into a file, and it stamps them here.
+ * THE TWO DATES MEAN DIFFERENT THINGS, AND ONLY ONE OF THEM IS THE CLOCK'S
+ * -----------------------------------------------------------------------
+ * `updatedAt` is stamped to today: it records that this revision happened, which is exactly what a
+ * refresh knows. `date` is PRESERVED: it is the article's publication date, a fact about the past
+ * that no later run has any standing to restate.
  *
- * mergeRefreshedFrontmatter now also stops invented fields upstream, by reading only the three the
- * model owns. This stamp stays regardless: it is the last line before the bytes, and
- * commitRefreshedArticles is exported and callable with arbitrary payloads.
+ * This function used to overwrite both. That silently destroyed the publication date of every
+ * article it touched, and the value was unrecoverable from the committed file, so an article first
+ * published in January reported `datePublished: <the day the cron ran>`. Both consumers followed it:
+ * `resources/[slug]/page.tsx` feeds `date` to the Article node, and `sitemap.ts` reads
+ * `updatedAt ?? date` into `lastModified`. The article therefore presented to Google as newly
+ * published rather than as long-standing and revised, inverting the signal a content refresh exists
+ * to send, on the pages the refresh touches most.
+ *
+ * WHERE THE "A MODEL CANNOT AUTHOR A DATE" GUARANTEE LIVES NOW
+ * ------------------------------------------------------------
+ * It moved, so do not read the preserved `date` as a hole reopening. The overwrite here used to be
+ * what stopped model-authored dates. That job now belongs to `mergeRefreshedFrontmatter`
+ * (src/lib/contentRefresh.ts), which builds the frontmatter by starting from the ORIGINAL article
+ * and copying only MODEL_OWNED_FIELDS -- title, excerpt, faqs. `date` is not among them, so what
+ * arrives here is the value already on disk, never the model's.
+ *
+ * That relocation is why `date` is safe to keep and why it is tested end to end rather than
+ * asserted here: see "a model-supplied date does not survive the merge" in
+ * tests/unit/write-path-dates.test.ts. If MODEL_OWNED_FIELDS ever grows to include a date field,
+ * that test is what goes red.
+ *
+ * A malformed preserved `date` is not laundered into something plausible. It flows to
+ * `validateArticlePayload` below, which refuses the whole batch, matching how every other bad input
+ * on this path behaves.
  *
  * `today` is a parameter so the stamped value and the value the guard below validates against are
  * the same one, rather than two `new Date()` calls that can land on opposite sides of midnight.
@@ -416,7 +436,7 @@ export function serializeArticle(
   body: string,
   today: string = utcDayString(),
 ): string {
-  return matter.stringify(body, { ...frontmatter, date: today, updatedAt: today });
+  return matter.stringify(body, { ...frontmatter, updatedAt: today });
 }
 
 /**

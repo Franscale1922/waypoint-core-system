@@ -41,6 +41,13 @@ export interface ArticleFrontmatter {
   // getRefreshCadenceDays reads it to override every other rule: a field that
   // load-bearing is a rename away from silently becoming undefined.
   reviewCadence?: string;
+  // The revision date, stamped by serializeArticle on every refresh. Declared here for the same
+  // reason as reviewCadence, and it earned it in the same way: isStale now schedules from
+  // `updatedAt ?? date`, so this field decides WHICH articles the monthly run rewrites. Left in the
+  // index signature it would type as `unknown`, and a rename or a typo would read as undefined --
+  // which does not fail, it just silently falls back to `date` and reinstates the runaway loop the
+  // isStale docblock describes.
+  updatedAt?: string;
   [key: string]: unknown;
 }
 
@@ -397,6 +404,27 @@ export function getRefreshCadenceDays(article: Article): number | null {
 /**
  * Returns true if the article is due for a refresh.
  * Force = true bypasses the cadence check (useful for an initial pass).
+ *
+ * MEASURED FROM THE LAST REVISION, NOT FROM PUBLICATION
+ * -----------------------------------------------------
+ * This reads `updatedAt ?? date`, and the fallback is the whole subtlety. It used to read `date`
+ * alone, which worked only because `serializeArticle` overwrote `date` on every refresh: the clock
+ * an article was scheduled by was reset by the very run that refreshed it. That overwrite was a bug
+ * -- it destroyed the publication date -- but it was load-bearing here, so the two had to be fixed
+ * together.
+ *
+ * Fixing the date alone would have inverted this into a worse failure. With `date` frozen at
+ * publication, age measured from `date` only ever grows, so every article would become permanently
+ * stale one cadence after it was published and the refresh would rewrite the entire corpus every
+ * month, forever, with each run leaving it exactly as due as before. Nothing would have failed
+ * loudly; the batch would simply never shrink. Do not revert this line without also restoring the
+ * `date` overwrite, and prefer not to do either.
+ *
+ * `updatedAt ?? date` rather than the later of the two: an article that has never been refreshed
+ * has no `updatedAt` and is correctly measured from publication, and for one that has,
+ * src/lib/frontmatterDates.mjs already refuses an `updatedAt` earlier than `date` in both the
+ * pre-push hook and CI, so the fallback cannot be used to schedule an article more often than its
+ * cadence. This also matches how sitemap.ts reads the same pair for `lastModified`.
  */
 export function isStale(article: Article, force = false): boolean {
   const cadenceDays = getRefreshCadenceDays(article);
@@ -406,9 +434,25 @@ export function isStale(article: Article, force = false): boolean {
 
   if (force) return true;
 
-  const articleDate = new Date(article.frontmatter.date);
-  const now = new Date();
-  const ageInDays = (now.getTime() - articleDate.getTime()) / (1000 * 60 * 60 * 24);
+  const { date, updatedAt } = article.frontmatter;
+
+  // `updatedAt ?? date` is not enough on its own: `??` falls back on null and undefined, NOT on a
+  // string that is present and unreadable. An article carrying `updatedAt: "not-a-date"` beside a
+  // perfectly good `date` would then measure from the unreadable value, come out NaN, and be
+  // classified as not-due forever -- silently, since a run finding nothing reports "No articles due
+  // for refresh" rather than naming the article it could not read. A bad revision date must not be
+  // able to mask a good publication date, so this falls through to the next readable value.
+  const reference = [updatedAt, date]
+    .map((value) => (value === undefined ? NaN : new Date(value).getTime()))
+    .find((time) => !Number.isNaN(time));
+
+  // Neither is readable. Not a reason to rewrite the article: refreshing it would commit the same
+  // unreadable date straight back, and validateArticlePayload would refuse the whole batch over it.
+  // The pre-push hook and CI already reject both fields, so reaching this means something bypassed
+  // them, and the loud failure belongs there rather than in a silent monthly rewrite.
+  if (reference === undefined) return false;
+
+  const ageInDays = (Date.now() - reference) / (1000 * 60 * 60 * 24);
 
   return ageInDays >= cadenceDays;
 }

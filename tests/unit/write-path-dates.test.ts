@@ -91,10 +91,22 @@ function payload(slug: string, extra: Record<string, unknown> = {}) {
   return { slug, frontmatter: modelFrontmatter({ slug, ...extra }), body: BODY };
 }
 
-describe("serializeArticle: both dates are stamped, never taken from the model", () => {
+/**
+ * The two dates mean different things, and only `updatedAt` is the clock's.
+ *
+ * `date` is the publication date, a fact about the past. `updatedAt` records that this revision
+ * happened. serializeArticle used to overwrite BOTH, which destroyed the publication date of every
+ * article it touched and made a January article report the day the cron ran as `datePublished`.
+ *
+ * The guarantee that a MODEL cannot author `date` did not go away with that overwrite, it moved:
+ * mergeRefreshedFrontmatter builds the frontmatter from the ORIGINAL article and copies only
+ * MODEL_OWNED_FIELDS, which do not include either date. The end-to-end test below is what holds
+ * that line now, so it is the one that goes red if MODEL_OWNED_FIELDS ever grows a date field.
+ */
+describe("serializeArticle: updatedAt is stamped, date is preserved", () => {
   it.each([
-    ["a future date", { updatedAt: "9999-12-31" }],
-    ["an impossible day", { updatedAt: "2026-02-30" }],
+    ["a future updatedAt", { updatedAt: "9999-12-31" }],
+    ["an impossible updatedAt", { updatedAt: "2026-02-30" }],
     // What the model actually produces when it writes an UNQUOTED date in its own markdown:
     // matter() has already resolved it to a Date (and already rolled it over) at the point the
     // refresh reads it, so this is the realistic shape, not a contrived one.
@@ -104,13 +116,22 @@ describe("serializeArticle: both dates are stamped, never taken from the model",
     const { serializeArticle } = await import("@/lib/githubArticleCommit");
     const content = serializeArticle(modelFrontmatter(extra), BODY, TODAY);
 
-    expect(content).toContain(`date: '${TODAY}'`);
     expect(content).toContain(`updatedAt: '${TODAY}'`);
     // Quoted, not bare: an unquoted emission would be re-resolved to a Date by js-yaml on the way
     // back in, which is the corruption this whole area exists to prevent.
     expect(content).not.toMatch(/^updatedAt: [^'"]/m);
-    // The stamp is the only date in the file — no stale second copy left behind.
+    // The stamp is the only one in the file — no stale second copy left behind.
     expect(content.match(/^updatedAt:/gm)).toHaveLength(1);
+  });
+
+  it("leaves the publication date exactly as it found it", async () => {
+    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+    // modelFrontmatter carries date: "2026-01-15". A refresh running in August must not touch it.
+    const content = serializeArticle(modelFrontmatter(), BODY, TODAY);
+
+    expect(content).toContain(`date: '2026-01-15'`);
+    expect(content).not.toContain(`date: '${TODAY}'`);
+    expect(content.match(/^date:/gm)).toHaveLength(1);
   });
 
   it("preserves the rest of the model's frontmatter", async () => {
@@ -127,7 +148,150 @@ describe("serializeArticle: both dates are stamped, never taken from the model",
   it("defaults to the current UTC day when no day is passed", async () => {
     const { serializeArticle } = await import("@/lib/githubArticleCommit");
     const content = serializeArticle(modelFrontmatter(), BODY);
-    expect(content).toContain(`date: '${new Date().toISOString().slice(0, 10)}'`);
+    expect(content).toContain(`updatedAt: '${new Date().toISOString().slice(0, 10)}'`);
+  });
+
+  /**
+   * The relocated guarantee, driven end to end.
+   *
+   * serializeArticle no longer overwrites `date`, so on its own it would happily serialize whatever
+   * date it is handed. What stops a model-authored date reaching a file is the merge upstream. This
+   * asserts the composition rather than either half, because the composition is the property that
+   * actually protects production.
+   */
+  it("does not let a model-supplied date survive the merge", async () => {
+    const { mergeRefreshedFrontmatter } = await import("@/lib/contentRefresh");
+    const { serializeArticle } = await import("@/lib/githubArticleCommit");
+
+    const original = modelFrontmatter();            // date: 2026-01-15
+    const merged = mergeRefreshedFrontmatter(original, {
+      title: "A Refreshed Title",
+      excerpt: "A refreshed excerpt.",
+      faqs: [{ q: "Q?", a: "A." }],
+      // Everything below is the model trying to author provenance it does not own.
+      date: "1999-01-01",
+      updatedAt: "9999-12-31",
+      slug: "somewhere-else",
+    });
+
+    const content = serializeArticle(merged, BODY, TODAY);
+
+    expect(content).toContain(`date: '2026-01-15'`);   // the original, not 1999
+    expect(content).toContain(`updatedAt: '${TODAY}'`); // the clock, not 9999
+    expect(content).not.toContain("1999-01-01");
+    expect(content).not.toContain("9999-12-31");
+    expect(content).not.toContain("somewhere-else");
+    // And the fields it DOES own came through, so this is not passing by rejecting everything.
+    expect(content).toContain("A Refreshed Title");
+  });
+});
+
+/**
+ * The scheduling half of the same decision, tested here rather than in a file of its own.
+ *
+ * isStale is not part of the write path, so on subject matter it does not belong in this file. It is
+ * here because the two are ONE decision and were changed in one commit: `date` is preserved as the
+ * publication date, and staleness therefore has to be measured from `updatedAt ?? date` instead.
+ * Split across two files, someone reverting one half would not see the tests guarding the other.
+ *
+ * Before this, isStale measured from `date` and serializeArticle overwrote `date` on every run, so
+ * the clock an article was scheduled by was reset by the refresh itself. The overwrite was a bug,
+ * but it was load-bearing here.
+ */
+describe("isStale: measured from the last revision, not from publication", () => {
+  // "franchise-financing-basics" carries a FINANCING_KEYWORDS token, so its cadence is 365 days.
+  const article = (frontmatter: Record<string, unknown>, slug = "franchise-financing-basics") =>
+    ({
+      slug,
+      frontmatter: { ...(modelFrontmatter() as object), slug, ...frontmatter },
+      body: BODY,
+      filePath: `content/articles/${slug}.md`,
+    }) as never;
+
+  const daysAgo = (n: number) =>
+    new Date(Date.now() - n * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+
+  it("measures from date when the article has never been refreshed", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+
+    expect(isStale(article({ date: daysAgo(400) }))).toBe(true);
+    expect(isStale(article({ date: daysAgo(300) }))).toBe(false);
+  });
+
+  /**
+   * THE REGRESSION. This is the test that fails if isStale is reverted to reading `date`.
+   *
+   * An article published long ago and refreshed yesterday is NOT due. Read from `date` alone with
+   * `date` now frozen at publication, this returns true — and then returns true again next month,
+   * and every month after, because a refresh no longer moves the value being measured. The whole
+   * corpus would be rewritten every run, forever, and nothing would fail loudly: the batch would
+   * simply never shrink.
+   */
+  it("does NOT re-stale an article that was just refreshed, however old its publication date", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+
+    const justRefreshed = article({ date: daysAgo(900), updatedAt: daysAgo(1) });
+    expect(isStale(justRefreshed)).toBe(false);
+
+    // And it comes due again on its cadence, measured from the refresh: still quiet at 300 days
+    // since, due at 400. A refresh buys exactly one cadence of silence, which is the point.
+    expect(isStale(article({ date: daysAgo(900), updatedAt: daysAgo(300) }))).toBe(false);
+    expect(isStale(article({ date: daysAgo(900), updatedAt: daysAgo(400) }))).toBe(true);
+  });
+
+  it("keeps the corpus staggered instead of synchronising it into one batch", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+
+    // Two articles published the same day, refreshed 200 days apart. If staleness were measured
+    // from publication they would always come due together, which is how a monthly job turns into
+    // one enormous batch that rewrites everything at once.
+    const a = article({ date: daysAgo(900), updatedAt: daysAgo(400) });
+    const b = article({ date: daysAgo(900), updatedAt: daysAgo(200) });
+
+    expect(isStale(a)).toBe(true);
+    expect(isStale(b)).toBe(false);
+  });
+
+  it("never refreshes a strategic article, whatever its dates", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+    const strategic = article({ date: daysAgo(9000) }, "are-you-ready-to-own-a-franchise");
+
+    expect(isStale(strategic)).toBe(false);
+    // Not even under force, which is the one case a reader might assume overrides everything.
+    expect(isStale(strategic, true)).toBe(false);
+  });
+
+  it("force bypasses the cadence for an article that has one", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+    expect(isStale(article({ date: daysAgo(1), updatedAt: daysAgo(1) }), true)).toBe(true);
+  });
+
+  /**
+   * A bad revision date must not mask a good publication date.
+   *
+   * `updatedAt ?? date` alone does not do this: `??` falls back on null and undefined, never on a
+   * string that is present and unreadable. So an article carrying `updatedAt: "not-a-date"` beside
+   * a valid `date` measured from the unreadable value, came out NaN, and was classified not-due
+   * FOREVER -- and silently, because a run that finds nothing reports "No articles due for refresh"
+   * rather than naming the article it could not read. Raised by Codex round 1 as a Low; it is a
+   * defect this change introduced, since nothing read `updatedAt` for scheduling before.
+   */
+  it.each([["nonsense"], [""], ["not-a-date"], ["2026-13-45"]])(
+    "falls back to the publication date when updatedAt is %o",
+    async (value) => {
+      const { isStale } = await import("@/lib/contentRefresh");
+      // 900 days past publication, well beyond the 365-day cadence: due, not silently skipped.
+      expect(isStale(article({ date: daysAgo(900), updatedAt: value }))).toBe(true);
+      // And the fallback respects the cadence rather than forcing a refresh.
+      expect(isStale(article({ date: daysAgo(10), updatedAt: value }))).toBe(false);
+    },
+  );
+
+  it("is not due when NEITHER date can be read", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+    // Refreshing would commit the same unreadable date back and validateArticlePayload would refuse
+    // the whole batch over it. The loud failure belongs in the push gate that let it through.
+    expect(isStale(article({ date: "rubbish", updatedAt: "also-rubbish" }))).toBe(false);
   });
 });
 
@@ -149,7 +313,7 @@ describe("validateArticlePayload: what the boundary checks", () => {
     // Nothing is wrong with this payload, so assert on the label the guard WOULD use by running
     // the same rules against content that is wrong in the one way stamping cannot reach.
     const { content } = validateArticlePayload(article, { today: TODAY });
-    const broken = content.replace(`date: '${TODAY}'`, `date: '2026-02-30'`);
+    const broken = content.replace(`date: '2026-01-15'`, `date: '2026-02-30'`);
     const { errors } = validateFrontmatterDates(broken, {
       label: `content/articles/${article.slug}.md (automated content refresh)`,
       today: TODAY,
