@@ -93,17 +93,42 @@ export async function isEmailSuppressed(email: string): Promise<boolean> {
 }
 
 /**
+ * Why we are not mailing this address, with the fail-closed decision already
+ * made: any error resolves to "do not send" so a database blip can never be the
+ * reason a nurture sequence starts for someone who opted out.
+ *
+ * WHY THIS IS THREE VALUES AND NOT A BOOLEAN
+ * ------------------------------------------
+ * The boolean version collapsed "this person opted out" and "we could not tell"
+ * into the same answer, and every caller then logged the outcome as
+ * "unsubscribed". A transient Neon error therefore recorded a voluntary opt-out
+ * against someone who never asked for one, and because the Inngest step returns
+ * `{ skipped: true }` (a COMPLETED step, never retried) the message was dropped
+ * for good with no trace of why. Not sending is still the right call. Calling it
+ * an opt-out is what made it undiagnosable.
+ */
+export type SuppressionVerdict = "clear" | "suppressed" | "lookup-failed";
+
+export async function suppressionVerdict(email: string): Promise<SuppressionVerdict> {
+  try {
+    return (await isEmailSuppressed(email)) ? "suppressed" : "clear";
+  } catch (err) {
+    console.error("[email-suppression] lookup failed; treating as suppressed:", err);
+    return "lookup-failed";
+  }
+}
+
+/**
  * isEmailSuppressed, with the fail-closed decision already made: any error is
  * reported as "suppressed" so a database blip can never be the reason a nurture
  * sequence starts for someone who opted out.
+ *
+ * Kept for callers that only need the yes/no. Anything that RECORDS the outcome
+ * should use suppressionVerdict instead, so the two reasons stay distinguishable
+ * in the log.
  */
 export async function isEmailSuppressedFailClosed(email: string): Promise<boolean> {
-  try {
-    return await isEmailSuppressed(email);
-  } catch (err) {
-    console.error("[email-suppression] lookup failed; treating as suppressed:", err);
-    return true;
-  }
+  return (await suppressionVerdict(email)) !== "clear";
 }
 
 /**

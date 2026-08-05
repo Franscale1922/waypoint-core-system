@@ -1,6 +1,6 @@
 import { inngest } from "./client";
 import prisma from "@/lib/prisma";
-import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { suppressionVerdict } from "@/lib/email-suppression";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
 
 export const leadHunterProcess = inngest.createFunction(
@@ -2350,7 +2350,16 @@ export const checklistNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             // Check if the lead booked a call or replied
             const lead = await prisma.lead.findFirst({
@@ -2557,7 +2566,16 @@ export const scorecardNurtureProcess = inngest.createFunction(
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
             // See above: suppression is a property of the ADDRESS, not of one row.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             // 2. Lead booked a call (TidyCal sync writes bookedAt)
             // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
@@ -2815,7 +2833,16 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3026,7 +3053,16 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3179,7 +3215,16 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3350,7 +3395,16 @@ export const archetypeNurtureProcess = inngest.createFunction(
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
             // See above: suppression is a property of the ADDRESS, not of one row.
-            if (await isEmailSuppressedFailClosed(email)) return { stop: true, reason: "unsubscribed" };
+            // Both non-clear verdicts stop the sequence. They are reported apart
+            // because a failed lookup is not an opt-out, and logging it as one
+            // hid dropped mail behind a reason nobody would investigate.
+            const addressVerdict = await suppressionVerdict(email);
+            if (addressVerdict !== "clear") {
+                return {
+                    stop: true,
+                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
+                };
+            }
 
             const lead = await prisma.lead.findFirst({
                 where: { email },

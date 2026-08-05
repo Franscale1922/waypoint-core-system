@@ -529,6 +529,48 @@ describe("the contact form is not an open relay either", () => {
   });
 });
 
+describe("the newsletter signup is not an open relay either", () => {
+  it("is rate limited like the magnets", async () => {
+    // It subscribes whatever address the body names to a list that sends real
+    // mail, and it was the one endpoint of that shape left with no limiter.
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL, name: "Test Prospect" }));
+
+    expect(res.status).toBe(429);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+
+  it("refuses rather than subscribing when the limiter is unreachable", async () => {
+    h.db.rateLimitBucket.upsert.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(503);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+
+  it("subscribes the NORMALIZED address, so a later opt-out lookup matches", async () => {
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: "  Prospect@Example.COM  ", name: " Test " }));
+
+    expect(res.status).toBe(200);
+    expect(h.subscribeToBeehiiv).toHaveBeenCalledWith(EMAIL, "Test");
+  });
+
+  it("rejects a malformed address before touching beehiiv", async () => {
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: "not-an-address" }));
+
+    expect(res.status).toBe(400);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+});
+
 describe("a suppression lookup failure must not destroy quiz answers", () => {
   const SCORECARD = { name: "Test Prospect", email: EMAIL, score: 55, primaryDriver: "A", biggestFear: "B" };
 

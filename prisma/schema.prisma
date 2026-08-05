@@ -131,8 +131,16 @@ model ScorecardSubmission {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
@@ -159,8 +167,16 @@ model ArchetypeSubmission {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
@@ -183,8 +199,16 @@ model ChecklistDownload {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
@@ -207,8 +231,16 @@ model EscapeKitDownload {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
@@ -230,8 +262,16 @@ model PitchDecoderDownload {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
@@ -253,8 +293,16 @@ model AiFddReaderDownload {
   // Serves the exact-match lookup on the NORMALIZED address that backs capture
   // idempotency (src/lib/lead-capture.ts). It deliberately does NOT serve the
   // suppression sweep, which matches case-insensitively to catch legacy rows
-  // stored before addresses were normalized on write — Postgres cannot answer
+  // stored before addresses were normalized on write, and Postgres cannot answer
   // that from a plain btree. Correctness wins there; the lists are small.
+  //
+  // An expression index on lower(email) is the usual answer and was CONSIDERED
+  // AND DECLINED, not overlooked. It cannot be expressed in the Prisma schema
+  // language, and this schema is deployed with `prisma db push` (see the build
+  // script in package.json; nothing runs `migrate deploy`, and prisma/migrations
+  // is vestigial). An index push cannot see is one it does not maintain and may
+  // drop out from under the query it was added for. Revisit if this repo ever
+  // moves to real migrations, or if these tables stop being small.
   @@index([email])
 }
 
