@@ -15,7 +15,7 @@ first. The PR #21 section that used to head this file is now history and is summ
 | | |
 |---|---|
 | `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `f4af4f7`, everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on. It moved again during the #51 session, from `f84055c` to `f4af4f7` between the branch being cut and the first commit landing |
-| `fix/webhook-allowlist-accuracy` | **PR #51 OPEN**, HEAD `b3090e9`, mergeable, all checks green. **Held for a go-live decision** — it touches `src/` so merging deploys production. See the section directly below the State block |
+| `fix/webhook-allowlist-accuracy` | **merged as #51** (`b9920bf`), deployed green, remote branch deleted. Corrected a security-allowlist entry that claimed a signature check the route has never had, and fixed the same falsehood in six other places. See the section below the State block |
 | `fix/unsubscribe-recoverability-and-residuals` | **merged as #48** (`767bd78`), deployed green, remote branch deleted. Closed the residual PR #44 findings and made a wrong opt-out reversible. See the opt-out section below |
 | `claude/beehiiv-optout-sync` | **merged as #49** (`d416a1f`), deployed green. Carries beehiiv opt-outs into `SuppressionList`; webhook registered and proven in production with a real delete event. See the opt-out section below |
 | `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
@@ -119,17 +119,20 @@ what survives from it, what was decorative, and why the branch itself is not sal
 
 ---
 
-## ⏳ OPEN, awaiting a go-live decision — PR #51, webhook allowlist accuracy (2026-08-05)
+## ✅ MERGED and deployed — PR #51, webhook allowlist accuracy (2026-08-05)
 
 Not SEO work; recorded here because this is the repo's one handoff doc and a second one is how
-state gets lost. Branch `fix/webhook-allowlist-accuracy`, HEAD `b3090e9`, three commits, based on
-`f4af4f7`. **Open, MERGEABLE, all checks green** (`verify` pass, Vercel preview deployed).
-`npm test` 1304 + 20 passed, `aeo-audit` PASS, `tsc` 51 errors byte-identical to the `main`
-baseline and none in any touched file.
+state gets lost. **Merged as `b9920bf`, deployed green**: Vercel reported "Deployment has
+completed" (a real build, not the ignore-step skip), the live site returns 200, and both
+"Verify Internal Links" and "Notify Search Engines on Deploy" passed on that SHA. Remote branch
+deleted. Gates at merge: `npm test` 1304 + 20 passed, `aeo-audit` PASS, `tsc` 51 errors
+byte-identical to the `main` baseline and none in any touched file.
 
-**Not merged on purpose.** It touches `src/` and `tests/`, so it is outside `vercel.json`'s
-`ignoreCommand` and merging runs a real production build plus `prisma db push` against the
-production database. Kelsey has the go/no-go.
+**The deploy was safe for a reason worth reusing, not because it was small.** The PR touches
+`src/`, so it is outside `vercel.json`'s `ignoreCommand` and a merge does run `prisma db push`
+against the production database. That push was a no-op because the diff contains no `prisma/`
+files at all, so the schema already matched. Check that before treating any `src/` merge as
+routine; the `db push` is the part with teeth, not the rebuild.
 
 **What it fixes.** `PUBLIC_BY_DESIGN` described `webhooks/resend/route.ts` as "guarded by its own
 signature check". There is no signature check and never was: the route calls `verifyBearer` against
