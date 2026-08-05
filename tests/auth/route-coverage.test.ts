@@ -42,8 +42,40 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   "webhooks/beehiiv/route.ts":
     "External webhook; guarded by BEEHIIV_WEBHOOK_SECRET (query param, fail-closed) plus an API re-check.",
   "webhooks/clay/route.ts": "External webhook; guarded by CLAY_WEBHOOK_SECRET (fail-closed).",
-  "webhooks/inbound/route.ts": "External webhook; guarded by its own shared secret.",
-  "webhooks/resend/route.ts": "External webhook; guarded by its own signature check.",
+  // The next two entries share ONE secret. Both read INBOUND_WEBHOOK_SECRET, so a
+  // rotation has to cover both routes and a leak exposes both. Until 2026-08-05 each
+  // described its control as "its own", which hid that coupling from exactly the
+  // person auditing this list. Neither secret is "its own"; there is one.
+  //
+  // The control in both cases is verifyBearer: a plain string comparison against a
+  // static token, fail-closed if the env var is unset (webhook-auth.ts). It is not
+  // a constant-time compare, and neither sender signs its payloads. So possession of
+  // that one token is the entire control on both routes, and these routes write
+  // SUPPRESSED leads and SuppressionList rows. Rotate it like a credential.
+  //
+  // The sharing is the part worth arguing about, because these are two different
+  // trust domains. The token is held by Instantly for one route and used for our own
+  // scorecard submissions on the other, so a compromise on either side authorizes
+  // BOTH: forged suppression events and forged lead records. Neither integration can
+  // be rotated without breaking the other. Splitting them into two secrets is the
+  // right fix and is NOT done here: it needs a new env var in production plus a
+  // re-registration in the Instantly dashboard, which is a coordinated change rather
+  // than a comment. Recorded so it is a known debt and not a discovery.
+  "webhooks/inbound/route.ts":
+    "External webhook (Franchise Readiness Scorecard submissions); guarded by INBOUND_WEBHOOK_SECRET, a static Bearer token shared with webhooks/resend, checked fail-closed. No payload signature.",
+  // This entry read "guarded by its own signature check" until 2026-08-05. There is
+  // no signature check, and there never was: see the shared-secret note above. An
+  // allowlist entry claiming cryptographic verification that does not exist tells an
+  // auditor the route is safer than it is, which is the one thing this list must
+  // never do.
+  //
+  // The path name is historical and this route has nothing to do with Resend: the
+  // handler serves Instantly.ai (payload fields lead_email / reply_text, event_type
+  // "reply_received"), and its URL is registered in the Instantly dashboard, so the
+  // directory cannot be renamed without re-pointing that registration first. See the
+  // docblock in the route itself and docs/COLD_EMAIL_STACK.md.
+  "webhooks/resend/route.ts":
+    "External webhook (Instantly, despite the path name); guarded by INBOUND_WEBHOOK_SECRET, a static Bearer token shared with webhooks/inbound, checked fail-closed. No payload signature.",
   "webhooks/tidycal/route.ts": "External webhook; guarded by its own shared secret.",
   "leads/retrigger/route.ts": "Ops endpoint; guarded by RETRIGGER_SECRET (fail-closed).",
   "scorecard-complete/route.ts": "Public site quiz submission.",
@@ -223,6 +255,53 @@ describe("API route auth coverage", () => {
       offenders,
       `GET handler(s) that write to the database. Gate them, or add to MUTATING_GET_BY_DESIGN ` +
         `with the control that actually protects them:\n  ${offenders.join("\n  ")}`,
+    ).toEqual([]);
+  });
+
+  it("no PUBLIC_BY_DESIGN entry claims a signature check its route does not perform", () => {
+    // Until 2026-08-05 the webhooks/resend entry read "guarded by its own signature
+    // check". That route has only ever compared a static bearer token. The claim
+    // survived because these descriptions are free prose that nothing reads: every
+    // value in PUBLIC_BY_DESIGN could be set to "" and this file would still be green.
+    // The list's whole job is telling an auditor what protects an unauthenticated
+    // route, so the one error it must never make is overstating the control.
+    //
+    // KNOW WHAT THIS DOES NOT COVER. It is a lexical backstop against one specific
+    // lie, not a proof that any description is true. Three known ways past it:
+    //   1. Wording. "HMAC-authenticated" or "cryptographically verified" contain no
+    //      "signatur" substring and are skipped.
+    //   2. Lexical matching. An unused createHmac import, or the word in a comment,
+    //      satisfies it without a single byte being verified.
+    //   3. Depth. It reads only the route file.
+    // Two candidate hardenings were written and dropped, both for the same reason.
+    // Requiring an env var named in a description to appear in the route source
+    // fails the inngest entry, which correctly credits INNGEST_SIGNING_KEY: serve()
+    // consumes it inside the SDK and it never appears in the route file. Widening
+    // the claim pattern to "hmac" fails the six unsubscribe entries, which honestly
+    // describe an HMAC that is verified two modules away (route ->
+    // lib/unsubscribe-route -> lib/nurture-emails, where createHmac and
+    // timingSafeEqual actually live). Following that chain means a module-graph
+    // walk, whose own bugs would then decide whether a security test passes.
+    // A check that punishes accuracy is worse than no check, so this one stays
+    // narrow, and the reading of the descriptions stays a human job.
+    const VERIFIES_A_SIGNATURE = /createHmac|timingSafeEqual|verifySignature|constructEvent|svix/;
+    const offenders: string[] = [];
+
+    for (const [key, description] of Object.entries(PUBLIC_BY_DESIGN)) {
+      // Strip explicit denials first. "No payload signature" is the honest disclosure
+      // this test exists to encourage; catching it would punish the fix.
+      const affirmative = description.replace(/\bno\s+\w*\s*signature\w*/gi, "");
+      if (!/signatur/i.test(affirmative)) continue;
+
+      const src = readFileSync(join(API_DIR, key), "utf8");
+      if (!VERIFIES_A_SIGNATURE.test(src)) offenders.push(key);
+    }
+
+    expect(
+      offenders,
+      `PUBLIC_BY_DESIGN claims a signature check these routes do not perform. Either ` +
+        `implement one, or describe the control that actually protects the route:\n  ` +
+        offenders.join("\n  "),
     ).toEqual([]);
   });
 
