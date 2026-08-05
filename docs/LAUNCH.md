@@ -349,7 +349,7 @@ inferring a broken loop from the absence of a deploy. See `src/lib/githubArticle
 
 - **Scorecard:** Submission triggers `scorecard-complete` Inngest event → Resend sends personalized email with score (capped at 98 for display)
 - **Checklists:** Download triggers `checklist-requested` event → correct industry-specific PDF delivered → 5-email nurture sequence begins
-- Unsubscribe links use `List-Unsubscribe` headers; the Instantly inbound webhook (`/api/webhooks/resend`, named for Resend by history only) handles suppression
+- Unsubscribe links use `List-Unsubscribe` / `List-Unsubscribe-Post` headers pointing at our OWN HMAC-token opt-out routes (`/api/unsubscribe` and the per-magnet variants). Those routes perform the suppression; no webhook is involved, so a failing one-click unsubscribe is debugged here, not in any vendor dashboard. Cold-outreach bounces and unsubscribes are a separate path entirely, handled by the Instantly inbound webhook at `/api/webhooks/resend`
 
 ---
 

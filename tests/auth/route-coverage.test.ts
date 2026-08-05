@@ -52,6 +52,15 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   // a constant-time compare, and neither sender signs its payloads. So possession of
   // that one token is the entire control on both routes, and these routes write
   // SUPPRESSED leads and SuppressionList rows. Rotate it like a credential.
+  //
+  // The sharing is the part worth arguing about, because these are two different
+  // trust domains. The token is held by Instantly for one route and used for our own
+  // scorecard submissions on the other, so a compromise on either side authorizes
+  // BOTH: forged suppression events and forged lead records. Neither integration can
+  // be rotated without breaking the other. Splitting them into two secrets is the
+  // right fix and is NOT done here: it needs a new env var in production plus a
+  // re-registration in the Instantly dashboard, which is a coordinated change rather
+  // than a comment. Recorded so it is a known debt and not a discovery.
   "webhooks/inbound/route.ts":
     "External webhook (Franchise Readiness Scorecard submissions); guarded by INBOUND_WEBHOOK_SECRET, a static Bearer token shared with webhooks/resend, checked fail-closed. No payload signature.",
   // This entry read "guarded by its own signature check" until 2026-08-05. There is
@@ -257,12 +266,24 @@ describe("API route auth coverage", () => {
     // The list's whole job is telling an auditor what protects an unauthenticated
     // route, so the one error it must never make is overstating the control.
     //
-    // Deliberately narrow: it polices the specific lie that got through. A companion
-    // rule, "every UPPER_SNAKE env var named in a description must appear in that
-    // route's source", was written and dropped. The inngest entry correctly credits
-    // INNGEST_SIGNING_KEY, which serve() consumes inside the SDK and which never
-    // appears in the route file, so that rule would fail on an accurate description.
-    // A check that punishes accuracy is worse than no check.
+    // KNOW WHAT THIS DOES NOT COVER. It is a lexical backstop against one specific
+    // lie, not a proof that any description is true. Three known ways past it:
+    //   1. Wording. "HMAC-authenticated" or "cryptographically verified" contain no
+    //      "signatur" substring and are skipped.
+    //   2. Lexical matching. An unused createHmac import, or the word in a comment,
+    //      satisfies it without a single byte being verified.
+    //   3. Depth. It reads only the route file.
+    // Two candidate hardenings were written and dropped, both for the same reason.
+    // Requiring an env var named in a description to appear in the route source
+    // fails the inngest entry, which correctly credits INNGEST_SIGNING_KEY: serve()
+    // consumes it inside the SDK and it never appears in the route file. Widening
+    // the claim pattern to "hmac" fails the six unsubscribe entries, which honestly
+    // describe an HMAC that is verified two modules away (route ->
+    // lib/unsubscribe-route -> lib/nurture-emails, where createHmac and
+    // timingSafeEqual actually live). Following that chain means a module-graph
+    // walk, whose own bugs would then decide whether a security test passes.
+    // A check that punishes accuracy is worse than no check, so this one stays
+    // narrow, and the reading of the descriptions stays a human job.
     const VERIFIES_A_SIGNATURE = /createHmac|timingSafeEqual|verifySignature|constructEvent|svix/;
     const offenders: string[] = [];
 
