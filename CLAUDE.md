@@ -416,11 +416,13 @@ mandatory; building one is a scoped piece of work to agree first, not a licence 
 <!-- Repo-specific. Outside every stamped marker on purpose: stamp-git-safety.sh
      splices only between BEGIN/END markers, so this survives a re-stamp. -->
 
-## Codex delegation — I call it, Kelsey never does
+## Codex delegation — repo mechanics only
 
-Kelsey does not run commands. If Codex should be involved, **I invoke it**; he asks for a
-review or a second opinion in plain English and I run the tool. Never hand him a command to
-type, and never tell him to trigger a Codex run himself.
+The **rule** for Codex — two reviewers in order, what each stage owns, when to skip stage 1,
+payload safety, and that I invoke it while Kelsey never runs it himself — lives in the
+`franscale-plan-budgeting` block above. **That is its single home; do not restate it here.**
+Two copies of one rule is the documented failure mode that already let a false coverage claim
+reach Kelsey. This section carries only what is specific to *this* repo.
 
 **The only sanctioned way to call Codex from this repo is `scripts/codex-review.mjs`.**
 
@@ -435,14 +437,9 @@ is how the containment silently breaks — one missing flag reopens web egress o
 GitHub/Google-Drive **write** connectors. If the wrapper needs a capability it lacks, extend the
 wrapper; do not bypass it.
 
-**When to reach for it:**
-- The mandatory adversarial-review phase — **stage 1 of two.** Codex runs first, the Claude
-  reviewer runs after it; neither replaces the other (canonical rule: "Two reviewers, in order",
-  in the `franscale-plan-budgeting` block above). They have non-overlapping blind spots; that is
-  measured, not assumed (§11-J, §11-L). Codex answers *"is this correct?"*; it cannot see
-  CLAUDE.md, memory, or this conversation, so scope completeness against the original request and
-  anything **governance-bearing** belong to the Claude stage.
-- Discovery/legwork on public source when it is worth spending Codex's pool instead of Claude's.
+**Beyond the review phase**, reach for it for discovery/legwork on public source when it is
+worth spending Codex's pool instead of Claude's. Blind-spot non-overlap between the two
+reviewers is **measured, not assumed** (§11-J, §11-L).
 
 **Rounds rotate the persona**: 1 = senior engineer, 2 = security/data-integrity, 3 = ops/SRE,
 4+ deepens. Run round 1 first; escalate only if it finds something worth pressing on.
@@ -454,9 +451,8 @@ contract, and reading the transcript spends the Claude tokens the delegation was
 confidential documents, no `.env` files. Reads are disk-wide regardless of flags (§11-H), so
 this is a discipline, not a technical guarantee.
 
-**Verify what it returns.** Codex findings are claims, not facts — the grounding rule applies
-unchanged. Its first live run produced an accurate High and, in a separate pilot, Sonnet
-produced a confident false claim. Check against source before acting.
+**Verify what it returns** (the grounding rule, applied to Codex): its first live run produced
+an accurate High while a separate Sonnet pilot produced a confident false claim.
 
 ## Deploys — pushing to `main` does NOT always redeploy
 
