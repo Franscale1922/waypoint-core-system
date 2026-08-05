@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAllArticles } from "../../lib/articles";
+import { articleDateObject } from "../../lib/articleDate";
 
 export async function GET() {
   const articles = getAllArticles();
@@ -9,15 +10,17 @@ export async function GET() {
   const rssItems = articles
     .map((article) => {
       const url = `${siteUrl}/resources/${article.slug}`;
-      const pubDate = new Date(article.date + "T12:00:00").toUTCString();
+      // RFC 822 date, or the element is omitted. "Invalid Date" in a <pubDate>
+      // is a parse error for readers, which can invalidate the whole feed
+      // rather than just the one item.
+      const published = articleDateObject(article.date);
       
       return `
     <item>
       <title><![CDATA[${article.title}]]></title>
       <link>${url}</link>
       <guid>${url}</guid>
-      <pubDate>${pubDate}</pubDate>
-      <description><![CDATA[${article.excerpt}]]></description>
+${published ? `      <pubDate>${published.toUTCString()}</pubDate>\n` : ""}      <description><![CDATA[${article.excerpt}]]></description>
       <category>${article.category}</category>
     </item>`;
     })
