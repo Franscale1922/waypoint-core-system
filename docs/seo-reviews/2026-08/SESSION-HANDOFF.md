@@ -16,6 +16,8 @@ first. The PR #21 section that used to head this file is now history and is summ
 |---|---|
 | `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `f4af4f7`, everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on. It moved again during the #51 session, from `f84055c` to `f4af4f7` between the branch being cut and the first commit landing |
 | `fix/webhook-allowlist-accuracy` | **PR #51 OPEN**, HEAD `b3090e9`, mergeable, all checks green. **Held for a go-live decision** — it touches `src/` so merging deploys production. See the section directly below the State block |
+| `fix/unsubscribe-recoverability-and-residuals` | **merged as #48** (`767bd78`), deployed green, remote branch deleted. Closed the residual PR #44 findings and made a wrong opt-out reversible. See the opt-out section below |
+| `claude/beehiiv-optout-sync` | **merged as #49** (`d416a1f`), deployed green. Carries beehiiv opt-outs into `SuppressionList`; webhook registered and proven in production with a real delete event. See the opt-out section below |
 | `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
 | `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
@@ -25,6 +27,49 @@ first. The PR #21 section that used to head this file is now history and is summ
 | `fix/content-refresh-ref-idempotency` | **merged as #39** (`2e4513f`), deployed green. **Remote branch still exists** — `--delete-branch` did not take, because `gh` cannot run its post-merge local checkout while `main` is checked out in the primary worktree. Safe to delete |
 | `claude/quirky-lumiere-fc6b90` | **abandoned**, PR **#36 closed** in favour of #39. **Remote branch still exists**, safe to delete. Do not reopen #36: it was cut before #34 and #37 landed in the same file |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
+
+### The opt-out path became reversible, and grew a second channel (2026-08-05)
+
+Three PRs on one path, in merge order. Read all three before touching suppression: each one's fix
+depends on the previous one's shape.
+
+| PR | What it closed |
+|---|---|
+| **#44** `45ae80c` | Lead-capture hardening. `suppressEmailEverywhere` made an opt-out cover the ADDRESS, not one row |
+| **#48** `767bd78` | Made a wrong opt-out reversible (`unsuppressEmail` + `/api/admin/resubscribe` + an admin UI), and stopped `reactivate_existing` resurrecting people |
+| **#49** `d416a1f` | Carried beehiiv's own opt-outs into `SuppressionList`, so a channel we could not see stopped being invisible |
+
+**Invariants that are easy to break without noticing:**
+
+- **`unsuppressEmail` clears ONLY the exact reason `"unsubscribed"`.** That is the string
+  `suppressEmailEverywhere` writes and nothing else. Any new suppression source must use its own
+  reason, or it silently becomes reversible from the admin screen. #49's `beehiiv-unsubscribe` /
+  `beehiiv-deleted` are correct by construction for this reason.
+- **Writing the canonical `SuppressionList` row is sufficient.** Every nurture `shouldSuppress`
+  calls `isEmailSuppressedFailClosed`, and `senderProcess` queries `SuppressionList` with no
+  `reason` filter. You do not also need to touch the six per-list flags to stop mail.
+- **`reactivate_existing: false` does NOT protect a DELETED beehiiv subscriber.** It refuses to
+  revive an *inactive* record; a deleted one is gone, so a plain subscribe mints a new active one.
+- **Never treat a vendor's current state as independent confirmation** when our own code can write
+  to it. #49's webhook compares beehiiv's subscription `created` against the event timestamp for
+  exactly this reason: an address we resurrected ourselves would otherwise look like proof the
+  opt-out was stale, and the "safe" verification would drop real opt-outs.
+- **`/api/webhooks/resend` is the INSTANTLY inbound webhook**, named for Resend by history only.
+  #48 wrote three comments calling it "the Resend webhook"; **PR #51 corrects them**. The write
+  ORDER those comments describe (lead row before `SuppressionList`) is still accurate.
+
+**Still open on this path:**
+
+- **No reconciliation sweep.** A beehiiv webhook that fails to deliver is a permanent silent miss.
+  Codex flagged it in both #49 rounds; deliberately deferred at zero subscribers. Revisit before
+  the list is real.
+- **The "Reverse an opt-out" admin screen has never been exercised on real data.** There is no
+  non-production database, so nobody has clicked it. An address with no opt-out on record is the
+  safe dry run: it writes nothing and reports "No opt-out found".
+- **beehiiv's status code for a previously-departed address is unverified.** `subscribeToBeehiiv`
+  therefore treats only 5xx and network errors as retryable; a 4xx is logged and reported as
+  skipped. If signups ever look like they are vanishing, read the `[beehiiv] Subscribe failed` logs
+  before assuming the endpoint is healthy.
 
 ### The AI content-refresh write path was hardened eight times in one day (2026-08-04)
 
