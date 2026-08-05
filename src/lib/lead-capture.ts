@@ -93,6 +93,18 @@ export interface CaptureGuardOptions {
    */
   idempotency?: { model: string; where?: Record<string, unknown> };
   /**
+   * Which per-address quota this route draws on. Defaults to the shared
+   * delivery quota every lead magnet uses.
+   *
+   * Pass a distinct value for a route that is NOT a magnet delivery, so it
+   * cannot spend a victim's magnet allowance. The newsletter is the case: it
+   * still needs a per-address bound of its own, but if it drew on the shared
+   * counter then three newsletter POSTs aimed at somebody would exhaust their
+   * hourly quota and the guide THEY then asked for would come back 429. A limit
+   * meant to protect a person must not become a way to deny them.
+   */
+  addressQuota?: string;
+  /**
    * Pushes the lead somewhere that does NOT depend on our database, run only
    * when the guard refuses for an INFRASTRUCTURE reason.
    *
@@ -194,14 +206,16 @@ export async function guardCapture(opts: CaptureGuardOptions): Promise<CaptureDe
   // The delivery counters are charged only once this request looks like a real
   // delivery. Charging them above would let two harmless browser retries burn an
   // address's hourly quota and then refuse it a DIFFERENT guide it never got.
+  const hourScope = opts.addressQuota ?? "email";
+  const dayScope = `${hourScope}-day`;
   try {
-    const perHour = await consumeRateLimit({ scope: "email", key: email, limit: EMAIL_LIMIT, windowMs: HOUR_MS });
+    const perHour = await consumeRateLimit({ scope: hourScope, key: email, limit: EMAIL_LIMIT, windowMs: HOUR_MS });
     schedulePrune(perHour.count);
-    if (!perHour.allowed) return { proceed: false, response: tooMany(route, "email", perHour.retryAfterSeconds) };
+    if (!perHour.allowed) return { proceed: false, response: tooMany(route, hourScope, perHour.retryAfterSeconds) };
 
-    const perDay = await consumeRateLimit({ scope: "email-day", key: email, limit: EMAIL_DAILY_LIMIT, windowMs: DAY_MS });
+    const perDay = await consumeRateLimit({ scope: dayScope, key: email, limit: EMAIL_DAILY_LIMIT, windowMs: DAY_MS });
     schedulePrune(perDay.count);
-    if (!perDay.allowed) return { proceed: false, response: tooMany(route, "email-day", perDay.retryAfterSeconds) };
+    if (!perDay.allowed) return { proceed: false, response: tooMany(route, dayScope, perDay.retryAfterSeconds) };
   } catch (err) {
     return { proceed: false, response: limiterUnavailable(route, err, preserveLead) };
   }

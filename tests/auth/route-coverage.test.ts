@@ -56,15 +56,28 @@ const PUBLIC_BY_DESIGN: Record<string, string> = {
   // can replay it forever. It is also not scoped to a list. And its blast radius
   // grew: a POST now suppresses the address across all six lists AND the
   // canonical SuppressionList that gates cold outreach, so one replayed token
-  // permanently silences an address on every channel, with no re-subscribe path
-  // in the app. That is the right default for an opt-out and the wrong thing to
-  // widen further without adding expiry.
-  "unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "escape-kit-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "scorecard-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
-  "archetype-unsubscribe/route.ts": "Public opt-out; guarded by an HMAC token in the URL.",
+  // permanently silences an address on every channel. That is the right default
+  // for an opt-out and the wrong thing to widen further.
+  //
+  // EXPIRY WAS CONSIDERED AND DECLINED. Under RFC 8058 the POST is sent by the
+  // recipient's MAIL PROVIDER, sometimes long after the message was delivered,
+  // so any expiry short enough to shrink the replay window also starts failing
+  // real one-click unsubscribes. A failed opt-out is a CAN-SPAM and
+  // deliverability problem; a replayed one is griefing. Failing an opt-out
+  // closed is the wrong direction, so the token deliberately stays permanent.
+  //
+  // What changed instead is that the damage is now REVERSIBLE: unsuppressEmail
+  // plus /api/admin/resubscribe let an admin undo a wrong opt-out without a
+  // hand-written database edit. Binding the token to its list was declined for a
+  // separate reason: resolve() already looks the id up in that route's own
+  // model, so a cross-route replay returns not-found, and a POST suppresses
+  // every list regardless. The binding would buy nothing.
+  "unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "escape-kit-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "pitch-decoder-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "ai-fdd-reader-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "scorecard-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
+  "archetype-unsubscribe/route.ts": "Public opt-out; permanent HMAC token in the URL, no expiry or nonce. Suppresses the address on EVERY list; reversible only via /api/admin/resubscribe.",
 };
 
 function walk(dir: string): string[] {

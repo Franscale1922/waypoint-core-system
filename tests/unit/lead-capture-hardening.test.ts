@@ -529,6 +529,93 @@ describe("the contact form is not an open relay either", () => {
   });
 });
 
+describe("the newsletter signup is not an open relay either", () => {
+  it("is rate limited like the magnets", async () => {
+    // It subscribes whatever address the body names to a list that sends real
+    // mail, and it was the one endpoint of that shape left with no limiter.
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL, name: "Test Prospect" }));
+
+    expect(res.status).toBe(429);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+
+  it("refuses rather than subscribing when the limiter is unreachable", async () => {
+    h.db.rateLimitBucket.upsert.mockRejectedValue(new Error("db down"));
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    expect(res.status).toBe(503);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+
+  it("subscribes the NORMALIZED address, so a later opt-out lookup matches", async () => {
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: "  Prospect@Example.COM  ", name: " Test " }));
+
+    expect(res.status).toBe(200);
+    expect(h.subscribeToBeehiiv).toHaveBeenCalledWith(EMAIL, "Test");
+  });
+
+  it("draws on its OWN address quota, so it cannot deny someone a guide", async () => {
+    // Sharing the magnet counter would make this a denial tool: three
+    // newsletter POSTs aimed at an address would burn its hourly allowance, and
+    // the guide that person then asked for would come back 429.
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    await POST(post({ email: EMAIL }));
+
+    const scopes = h.db.rateLimitBucket.upsert.mock.calls.map(
+      (c) => (c[0] as { create: { scope: string; key: string } }).create.scope
+    );
+    expect(scopes).toContain("newsletter");
+    expect(scopes).toContain("newsletter-day");
+    // The shared delivery counters stay untouched.
+    expect(scopes).not.toContain("email");
+    expect(scopes).not.toContain("email-day");
+  });
+
+  it("still bounds one address, just out of its own budget", async () => {
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    expect((await POST(post({ email: EMAIL }))).status).toBe(429);
+  });
+
+  it("reports a beehiiv failure instead of answering success over a lost signup", async () => {
+    h.subscribeToBeehiiv.mockResolvedValue("failed");
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    // There is no local subscriber row and no retry, so a silent success loses
+    // the lead permanently. Same shape as the unchecked Resend results.
+    expect(res.status).toBe(502);
+  });
+
+  it("still answers success when the address is merely skipped", async () => {
+    // "skipped" is local dev with no credentials, or a suppressed address. A
+    // suppressed person must not get an error confirming we hold a record.
+    h.subscribeToBeehiiv.mockResolvedValue("skipped");
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    expect((await POST(post({ email: EMAIL }))).status).toBe(200);
+  });
+
+  it("rejects a malformed address before touching beehiiv", async () => {
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: "not-an-address" }));
+
+    expect(res.status).toBe(400);
+    expect(h.subscribeToBeehiiv).not.toHaveBeenCalled();
+  });
+});
+
 describe("a suppression lookup failure must not destroy quiz answers", () => {
   const SCORECARD = { name: "Test Prospect", email: EMAIL, score: 55, primaryDriver: "A", biggestFear: "B" };
 
