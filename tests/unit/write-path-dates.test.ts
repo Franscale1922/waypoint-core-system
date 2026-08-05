@@ -267,19 +267,32 @@ describe("isStale: measured from the last revision, not from publication", () =>
   });
 
   /**
-   * An unreadable date is not a reason to rewrite an article.
+   * A bad revision date must not mask a good publication date.
    *
-   * The old code reached this outcome by accident, because every comparison against NaN is false.
-   * Asserting it means a later "simplification" of the comparison cannot silently start refreshing
-   * every article whose date it cannot parse.
+   * `updatedAt ?? date` alone does not do this: `??` falls back on null and undefined, never on a
+   * string that is present and unreadable. So an article carrying `updatedAt: "not-a-date"` beside
+   * a valid `date` measured from the unreadable value, came out NaN, and was classified not-due
+   * FOREVER -- and silently, because a run that finds nothing reports "No articles due for refresh"
+   * rather than naming the article it could not read. Raised by Codex round 1 as a Low; it is a
+   * defect this change introduced, since nothing read `updatedAt` for scheduling before.
    */
-  it.each([["nonsense"], [""], ["not-a-date"]])(
-    "treats an unparseable %o as not due rather than as infinitely old",
+  it.each([["nonsense"], [""], ["not-a-date"], ["2026-13-45"]])(
+    "falls back to the publication date when updatedAt is %o",
     async (value) => {
       const { isStale } = await import("@/lib/contentRefresh");
-      expect(isStale(article({ date: daysAgo(900), updatedAt: value }))).toBe(false);
+      // 900 days past publication, well beyond the 365-day cadence: due, not silently skipped.
+      expect(isStale(article({ date: daysAgo(900), updatedAt: value }))).toBe(true);
+      // And the fallback respects the cadence rather than forcing a refresh.
+      expect(isStale(article({ date: daysAgo(10), updatedAt: value }))).toBe(false);
     },
   );
+
+  it("is not due when NEITHER date can be read", async () => {
+    const { isStale } = await import("@/lib/contentRefresh");
+    // Refreshing would commit the same unreadable date back and validateArticlePayload would refuse
+    // the whole batch over it. The loud failure belongs in the push gate that let it through.
+    expect(isStale(article({ date: "rubbish", updatedAt: "also-rubbish" }))).toBe(false);
+  });
 });
 
 describe("validateArticlePayload: what the boundary checks", () => {

@@ -435,15 +435,24 @@ export function isStale(article: Article, force = false): boolean {
   if (force) return true;
 
   const { date, updatedAt } = article.frontmatter;
-  const reference = new Date(updatedAt ?? date);
 
-  // An unparseable value is not a reason to rewrite an article. The old code reached the same
-  // outcome by accident, because every comparison against NaN is false; stating it is the point,
-  // since a later refactor that "simplifies" the comparison would otherwise silently start
-  // refreshing every article whose date it cannot read.
-  if (Number.isNaN(reference.getTime())) return false;
+  // `updatedAt ?? date` is not enough on its own: `??` falls back on null and undefined, NOT on a
+  // string that is present and unreadable. An article carrying `updatedAt: "not-a-date"` beside a
+  // perfectly good `date` would then measure from the unreadable value, come out NaN, and be
+  // classified as not-due forever -- silently, since a run finding nothing reports "No articles due
+  // for refresh" rather than naming the article it could not read. A bad revision date must not be
+  // able to mask a good publication date, so this falls through to the next readable value.
+  const reference = [updatedAt, date]
+    .map((value) => (value === undefined ? NaN : new Date(value).getTime()))
+    .find((time) => !Number.isNaN(time));
 
-  const ageInDays = (Date.now() - reference.getTime()) / (1000 * 60 * 60 * 24);
+  // Neither is readable. Not a reason to rewrite the article: refreshing it would commit the same
+  // unreadable date straight back, and validateArticlePayload would refuse the whole batch over it.
+  // The pre-push hook and CI already reject both fields, so reaching this means something bypassed
+  // them, and the loud failure belongs there rather than in a silent monthly rewrite.
+  if (reference === undefined) return false;
+
+  const ageInDays = (Date.now() - reference) / (1000 * 60 * 60 * 24);
 
   return ageInDays >= cadenceDays;
 }
