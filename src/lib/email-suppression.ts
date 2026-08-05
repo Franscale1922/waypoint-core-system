@@ -93,17 +93,42 @@ export async function isEmailSuppressed(email: string): Promise<boolean> {
 }
 
 /**
+ * Why we are not mailing this address, with the fail-closed decision already
+ * made: any error resolves to "do not send" so a database blip can never be the
+ * reason a nurture sequence starts for someone who opted out.
+ *
+ * WHY THIS IS THREE VALUES AND NOT A BOOLEAN
+ * ------------------------------------------
+ * The boolean version collapsed "this person opted out" and "we could not tell"
+ * into the same answer, and every caller then logged the outcome as
+ * "unsubscribed". A transient Neon error therefore recorded a voluntary opt-out
+ * against someone who never asked for one, and because the Inngest step returns
+ * `{ skipped: true }` (a COMPLETED step, never retried) the message was dropped
+ * for good with no trace of why. Not sending is still the right call. Calling it
+ * an opt-out is what made it undiagnosable.
+ */
+export type SuppressionVerdict = "clear" | "suppressed" | "lookup-failed";
+
+export async function suppressionVerdict(email: string): Promise<SuppressionVerdict> {
+  try {
+    return (await isEmailSuppressed(email)) ? "suppressed" : "clear";
+  } catch (err) {
+    console.error("[email-suppression] lookup failed; treating as suppressed:", err);
+    return "lookup-failed";
+  }
+}
+
+/**
  * isEmailSuppressed, with the fail-closed decision already made: any error is
  * reported as "suppressed" so a database blip can never be the reason a nurture
  * sequence starts for someone who opted out.
+ *
+ * Kept for callers that only need the yes/no. Anything that RECORDS the outcome
+ * should use suppressionVerdict instead, so the two reasons stay distinguishable
+ * in the log.
  */
 export async function isEmailSuppressedFailClosed(email: string): Promise<boolean> {
-  try {
-    return await isEmailSuppressed(email);
-  } catch (err) {
-    console.error("[email-suppression] lookup failed; treating as suppressed:", err);
-    return true;
-  }
+  return (await suppressionVerdict(email)) !== "clear";
 }
 
 /**
@@ -138,4 +163,192 @@ export async function suppressEmailEverywhere(email: string): Promise<number> {
   );
   await canonical;
   return results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
+}
+
+/**
+ * The exact `reason` suppressEmailEverywhere writes. Load bearing: it is how
+ * unsuppressEmail tells a self-service opt-out apart from a bounce, a complaint
+ * or a reply classified as "not a fit", none of which a re-subscribe may clear.
+ */
+export const SELF_SERVICE_OPT_OUT_REASON = "unsubscribed";
+
+/**
+ * Lead suppression reasons that mean the ADDRESS is undeliverable or its owner
+ * objected, as opposed to reasons that only mean "not worth cold-emailing".
+ * Any of these on a latched Lead refuses a re-subscribe.
+ *
+ * This is a second line, not the main one. Normally SuppressionList carries the
+ * same signal and blocks first. It matters because the Resend webhook writes the
+ * LEAD before the SuppressionList row (webhooks/resend/route.ts:89 then :97), so
+ * a failure between the two leaves a known hard bounce recorded only on the
+ * lead. Nurture's shouldSuppress checks bookedAt and REPLIED but not SUPPRESSED,
+ * so without this check a reversal in that window would clear the last guard and
+ * start mailing an address that is known to bounce.
+ *
+ * "unsubscribe" is deliberately NOT here. senderProcess latches exactly that
+ * reason onto the lead whenever it sees a SuppressionList hit, so treating it as
+ * a blocker would refuse the ordinary case this whole function exists to serve.
+ * Pure targeting reasons (low_score, title_suppressed, non_serviceable_market)
+ * are absent for the opposite reason: they say nothing about consent to receive
+ * the marketing sequences.
+ *
+ * It is a READ, so it is a time-of-check gate, not a lock: a bounce landing
+ * between this read and the writes below is still missed. Accepted knowingly.
+ * It narrows a window that was previously wide open, and closing it completely
+ * would need the webhook's two writes and this whole function to share one
+ * transaction. The webhook's own ordering is the better place to fix that.
+ */
+const UNDELIVERABLE_LEAD_REASONS = new Set([
+  "bounce",
+  "complaint",
+  "not_a_fit",
+  "fabricated_email",
+  "riskier_email",
+]);
+
+export interface UnsuppressOutcome {
+  /** False when nothing was changed. `blockedBy` then says what refused. */
+  ok: boolean;
+  /** Rows returned to mailable across the six lists. */
+  listRowsRestored: number;
+  /** True when the canonical opt-out row was actually removed. */
+  canonicalCleared: boolean;
+  /** Set only when ok is false. Names what refused, for the operator. */
+  blockedBy: string | null;
+  /**
+   * A cold outreach Lead still latched to SUPPRESSED. Reported, never cleared.
+   * See below for why.
+   */
+  latchedLead: { id: string; suppressionReason: string | null } | null;
+}
+
+/**
+ * Reverses a SELF-SERVICE opt-out, so a wrong one stops needing a hand-written
+ * database edit to undo.
+ *
+ * WHY THIS EXISTS
+ * ---------------
+ * The unsubscribe token is HMAC(secret, recordId) with no expiry and no nonce,
+ * so anyone who ever saw the URL can replay it, and a POST now suppresses the
+ * address on all six lists AND the canonical record that gates cold outreach.
+ * Tightening the token is the wrong lever: under RFC 8058 the recipient's mail
+ * provider sends that POST, sometimes long after delivery, so an expiry short
+ * enough to matter breaks real one-click unsubscribes, and a failed opt-out is a
+ * worse failure than a replayed one. Making the mistake REVERSIBLE is the fix
+ * that carries no such tradeoff.
+ *
+ * WHY IT IS SURGICAL
+ * ------------------
+ * SuppressionList is shared. The Resend webhook writes bounces and complaints
+ * into it, and the reply classifier writes "not_a_fit". Clearing it wholesale
+ * would resurrect addresses that are dead or hostile, turning a support favour
+ * into a deliverability incident. So anything that is not the exact reason
+ * suppressEmailEverywhere writes refuses, and says so.
+ *
+ * WHY THE REASON IS IN THE WHERE CLAUSE
+ * -------------------------------------
+ * The delete filters on `reason` rather than deleting the row that was just
+ * read. Between the read and the write a bounce webhook can upgrade the same row
+ * from "unsubscribed" to "bounce"; a delete by id would drop it anyway and
+ * re-open a hard-bounced address. Filtering makes that race unrepresentable.
+ *
+ * WHY THE WRITES ARE ORDERED
+ * --------------------------
+ * There is no transaction here, matching suppressEmailEverywhere and the rest of
+ * this codebase. The order is therefore load bearing: the six list flags clear
+ * FIRST and the canonical row LAST. If the second half fails, the canonical row
+ * survives, isEmailSuppressed still answers "suppressed", and cold outreach stays
+ * gated. Doing it the other way round would leave a window where the canonical
+ * record was gone but the lists still said opted-out, which is the one
+ * combination that could put mail in front of someone who asked for none.
+ */
+export async function unsuppressEmail(email: string): Promise<UnsuppressOutcome> {
+  const key = normalizeEmail(email);
+  const unchanged = { ok: false, listRowsRestored: 0, canonicalCleared: false, latchedLead: null };
+  if (!key) return { ...unchanged, blockedBy: "no address given" };
+
+  const domain = key.split("@")[1] ?? "";
+
+  // Stamped BEFORE the reads, and carried into both writes below. It is what
+  // stops this from erasing an opt-out that arrives WHILE it runs: an admin
+  // reversal that reads "nothing suppressed", races a recipient clicking
+  // unsubscribe, and then clears the flags that click just set would destroy a
+  // consent decision newer than anything the admin ever saw. Every write is
+  // therefore bounded to rows that already looked like this at read time.
+  //
+  // WHAT THIS BOUND DOES NOT COVER, and why that is accepted. A recipient who
+  // was ALREADY opted out and clicks unsubscribe again refreshes nothing:
+  // suppressEmailEverywhere upserts the canonical row with `update: {}` and only
+  // touches list rows where `unsubscribed: false`, so every timestamp stays old
+  // and this reversal still clears them. That is the intended behaviour, not a
+  // gap. The admin is deliberately reversing an opt-out that existed before and
+  // after the re-click, and a repeat click carries no consent information the
+  // admin did not already have. Closing it properly would mean versioning every
+  // opt-out and running the reversal under a row lock, which is a lot of
+  // machinery to re-decide something the operator just decided on purpose. The
+  // NEW opt-out case, which does carry new information, is the one bounded here.
+  const observedAt = new Date();
+
+  const [domainEntry, addressEntry, latchedLead] = await Promise.all([
+    domain
+      ? prisma.suppressionList.findFirst({ where: { domain }, select: { id: true } })
+      : Promise.resolve(null),
+    prisma.suppressionList.findFirst({ where: { email: key }, select: { id: true, reason: true } }),
+    // Reported so the operator is not told "done" while cold outreach still
+    // refuses this address. `as any`: suppressionReason is on the schema but the
+    // generated client is only refreshed on deploy, which is why the rest of the
+    // codebase casts here too.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (prisma.lead.findFirst as any)({
+      where: { email: { equals: key, mode: "insensitive" }, status: "SUPPRESSED" },
+      select: { id: true, suppressionReason: true },
+      orderBy: { updatedAt: "desc" },
+    }) as Promise<{ id: string; suppressionReason: string | null } | null>,
+  ]);
+
+  // A domain rule outranks the address. Clearing the address row would report
+  // success over an address the domain entry still gates.
+  if (domainEntry) {
+    return { ...unchanged, blockedBy: `a domain-level suppression on ${domain}`, latchedLead };
+  }
+  if (addressEntry && addressEntry.reason !== SELF_SERVICE_OPT_OUT_REASON) {
+    return { ...unchanged, blockedBy: addressEntry.reason ?? "an unrecorded reason", latchedLead };
+  }
+  const leadReason = latchedLead?.suppressionReason;
+  if (leadReason && UNDELIVERABLE_LEAD_REASONS.has(leadReason)) {
+    return { ...unchanged, blockedBy: `a lead record marked ${leadReason}`, latchedLead };
+  }
+
+  const results = await Promise.all(
+    SUPPRESSION_LISTS.map((list) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (prisma as any)[list].updateMany({
+        where: {
+          email: { equals: key, mode: "insensitive" },
+          unsubscribed: true,
+          // Rows opted out AFTER this call started are somebody's fresh click
+          // and are left alone. Null means the row predates the timestamp
+          // column, which by definition is not a concurrent write.
+          OR: [{ unsubscribedAt: null }, { unsubscribedAt: { lte: observedAt } }],
+        },
+        data: { unsubscribed: false, unsubscribedAt: null },
+      })
+    )
+  );
+  const listRowsRestored = results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
+
+  // Same bound on the canonical row. `reason` alone is not enough here: a
+  // concurrent opt-out writes the very same reason, so a reason-only delete
+  // would happily remove an opt-out newer than the one being reversed.
+  const removed = await prisma.suppressionList.deleteMany({
+    where: { email: key, reason: SELF_SERVICE_OPT_OUT_REASON, createdAt: { lte: observedAt } },
+  });
+
+  return {
+    ok: true,
+    listRowsRestored,
+    canonicalCleared: removed.count > 0,
+    blockedBy: null,
+    latchedLead,
+  };
 }
