@@ -227,7 +227,8 @@ describe("cold outreach is reported, never silently resumed", () => {
   });
 
   it("REFUSES when the lead records a bounce the canonical row never got", async () => {
-    // The Resend webhook writes the LEAD before the SuppressionList row, so a
+    // The Instantly inbound webhook (webhooks/resend, named for Resend by
+    // history only) writes the LEAD before the SuppressionList row, so a
     // failure between the two leaves a known hard bounce recorded only on the
     // lead. Nurture does not check SUPPRESSED leads, so without this the
     // reversal would clear the last guard on an address that bounces.

@@ -7,7 +7,8 @@ import { verifyBearer } from "@/app/lib/webhook-auth";
 // THE PATH NAME IS HISTORICAL. Nothing in this file touches Resend. The handler
 // serves Instantly.ai's inbound webhook, and it lives under
 // /api/webhooks/resend only because that is the URL already registered in the
-// Instantly dashboard (docs/COLD_EMAIL_STACK.md §"Inbound Reply Webhook").
+// Instantly dashboard (see the "Inbound Reply Webhook" block in
+// docs/COLD_EMAIL_STACK.md, which records it as verified active).
 // Renaming this directory silently breaks reply, bounce and unsubscribe
 // delivery until that dashboard entry is re-pointed, so treat the two as one
 // change or leave the path alone.
@@ -21,10 +22,11 @@ import { verifyBearer } from "@/app/lib/webhook-auth";
 // with a Bearer token matching the INBOUND_WEBHOOK_SECRET env var.
 //
 // Auth: verifyBearer compares the Authorization header against
-// INBOUND_WEBHOOK_SECRET. That is a shared static bearer token, NOT a payload
-// signature: Instantly publishes no signature for us to verify, so possession
-// of the token is the whole control and anyone holding it can forge any reply,
-// bounce or unsubscribe event this route acts on. The same secret also guards
+// INBOUND_WEBHOOK_SECRET with a plain string comparison, not a constant-time
+// one. That is a shared static bearer token, NOT a payload signature: Instantly
+// publishes no signature for us to verify, so possession of the token is the
+// whole control and anyone holding it can forge any reply, bounce or
+// unsubscribe event this route acts on. The same secret also guards
 // /api/webhooks/inbound, so rotating it must cover both routes.
 //
 // Instantly v2 webhook payload shape (event_type: "reply_received"):

@@ -69,8 +69,9 @@ export async function isEmailSuppressed(email: string): Promise<boolean> {
 
   const domain = key.split("@")[1] ?? "";
 
-  // SuppressionList is the pre-existing canonical record: the Resend webhook
-  // writes bounces and complaints into it, and cold outreach already gates on
+  // SuppressionList is the pre-existing canonical record: the Instantly inbound
+  // webhook (webhooks/resend, named for Resend by history only) writes bounces
+  // and complaints into it, and cold outreach already gates on
   // it. Skipping it here would have made this a SECOND, disconnected source of
   // truth, so an address that hard-bounced could still be dripped to and
   // reactivated on the newsletter. It carries domain-level entries too.
@@ -240,8 +241,9 @@ export interface UnsuppressOutcome {
  *
  * WHY IT IS SURGICAL
  * ------------------
- * SuppressionList is shared. The Resend webhook writes bounces and complaints
- * into it, and the reply classifier writes "not_a_fit". Clearing it wholesale
+ * SuppressionList is shared. The Instantly inbound webhook (webhooks/resend,
+ * named for Resend by history only) writes bounces and complaints into it, and
+ * the reply classifier writes "not_a_fit". Clearing it wholesale
  * would resurrect addresses that are dead or hostile, turning a support favour
  * into a deliverability incident. So anything that is not the exact reason
  * suppressEmailEverywhere writes refuses, and says so.

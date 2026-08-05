@@ -112,7 +112,7 @@ Set all of these in Vercel → Project → Settings → Environment Variables (P
 | `DATABASE_URL` | PostgreSQL connection string | Neon dashboard |
 | `OPENAI_API_KEY` | AI content enrichment, scorecard email drafts | platform.openai.com/api-keys |
 | `RESEND_API_KEY` | All transactional email (scorecard, checklists, nurture) | resend.com/api-keys |
-| `RESEND_WEBHOOK_SECRET` | Validates Resend webhook events (bounces, unsubscribes) | Resend → Webhooks → signing secret |
+| `INBOUND_WEBHOOK_SECRET` | Bearer token guarding BOTH `/api/webhooks/resend` (Instantly replies, bounces, unsubscribes) and `/api/webhooks/inbound` (scorecard submissions). Self-generated; paste the same value into the Instantly inbound-webhook config. Both routes return 500 if it is unset. | Self-generated |
 | `AUTH_SECRET` | NextAuth.js session encryption | Copy from `.env` — never regenerate in prod |
 | `AUTH_GOOGLE_ID` | Google OAuth for admin login | Google Cloud Console → OAuth credentials |
 | `AUTH_GOOGLE_SECRET` | Google OAuth for admin login | Google Cloud Console → OAuth credentials |
@@ -349,7 +349,7 @@ inferring a broken loop from the absence of a deploy. See `src/lib/githubArticle
 
 - **Scorecard:** Submission triggers `scorecard-complete` Inngest event → Resend sends personalized email with score (capped at 98 for display)
 - **Checklists:** Download triggers `checklist-requested` event → correct industry-specific PDF delivered → 5-email nurture sequence begins
-- Unsubscribe links use `List-Unsubscribe` headers; Resend webhook handles suppression
+- Unsubscribe links use `List-Unsubscribe` headers; the Instantly inbound webhook (`/api/webhooks/resend`, named for Resend by history only) handles suppression
 
 ---
 

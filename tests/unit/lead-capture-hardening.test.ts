@@ -447,7 +447,8 @@ describe("quiz routes do not drip to someone whose result never arrived", () => 
 
 describe("the canonical suppression record is honoured", () => {
   it("starts no sequence for an address the bounce webhook suppressed", async () => {
-    // SuppressionList is written by the Resend webhook and already gates cold
+    // SuppressionList is written by the Instantly inbound webhook
+    // (webhooks/resend, named for Resend by history only) and already gates cold
     // outreach. Querying only the six capture tables made this a second,
     // disconnected source of truth, so a hard-bounced address could still be
     // dripped to.

@@ -76,7 +76,7 @@ month.
 | `INNGEST_SIGNING_KEY` | Inngest dashboard → production app |
 | `INNGEST_EVENT_KEY` | Inngest dashboard → production app |
 | `TIDYCAL_WEBHOOK_SECRET` | TidyCal dashboard → Webhooks |
-| `RESEND_WEBHOOK_SECRET` | Resend dashboard → Webhooks → signing secret |
+| `INBOUND_WEBHOOK_SECRET` | Self-generated; one Bearer token shared by `/api/webhooks/resend` (Instantly) and `/api/webhooks/inbound`. Register the same value in the Instantly dashboard |
 | `BEEHIIV_WEBHOOK_SECRET` | Self-generated; put it in the webhook URL registered with beehiiv (see below) |
 
 ---
