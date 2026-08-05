@@ -32,12 +32,20 @@ export const POST = withAdmin(async (req, session) => {
       return NextResponse.json({ error: "An email address is required." }, { status: 400 });
     }
 
+    const target = email.trim().toLowerCase();
+
+    // Logged BEFORE the mutation as well as after, and both lines carry the
+    // actor and the target. The write is six updates plus a delete with no
+    // transaction around them, so a crash midway, or after the delete but
+    // before the outcome line, would otherwise leave a consent record changed
+    // with nothing at all saying who changed it. An intent line means every
+    // reversal is attributable even when it did not finish.
+    console.log(`[admin/resubscribe] ${session.user.email} -> ${target}: attempting`);
+
     const outcome = await unsuppressEmail(email);
 
-    // Logged with the actor: this reverses a recorded opt-out, so who did it and
-    // for whom is exactly what anyone auditing a complaint would need.
     console.log(
-      `[admin/resubscribe] ${session.user.email} -> ${email.trim().toLowerCase()}: ` +
+      `[admin/resubscribe] ${session.user.email} -> ${target}: ` +
         (outcome.ok
           ? `restored ${outcome.listRowsRestored} row(s), canonical ${outcome.canonicalCleared ? "cleared" : "absent"}`
           : `REFUSED (${outcome.blockedBy})`)
@@ -46,7 +54,7 @@ export const POST = withAdmin(async (req, session) => {
     return NextResponse.json(outcome);
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
-    console.error("[admin/resubscribe]", message);
+    console.error("[admin/resubscribe] FAILED:", message);
     return NextResponse.json({ error: message }, { status: 500 });
   }
 });

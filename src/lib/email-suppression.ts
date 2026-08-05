@@ -191,6 +191,12 @@ export const SELF_SERVICE_OPT_OUT_REASON = "unsubscribed";
  * Pure targeting reasons (low_score, title_suppressed, non_serviceable_market)
  * are absent for the opposite reason: they say nothing about consent to receive
  * the marketing sequences.
+ *
+ * It is a READ, so it is a time-of-check gate, not a lock: a bounce landing
+ * between this read and the writes below is still missed. Accepted knowingly.
+ * It narrows a window that was previously wide open, and closing it completely
+ * would need the webhook's two writes and this whole function to share one
+ * transaction. The webhook's own ordering is the better place to fix that.
  */
 const UNDELIVERABLE_LEAD_REASONS = new Set([
   "bounce",
@@ -269,6 +275,18 @@ export async function unsuppressEmail(email: string): Promise<UnsuppressOutcome>
   // unsubscribe, and then clears the flags that click just set would destroy a
   // consent decision newer than anything the admin ever saw. Every write is
   // therefore bounded to rows that already looked like this at read time.
+  //
+  // WHAT THIS BOUND DOES NOT COVER, and why that is accepted. A recipient who
+  // was ALREADY opted out and clicks unsubscribe again refreshes nothing:
+  // suppressEmailEverywhere upserts the canonical row with `update: {}` and only
+  // touches list rows where `unsubscribed: false`, so every timestamp stays old
+  // and this reversal still clears them. That is the intended behaviour, not a
+  // gap. The admin is deliberately reversing an opt-out that existed before and
+  // after the re-click, and a repeat click carries no consent information the
+  // admin did not already have. Closing it properly would mean versioning every
+  // opt-out and running the reversal under a row lock, which is a lot of
+  // machinery to re-decide something the operator just decided on purpose. The
+  // NEW opt-out case, which does carry new information, is the one bounded here.
   const observedAt = new Date();
 
   const [domainEntry, addressEntry, latchedLead] = await Promise.all([

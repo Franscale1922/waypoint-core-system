@@ -586,6 +586,26 @@ describe("the newsletter signup is not an open relay either", () => {
     expect((await POST(post({ email: EMAIL }))).status).toBe(429);
   });
 
+  it("reports a beehiiv failure instead of answering success over a lost signup", async () => {
+    h.subscribeToBeehiiv.mockResolvedValue("failed");
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    const res = await POST(post({ email: EMAIL }));
+
+    // There is no local subscriber row and no retry, so a silent success loses
+    // the lead permanently. Same shape as the unchecked Resend results.
+    expect(res.status).toBe(502);
+  });
+
+  it("still answers success when the address is merely skipped", async () => {
+    // "skipped" is local dev with no credentials, or a suppressed address. A
+    // suppressed person must not get an error confirming we hold a record.
+    h.subscribeToBeehiiv.mockResolvedValue("skipped");
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    expect((await POST(post({ email: EMAIL }))).status).toBe(200);
+  });
+
   it("rejects a malformed address before touching beehiiv", async () => {
     const { POST } = await import("@/app/api/newsletter-subscribe/route");
 

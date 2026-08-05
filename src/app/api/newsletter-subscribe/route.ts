@@ -43,7 +43,25 @@ export async function POST(req: Request) {
 
     // The NORMALIZED address, so a later suppression lookup on it matches what
     // the opt-out path writes.
-    await subscribeToBeehiiv(guard.email, typeof name === "string" ? name.trim() || undefined : undefined);
+    const result = await subscribeToBeehiiv(
+      guard.email,
+      typeof name === "string" ? name.trim() || undefined : undefined
+    );
+
+    // Answering "success" over a beehiiv failure loses the signup silently:
+    // there is no local subscriber row and no retry, so nobody ever finds out.
+    // Telling the visitor to try again is the only way that lead survives. Same
+    // shape as the unchecked Resend results PR #44 fixed.
+    //
+    // "skipped" reports success on purpose. It means either local dev with no
+    // credentials, or a suppressed address, and a suppressed person must not be
+    // handed an error that confirms we hold a record of them.
+    if (result === "failed") {
+      return NextResponse.json(
+        { error: "We couldn't complete that signup. Please try again in a moment." },
+        { status: 502 }
+      );
+    }
 
     return NextResponse.json({ success: true });
   } catch (err: unknown) {
