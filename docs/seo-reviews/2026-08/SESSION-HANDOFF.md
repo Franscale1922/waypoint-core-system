@@ -14,7 +14,8 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 | | |
 |---|---|
-| `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `c8546b8` (#47), everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on |
+| `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `f4af4f7`, everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on. It moved again during the #51 session, from `f84055c` to `f4af4f7` between the branch being cut and the first commit landing |
+| `fix/webhook-allowlist-accuracy` | **PR #51 OPEN**, HEAD `b3090e9`, mergeable, all checks green. **Held for a go-live decision** — it touches `src/` so merging deploys production. See the section directly below the State block |
 | `claude/competent-easley-9eec18` | **merged as #23** (`40f4087`), aeo-audit gate hardening. The "PR #23 open" line this row used to carry was stale |
 | `seo/faq-entry-validation` | **merged as #29** (`ed22c03`), remote branch deleted. Validates every FAQ entry and renders the visible FAQ from the same filter |
 | `seo/investment-selection-intent` | **merged as #25** (`24530c1`), branch deleted |
@@ -70,6 +71,53 @@ rather than an addition.
 Its review doc is still worth reading as a record of how a green test suite hid two decorative
 guards: `ADVERSARIAL-REVIEW-write-path-CAS-2026-08-04.md` beside this file records
 what survives from it, what was decorative, and why the branch itself is not salvageable by merge.
+
+---
+
+## ⏳ OPEN, awaiting a go-live decision — PR #51, webhook allowlist accuracy (2026-08-05)
+
+Not SEO work; recorded here because this is the repo's one handoff doc and a second one is how
+state gets lost. Branch `fix/webhook-allowlist-accuracy`, HEAD `b3090e9`, three commits, based on
+`f4af4f7`. **Open, MERGEABLE, all checks green** (`verify` pass, Vercel preview deployed).
+`npm test` 1304 + 20 passed, `aeo-audit` PASS, `tsc` 51 errors byte-identical to the `main`
+baseline and none in any touched file.
+
+**Not merged on purpose.** It touches `src/` and `tests/`, so it is outside `vercel.json`'s
+`ignoreCommand` and merging runs a real production build plus `prisma db push` against the
+production database. Kelsey has the go/no-go.
+
+**What it fixes.** `PUBLIC_BY_DESIGN` described `webhooks/resend/route.ts` as "guarded by its own
+signature check". There is no signature check and never was: the route calls `verifyBearer` against
+`INBOUND_WEBHOOK_SECRET`, a plain string comparison against a static token, and Instantly signs
+nothing. The route is also Instantly's, not Resend's; the path name is historical and the directory
+is **deliberately not renamed** because that URL is registered in the Instantly dashboard.
+
+**Two things a later session will otherwise rediscover the hard way:**
+
+- **Correcting a name inside a claim does not make the claim true.** `LAUNCH.md` said "Resend
+  webhook handles suppression" for `List-Unsubscribe`. Changing it to "Instantly inbound webhook"
+  fixed the misnomer and preserved the actual error: those headers point at our own HMAC opt-out
+  routes and no webhook is involved. The Claude reviewer missed it because it was checking whether
+  the misnomer was fixed; Codex caught it. Re-verify the whole sentence, not the noun you changed.
+- **An env-var rename lands in code and not in the provisioning docs.**
+  `RESEND_WEBHOOK_SECRET` → `INBOUND_WEBHOOK_SECRET` happened in March 2026. In August,
+  `LAUNCH.md`, `hosting-requirements.md` and `ROADMAP.md` still all named the old var (read by no
+  code) and none named the new one, which both webhook routes fail closed on. **Following
+  `LAUNCH.md` would have deployed `/api/webhooks/resend` and `/api/webhooks/inbound` both dead.**
+  All three tables are fixed on this branch. Grep every doc when renaming an env var.
+
+**Known debt this PR records but does NOT fix:** `INBOUND_WEBHOOK_SECRET` is one token shared
+across two different trust domains (Instantly-held vs our own scorecard submissions), so a
+compromise on either authorizes forged suppression events **and** forged lead records, and neither
+integration can be rotated without breaking the other. Splitting it needs a new production env var
+plus an Instantly dashboard re-registration, so it is a coordinated change, not a doc edit.
+
+**On the new test.** The descriptions in `PUBLIC_BY_DESIGN` were free prose no assertion read —
+every one could have been `""` and the suite stayed green, which is why the false claim survived.
+An entry may now claim a signature check only if the route verifies one (proven by mutation:
+restoring the original description fails it). It is a narrow lexical backstop and its three known
+bypasses are written into the test. Two hardenings were tried and dropped because each would have
+failed *accurate* descriptions — do not re-add them without reading that comment first.
 
 ---
 
