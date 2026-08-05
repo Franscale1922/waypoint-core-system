@@ -30,7 +30,33 @@ none was taken on the tool's word.
 
 ---
 
-## Still open — one finding, after the publication-date reset was closed
+## Nothing is open against this file
+
+Both findings closed on 2026-08-05, within about an hour, by different sessions. They are kept below
+in full rather than deleted, because the reasoning is what makes the fixes reviewable later.
+
+---
+
+## CLOSED 2026-08-05 — a retry could overwrite a newer edit to the same article
+
+**Closed by #47 (`c8546b8`), deployed green.** Each payload now carries the git blob SHA of the file
+it was generated from, checked against the branch's tree before any blob is created. An article
+whose file moved underneath the run stands down and is reported rather than overwritten, which is
+the "abort on mismatch" option below; publishing through a branch and a PR was not adopted, so the
+monthly refresh still writes to `main` directly.
+
+`CommitOutcome` gained a status for the case where every article stands down, so a run that wrote
+nothing because the corpus moved is distinguishable in the Inngest history from a run that had
+nothing to do. Verified in `src/lib/githubArticleCommit.ts` on `main` at `d416a1f`, not taken from
+the commit message.
+
+**This section was still filed as open until 2026-08-05.** `fee6a08` corrected SESSION-HANDOFF.md to
+say both findings were closed but did not reach this file, so the two documents contradicted each
+other for a few commits, and this one is the more detailed of the two. Worth noting as a pattern
+rather than a one-off: the same day, the handoff's State row went stale twice. A finding recorded in
+two places has to be closed in both.
+
+The original finding, as written:
 
 **A retry can overwrite a newer edit to the same article.** `commitRefreshedArticles` lays its blobs
 over whatever HEAD currently holds: it reads the ref, takes that commit's tree as `base_tree`, and
