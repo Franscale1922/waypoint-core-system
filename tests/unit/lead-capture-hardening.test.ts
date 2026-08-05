@@ -561,6 +561,31 @@ describe("the newsletter signup is not an open relay either", () => {
     expect(h.subscribeToBeehiiv).toHaveBeenCalledWith(EMAIL, "Test");
   });
 
+  it("draws on its OWN address quota, so it cannot deny someone a guide", async () => {
+    // Sharing the magnet counter would make this a denial tool: three
+    // newsletter POSTs aimed at an address would burn its hourly allowance, and
+    // the guide that person then asked for would come back 429.
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    await POST(post({ email: EMAIL }));
+
+    const scopes = h.db.rateLimitBucket.upsert.mock.calls.map(
+      (c) => (c[0] as { create: { scope: string; key: string } }).create.scope
+    );
+    expect(scopes).toContain("newsletter");
+    expect(scopes).toContain("newsletter-day");
+    // The shared delivery counters stay untouched.
+    expect(scopes).not.toContain("email");
+    expect(scopes).not.toContain("email-day");
+  });
+
+  it("still bounds one address, just out of its own budget", async () => {
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/newsletter-subscribe/route");
+
+    expect((await POST(post({ email: EMAIL }))).status).toBe(429);
+  });
+
   it("rejects a malformed address before touching beehiiv", async () => {
     const { POST } = await import("@/app/api/newsletter-subscribe/route");
 

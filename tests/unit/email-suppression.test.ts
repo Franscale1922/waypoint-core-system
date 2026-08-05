@@ -167,9 +167,47 @@ describe("what a re-subscribe must refuse", () => {
 
     await unsuppressEmail(EMAIL);
 
-    expect(h.db.suppressionList.deleteMany).toHaveBeenCalledWith({
-      where: { email: EMAIL, reason: "unsubscribed" },
-    });
+    expect(h.db.suppressionList.deleteMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ email: EMAIL, reason: "unsubscribed" }),
+      })
+    );
+  });
+});
+
+describe("a reversal cannot erase an opt-out that arrives while it runs", () => {
+  it("leaves rows opted out AFTER the call started alone", async () => {
+    h.db.suppressionList.findFirst.mockResolvedValue(null);
+    const { unsuppressEmail } = await import("@/lib/email-suppression");
+
+    await unsuppressEmail(EMAIL);
+
+    // Every list update is bounded to rows that already looked opted out when
+    // this call read them. Without the bound, an admin reversal racing a
+    // recipient's click would clear the flags that click had just set.
+    for (const u of listUpdates()) {
+      const or = u.where.OR as Array<Record<string, unknown>>;
+      expect(or).toBeDefined();
+      const lte = or.find((c) => c.unsubscribedAt && typeof c.unsubscribedAt === "object");
+      expect((lte!.unsubscribedAt as { lte: Date }).lte).toBeInstanceOf(Date);
+      // Legacy rows predate the column and must stay reversible.
+      expect(or).toContainEqual({ unsubscribedAt: null });
+    }
+  });
+
+  it("will not delete a canonical row created after the call started", async () => {
+    h.db.suppressionList.findFirst.mockImplementation((args: any) =>
+      args?.where?.email ? { id: "sup_1", reason: "unsubscribed" } : null
+    );
+    const { unsuppressEmail } = await import("@/lib/email-suppression");
+
+    await unsuppressEmail(EMAIL);
+
+    // reason alone is not enough: a concurrent opt-out writes the SAME reason,
+    // so a reason-only delete would remove a newer consent decision.
+    const where = h.db.suppressionList.deleteMany.mock.calls[0]![0].where;
+    expect(where.reason).toBe("unsubscribed");
+    expect((where.createdAt as { lte: Date }).lte).toBeInstanceOf(Date);
   });
 });
 
@@ -186,6 +224,40 @@ describe("cold outreach is reported, never silently resumed", () => {
     // so putting someone back into cold outreach is not ours to guess.
     expect(h.db.lead.update).not.toHaveBeenCalled();
     expect(h.db.lead.updateMany).not.toHaveBeenCalled();
+  });
+
+  it("REFUSES when the lead records a bounce the canonical row never got", async () => {
+    // The Resend webhook writes the LEAD before the SuppressionList row, so a
+    // failure between the two leaves a known hard bounce recorded only on the
+    // lead. Nurture does not check SUPPRESSED leads, so without this the
+    // reversal would clear the last guard on an address that bounces.
+    h.db.suppressionList.findFirst.mockResolvedValue(null);
+    h.db.lead.findFirst.mockResolvedValue({ id: "lead_1", suppressionReason: "bounce" });
+    const { unsuppressEmail } = await import("@/lib/email-suppression");
+
+    const out = await unsuppressEmail(EMAIL);
+
+    expect(out.ok).toBe(false);
+    expect(out.blockedBy).toContain("bounce");
+    expect(listUpdates()).toHaveLength(0);
+    expect(h.db.suppressionList.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it("does NOT let a lead marked 'unsubscribe' block the ordinary reversal", async () => {
+    // senderProcess latches exactly that reason whenever it sees a
+    // SuppressionList hit, so blocking on it would refuse the one case this
+    // function exists to serve.
+    h.db.suppressionList.findFirst.mockImplementation((args: any) =>
+      args?.where?.email ? { id: "sup_1", reason: "unsubscribed" } : null
+    );
+    h.db.lead.findFirst.mockResolvedValue({ id: "lead_1", suppressionReason: "unsubscribe" });
+    for (const l of LISTS) h.db[l].updateMany.mockResolvedValue({ count: 1 });
+    const { unsuppressEmail } = await import("@/lib/email-suppression");
+
+    const out = await unsuppressEmail(EMAIL);
+
+    expect(out.ok).toBe(true);
+    expect(out.listRowsRestored).toBe(6);
   });
 
   it("still reports the latched lead when the re-subscribe is refused", async () => {

@@ -172,6 +172,34 @@ export async function suppressEmailEverywhere(email: string): Promise<number> {
  */
 export const SELF_SERVICE_OPT_OUT_REASON = "unsubscribed";
 
+/**
+ * Lead suppression reasons that mean the ADDRESS is undeliverable or its owner
+ * objected, as opposed to reasons that only mean "not worth cold-emailing".
+ * Any of these on a latched Lead refuses a re-subscribe.
+ *
+ * This is a second line, not the main one. Normally SuppressionList carries the
+ * same signal and blocks first. It matters because the Resend webhook writes the
+ * LEAD before the SuppressionList row (webhooks/resend/route.ts:89 then :97), so
+ * a failure between the two leaves a known hard bounce recorded only on the
+ * lead. Nurture's shouldSuppress checks bookedAt and REPLIED but not SUPPRESSED,
+ * so without this check a reversal in that window would clear the last guard and
+ * start mailing an address that is known to bounce.
+ *
+ * "unsubscribe" is deliberately NOT here. senderProcess latches exactly that
+ * reason onto the lead whenever it sees a SuppressionList hit, so treating it as
+ * a blocker would refuse the ordinary case this whole function exists to serve.
+ * Pure targeting reasons (low_score, title_suppressed, non_serviceable_market)
+ * are absent for the opposite reason: they say nothing about consent to receive
+ * the marketing sequences.
+ */
+const UNDELIVERABLE_LEAD_REASONS = new Set([
+  "bounce",
+  "complaint",
+  "not_a_fit",
+  "fabricated_email",
+  "riskier_email",
+]);
+
 export interface UnsuppressOutcome {
   /** False when nothing was changed. `blockedBy` then says what refused. */
   ok: boolean;
@@ -235,6 +263,14 @@ export async function unsuppressEmail(email: string): Promise<UnsuppressOutcome>
 
   const domain = key.split("@")[1] ?? "";
 
+  // Stamped BEFORE the reads, and carried into both writes below. It is what
+  // stops this from erasing an opt-out that arrives WHILE it runs: an admin
+  // reversal that reads "nothing suppressed", races a recipient clicking
+  // unsubscribe, and then clears the flags that click just set would destroy a
+  // consent decision newer than anything the admin ever saw. Every write is
+  // therefore bounded to rows that already looked like this at read time.
+  const observedAt = new Date();
+
   const [domainEntry, addressEntry, latchedLead] = await Promise.all([
     domain
       ? prisma.suppressionList.findFirst({ where: { domain }, select: { id: true } })
@@ -260,20 +296,34 @@ export async function unsuppressEmail(email: string): Promise<UnsuppressOutcome>
   if (addressEntry && addressEntry.reason !== SELF_SERVICE_OPT_OUT_REASON) {
     return { ...unchanged, blockedBy: addressEntry.reason ?? "an unrecorded reason", latchedLead };
   }
+  const leadReason = latchedLead?.suppressionReason;
+  if (leadReason && UNDELIVERABLE_LEAD_REASONS.has(leadReason)) {
+    return { ...unchanged, blockedBy: `a lead record marked ${leadReason}`, latchedLead };
+  }
 
   const results = await Promise.all(
     SUPPRESSION_LISTS.map((list) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (prisma as any)[list].updateMany({
-        where: { email: { equals: key, mode: "insensitive" }, unsubscribed: true },
+        where: {
+          email: { equals: key, mode: "insensitive" },
+          unsubscribed: true,
+          // Rows opted out AFTER this call started are somebody's fresh click
+          // and are left alone. Null means the row predates the timestamp
+          // column, which by definition is not a concurrent write.
+          OR: [{ unsubscribedAt: null }, { unsubscribedAt: { lte: observedAt } }],
+        },
         data: { unsubscribed: false, unsubscribedAt: null },
       })
     )
   );
   const listRowsRestored = results.reduce((sum: number, r: { count: number }) => sum + r.count, 0);
 
+  // Same bound on the canonical row. `reason` alone is not enough here: a
+  // concurrent opt-out writes the very same reason, so a reason-only delete
+  // would happily remove an opt-out newer than the one being reversed.
   const removed = await prisma.suppressionList.deleteMany({
-    where: { email: key, reason: SELF_SERVICE_OPT_OUT_REASON },
+    where: { email: key, reason: SELF_SERVICE_OPT_OUT_REASON, createdAt: { lte: observedAt } },
   });
 
   return {

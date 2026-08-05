@@ -29,11 +29,16 @@
 import prisma from "@/lib/prisma";
 
 /**
- * "email" and "email-day" are the same dimension at two windows: an hourly cap
- * for bursts and a daily one so a sustained trickle is bounded too.
- * "lock" is not a counter at all; see acquireDeliveryLock.
+ * The namespace a counter lives in. Two scopes never share a budget, which is
+ * the point: a route drawing on its own scope cannot spend another route's.
+ *
+ * Well-known values. "email" and "email-day" are the same dimension at two
+ * windows: an hourly cap for bursts and a daily one so a sustained trickle is
+ * bounded too. "lock" is not a counter at all; see acquireDeliveryLock.
+ * Routes that are not magnet deliveries pass their own, e.g.
+ * "newsletter"/"newsletter-day"; see CaptureGuardOptions.addressQuota.
  */
-export type RateLimitScope = "ip" | "email" | "email-day" | "lock";
+export type RateLimitScope = "ip" | "email" | "email-day" | "lock" | (string & {});
 
 export interface RateLimitRule {
   scope: RateLimitScope;

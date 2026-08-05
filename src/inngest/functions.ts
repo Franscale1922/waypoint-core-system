@@ -2350,16 +2350,20 @@ export const checklistNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             // Check if the lead booked a call or replied
             const lead = await prisma.lead.findFirst({
@@ -2566,16 +2570,20 @@ export const scorecardNurtureProcess = inngest.createFunction(
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
             // See above: suppression is a property of the ADDRESS, not of one row.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             // 2. Lead booked a call (TidyCal sync writes bookedAt)
             // 3. Lead replied to cold email (replyGuardianProcess sets status=REPLIED)
@@ -2833,16 +2841,20 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3053,16 +3065,20 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3215,16 +3231,20 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
             // recorded against any OTHER list belongs to the same person and stops this
             // sequence too. Checking only the local row is how a later download used to
             // hand someone a fresh record and quietly resume mailing them.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },
@@ -3395,16 +3415,20 @@ export const archetypeNurtureProcess = inngest.createFunction(
             });
             if (submission?.unsubscribed) return { stop: true, reason: "unsubscribed" };
             // See above: suppression is a property of the ADDRESS, not of one row.
-            // Both non-clear verdicts stop the sequence. They are reported apart
-            // because a failed lookup is not an opt-out, and logging it as one
-            // hid dropped mail behind a reason nobody would investigate.
+            // A confirmed opt-out STOPS. A lookup we could not complete THROWS.
+            //
+            // Both refuse to send, which is the fail-closed part and is not in
+            // question. The difference is what happens next: these run inside
+            // step.run, so a normal return completes and memoizes the step and
+            // Inngest never retries it. Reporting a transient database error as
+            // a stop therefore dropped that email permanently, on one blip, for
+            // someone who never opted out. Throwing hands it back to the retry
+            // policy, which is the whole reason the step has one.
             const addressVerdict = await suppressionVerdict(email);
-            if (addressVerdict !== "clear") {
-                return {
-                    stop: true,
-                    reason: addressVerdict === "suppressed" ? "unsubscribed" : "suppression-lookup-failed",
-                };
+            if (addressVerdict === "lookup-failed") {
+                throw new Error("suppression lookup failed; retrying rather than dropping this email");
             }
+            if (addressVerdict === "suppressed") return { stop: true, reason: "unsubscribed" };
 
             const lead = await prisma.lead.findFirst({
                 where: { email },

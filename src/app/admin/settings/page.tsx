@@ -245,6 +245,11 @@ export default function SettingsPage() {
                                                 ? ", and the master opt-out entry was removed."
                                                 : ". There was no master opt-out entry to remove."}
                                         </p>
+                                        <p className="mt-2">
+                                            This unblocks them going forward. It does not restart a sequence that
+                                            already finished, so if they want the emails they missed, send those
+                                            yourself or have them request the guide again.
+                                        </p>
                                     </div>
                                 </div>
                             )}
@@ -261,7 +266,7 @@ export default function SettingsPage() {
                                                 : ""}
                                             . That is a separate system from the email sequences and is deliberately not
                                             changed here, because there is no record of what state to put them back into.
-                                            Marketing emails will resume; cold outreach will not.
+                                            Future marketing captures are unblocked; cold outreach stays off.
                                         </p>
                                     </div>
                                 </div>
