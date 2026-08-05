@@ -43,6 +43,32 @@ jobs:
         run: npx vitest run --project unit tests/unit/verify-dates.test.ts
       - name: Verify Dates, AI write path (unit tests)
         run: npx vitest run --project unit tests/unit/write-path-dates.test.ts
+      # The required NON-DATE frontmatter fields on that same bot path. Dates are
+      # stamped, so their guard is a backstop; title, excerpt and faqs are taken
+      # from model output verbatim and this is the only thing checking them
+      # before the commit exists. Listed by name for the same reason as every job
+      # above: this workflow selects test files explicitly, so a file that is not
+      # named here runs in the pre-push hook and silently never runs in CI.
+      - name: Verify required fields, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-fields.test.ts
+      # The other half of the same commit: WHERE that write path puts the file.
+      # The three jobs above check the bytes; this one checks the destination.
+      # The slug becomes the path of a tree entry, so this suite covers the
+      # format, the payload-slug/frontmatter-slug binding, and duplicate
+      # destinations within one batch. It also re-checks every article on disk
+      # against the enforced format, so a newly authored slug the refresh would
+      # refuse fails here rather than months later as a dropped article.
+      - name: Verify Slugs, AI write path (unit tests)
+        run: npx vitest run --project unit tests/unit/write-path-slug.test.ts
+      # Where that slug COMES FROM, which the job above takes as given. It checks
+      # the payload against its own frontmatter at the write boundary; this one
+      # covers the step before, in discovery: the live site reads the FILENAME
+      # and the refresh preferred the FIELD, so a file whose frontmatter
+      # contradicted its own name armed the refresh to commit a duplicate under
+      # the other name. Also covers the reviewCadence override.
+      # Listed by name for the same reason as every job above.
+      - name: Verify article slug identity (unit tests)
+        run: npx vitest run --project unit tests/unit/article-slug-identity.test.ts
       - name: Verify Dates
         run: node scripts/verify-dates.mjs
       - name: Enforce Content Standards (no em dashes, §11)

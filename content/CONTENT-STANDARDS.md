@@ -193,6 +193,27 @@ Any claim that can change year over year must include an "as of [year]" qualifie
 | Process/structural articles (FDD, Discovery Day, agreements) | Every 24 months or when regulation changes |
 | Strategic/mindset articles | No scheduled review |
 
+The automated monthly refresh normally infers which row an article belongs to from its
+slug, by looking for financing words in it. That inference is right for most articles and
+wrong for two kinds:
+
+- Articles that honestly belong to two rows. "Cost and Operational Efficiency Franchises"
+  is both a cost article and a category analysis, and this table does not say which wins.
+- Articles where a cadence word is not about money at all. In "Why Improvising Early Costs
+  You", "Costs" is a verb.
+
+When the slug would get it wrong, say so in frontmatter:
+
+```yaml
+reviewCadence: strategic
+```
+
+Valid values, one per row above: `investment-and-cost`, `financing`, `category-analysis`,
+`process`, `strategic`. The field is **optional** and overrides the inference completely.
+Omit it unless the inference is wrong; most articles should not carry it. A value outside
+that list fails the pre-push gate, because an ignored typo would silently leave the article
+on the cadence the field was added to change.
+
 ---
 
 ## Section 7 — The Island Test
@@ -499,3 +520,41 @@ The monthly AI content refresh does not get to author either date. `serializeArt
 The pre-push hook (`.githooks/pre-push` -> `scripts/verify-pushed-tree.mjs` -> `scripts/verify-dates.mjs`) fails the push if any article date is missing, unquoted, not a real calendar day, out of order, or in the future. The same check runs in CI and in `npm test`. To check manually:
 
 `npm run verify-dates`
+
+---
+
+## Section 16 — Article Slugs
+
+Every article has a slug, and it appears in three places that must agree: the **filename** (`content/articles/<slug>.md`), the **`slug:` field** in its frontmatter, and the **URL** the article is published at.
+
+### The format
+
+A slug is lowercase letters, digits, and single interior hyphens, up to 80 characters.
+
+- ✅ `how-franchise-financing-works`
+- ✅ `franchise-costs-2026`
+- ❌ `How-Franchise-Financing-Works` (uppercase)
+- ❌ `franchise_financing` (underscore)
+- ❌ `franchise--financing` (doubled hyphen)
+- ❌ `-financing` / `financing-` (leading or trailing hyphen)
+- ❌ `guides/financing` (a path, not a slug)
+
+All 45 articles already satisfied this when it was introduced, so it describes existing practice rather than changing it. 80 characters leaves real headroom: the longest slug today is 59.
+
+### Frontmatter `slug:` is required, and must equal the filename
+
+An article whose frontmatter omits `slug:` is **skipped by the automated content refresh**. The refresh falls back to the filename when building its payload but has nothing to fall back to for the frontmatter, so the two cannot be confirmed to agree and the article is dropped rather than written to a guessed path. It shows up under "Failed" in the monthly summary email.
+
+The same applies if `slug:` disagrees with the filename: that is what publishing an article at one URL while overwriting a different file looks like, so it is refused rather than resolved in one direction.
+
+### Why the machine path is strict about this
+
+For hand-written articles the slug is a naming convention. For the monthly AI content refresh it is a **destination**: `commitRefreshedArticles` in `src/lib/githubArticleCommit.ts` turns the slug into the path of a tree entry and commits it by PATCHing the branch ref, which defaults to `main`. A slug containing `/` or `..` would place the file somewhere else in the repository, and nothing downstream re-checks a path that GitHub has already accepted into a tree. Those commits never touch local git, so the pre-push hook cannot see them.
+
+That refresh also refuses a batch in which two articles resolve to the same file. A tree cannot carry two entries for one path: GitHub keeps whichever is listed last and discards the other, reporting a successful commit either way.
+
+The slug is not written by the model. It is read off the article the refresh is updating, and the model's own slug is discarded before the payload is built. These rules are a guard at a boundary that writes to production, not a fix for something the model does.
+
+### Verification
+
+`tests/unit/write-path-slug.test.ts` checks every article in `content/articles/` against this format on every run, and runs in CI. A new article with a slug the refresh would refuse fails there, when it is authored, rather than months later as a silently dropped refresh.

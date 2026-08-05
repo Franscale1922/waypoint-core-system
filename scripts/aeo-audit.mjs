@@ -35,6 +35,17 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
 import ts from "typescript";
+import {
+  BRAND_SHORT,
+  EXCERPT_MAX,
+  EXCERPT_MIN,
+  SUFFIX,
+  TITLE_BUDGET,
+  classifyExcerpt,
+  classifyFaqs,
+  hardCodesBrand,
+} from "../src/lib/frontmatterFields.mjs";
+import { REVIEW_CADENCE_FIELD, validateReviewCadence } from "../src/lib/reviewCadence.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,29 +56,21 @@ export const DEFAULT_APP_DIR = path.join(REPO_ROOT, "src", "app");
 export const DEFAULT_DATA_DIR = path.join(REPO_ROOT, "src", "data");
 export const DEFAULT_CODE_DIRS = [path.join(REPO_ROOT, "src")];
 
-// CONTENT-STANDARDS Section 4 requires a search-snippet-ready excerpt, and the
-// seo-review workflow's Step 3 puts the target at 150-160 characters.
+// The excerpt window, the title budget and the brand test now live in
+// src/lib/frontmatterFields.mjs, and are re-exported here so this script's
+// existing importers (tests/unit/aeo-audit.test.ts) keep working unchanged.
 //
-// Over 160 is a hard failure because it does actual damage: the description is
-// truncated mid-sentence in the SERP, in social previews, and in the JSON-LD
-// that answer engines read. Under 150 is only wasted space, so it is reported
-// and not enforced. When this guard was added, 43 of 45 articles were over and
-// exactly 0 were inside the window, which is how a whole-catalogue defect stayed
-// invisible while every other AEO check passed.
-export const EXCERPT_MAX = 160;
-export const EXCERPT_MIN = 150;
-
-// Google renders roughly 60 characters of a title. Anything past that is
-// truncated, so the budget is the suffix plus the page's own words.
-export const TITLE_BUDGET = 60;
-export const BRAND_SHORT = "Waypoint";
-export const SUFFIX = ` | ${BRAND_SHORT}`;
-
-// Whole word, any case. A plain `includes("Waypoint")` was wrong in both
-// directions: `WHY WAYPOINT WORKS` sailed through and got the brand appended a
-// second time, while `Waypointing` was blocked despite not naming the brand.
-const BRAND_RE = new RegExp(`\\b${BRAND_SHORT}\\b`, "i");
-export const hardCodesBrand = (text) => BRAND_RE.test(text);
+// They moved because this is no longer the only thing enforcing them. The AI
+// content refresh commits articles straight through the GitHub API against
+// `main`, so it never reaches .githooks/pre-push and this script never sees its
+// output; it validates itself at its own boundary instead, against these same
+// rules. A second copy of the number 160 is precisely how the two would have
+// come to disagree about what a valid excerpt is, and the copy that drifted
+// would have been the unattended one.
+//
+// The commentary on WHY each threshold is what it is lives with the definitions
+// in that module. Read it there before changing one of these.
+export { EXCERPT_MAX, EXCERPT_MIN, TITLE_BUDGET, BRAND_SHORT, SUFFIX, hardCodesBrand };
 
 // Escape hatch: a line containing this token is skipped by the em-dash gate,
 // for the rare legitimately-functional em dash (the literal em dash inside a
@@ -213,9 +216,16 @@ export function auditArticle(raw, file) {
   // across the whole front matter meant an unrelated list could mask a missing
   // FAQ block. Note the real key is plural; the old regex never named it and
   // worked by accident.
-  const faqs = data.faqs;
-  const faqCount = Array.isArray(faqs) ? faqs.length : 0;
-  const faqsMalformed = faqs !== undefined && !Array.isArray(faqs);
+  //
+  // Classified by the shared module so the write path agrees with this one about
+  // what a broken block is. The buckets below are unchanged: only a non-list is
+  // MALFORMED (a bare `faqs:` parses to null and lands there), while an absent
+  // or empty block is reported through faqCount and does not fail a push here.
+  // The write path is stricter and rejects those too, because its input is
+  // unattended model output rather than a human's diff.
+  const faqs = classifyFaqs(data.faqs);
+  const faqCount = faqs.count;
+  const faqsMalformed = faqs.kind === "not-a-list";
 
   const rel = data.relatedSlugs;
   const relCount = Array.isArray(rel) ? rel.length : 0;
@@ -244,11 +254,48 @@ export function auditArticle(raw, file) {
   // feeds it to the meta description, the OpenGraph description, AND the
   // Article JSON-LD description. Parsed rather than regexed, so any quote style,
   // block scalar or escaped quote measures its true rendered length.
-  const excerpt = data.excerpt;
-  const excerptLen = typeof excerpt === "string" ? excerpt.length : null;
+  //
+  // Shared classifier, same contract as before: a length for anything that is a
+  // string (including the empty one) and null for anything unmeasurable, which
+  // is what the `missingExcerpt` bucket below has always keyed on.
+  const excerptLen = classifyExcerpt(data.excerpt).length;
+
+  // A frontmatter `slug` that disagrees with its own filename.
+  //
+  // The two are not redundant copies of one fact, they are read by different
+  // halves of the system, and this is the only place that makes them agree.
+  // src/lib/articles.ts serves the site off the FILENAME and ignores this field
+  // entirely, while src/lib/contentRefresh.ts used to prefer the FIELD and hand
+  // it to githubArticleCommit.ts, which interpolates it into
+  // `content/articles/${slug}.md` and PATCHes `main` with the result. A
+  // divergence therefore published nothing wrong today and quietly armed the
+  // automated refresh to write a duplicate file months later, leaving the
+  // original stale and serving one article under two URLs.
+  //
+  // That write path has since been changed to derive identity from the filename,
+  // so this gate is no longer what prevents the duplicate. It is what stops the
+  // divergence being AUTHORED, at the point a human can still tell which of the
+  // two was the intended name. Nothing downstream can recover that intent.
+  //
+  // An absent slug field is fine and stays fine: the filename is authoritative,
+  // so the field is optional. Only a present-and-contradictory value fails.
+  const slugMismatch =
+    data.slug !== undefined && data.slug !== slug
+      ? { file: `content/articles/${slug}.md`, frontmatter: String(data.slug), filename: slug }
+      : null;
+
+  // The optional authored review cadence. Gated because it OVERRIDES every inference in
+  // getRefreshCadenceDays, so a typo is worse than an absent field: `reviewCadence: stategic`
+  // is silently ignored at runtime and the article quietly keeps whatever the slug implied,
+  // which is the outcome the author wrote the field to prevent. Absent stays legal.
+  const cadenceError = validateReviewCadence(data[REVIEW_CADENCE_FIELD], {
+    label: `content/articles/${slug}.md`,
+  });
 
   return {
     f: slug,
+    slugMismatch,
+    cadenceError,
     words,
     h2: h2s.length,
     h2q,
@@ -557,6 +604,8 @@ export function auditAll({
 
   const parseErrors = rows.filter((r) => r.parseError);
   const malformedFaqs = rows.filter((r) => r.faqsMalformed);
+  const slugMismatches = rows.filter((r) => r.slugMismatch).map((r) => r.slugMismatch);
+  const cadenceErrors = rows.filter((r) => r.cadenceError).map((r) => r.cadenceError);
 
   const missingExcerpt = rows.filter((r) => r.excerptLen === null);
   const tooLong = rows
@@ -607,6 +656,12 @@ export function auditAll({
 
   if (parseErrors.length) failures.push(`${parseErrors.length} article(s) have unparseable front matter`);
   if (malformedFaqs.length) failures.push(`${malformedFaqs.length} article(s) have a non-list faqs field`);
+  if (slugMismatches.length) {
+    failures.push(`${slugMismatches.length} article(s) have a frontmatter slug that contradicts the filename`);
+  }
+  if (cadenceErrors.length) {
+    failures.push(`${cadenceErrors.length} article(s) declare an unknown ${REVIEW_CADENCE_FIELD}`);
+  }
   if (tooLong.length || missingExcerpt.length) {
     failures.push(`${tooLong.length} excerpt(s) over ${EXCERPT_MAX}, ${missingExcerpt.length} unparseable`);
   }
@@ -625,6 +680,8 @@ export function auditAll({
     rows,
     parseErrors,
     malformedFaqs,
+    slugMismatches,
+    cadenceErrors,
     missingExcerpt,
     tooLong,
     tooShort,
@@ -662,6 +719,21 @@ function main() {
   if (a.parseErrors.length) {
     console.log(`Front matter that failed to parse: ${a.parseErrors.length}`);
     for (const r of a.parseErrors) console.log(`  ${r.parseError}`);
+    console.log("");
+  }
+
+  if (a.slugMismatches.length) {
+    console.log(`Frontmatter slug contradicts the filename: ${a.slugMismatches.length}`);
+    for (const m of a.slugMismatches) {
+      console.log(`  ${m.file}: frontmatter says "${m.frontmatter}", filename says "${m.filename}"`);
+    }
+    console.log(`  The filename is authoritative. Fix the frontmatter, or rename the file.`);
+    console.log("");
+  }
+
+  if (a.cadenceErrors.length) {
+    console.log(`Unknown ${REVIEW_CADENCE_FIELD} values: ${a.cadenceErrors.length}`);
+    for (const e of a.cadenceErrors) console.log(`  ${e}`);
     console.log("");
   }
 
