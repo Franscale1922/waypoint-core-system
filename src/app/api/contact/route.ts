@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { afterResponse } from "@/lib/after-response";
 import { notifyCrm } from "@/lib/crm";
 import { Resend } from "resend";
+import { guardCapture, resendFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const TO = "kelsey@waypointfranchise.com";
@@ -11,11 +12,20 @@ const FROM = "Waypoint Website <noreply@mail.waypointfranchise.com>";
 
 export async function POST(req: Request) {
   try {
-    const { name, email, phone, message } = await req.json();
+    const body = await req.json();
+    const { name, phone, message } = body;
 
-    if (!name || !email || !message) {
+    if (!name || !message) {
       return NextResponse.json({ error: "Name, email, and message are required." }, { status: 400 });
     }
+
+    // This route sends an auto-reply to whatever address the body names, which
+    // is the same unauthenticated inbox-bombing shape as the lead magnets, so it
+    // takes the same limits. No idempotency key: two genuine messages are two
+    // different messages, and swallowing the second would lose an enquiry.
+    const guard = await guardCapture({ req, route: "contact", email: body.email });
+    if (!guard.proceed) return guard.response;
+    const email = guard.email;
 
     // ── CRM sync ───────────────────────────────────────────────────────────
     // Runs after the response is flushed, so it never delays the emails below.
@@ -50,8 +60,14 @@ export async function POST(req: Request) {
       ].join("\n"),
     });
 
-    if (notifyResult.error) {
-      console.error("[contact] Resend notify error:", JSON.stringify(notifyResult.error));
+    // Inverted relative to the lead magnets, deliberately. There the subscriber's
+    // copy is the deliverable; here it is Kelsey's notification, because a
+    // contact form that silently loses the enquiry has failed at its only job.
+    if (resendFailed("[contact] notify", notifyResult)) {
+      return NextResponse.json(
+        { error: "We couldn't send that message. Please email kelsey@waypointfranchise.com directly." },
+        { status: 500 }
+      );
     }
 
     // Skip auto-reply when submitter is the same address as TO; avoids same-domain
@@ -75,9 +91,8 @@ export async function POST(req: Request) {
           `Waypoint Franchise Advisors`,
         ].join("\n"),
       });
-      if (replyResult.error) {
-        console.error("[contact] Resend auto-reply error:", JSON.stringify(replyResult.error));
-      }
+      // The courtesy half: logged, never raised. Kelsey already has the message.
+      resendFailed("[contact] auto-reply", replyResult);
     }
 
     return NextResponse.json({ success: true });

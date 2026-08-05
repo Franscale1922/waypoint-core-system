@@ -25,7 +25,13 @@ function walk(dir: string): string[] {
   return out;
 }
 
-const CALL = /(?:const\s+(\w+)\s*=\s*)?await\s+resend\.emails\.send\(/g;
+// Matches ANY client identifier, not the one variable name the first version of
+// this scan happened to look for. That version was anchored to `resend.emails
+// .send(` and walked straight past eleven `resendClient.emails.send(` sites in
+// src/inngest/functions.ts, all of them subscriber-facing and all of them
+// advancing nurtureStep on a failure. A scan that only sees one spelling is
+// worse than no scan, because it reports green over the gap.
+const CALL = /(?:const\s+(\w+)\s*=\s*)?await\s+\w+\.emails\.send\(/g;
 
 /**
  * Drops comments before scanning. Several of these files DESCRIBE the broken
@@ -43,7 +49,7 @@ function stripComments(src: string): string {
 
 describe("Resend result coverage", () => {
   const files = walk(join(ROOT, "src")).filter((f) =>
-    stripComments(readFileSync(f, "utf8")).includes("resend.emails.send(")
+    /\.emails\.send\(/.test(stripComments(readFileSync(f, "utf8")))
   );
 
   it("finds the call sites at all, so this cannot pass vacuously", () => {

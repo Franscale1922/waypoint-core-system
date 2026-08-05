@@ -492,3 +492,65 @@ describe("the newsletter is not joined on a delivery that failed", () => {
     expect(h.subscribeToBeehiiv).toHaveBeenCalledTimes(1);
   });
 });
+
+// ── Findings from the Claude-side review ────────────────────────────────────
+
+describe("the contact form is not an open relay either", () => {
+  const BODY = { name: "Test Prospect", email: EMAIL, message: "Hello" };
+
+  it("is rate limited like the magnets", async () => {
+    // It auto-replies to whatever address the body names, which is the same
+    // unauthenticated shape as the lead magnets, and it had no limiter at all.
+    h.db.rateLimitBucket.upsert.mockResolvedValue({ count: 99 });
+    const { POST } = await import("@/app/api/contact/route");
+
+    const res = await POST(post(BODY));
+
+    expect(res.status).toBe(429);
+    expect(h.emailSend).not.toHaveBeenCalled();
+  });
+
+  it("fails loudly when KELSEY's notification fails, not the auto-reply", async () => {
+    // Inverted from the magnets on purpose: here the internal notification is
+    // the deliverable, and losing it silently is the whole failure.
+    h.emailSend.mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/contact/route");
+
+    expect((await POST(post(BODY))).status).toBe(500);
+  });
+
+  it("still succeeds when only the courtesy auto-reply fails", async () => {
+    h.emailSend.mockResolvedValueOnce(RESEND_OK).mockResolvedValueOnce(RESEND_ERROR);
+    const { POST } = await import("@/app/api/contact/route");
+
+    expect((await POST(post(BODY))).status).toBe(200);
+  });
+});
+
+describe("a suppression lookup failure must not destroy quiz answers", () => {
+  const SCORECARD = { name: "Test Prospect", email: EMAIL, score: 55, primaryDriver: "A", biggestFear: "B" };
+
+  it("keeps the submission row when the lookup errors", async () => {
+    // Fail-closed on SENDING is right. Deleting the row because we could not
+    // tell erases the score and answers on a transient read error.
+    h.db.suppressionList.findFirst.mockRejectedValue(new Error("db blip"));
+    const { POST } = await import("@/app/api/scorecard-complete/route");
+
+    await POST(post(SCORECARD));
+    await runScheduled();
+
+    expect(h.sendEvent).not.toHaveBeenCalled();
+    expect(h.db.scorecardSubmission.delete).not.toHaveBeenCalled();
+  });
+
+  it("still releases the row for a genuine opt-out", async () => {
+    h.db.suppressionList.findFirst.mockResolvedValue({ id: "opted_out" });
+    const { POST } = await import("@/app/api/scorecard-complete/route");
+
+    await POST(post(SCORECARD));
+    await runScheduled();
+
+    expect(h.sendEvent).not.toHaveBeenCalled();
+    expect(h.db.scorecardSubmission.delete).toHaveBeenCalledWith({ where: { id: ID } });
+  });
+});

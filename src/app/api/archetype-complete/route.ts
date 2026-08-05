@@ -6,7 +6,7 @@ import { inngest } from "@/inngest/client";
 import prisma from "@/lib/prisma";
 import { ArchetypeSchema } from "@/app/lib/schemas";
 import { buildUnsubscribeLink } from "@/lib/nurture-emails";
-import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { isEmailSuppressed } from "@/lib/email-suppression";
 import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -146,7 +146,18 @@ export async function POST(req: Request) {
           }
           // An opt-out on ANY list belongs to this person and stops the sequence
           // before it starts. The confirmation email above still goes out.
-          if (await isEmailSuppressedFailClosed(email)) {
+          // isEmailSuppressedFailClosed cannot distinguish "this person opted
+          // out" from "the lookup failed", so it must not be what decides to
+          // DESTROY the row: a transient read error would erase the quiz answers.
+          // Not sending is the fail-closed part; deleting needs a real opt-out.
+          let suppressed: boolean;
+          try {
+            suppressed = await isEmailSuppressed(email);
+          } catch (lookupErr) {
+            console.error("[archetype-complete] suppression lookup failed; skipping the sequence but keeping the row:", lookupErr);
+            return;
+          }
+          if (suppressed) {
             console.log("[archetype-complete] address is suppressed; releasing the submission row");
             await submissions.delete({ where: { id: submissionId } });
             return;

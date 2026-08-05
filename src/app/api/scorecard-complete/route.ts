@@ -7,7 +7,7 @@ import prisma from "@/lib/prisma";
 import { scoreResultsHtml, scoreResultsText } from "@/app/emails/scorecard-results";
 import { ScorecardSchema } from "@/app/lib/schemas";
 import { subscribeToBeehiiv } from "@/lib/beehiiv";
-import { isEmailSuppressedFailClosed } from "@/lib/email-suppression";
+import { isEmailSuppressed } from "@/lib/email-suppression";
 import { guardCapture, resendFailed, markDelivered, deliveryFailed } from "@/lib/lead-capture";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -84,12 +84,6 @@ export async function POST(req: Request) {
       })
     );
 
-    // ── 1c. Beehiiv subscriber sync ───────────────────────────────────────────
-    // Auto-subscribes every scorecard submitter to the Waypoint newsletter.
-    afterResponse("[scorecard-complete] Beehiiv sync", () =>
-      subscribeToBeehiiv(email, name)
-    );
-
     // ── 2. Deduplicate: only start a new nurture sequence if none is active ───
     // "Active" = not completed and not unsubscribed. If a sequence is already
     // sleeping for this email, skip creating another one; prevents double emails
@@ -148,7 +142,18 @@ export async function POST(req: Request) {
           // An opt-out recorded on ANY list belongs to this person and stops the
           // sequence before it starts. The results email above still goes out:
           // they just asked for it.
-          if (await isEmailSuppressedFailClosed(email)) {
+          // isEmailSuppressedFailClosed cannot distinguish "this person opted
+          // out" from "the lookup failed", so it must not be what decides to
+          // DESTROY the row: a transient read error would erase the quiz answers.
+          // Not sending is the fail-closed part; deleting needs a real opt-out.
+          let suppressed: boolean;
+          try {
+            suppressed = await isEmailSuppressed(email);
+          } catch (lookupErr) {
+            console.error("[scorecard-complete] suppression lookup failed; skipping the sequence but keeping the row:", lookupErr);
+            return;
+          }
+          if (suppressed) {
             console.log("[scorecard-complete] address is suppressed; releasing the submission row");
             await submissions.delete({ where: { id: submissionId } });
             return;
@@ -190,6 +195,11 @@ export async function POST(req: Request) {
     // unchecked await reported success for a message that never left.
     if (resendFailed("[scorecard-complete] delivery", deliveryResult)) return deliveryFailed();
     delivered = true;
+
+    // ── Beehiiv subscriber sync ─────────────────────────────────────────────
+    // Queued only now. Scheduled earlier it ran even when the results email
+    // failed, because after() fires post-response regardless of the status.
+    afterResponse("[scorecard-complete] Beehiiv sync", () => subscribeToBeehiiv(email, name));
     await markDelivered("scorecardSubmission", submission.id, "[scorecard-complete]");
 
     // ── 4. Alert Kelsey for high-score submissions ────────────────────────────

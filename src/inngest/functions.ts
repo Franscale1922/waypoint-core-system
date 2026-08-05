@@ -1529,12 +1529,17 @@ export const contentRefreshFunction = inngest.createFunction(
                 `⏭ Skipped (strategic/not due): ${articles.length - staleArticles.length} articles`,
             ];
 
-            await client.emails.send({
+            const summarySendResult = await client.emails.send({
                 from: "Waypoint System <hi@waypointfranchise.com>",
                 to: [NOTIFY_EMAIL],
                 subject: `Content Refresh: ${refreshed.length} articles updated, ${today}`,
                 text: bodyLines.join("\n"),
             });
+            // Internal summary rather than a subscriber's mail, so this is
+            // surfaced rather than retried. It must still not read as success.
+            if (summarySendResult.error) {
+              console.error("[content-refresh] summary email failed:", JSON.stringify(summarySendResult.error));
+            }
         });
 
         return {
@@ -2120,6 +2125,21 @@ import {
     NURTURE_EMAIL_5,
 } from "@/lib/nurture-emails";
 
+
+/**
+ * `List-Unsubscribe-Post` asserts that a bare POST to the URL unsubscribes the
+ * recipient. Over a mailto that is a promise the address cannot keep, so the
+ * header is emitted only alongside an https target.
+ */
+function unsubscribeHeadersFor(url: string): Record<string, string> {
+    return url.startsWith("mailto:")
+        ? { "List-Unsubscribe": `<${url}>` }
+        : {
+              "List-Unsubscribe": `<${url}>`,
+              "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          };
+}
+
 const NURTURE_FROM = "Kelsey at Waypoint <noreply@mail.waypointfranchise.com>";
 const NURTURE_REPLY_TO = "kelsey@waypointfranchise.com";
 
@@ -2194,10 +2214,7 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: em2.subject,
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
             // Resend resolves with { data, error } rather than rejecting, so an
@@ -2227,10 +2244,7 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: em3.subject,
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
             // Resend resolves with { data, error } rather than rejecting, so an
@@ -2259,10 +2273,7 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: NURTURE_EMAIL_4.subject,
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
             // Resend resolves with { data, error } rather than rejecting, so an
@@ -2292,10 +2303,7 @@ export const checklistNurtureProcess = inngest.createFunction(
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: NURTURE_EMAIL_5.subject,
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
             // Resend resolves with { data, error } rather than rejecting, so an
@@ -2601,7 +2609,9 @@ export const escapeKitNurtureProcess = inngest.createFunction(
         const firstName = name ? name.split(" ")[0] : "there";
         const unsubscribeUrl = (() => {
             const secret = process.env.UNSUBSCRIBE_SECRET;
-            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            // Was `/unsubscribe`, a path with no handler at all. A mailto always
+            // resolves, and the caller drops the one-click header when it sees one.
+            if (!secret) return "mailto:kelsey@waypointfranchise.com?subject=Unsubscribe";
             // Inline HMAC to avoid import issues: mirrors buildUnsubscribeUrl
             const crypto = require("crypto");
             const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
@@ -2679,17 +2689,20 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "one number worth knowing",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -2724,17 +2737,20 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "the question I ask on every first call",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(3);
             return { sent: true, step: 3 };
@@ -2765,17 +2781,20 @@ export const escapeKitNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "last note",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(4, true);
             return { sent: true, step: 4 };
@@ -2803,7 +2822,9 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
         const firstName = name ? name.split(" ")[0] : "there";
         const unsubscribeUrl = (() => {
             const secret = process.env.UNSUBSCRIBE_SECRET;
-            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            // Was `/unsubscribe`, a path with no handler at all. A mailto always
+            // resolves, and the caller drops the one-click header when it sees one.
+            if (!secret) return "mailto:kelsey@waypointfranchise.com?subject=Unsubscribe";
             const crypto = require("crypto");
             const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
             const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
@@ -2871,17 +2892,20 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "the part of the pitch worth slowing down on",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -2910,17 +2934,20 @@ export const pitchDecoderNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "a second set of eyes",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(3, true);
             return { sent: true, step: 3 };
@@ -2948,7 +2975,9 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
         const firstName = name ? name.split(" ")[0] : "there";
         const unsubscribeUrl = (() => {
             const secret = process.env.UNSUBSCRIBE_SECRET;
-            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            // Was `/unsubscribe`, a path with no handler at all. A mailto always
+            // resolves, and the caller drops the one-click header when it sees one.
+            if (!secret) return "mailto:kelsey@waypointfranchise.com?subject=Unsubscribe";
             const crypto = require("crypto");
             const token = crypto.createHmac("sha256", secret).update(downloadId).digest("hex");
             const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
@@ -3016,17 +3045,20 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "where the AI hands off to your attorney",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -3055,17 +3087,20 @@ export const aiFddReaderNurtureProcess = inngest.createFunction(
             ].join("\n");
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: NURTURE_FROM,
                 to: email,
                 replyTo: NURTURE_REPLY_TO,
                 subject: "reading what the AI surfaced",
-                headers: {
-                    "List-Unsubscribe": `<${unsubscribeUrl}>`,
-                    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-                },
+                headers: unsubscribeHeadersFor(unsubscribeUrl),
                 text: body,
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(3, true);
             return { sent: true, step: 3 };
@@ -3108,7 +3143,9 @@ export const archetypeNurtureProcess = inngest.createFunction(
         // Build HMAC unsubscribe URL inline (mirrors escapeKitNurtureProcess pattern)
         const unsubscribeUrl = (() => {
             const secret = process.env.UNSUBSCRIBE_SECRET;
-            if (!secret) return "https://www.waypointfranchise.com/unsubscribe";
+            // Was `/unsubscribe`, a path with no handler at all. A mailto always
+            // resolves, and the caller drops the one-click header when it sees one.
+            if (!secret) return "mailto:kelsey@waypointfranchise.com?subject=Unsubscribe";
             const crypto = require("crypto");
             const token = crypto.createHmac("sha256", secret).update(submissionId).digest("hex");
             const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.waypointfranchise.com";
@@ -3167,7 +3204,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             if (s.stop) return { skipped: true, reason: s.reason };
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: ARCHETYPE_FROM,
                 to: email,
                 replyTo: ARCHETYPE_REPLY_TO,
@@ -3180,6 +3217,12 @@ export const archetypeNurtureProcess = inngest.createFunction(
                     { name: "archetype", value: archetype },
                 ],
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(2);
             return { sent: true, step: 2 };
@@ -3193,7 +3236,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             if (s.stop) return { skipped: true, reason: s.reason };
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: ARCHETYPE_FROM,
                 to: email,
                 replyTo: ARCHETYPE_REPLY_TO,
@@ -3206,6 +3249,12 @@ export const archetypeNurtureProcess = inngest.createFunction(
                     { name: "archetype", value: archetype },
                 ],
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(3);
             return { sent: true, step: 3 };
@@ -3219,7 +3268,7 @@ export const archetypeNurtureProcess = inngest.createFunction(
             if (s.stop) return { skipped: true, reason: s.reason };
 
             const resendClient = new Resend(process.env.RESEND_API_KEY);
-            await resendClient.emails.send({
+            const nurtureSendResult = await resendClient.emails.send({
                 from: ARCHETYPE_FROM,
                 to: email,
                 replyTo: ARCHETYPE_REPLY_TO,
@@ -3232,6 +3281,12 @@ export const archetypeNurtureProcess = inngest.createFunction(
                     { name: "archetype", value: archetype },
                 ],
             });
+            // Same discarded-result defect as everywhere else: without this the
+            // step advanced nurtureStep for mail that never left, losing the
+            // message AND marking the step done so it never retried.
+            if (nurtureSendResult.error) {
+              throw new Error(`Resend refused the send: ${JSON.stringify(nurtureSendResult.error)}`);
+            }
 
             await markStep(4, true);
             return { sent: true, step: 4 };
