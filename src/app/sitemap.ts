@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllArticles } from "../lib/articles";
+import { articleDateObject } from "../lib/articleDate";
 import { industries, getIndustryCost } from "../data/industries";
 import { financingGuides } from "../data/financing";
 import { allGlossaryEntries } from "../data/glossary";
@@ -182,12 +183,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     },
   ];
 
-  const articlePages: MetadataRoute.Sitemap = articles.map((article) => ({
-    url: `${SITE_URL}/resources/${article.slug}`,
-    lastModified: new Date((article.updatedAt ?? article.date) + "T12:00:00"),
-    changeFrequency: "monthly" as const,
-    priority: 0.75,
-  }));
+  // An unvalidatable date omits lastModified rather than emitting an Invalid
+  // Date, which Next serializes as an empty <lastmod> and Search Console reads
+  // as a malformed sitemap entry.
+  const articlePages: MetadataRoute.Sitemap = articles.map((article) => {
+    const lastModified = articleDateObject(article.updatedAt ?? article.date);
+    return {
+      url: `${SITE_URL}/resources/${article.slug}`,
+      ...(lastModified ? { lastModified } : {}),
+      changeFrequency: "monthly" as const,
+      priority: 0.75,
+    };
+  });
 
   const industryPages: MetadataRoute.Sitemap = industries.map((i) => ({
     url: `${SITE_URL}/industries/${i.slug}`,
