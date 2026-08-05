@@ -178,14 +178,23 @@ describe("beehiiv opt-out webhook: verification against beehiiv itself", () => {
     expect(h.db.suppressionList.upsert).not.toHaveBeenCalled();
   });
 
-  it("honours the opt-out unverified when credentials are absent, since retrying can never fix that", async () => {
+  it("refuses to write unverified when the API key is absent, so unsetting it cannot disable the check", async () => {
     delete process.env.BEEHIIV_API_KEY;
 
     const res = await callRoute(post({ event_type: "subscription.deleted", data: { email: "a@example.com" } }));
 
-    expect(res.status).toBe(200);
+    expect(res.status).toBe(503);
     expect(h.fetch).not.toHaveBeenCalled();
-    expect(h.db.suppressionList.upsert).toHaveBeenCalledTimes(1);
+    expect(h.db.suppressionList.upsert).not.toHaveBeenCalled();
+  });
+
+  it("refuses to write unverified when the publication id is absent", async () => {
+    delete process.env.BEEHIIV_PUBLICATION_ID;
+
+    const res = await callRoute(post({ event_type: "subscription.deleted", data: { email: "a@example.com" } }));
+
+    expect(res.status).toBe(503);
+    expect(h.db.suppressionList.upsert).not.toHaveBeenCalled();
   });
 
   it("queries beehiiv for the address it was asked about", async () => {

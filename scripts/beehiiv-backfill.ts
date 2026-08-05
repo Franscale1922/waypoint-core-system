@@ -126,8 +126,38 @@ async function main() {
     queue.push({ email, firstName: row.name?.split(" ")[0] || undefined, source: "escape-kit" });
   }
 
-  console.log(`Found ${queue.length} unique emails to subscribe:\n`);
-  queue.forEach(({ email, source }) => console.log(`  ${source.padEnd(12)} ${email}`));
+  // The canonical opt-out record, which the three queries above cannot see. They
+  // filter on each source table's own `unsubscribed` flag, and an opt-out that
+  // reached us any other way (a beehiiv unsubscribe, a bounce, a complaint, a
+  // domain rule) never touches those flags. So a person who left the newsletter
+  // still arrives here looking eligible.
+  //
+  // reactivate_existing: false does NOT cover this. It refuses to revive an
+  // existing INACTIVE subscriber, but a deleted beehiiv subscriber is gone
+  // rather than inactive, so a plain subscribe would mint a brand new active
+  // subscription for somebody who opted out.
+  const suppressedRows = await (prisma as any).suppressionList.findMany({
+    select: { email: true, domain: true },
+  });
+  const suppressedEmails = new Set<string>(
+    suppressedRows.map((r: any) => r.email?.toLowerCase().trim()).filter(Boolean)
+  );
+  const suppressedDomains = new Set<string>(
+    suppressedRows.map((r: any) => r.domain?.toLowerCase().trim()).filter(Boolean)
+  );
+
+  const eligible = queue.filter(({ email }) => {
+    const domain = email.split("@")[1] ?? "";
+    return !suppressedEmails.has(email) && !(domain && suppressedDomains.has(domain));
+  });
+  const skipped = queue.length - eligible.length;
+
+  if (skipped > 0) {
+    console.log(`Skipping ${skipped} suppressed address(es): opt-out, bounce, complaint or domain rule.\n`);
+  }
+
+  console.log(`Found ${eligible.length} unique emails to subscribe:\n`);
+  eligible.forEach(({ email, source }) => console.log(`  ${source.padEnd(12)} ${email}`));
   console.log();
 
   if (!LIVE) {
@@ -137,7 +167,7 @@ async function main() {
   }
 
   let ok = 0; let errors = 0;
-  for (const { email, firstName } of queue) {
+  for (const { email, firstName } of eligible) {
     const result = await subscribeOne(email, firstName);
     if (result === "ok") ok++;
     else if (result === "error") errors++;

@@ -40,12 +40,20 @@ import { normalizeEmail } from "@/lib/email-suppression";
  * unsigned webhook plus a URL secret is not enough to carry that, so the claim
  * is checked against beehiiv's own API before anything is written.
  *
- * The check is deliberately one-sided. It can prove a webhook WRONG (beehiiv
- * still reports the address active) but it cannot prove one right, because a
- * deleted subscription and an address that never existed look identical from
- * outside. So the rule is: suppress unless beehiiv positively contradicts the
- * claim. That fails toward not sending mail, which is the direction this
- * codebase already fails in everywhere else.
+ * BE PRECISE ABOUT WHAT THAT CHECK BUYS, because it is easy to overrate.
+ * It can prove a webhook WRONG (beehiiv still reports the address active) but it
+ * can never prove one right: a deleted subscription and an address that never
+ * existed are indistinguishable from outside, both returning an empty list. So
+ * a leaked secret CAN still suppress any address that is not currently an active
+ * subscriber. What the check actually protects is the active subscriber list
+ * itself, which is the highest-value thing an attacker with the URL would go
+ * after, and it costs one request to protect it. It is a mitigation, not a
+ * substitute for treating the URL as a credential.
+ *
+ * The rule is therefore: suppress unless beehiiv positively contradicts the
+ * claim, and refuse to write at all when the claim could not be checked. Both
+ * fail toward not sending mail, which is the direction this codebase already
+ * fails in everywhere else.
  */
 
 const BEEHIIV_API_BASE = "https://api.beehiiv.com/v2";
@@ -71,6 +79,16 @@ export const BEEHIIV_OPT_OUT_REASON = "beehiiv-unsubscribe";
  * subscription.paused is NOT here. A pause is a temporary state the subscriber
  * can lift themselves, and turning it into a permanent, irreversible suppression
  * would read a "not right now" as a "never".
+ *
+ * subscription.deleted IS here, and that is a deliberate over-reach worth naming.
+ * A deletion is not necessarily a consent withdrawal: an operator tidying the
+ * list or removing a duplicate fires the same event, and that will permanently
+ * suppress the address on every Waypoint channel. It is included anyway because
+ * the two errors are not symmetric. Missing a real opt-out means mailing someone
+ * who told us to stop, which is the CAN-SPAM failure. Over-suppressing means not
+ * mailing someone we could have, which costs a lead. If beehiiv is ever confirmed
+ * to fire newsletter_list_subscription.unsubscribed on every genuine unsubscribe,
+ * drop this one and the over-reach goes with it.
  */
 const OPT_OUT_EVENTS = new Set([
   "subscription.deleted",
@@ -154,34 +172,43 @@ export async function POST(req: Request) {
     const apiKey = process.env.BEEHIIV_API_KEY;
     const publicationId = process.env.BEEHIIV_PUBLICATION_ID;
 
-    if (apiKey && publicationId) {
-      const confirmation = await confirmOptOutWithBeehiiv(email, apiKey, publicationId);
+    // No credentials means the claim cannot be checked at all. An earlier draft
+    // wrote anyway, reasoning that a missing key is permanent so retrying is
+    // futile. That was a bypass: it made "unset the env var" a way to turn the
+    // verification off, and it is the one branch an attacker holding the URL
+    // would most like to reach. Production always has these set (they are what
+    // subscribeToBeehiiv runs on), so reaching this line at all is a
+    // misconfiguration that should be loud rather than silently permissive.
+    if (!apiKey || !publicationId) {
+      console.error(
+        "[beehiiv-webhook] BEEHIIV_API_KEY or BEEHIIV_PUBLICATION_ID unset; refusing to write unverified"
+      );
+      return NextResponse.json(
+        { success: false, reason: "Verification unavailable; not writing unverified" },
+        { status: 503 }
+      );
+    }
 
-      if (confirmation === "still-active") {
-        // beehiiv contradicts the payload, so the payload is stale or forged.
-        // Acknowledged rather than errored: a retry would reach the same answer.
-        console.warn(
-          `[beehiiv-webhook] refusing ${eventType}: beehiiv still reports this address active`
-        );
-        return NextResponse.json({ success: true, action: "ignored:still-active" });
-      }
+    const confirmation = await confirmOptOutWithBeehiiv(email, apiKey, publicationId);
 
-      if (confirmation === "cannot-verify") {
-        // Retryable on purpose. Writing on an unverified claim would let a
-        // leaked URL secret suppress arbitrary addresses irreversibly, and
-        // swallowing the event would drop a real opt-out. A 5xx does neither.
-        return NextResponse.json(
-          { success: false, reason: "Could not verify with beehiiv; retry expected" },
-          { status: 503 }
-        );
-      }
-    } else {
-      // Missing credentials are a PERMANENT condition, so a 503 here would retry
-      // forever and eventually drop a real opt-out. Honouring it unverified is
-      // the safer failure: the request already passed the shared secret, and not
-      // recording a stated opt-out is the outcome with legal consequences.
+    if (confirmation === "still-active") {
+      // beehiiv contradicts the payload. Either the payload is forged, or the
+      // person genuinely resubscribed after opting out. Both mean "do not
+      // suppress": the second is a newer consent decision than this event.
+      // Acknowledged rather than errored, since a retry reaches the same answer.
       console.warn(
-        "[beehiiv-webhook] BEEHIIV_API_KEY or BEEHIIV_PUBLICATION_ID unset; suppressing unverified"
+        `[beehiiv-webhook] refusing ${eventType}: beehiiv still reports this address active`
+      );
+      return NextResponse.json({ success: true, action: "ignored:still-active" });
+    }
+
+    if (confirmation === "cannot-verify") {
+      // Retryable on purpose. Writing on an unchecked claim would let a leaked
+      // URL secret suppress an active subscriber irreversibly, and swallowing
+      // the event would drop a real opt-out. A 5xx does neither.
+      return NextResponse.json(
+        { success: false, reason: "Could not verify with beehiiv; retry expected" },
+        { status: 503 }
       );
     }
 

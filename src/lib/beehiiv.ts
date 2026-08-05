@@ -30,10 +30,11 @@ export async function subscribeToBeehiiv(
   // The suppression check lives HERE, not at the call sites, because forgetting
   // it at one of the six would silently undo somebody's opt-out.
   //
-  // `reactivate_existing: true` below is the reason it matters: without this
-  // guard, a person who unsubscribed and later downloaded another guide was
-  // resurrected on the newsletter by that download. They had been told they
-  // would receive no more email, and then received the next issue.
+  // It is necessary but NOT sufficient, which is why reactivate_existing is off
+  // below. This check can only see opt-outs OUR database knows about, and a
+  // beehiiv-side unsubscribe reaches us asynchronously over a webhook. In the
+  // window before that webhook lands, this check passes for somebody who has
+  // already left.
   if (await isEmailSuppressedFailClosed(email)) {
     console.log("[beehiiv] address is suppressed; not subscribing");
     return;
@@ -53,7 +54,16 @@ export async function subscribeToBeehiiv(
         body: JSON.stringify({
           email,
           ...(firstName ? { first_name: firstName } : {}),
-          reactivate_existing: true,   // safe to call repeatedly: no duplicates
+          // Never resurrect somebody who left. This used to be true, and it
+          // destroyed real opt-outs two ways. Directly: a person who
+          // unsubscribed and later downloaded a guide was put back on the list
+          // by that download. And indirectly, once the opt-out webhook existed:
+          // the reactivation flipped the address back to `active`, so the
+          // arriving webhook found beehiiv reporting it active, treated its own
+          // payload as stale, and dropped the opt-out for good. Turning this off
+          // is what makes an `active` answer from beehiiv trustworthy evidence
+          // that a webhook is wrong rather than an artefact of our own writes.
+          reactivate_existing: false,
           send_welcome_email: false,   // Waypoint's own nurture handles welcome comms
           utm_source: "waypoint-crm",  // track origin in beehiiv analytics
         }),
