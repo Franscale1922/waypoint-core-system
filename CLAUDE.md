@@ -8,8 +8,9 @@ must **never be asked a git question**. Safety comes from how I behave, not from
 
 - **I own the checkpoints.** When a change is complete and verified, I commit it — I never leave verified
   work uncommitted and never wait to be told. Also before switching repos, deploying, or ending a session.
-- **I never push red.** I only push work I've actually verified green (tests / build / `/verify`, sized to
-  the change). Can't verify it? I commit locally and say so — I don't push unverified code.
+- **I never push red.** I only push work I've actually verified green (tests / build / actually running
+  the changed path, sized to the change). Can't verify it? I commit locally and say so — I don't push
+  unverified code.
 - **I do the whole thing, then report — in plain English, not git-speak.** e.g. *"Saved and pushed the 3
   doc fixes — live for the Mini to pull. Wrong? Say 'undo that' and I'll revert it."* I never make you
   read branches or SHAs. If anything failed, I say so with the error — I never claim a success I didn't see.
@@ -21,7 +22,7 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   (it's gitignored, so it's gone on a fresh clone): I treat a push as going live if the repo has a committed
   `vercel.json` / `netlify.toml` / deploy CI workflow, OR is a deployable web app (Next.js / Vite /
   SvelteKit / static site) with no obvious non-production host, OR is a known live repo — **auto-deploy on
-  push:** whimsey-and-grace, Bizconnect Caribbean, Timeblock, local-websites/heart-strings,
+  push:** whimsey-and-grace, Bizconnect Carribean (sic — that is the directory name), Timeblock, local-websites/heart-strings,
   waypoint-core-system, Franchise Conduit. (**Live but push-safe** — deploy is a manual step, a normal push
   is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.) When unsure whether a push deploys, I
   surface. Ordinary content/ops/docs repos just get pushed and reported.
@@ -31,7 +32,12 @@ must **never be asked a git question**. Safety comes from how I behave, not from
     unrelated, secret, or worktree files. **Naming a file is not protection when it is already dirty:
     `git add <file>` stages the WHOLE file.** So I run `git status --short` first; if a file I need is
     already dirty from another session, I stage the hunk or leave it for its owner, and say which.
+    (`git add -p` is interactive, which this harness blocks — the hunk path is
+    `git diff -- <file> > p && git apply --cached p`. If that doesn't fit, I leave the file.)
   - Never commit secrets/keys/tokens; respect `.gitignore`; never bypass repo hooks (`--no-verify` banned).
+    **A hook that fails for environmental reasons is still a red gate** — a worktree with no real
+    `node_modules` fails the gate on an unmodified upstream commit. I fix the environment or I don't
+    push; an environmental cause is never a reason to bypass.
   - Submodules: commit+push the submodule first, then bump the parent gitlink and push the parent.
   - Real, specific commit messages (`type(scope): why`) — never a placeholder.
   - I only push to `Franscale1922` remotes.
@@ -81,9 +87,17 @@ vault docs, skill descriptions, and my own earlier turns are point-in-time snaps
   config keys, IDs come from a real read or canonical inventory — no source → empty and flagged, never
   invented. And a single failure is a data point, not proof: I re-check before I state "it's broken" or
   "this tool can't."
-- **Evidence authority:** live system (n8n MCP read-only, file / `git` reads) > mechanically-generated
-  canonical docs > hand-written docs > memory snapshot. For "this code change works," `/verify` drives the
-  real flow; `/code-review` checks the diff.
+- **A remote claim needs a remote read.** `git show main:<file>` reads the **local** ref, which `fetch`
+  does NOT move — that is how a confident correction gets built on a branch days dead. Fetch first, read
+  `origin/<branch>`, and re-check late in long sessions.
+- **Grep is not an equality check.** It proves a string was found, not that a file matches — and a
+  case- or line-anchored pattern false-negatives silently. To prove content identical across copies,
+  compare hashes.
+- **Evidence authority:** live system (read-only n8n MCP *queries* — the MCP itself is not read-only and
+  does hold write tools; file / `git` reads) > mechanically-generated canonical docs > hand-written docs
+  > memory snapshot. For "this code change works," drive the real flow rather than reading about it
+  (`/run` for the app, `/qa` for a web surface); `/ground` forces a grounding pass when claims have piled
+  up unchecked. `/code-review` is **Kelsey-triggered — his check, not an instrument I can reach for**.
 
 **Act, don't acknowledge:** I check before I claim, and I label what I couldn't check. "I think" delivered
 as "it is" is the failure this rule exists to stop.
@@ -364,8 +378,9 @@ Also stage 2's alone: **governance-bearing decisions** — anything a CLAUDE.md 
 memory file speaks to (a security allowlist entry, a git or deploy call, a research
 gate). Codex cannot see those rules, so it cannot judge these.
 
-Compose with existing skills: `/verify` to drive the real flow end-to-end instead of
-trusting the test log, `/code-review high` for a diff-level correctness pass.
+Compose with existing skills: `/qa` to drive the real flow end-to-end instead of
+trusting the test log. `/code-review high` gives a diff-level correctness pass, but it
+is **Kelsey-triggered and billed — I cannot launch it**; ask for it, never claim to run it.
 
 **Act, don't acknowledge.** After the review, fix each finding or state
 explicitly why it's declined. "Noted" does not close a finding.
@@ -413,6 +428,18 @@ mandatory; building one is a scoped piece of work to agree first, not a licence 
 
 <!-- Repo-specific. Outside every stamped marker on purpose: stamp-git-safety.sh
      splices only between BEGIN/END markers, so this survives a re-stamp. -->
+
+## `franscale-research-directive` is INERT in this repo (ruled 2026-08-05)
+
+The block above stamps into every Franscale1922 repo — there is no per-repo opt-out — so it is
+present here but **does not bind**. Kelsey ruled it inert for waypoint-core-system on 2026-08-05:
+this is a site/app repo, and the 45 articles under `content/` are **not** a channel's per-item
+content records with their own research decisions. Content quality here is already gated by
+`CONTENT-STANDARDS.md` plus the aeo-audit pre-push gate, which is the ONE gate this channel needs.
+
+Do not stand up a second research gate here, and do not re-litigate the ambiguity each session —
+that question is closed. It reopens only if this repo starts owning per-item content research
+(a video/post record with its own sources), which publishing articles alone does not make it.
 
 ## Codex delegation — repo mechanics only
 
