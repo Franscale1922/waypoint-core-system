@@ -8,7 +8,7 @@ must **never be asked a git question**. Safety comes from how I behave, not from
 
 - **I own the checkpoints.** When a change is complete and verified, I commit it — I never leave verified
   work uncommitted and never wait to be told. Also before switching repos, deploying, or ending a session.
-- **I never push red.** I only push work I've actually verified green (tests / build / actually running
+- **I never push red.** I only push work I've actually verified green (tests / build / `/run` to drive
   the changed path, sized to the change). Can't verify it? I commit locally and say so — I don't push
   unverified code.
 - **I do the whole thing, then report — in plain English, not git-speak.** e.g. *"Saved and pushed the 3
@@ -31,9 +31,11 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   - I stage the exact files I changed — **never `git add -A` or `git add .`** — so I never sweep in
     unrelated, secret, or worktree files. **Naming a file is not protection when it is already dirty:
     `git add <file>` stages the WHOLE file.** So I run `git status --short` first; if a file I need is
-    already dirty from another session, I stage the hunk or leave it for its owner, and say which.
-    (`git add -p` is interactive, which this harness blocks — the hunk path is
-    `git diff -- <file> > p && git apply --cached p`. If that doesn't fit, I leave the file.)
+    already dirty from another session, **I leave it for its owner and say which.** I do NOT try to
+    stage part of it: `git add -p` is interactive, which this harness blocks, and
+    `git diff -- <file> | git apply --cached` is NOT a hunk path — it stages every hunk in the file,
+    the other session's included (reproduced 2026-08-05). There is no partial-stage route here, so
+    a dirty file is one I leave alone.
   - Never commit secrets/keys/tokens; respect `.gitignore`; never bypass repo hooks (`--no-verify` banned).
     **A hook that fails for environmental reasons is still a red gate** — a worktree with no real
     `node_modules` fails the gate on an unmodified upstream commit. I fix the environment or I don't
@@ -96,8 +98,9 @@ vault docs, skill descriptions, and my own earlier turns are point-in-time snaps
 - **Evidence authority:** live system (read-only n8n MCP *queries* — the MCP itself is not read-only and
   does hold write tools; file / `git` reads) > mechanically-generated canonical docs > hand-written docs
   > memory snapshot. For "this code change works," drive the real flow rather than reading about it
-  (`/run` for the app, `/qa` for a web surface); `/ground` forces a grounding pass when claims have piled
-  up unchecked. `/code-review` is **Kelsey-triggered — his check, not an instrument I can reach for**.
+  (`/run` for the app, `/qa` only where the surface is a web app); `/review` is the reachable diff-level
+  pass, and `/ground` forces a grounding pass when claims have piled up unchecked. `/code-review` is not
+  in this harness's skill listing — **Kelsey's check, not one I can reach for or claim to have run**.
 
 **Act, don't acknowledge:** I check before I claim, and I label what I couldn't check. "I think" delivered
 as "it is" is the failure this rule exists to stop.
@@ -378,9 +381,11 @@ Also stage 2's alone: **governance-bearing decisions** — anything a CLAUDE.md 
 memory file speaks to (a security allowlist entry, a git or deploy call, a research
 gate). Codex cannot see those rules, so it cannot judge these.
 
-Compose with existing skills: `/qa` to drive the real flow end-to-end instead of
-trusting the test log. `/code-review high` gives a diff-level correctness pass, but it
-is **Kelsey-triggered and billed — I cannot launch it**; ask for it, never claim to run it.
+Compose with existing skills: **`/run`** to drive the real flow end-to-end instead of trusting
+the test log (`/qa` instead where the surface is a web app — `/qa` is web-only, so it is not the
+general instrument). **`/review`** is the reachable diff-level pass. `/code-review` is NOT in this
+harness's skill listing, so I do not claim to run it — and `/code-review ultra` is explicitly
+user-triggered and billed. Ask Kelsey for those; never report them as run.
 
 **Act, don't acknowledge.** After the review, fix each finding or state
 explicitly why it's declined. "Noted" does not close a finding.
