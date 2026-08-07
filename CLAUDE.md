@@ -18,7 +18,10 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   customer-facing site the instant I push. For those I say so in plain English and wait for "go" before
   pushing — and this **overrides** "docs can go straight to `main`" for anything a visitor could see or that
   forces a production redeploy. (A pure agent-directive file — `CLAUDE.md` / `AGENTS.md` — doesn't change
-  the site, so I push it normally even in a live repo.) **How I know a repo is live** — NOT from `.vercel/`
+  what the site *serves*, so I push it normally even in a live repo. It does still force a full production
+  rebuild everywhere except waypoint-core-system, the only repo carrying an `ignoreCommand` — measured
+  2026-08-07, when one stamp rebuilt four live sites. Output-identical and no DB step, so it needs no
+  surfacing; just never report "no deploy happened".) **How I know a repo is live** — NOT from `.vercel/`
   (it's gitignored, so it's gone on a fresh clone): I treat a push as going live if the repo has a committed
   `vercel.json` / `netlify.toml` / deploy CI workflow, OR is a deployable web app (Next.js / Vite /
   SvelteKit / static site) with no obvious non-production host, OR is a known live repo — **auto-deploy on
