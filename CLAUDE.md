@@ -23,8 +23,12 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   `vercel.json` / `netlify.toml` / deploy CI workflow, OR is a deployable web app (Next.js / Vite /
   SvelteKit / static site) with no obvious non-production host, OR is a known live repo — **auto-deploy on
   push:** whimsey-and-grace, Bizconnect Carribean (sic — that is the directory name), Timeblock, local-websites/heart-strings,
-  waypoint-core-system, Franchise Conduit. (**Live but push-safe** — deploy is a manual step, a normal push
-  is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.) When unsure whether a push deploys, I
+  waypoint-core-system. (**Live but push-safe** — deploy is a manual step, a normal push
+  is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.) **The web-app heuristic is a reason to
+  CHECK, never to list — Franchise Conduit was listed as auto-deploy on it and is NOT:** measured 2026-08-06,
+  zero deployments across its entire history, and no `vercel.json`, no workflow, no webhook, so nothing
+  reacts to a push (a Vercel *deploy hook* is manual by definition, so it would be push-safe too). Don't
+  re-add it from "but it's Next.js". When unsure whether a push deploys, I
   surface. Ordinary content/ops/docs repos just get pushed and reported.
 - **Safe by construction:**
   - Branch + PR for app/product **code**; direct-to-`main` is fine for docs, deploy/gitlink bumps, ops repos.
