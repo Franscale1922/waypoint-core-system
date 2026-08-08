@@ -570,3 +570,318 @@ describe.skipIf(!IN_GIT_REPO)("the hook itself", () => {
     expect(hook).not.toMatch(/^\s*if \[ -z "\$SKIP_UNIT_TESTS" \]/m);
   });
 });
+
+/**
+ * The CLAUDE.md directive-file lint (added 2026-08-07).
+ *
+ * WHAT THIS SUITE GUARDS, and why the ALLOW cases matter more than the block
+ * one. Measured before the gate was built: of 19 remote branch tips in this repo
+ * carrying CLAUDE.md, exactly ONE passes the validator -- origin/main. 17 of the
+ * last 21 commits touching the file fail too, because every one before
+ * 2026-08-05 names a command that has since been retired. So a gate scoped even
+ * slightly wider than "main, tip only" blocks most pushes in this repo, and
+ * CLAUDE.md bans --no-verify, so there is no way past. The cases asserting a
+ * push is ALLOWED are what stop a later "improvement" widening the scope again.
+ *
+ * Those cases are written as DIFFERENTIALS -- the same commit is pushed to a
+ * non-main ref and to main, and the two outcomes must differ. An allow-case on
+ * its own would pass by construction the moment the lint stopped running at all,
+ * which is exactly the bug the first draft of this suite shipped: every case
+ * used a branch named `main-something`, none of which is `refs/heads/main`, so
+ * the lint never ran and two cases passed green having tested nothing.
+ *
+ * These run the REAL validator against a FIXTURE CLAUDE_CONFIG_DIR rather than a
+ * stub. A stub would pass by construction and prove nothing about resolution;
+ * pointing the real script at a directory whose contents we control keeps the
+ * logic real and the outcome deterministic on any machine.
+ */
+describe.skipIf(!IN_GIT_REPO)("pre-push gate: CLAUDE.md directive-file lint", () => {
+  const REAL_VALIDATOR = join(process.env.HOME ?? "", "dotfiles", "projects", "check-claude-md-commands.sh");
+
+  let claudeDir: string;
+  let stubDir: string;
+
+  /** Names only commands that resolve in the fixture config dir. */
+  const CLEAN = "# Probe\n\nUse `/probe-skill` and `/model` when working here.\n";
+  /** The same, plus one command that resolves nowhere. */
+  const DEAD = "# Probe\n\nUse `/probe-skill`, then run `/totally-absent-thing` to finish.\n";
+  /** The dead command, declared deliberately absent in the file itself. */
+  const WAIVED =
+    "# Probe\n\n<!-- claude-md-lint: allow-missing totally-absent-thing (probe fixture) -->\n" +
+    "Use `/probe-skill`, then run `/totally-absent-thing` to finish.\n";
+
+  beforeAll(() => {
+    if (!IN_GIT_REPO) return;
+    claudeDir = join(base, "fixture-claude");
+    stubDir = join(base, "stub-validators");
+    mkdirSync(join(claudeDir, "skills", "probe-skill"), { recursive: true });
+    mkdirSync(stubDir, { recursive: true });
+    writeFileSync(join(claudeDir, "skills", "probe-skill", "SKILL.md"), "---\nname: probe-skill\n---\n");
+
+    for (const [name, body] of [
+      ["exit2.sh", "#!/bin/sh\necho 'ERROR: no such file' >&2\nexit 2\n"],
+      ["zero.sh", "#!/bin/sh\necho 'OK  x: 0 command(s) resolve, 0 allowed-missing'\nexit 0\n"],
+    ] as const) {
+      writeFileSync(join(stubDir, name), body);
+      chmodSync(join(stubDir, name), 0o755);
+    }
+  }, TIMEOUT);
+
+  /**
+   * SKIP_UNIT_TESTS=1 stops the fixture re-running this very suite.
+   * CLAUDE_CONFIG_DIR is what makes the real validator deterministic: gitEnv()
+   * replaces HOME with an empty temp dir, so without it nothing would resolve
+   * and every case would fail for the wrong reason.
+   */
+  function lintEnv(extra: Record<string, string> = {}) {
+    return {
+      SKIP_UNIT_TESTS: "1",
+      CLAUDE_MD_VALIDATOR: REAL_VALIDATOR,
+      CLAUDE_CONFIG_DIR: claudeDir,
+      ...extra,
+    };
+  }
+
+  /**
+   * gitEnv() shaped the way spawnSync's types want it. This project augments
+   * ProcessEnv with a required NODE_ENV, while gitEnv() deliberately builds an
+   * environment from nothing rather than inheriting one, so the two do not
+   * overlap and the conversion has to go through `unknown`. Kept in one place
+   * instead of at every call site.
+   */
+  function spawnEnv(extra: Record<string, string> = {}) {
+    return gitEnv(extra) as unknown as NodeJS.ProcessEnv;
+  }
+
+  /**
+   * Push to the one ref this gate is scoped to. The remote ref is deleted first
+   * because each case builds a divergent history from the seed, and a second
+   * push to an existing main would be rejected as a non-fast-forward -- which
+   * would look exactly like the gate refusing, and pass the block cases for
+   * entirely the wrong reason.
+   */
+  function pushToMain(env: Record<string, string> = {}) {
+    spawnSync("git", ["update-ref", "-d", "refs/heads/main"], {
+      cwd: remote,
+      encoding: "utf8",
+      timeout: TIMEOUT,
+      env: spawnEnv(),
+    });
+    return pushThrough(NEW_HOOK_DIR, "main", env);
+  }
+
+  it(
+    "blocks a push to main whose COMMIT names a dead command, even when the working tree is repaired",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("directive with a dead command");
+      // Repair the working tree WITHOUT committing. The pre-fix hook design read
+      // this copy and would have reported green; the subject must be the commit.
+      writeFileSync(join(repo, "CLAUDE.md"), CLEAN);
+
+      const r = pushToMain(lintEnv());
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain("does not resolve");
+      expect(r.out).toContain("totally-absent-thing");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "allows the identical commit on a non-main branch, and blocks it on main",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("directive with a dead command");
+
+      // 18 of this repo's 19 live branches are in exactly this state, so a gate
+      // that fires here is unusable.
+      const other = pushThrough(NEW_HOOK_DIR, "stale-feature-branch", lintEnv());
+      expect(other.code).toBe(0);
+      expect(other.out).not.toContain("does not resolve");
+
+      // Same commit, different destination. If this does not block, the case
+      // above proved nothing.
+      const onMain = pushToMain(lintEnv());
+      expect(onMain.code).not.toBe(0);
+      expect(onMain.out).toContain("does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "scopes on the REMOTE ref, not the local branch name",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("directive with a dead command");
+      git(["checkout", "-qb", "main"]);
+      git(["config", "core.hooksPath", NEW_HOOK_DIR]);
+
+      // A LOCAL branch called main, pushed somewhere that is not main. Scoping
+      // off the local name would fire here; scoping off the remote ref does not.
+      const elsewhere = git(["push", "origin", "main:refs/heads/local-main-elsewhere"], lintEnv());
+      const elsewhereOut = `${elsewhere.stdout ?? ""}${elsewhere.stderr ?? ""}`;
+
+      // And the converse, which is what makes the above meaningful.
+      spawnSync("git", ["update-ref", "-d", "refs/heads/main"], {
+        cwd: remote,
+        encoding: "utf8",
+        timeout: TIMEOUT,
+        env: spawnEnv(),
+      });
+      const onMain = git(["push", "origin", "main:refs/heads/main"], lintEnv());
+      const onMainOut = `${onMain.stdout ?? ""}${onMain.stderr ?? ""}`;
+      git(["checkout", "-q", "--detach"]);
+
+      expect(elsewhere.status).toBe(0);
+      expect(elsewhereOut).not.toContain("does not resolve");
+      expect(onMain.status).not.toBe(0);
+      expect(onMainOut).toContain("does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "does NOT block when only an INTERMEDIATE commit names a dead command",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("intermediate: dead command");
+      writeFileSync(join(repo, "CLAUDE.md"), CLEAN);
+      commitAll("tip: repaired");
+
+      // Content checks still run per commit; this lint runs on the tip alone,
+      // because the question it asks ("do these rules name real commands?") is
+      // about the state that ships, not every state passed through. The block
+      // case above is what proves the lint would otherwise have fired.
+      const r = pushToMain(lintEnv());
+      expect(r.code).toBe(0);
+      expect(r.out).not.toContain("does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "honours the file's own allow-missing waiver end to end",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), WAIVED);
+      commitAll("directive with a waived absent command");
+
+      const waived = pushToMain(lintEnv());
+      expect(waived.code).toBe(0);
+
+      // Without the waiver comment, the same file blocks -- so the pass above is
+      // the waiver working, not the lint sitting idle.
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("same file, waiver removed");
+      const unwaived = pushToMain(lintEnv());
+      expect(unwaived.code).not.toBe(0);
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "skips LOUDLY when the validator is absent, rather than passing quietly",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("dead command, no validator available");
+
+      const r = pushToMain(lintEnv({ CLAUDE_MD_VALIDATOR: join(stubDir, "does-not-exist.sh") }));
+      expect(r.code).toBe(0);
+      expect(r.out).toContain("CLAUDE_MD_LINT_SKIPPED");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "reports a validator INPUT error (exit 2) as tooling, not as a dead command",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), CLEAN);
+      commitAll("clean directive, broken validator");
+
+      // Exit 2 is a usage/input error; exit 1 is a command that does not resolve.
+      // Collapsing them fails open in one direction and blocks with a wrong
+      // reason in the other. A probe that fed the validator a process
+      // substitution during development reported main as FAILING for this reason.
+      const r = pushToMain(lintEnv({ CLAUDE_MD_VALIDATOR: join(stubDir, "exit2.sh") }));
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain("could not run");
+      // Keyed on the dead-command HEADLINE, not on the bare phrase "does not
+      // resolve": the tooling message deliberately contains that phrase while
+      // explaining the difference between the two exit codes, so the looser
+      // assertion failed against correct output.
+      expect(r.out).not.toContain("names a slash command that does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "refuses a zero-command count as a vacuous pass",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), CLEAN);
+      commitAll("clean directive, extractor returns nothing");
+
+      // The validator discards its extractor's exit status, so a failed
+      // extraction prints "OK <file>: 0 command(s) resolve" and exits 0 -- the
+      // verify-links vacuous-pass shape. Any file carrying the franscale- blocks
+      // contains /model and /effort, so zero proves the extractor broke.
+      const r = pushToMain(lintEnv({ CLAUDE_MD_VALIDATOR: join(stubDir, "zero.sh") }));
+      expect(r.code).not.toBe(0);
+      expect(r.out).toContain("ZERO commands");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    'honours SKIP_CLAUDE_MD_LINT=1 and is NOT disabled by "0"',
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), DEAD);
+      commitAll("dead command, testing the valve");
+
+      const off = pushToMain(lintEnv({ SKIP_CLAUDE_MD_LINT: "1" }));
+      expect(off.code).toBe(0);
+      // Green-because-skipped has to be visible, or the skip is a lie.
+      expect(off.out).toContain("CLAUDE_MD_LINT_SKIPPED");
+
+      // "0" reads like "off" and must not be. SKIP_BIP_DRIFT and SKIP_UNIT_TESTS
+      // both shipped that bug in this same hook and both were corrected to test
+      // for exactly "1".
+      const on = pushToMain(lintEnv({ SKIP_CLAUDE_MD_LINT: "0" }));
+      expect(on.code).not.toBe(0);
+      expect(on.out).toContain("does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "says NOT VERIFIED when the hook did not declare which tips land on main",
+    () => {
+      resetToSeed();
+      const sha = git(["rev-parse", "HEAD"]).stdout.trim();
+
+      // A version-skewed checkout can pair an older hook with this orchestrator.
+      // Without the unconditional declaration flag, that silently disables the
+      // lint -- the quiet fail-open this whole gate exists to end.
+      //
+      // REPO_ROOT's orchestrator, not the fixture's: the fixture is seeded from
+      // `git archive HEAD`, so its copy is whatever was last committed, and
+      // pointing at it would test the previous revision of this file.
+      const r = spawnSync("node", [join(REPO_ROOT, "scripts", "verify-pushed-tree.mjs"), sha], {
+        cwd: repo,
+        encoding: "utf8",
+        timeout: TIMEOUT,
+        env: spawnEnv(lintEnv()),
+      });
+      expect(`${r.stdout ?? ""}${r.stderr ?? ""}`).toContain("NOT VERIFIED");
+    },
+    TIMEOUT,
+  );
+});

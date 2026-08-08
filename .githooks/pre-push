@@ -73,10 +73,28 @@ fi
 # closed rather than documented.)
 ZERO=$(git hash-object --stdin </dev/null | tr '0-9a-f' '0')
 SHAS=""
+MAIN_ARGS=""
 COUNT=0
-while read -r _local_ref local_oid _remote_ref _remote_oid; do
+while read -r _local_ref local_oid remote_ref _remote_oid; do
   [ -n "$local_oid" ] || continue
   [ "$local_oid" != "$ZERO" ] || continue
+
+  # Which tips LAND ON main. Decided by the REMOTE ref, never the local one:
+  # `git push origin HEAD:refs/heads/main` has a local ref of HEAD, and scoping
+  # off the local name would both miss that and fire wrongly on a local branch
+  # called main being pushed somewhere else.
+  #
+  # Recorded BEFORE the dedup below, deliberately. The dedup exists so a tip
+  # pushed to two refs is verified once, but it `continue`s -- so a tip pushed to
+  # some other ref first and to main second would be skipped here and never
+  # linted. Order matters; do not fold this into the block below.
+  if [ "$remote_ref" = "refs/heads/main" ]; then
+    case " $MAIN_ARGS " in
+      *" $local_oid "*) ;;
+      *) MAIN_ARGS="$MAIN_ARGS --main-tip $local_oid" ;;
+    esac
+  fi
+
   case " $SHAS " in
     *" $local_oid "*) continue ;;   # same tip pushed to two refs; verify once
   esac
@@ -94,10 +112,16 @@ if [ "$COUNT" -eq 0 ]; then
 fi
 
 if [ "$SKIP_ARCHIVE_VERIFY" != "1" ] && [ -f "$VERIFIER" ]; then
-  # Word splitting on $SHAS is intentional: it is a space-separated list of hex
-  # object names, each passed as its own argument.
+  # Word splitting on $SHAS and $MAIN_ARGS is intentional: both are
+  # space-separated lists of literal tokens, each passed as its own argument.
+  #
+  # --main-tips-declared is passed UNCONDITIONALLY, including when no tip lands
+  # on main. It is what lets the orchestrator tell "this push is not going to
+  # main" apart from "this hook is too old to know" -- without it, a version-
+  # skewed checkout would silently disable the CLAUDE.md lint instead of saying
+  # so, which is the quiet fail-open this whole file exists to end.
   # shellcheck disable=SC2086
-  node "$VERIFIER" $SHAS
+  node "$VERIFIER" --main-tips-declared $MAIN_ARGS $SHAS
   exit $?
 fi
 

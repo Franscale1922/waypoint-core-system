@@ -519,3 +519,40 @@ Consequences worth knowing:
   failure mode is a needless deploy, never a silently skipped one.
 - If you add an exclusion, first confirm nothing in `src/`, `scripts/`, `prisma/`, `next.config.ts`
   or `package.json` reads that path, and re-check against real history before pushing.
+
+## This file is linted on pushes to `main` (added 2026-08-07)
+
+The pre-push gate runs `~/dotfiles/projects/check-claude-md-commands.sh` against **this file as it
+exists in the pushed commit**, and refuses the push if it names a slash command that does not
+resolve. It is the mechanism behind the grounding rule's "no fabricated identifiers" — a dead
+command name in prose rots forever otherwise, which is exactly how the retired `verify` command
+(written with a leading slash) survived three review passes.
+
+> The sentence above deliberately does **not** write that name with its slash, and neither does the
+> one below. Both would trip this gate — as the first draft of this section did, caught by the very
+> check it documents. The validator matches bare occurrences, and its `allow-missing` waiver is
+> valid for a single mention only, so there is no waiver that covers two. Naming a dead command in
+> prose about dead commands is the one case where the gate and the documentation collide; write the
+> name without the slash.
+
+**It runs only when the push lands on `main`, and only on the tip.** That is not timidity, it is
+measurement: of 19 remote branch tips carrying this file, **only `main` passes** — every branch cut
+before 2026-08-05 still names that retired command, as do 17 of the last 21 commits touching it. A per-commit
+or all-branches gate would block most pushes in this repo, and `--no-verify` is banned, so there
+would be no way past. Landing-on-`main` is read from the **remote** ref, since
+`git push origin HEAD:refs/heads/main` has a local ref of `HEAD`.
+
+- **Skipped, loudly, when the validator is absent** (`CLAUDE_MD_LINT_SKIPPED`). It is a dotfiles
+  tool and this repo does not ship it, so a fresh clone or CI will not have it. Install with
+  `cd ~/dotfiles && git pull && ./install.sh`, or point `CLAUDE_MD_VALIDATOR` at a copy.
+- **Valve:** `SKIP_CLAUDE_MD_LINT=1 git push`. Tested for exactly `"1"` — `=0` does **not** disable
+  it, the bug this repo already shipped twice with `SKIP_BIP_DRIFT` and `SKIP_UNIT_TESTS`.
+- **Exit 2 is not exit 1.** A usage or input error is reported as a tooling failure, never as a dead
+  command; and exit 0 with a zero command count is refused as a vacuous pass, because any file
+  carrying the `franscale-` blocks contains `/model` and `/effort` by construction.
+- **⚠ A machine divergence is not an `allow-missing` case.** 3 of the 8 commands this file names are
+  per-machine installs, so a byte-identical file can pass here and block on the Mini. Install the
+  missing skill, or use the valve. Writing `<!-- claude-md-lint: allow-missing … -->` for it records
+  a false "deliberately absent" claim that the stamp then copies into all 39 governed files.
+- **Not covered:** a change arriving through a PR squash-merge, which GitHub creates server-side and
+  which passes through no local hook — the same limit every other check in this gate has.
