@@ -595,8 +595,16 @@ describe.skipIf(!IN_GIT_REPO)("the hook itself", () => {
  * pointing the real script at a directory whose contents we control keeps the
  * logic real and the outcome deterministic on any machine.
  */
-describe.skipIf(!IN_GIT_REPO)("pre-push gate: CLAUDE.md directive-file lint", () => {
-  const REAL_VALIDATOR = join(process.env.HOME ?? "", "dotfiles", "projects", "check-claude-md-commands.sh");
+/**
+ * The validator is a dotfiles tool this repo deliberately does not ship, so on a fresh clone or in
+ * CI it is simply absent. Skipping on that is not laziness: without it every push is ALLOWED (the
+ * gate skips loudly by design), so the four cases that assert a REFUSAL would fail — reporting a
+ * broken gate when the truth is a missing tool. A test that goes red for an environmental reason
+ * teaches people to ignore it. Skipping is honest; passing by accident would not be.
+ */
+const REAL_VALIDATOR = join(process.env.HOME ?? "", "dotfiles", "projects", "check-claude-md-commands.sh");
+
+describe.skipIf(!IN_GIT_REPO || !existsSync(REAL_VALIDATOR))("pre-push gate: CLAUDE.md directive-file lint", () => {
 
   let claudeDir: string;
   let stubDir: string;
@@ -759,6 +767,33 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: CLAUDE.md directive-file lint", ()
       const r = pushToMain(lintEnv());
       expect(r.code).toBe(0);
       expect(r.out).not.toContain("does not resolve");
+    },
+    TIMEOUT,
+  );
+
+  it(
+    "blocks a main tip that DELETES CLAUDE.md, and still allows the deletion elsewhere",
+    () => {
+      resetToSeed();
+      writeFileSync(join(repo, "CLAUDE.md"), CLEAN);
+      commitAll("clean directive");
+      rmSync(join(repo, "CLAUDE.md"));
+      commitAll("remove the directive file");
+
+      // Deleting the subject must not delete the gate. Before this was fixed the
+      // push succeeded and announced "Expected for a commit that predates the
+      // file" -- a true-sounding sentence about a commit that had just removed it.
+      const onMain = pushToMain(lintEnv());
+      expect(onMain.code).not.toBe(0);
+      expect(onMain.out).toContain("no CLAUDE.md");
+
+      // The differential: absence is only a block BECAUSE it is a main tip. A
+      // branch that legitimately has no CLAUDE.md is not this gate's business,
+      // and without this half the case above would also pass if the lint had
+      // simply started blocking everything.
+      const elsewhere = pushThrough(NEW_HOOK_DIR, "deletes-directive-elsewhere", lintEnv());
+      expect(elsewhere.code).toBe(0);
+      expect(elsewhere.out).not.toContain("no CLAUDE.md");
     },
     TIMEOUT,
   );

@@ -536,11 +536,13 @@ command name in prose rots forever otherwise, which is exactly how the retired `
 > name without the slash.
 
 **It runs only when the push lands on `main`, and only on the tip.** That is not timidity, it is
-measurement: of 19 remote branch tips carrying this file, **only `main` passes** — every branch cut
-before 2026-08-05 still names that retired command, as do 17 of the last 21 commits touching it. A per-commit
-or all-branches gate would block most pushes in this repo, and `--no-verify` is banned, so there
-would be no way past. Landing-on-`main` is read from the **remote** ref, since
-`git push origin HEAD:refs/heads/main` has a local ref of `HEAD`.
+measurement — and a **dated snapshot, not a standing fact**: as of **2026-08-09**, 20 remote tips
+carry this file and **18 fail**, every one of them on the same single retired command, leaving
+`main` and the branch that added this gate as the only clean tips. It read 19-and-1 on 2026-08-07;
+pushing that branch already moved it and merging it will move it again, so **re-measure rather than
+quoting these numbers**. A per-commit or all-branches gate would block most pushes in this repo,
+and `--no-verify` is banned, so there would be no way past. Landing-on-`main` is read from the
+**remote** ref, since `git push origin HEAD:refs/heads/main` has a local ref of `HEAD`.
 
 - **Skipped, loudly, when the validator is absent** (`CLAUDE_MD_LINT_SKIPPED`). It is a dotfiles
   tool and this repo does not ship it, so a fresh clone or CI will not have it. Install with
@@ -549,7 +551,16 @@ would be no way past. Landing-on-`main` is read from the **remote** ref, since
   it, the bug this repo already shipped twice with `SKIP_BIP_DRIFT` and `SKIP_UNIT_TESTS`.
 - **Exit 2 is not exit 1.** A usage or input error is reported as a tooling failure, never as a dead
   command; and exit 0 with a zero command count is refused as a vacuous pass, because any file
-  carrying the `franscale-` blocks contains `/model` and `/effort` by construction.
+  carrying the `franscale-` blocks contains `/model` and `/effort` by construction. That refusal is
+  not itself scoped to franscale files, so a directive file legitimately naming no commands would be
+  blocked for a stated reason that is untrue — unreachable here, where this file resolves eight.
+- **Deleting this file does not disable the gate.** A tip landing on `main` with no `CLAUDE.md` is
+  **blocked**, not skipped: the gate is not removable by removing its subject. Absence is only
+  treated as "this commit predates the file" for intermediate and non-`main` commits, which is where
+  that is actually true. The valve is the way through if a removal is genuinely intended.
+- **What it cannot see.** The validator recognises only names matching `[a-z][a-z0-9-]*`, so `/QA`,
+  `/watch_video` and a dotted `/effort.xhigh` go invisible rather than red — the underscore-for-hyphen
+  typo being the plausible one. "Names a command that does not resolve" means *within that grammar*.
 - **⚠ A machine divergence is not an `allow-missing` case.** 3 of the 8 commands this file names are
   per-machine installs, so a byte-identical file can pass here and block on the Mini. Install the
   missing skill, or use the valve. Writing `<!-- claude-md-lint: allow-missing … -->` for it records

@@ -443,15 +443,25 @@ function lintDirectiveFile(tree, env) {
     env.CLAUDE_MD_VALIDATOR ||
     path.join(os.homedir(), "dotfiles", "projects", "check-claude-md-commands.sh");
 
-  // A commit can predate CLAUDE.md, so absence is a skip and not a failure. It
-  // is deliberately NOT added to REQUIRED_PATHS, which would turn every such
-  // commit into a hard error. Said out loud, because a silent skip is how a gate
-  // stops gating without anyone noticing.
+  // Absence here means the file was DELETED, and that is a block.
+  //
+  // This function only ever runs for a tip that lands on main, so "the commit
+  // predates CLAUDE.md" -- true of intermediate and non-main commits, and the
+  // reason CLAUDE.md is deliberately NOT in REQUIRED_PATHS -- cannot describe
+  // the commit in front of it. The first draft returned success here with the
+  // message "Expected for a commit that predates the file", which meant a
+  // `git rm CLAUDE.md` landing on main removed the gate and its subject
+  // together, reported green, and explained itself with something untrue about
+  // the commit. A gate that can be disabled by deleting the file it guards is
+  // not a gate. (Found by the round-1 external review, 2026-08-09.)
   if (!fs.existsSync(subject)) {
-    console.log("");
-    console.log("CLAUDE_MD_LINT_SKIPPED: this commit has no CLAUDE.md, so the directive-file");
-    console.log("  lint did not run. Expected for a commit that predates the file.");
-    return true;
+    return blocked([
+      "the pushed tip for main has no CLAUDE.md.",
+      "This lint reads the directive file out of the COMMIT, so a push that deletes it",
+      "would otherwise take the gate away along with the file it protects.",
+      "Restore the file, or -- if the removal is genuinely intended:",
+      "  SKIP_CLAUDE_MD_LINT=1 git push",
+    ]);
   }
 
   if (!fs.existsSync(validator)) {
