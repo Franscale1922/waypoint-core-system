@@ -100,3 +100,11 @@ jobs:
         run: node scripts/verify-schema.mjs
       - name: Verify Structured Data (unit tests)
         run: npx vitest run --project unit tests/unit/faq-visibility.test.ts
+      # The deploy-time schema-drift report (scripts/guard-immutable-tables.mjs). Listed by
+      # name for the same reason as every job above. It matters here because the squash-merge
+      # commit GitHub creates is what actually deploys and never passes through the pre-push
+      # hook, so this is the only place these run against the tree that reaches production.
+      # Pure string classification over captured Prisma output — no database, no Prisma
+      # client, so it is safe under `npm ci --ignore-scripts`.
+      - name: Verify schema-drift report (unit tests)
+        run: npx vitest run --project unit tests/unit/schema-drift-report.test.ts
