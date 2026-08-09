@@ -15,6 +15,7 @@ first. The PR #21 section that used to head this file is now history and is summ
 | | |
 |---|---|
 | `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `f4af4f7`, everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on. It moved again during the #51 session, from `f84055c` to `f4af4f7` between the branch being cut and the first commit landing |
+| `gate/claude-md-directive-lint` | **merged as #52** (`a63401f`) on 2026-08-09, deployed green. **Remote branch deliberately NOT deleted** — the `CLAUDE.md` paragraph it adds names the clean tips as "`main` and the branch that added this gate", so deleting it would falsify a sentence in its own commit. Adds a pre-push lint of `CLAUDE.md`'s slash commands, main tips only. ⚠ Its production deploy re-synced the production DB — see the section below the State block |
 | `fix/webhook-allowlist-accuracy` | **merged as #51** (`b9920bf`), deployed green, remote branch deleted. Corrected a security-allowlist entry that claimed a signature check the route has never had, and fixed the same falsehood in six other places. See the section below the State block |
 | `fix/unsubscribe-recoverability-and-residuals` | **merged as #48** (`767bd78`), deployed green, remote branch deleted. Closed the residual PR #44 findings and made a wrong opt-out reversible. See the opt-out section below |
 | `claude/beehiiv-optout-sync` | **merged as #49** (`d416a1f`), deployed green. Carries beehiiv opt-outs into `SuppressionList`; webhook registered and proven in production with a real delete event. See the opt-out section below |
@@ -27,6 +28,48 @@ first. The PR #21 section that used to head this file is now history and is summ
 | `fix/content-refresh-ref-idempotency` | **merged as #39** (`2e4513f`), deployed green. **Remote branch still exists** — `--delete-branch` did not take, because `gh` cannot run its post-merge local checkout while `main` is checked out in the primary worktree. Safe to delete |
 | `claude/quirky-lumiere-fc6b90` | **abandoned**, PR **#36 closed** in favour of #39. **Remote branch still exists**, safe to delete. Do not reopen #36: it was cut before #34 and #37 landed in the same file |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
+
+### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
+
+`gate/claude-md-directive-lint` merged as `a63401f`. It lints `CLAUDE.md`'s slash commands on pushes
+landing on `main`, tip only, so a dead command name cannot rot in the file the way the retired
+`verify` command did through three review passes. Adversarially reviewed (Codex round 1, then a fresh
+Claude reviewer). 1336 tests pass locally; **28 of them are this gate's and CI does not run any of
+them** — `.github/workflows/verify-links.yml` runs a hand-enumerated list of test files and
+`tests/unit/pre-push-gate.test.ts` is not on it. Do not read a green `verify` check as coverage of
+this work.
+
+It **requires `~/dotfiles` at `fac61de` or later**. On a machine without it, `CLAUDE.md`'s
+"no waiver covers two" sentence is false. The Mini needs `cd ~/dotfiles && git pull && ./install.sh`.
+
+**⚠ The production `prisma db push` was NOT a no-op, and that was not predicted.** Read from the
+build logs, all three on the same `prisma/schema.prisma`:
+
+| Build | Endpoint | What `db push` said |
+|---|---|---|
+| `b9920bf` prod, 2026-08-05 | `ep-silent-sky-ad6xraj0…` | *"The database is already in sync"* |
+| `99d4367` preview, 2026-08-09 | `ep-blue-heart-adqokukr…` | *"The database is already in sync"* |
+| **`a63401f` prod, 2026-08-09** | `ep-silent-sky-ad6xraj0…` | **"🚀 Your database is now in sync … Done in 461ms"** |
+
+Those are Prisma's two *different* messages: the first means no diff, the second means it applied
+one. So **production had drifted from the committed schema between 2026-08-05 and 2026-08-09, and
+this deploy silently repaired it.** Git shows **zero** changes under `prisma/` between those two
+commits, so the drift did not come from our code.
+
+What is bounded, and what is not:
+
+- **Nothing was lost.** Plain `prisma db push` with no `--accept-data-loss` aborts rather than drop
+  data; it exited 0. `guard-immutable-tables` also passed on the 10 protected match-workspace tables.
+- **The site is healthy** — `/`, `/glossary` and the DB-backed `/api/stats` all 200 after the deploy.
+- **The cause is unknown and the evidence is gone**, because the push itself consumed it. The obvious
+  suspect — someone running `npm run build` locally, which writes to production — was **checked and
+  refuted**: no `.next` in the primary checkout or any worktree is newer than 2026-08-03. No preview
+  build in the window used the production endpoint, and the two branch pushes on 08-07/08-08
+  produced no deployment at all.
+
+**The durable fix is to make drift visible instead of self-healing**: have the build print
+`prisma migrate diff` between the live DB and the schema *before* `db push` runs. Until then, a
+future drift will be repaired just as silently. Tracked as a follow-up, not done here.
 
 ### The opt-out path became reversible, and grew a second channel (2026-08-05)
 
