@@ -172,3 +172,66 @@ describe("splitStatements refactor did not change findDestructiveOps", () => {
     ]);
   });
 });
+
+describe("the splitter is quote-aware, so the guard cannot be talked out of a block", () => {
+  // Codex round-1 High, reproduced before it was fixed: the old /--.*$/ comment strip and the
+  // bare ";" split were blind to string literals. A DEFAULT containing "--" truncated the
+  // statement, the DROP COLUMN clause after it vanished, and findDestructiveOps returned an
+  // EMPTY array for a destructive change to a protected decision-record table. Fail-open.
+  const withComment = `ALTER TABLE "MatchScore" ALTER COLUMN "note" SET DEFAULT 'https://x--y', DROP COLUMN "rank";`;
+
+  it("a '--' inside a string literal no longer hides a protected DROP COLUMN", () => {
+    expect(splitStatements(withComment)).toHaveLength(1);
+    expect(splitStatements(withComment)[0]).toContain("DROP COLUMN");
+    const findings = findDestructiveOps(withComment);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].table).toBe("MatchScore");
+    expect(findings[0].reason).toBe("DROP COLUMN");
+  });
+
+  it("a ';' inside a string literal does not split one statement into two", () => {
+    const sql = `ALTER TABLE "MatchScore" ALTER COLUMN "note" SET DEFAULT 'a;b', DROP COLUMN "rank";`;
+    expect(splitStatements(sql)).toHaveLength(1);
+    expect(findDestructiveOps(sql)).toHaveLength(1);
+  });
+
+  it("a ',' inside a string literal does not break clause splitting", () => {
+    const sql = `ALTER TABLE "MatchRun" ALTER COLUMN "actor" SET DEFAULT 'a,b', DROP COLUMN "actor";`;
+    expect(findDestructiveOps(sql)).toHaveLength(1);
+  });
+
+  it("still strips REAL comments, including a destructive op hidden behind one", () => {
+    // The other direction: comment handling must not regress into treating comments as SQL.
+    expect(splitStatements('-- DROP TABLE "MatchScore";\n')).toHaveLength(0);
+    expect(findDestructiveOps('-- DROP TABLE "MatchScore";\n')).toHaveLength(0);
+    // A real statement following a comment line is still seen.
+    expect(findDestructiveOps('-- DropTable\nDROP TABLE "MatchScore";')).toHaveLength(1);
+  });
+
+  it("handles dollar-quoted bodies and block comments without losing statements", () => {
+    const dollar = `ALTER TABLE "MatchScore" ALTER COLUMN "note" SET DEFAULT $tag$a;b--c$tag$, DROP COLUMN "rank";`;
+    expect(splitStatements(dollar)).toHaveLength(1);
+    expect(findDestructiveOps(dollar)).toHaveLength(1);
+
+    const block = `/* DROP TABLE "MatchScore"; */\nALTER TABLE "MatchRun" DROP COLUMN "actor";`;
+    expect(findDestructiveOps(block)).toHaveLength(1);
+  });
+});
+
+describe("the report never issues a false all-clear", () => {
+  it("says UNKNOWN, not NONE, when output could not be classified", () => {
+    // If the only content is unclassifiable, we do not know the DB is clean. Printing
+    // SCHEMA_DRIFT_NONE beside a warning would be exactly the false reassurance this PR removes.
+    const { drifted, text } = capture("SOMETHING UNEXPECTED FROM A FUTURE PRISMA;");
+    expect(drifted).toBe(false);
+    expect(text).toContain("SCHEMA_DRIFT_UNKNOWN");
+    expect(text).not.toContain("SCHEMA_DRIFT_NONE");
+    expect(text).toContain("SCHEMA_DRIFT_UNRECOGNIZED_OUTPUT");
+  });
+
+  it("still says NONE on a genuinely clean diff", () => {
+    const { text } = capture(CLEAN_DIFF);
+    expect(text).toContain("SCHEMA_DRIFT_NONE");
+    expect(text).not.toContain("SCHEMA_DRIFT_UNKNOWN");
+  });
+});

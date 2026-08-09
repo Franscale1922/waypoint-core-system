@@ -92,6 +92,40 @@ production gains no extra round-trip.
   `SCHEMA_DRIFT_NONE` exit 0; a drifted DB lists the statements exit 0; a dropped protected column
   prints the drift **first** and then `GUARD_BLOCKED` exit 1.
 
+**The adversarial review found a pre-existing fail-open in the guard, unrelated to drift reporting.**
+Codex round 1 flagged it and it **reproduced exactly**: `splitStatements`/`splitTopLevel` stripped
+`--` comments by regex and split on a bare `;`, both blind to string literals, so
+
+```
+ALTER TABLE "MatchScore" ALTER COLUMN "note" SET DEFAULT 'https://x--y', DROP COLUMN "rank";
+```
+
+truncated at the `--` inside the literal, the `DROP COLUMN` clause vanished, and
+`findDestructiveOps` returned an **empty array** for a destructive change to a protected
+decision-record table. A guard whose whole job is preventing silent loss of immutable records was
+defeatable by a default value containing two hyphens. Replaced with a quote-aware scanner
+(`sqlSplit`) handling `--` and nested block comments, `'…'` with `''` escapes, `"…"` identifiers and
+`$tag$…$tag$` bodies. This is a **security-relevant fix that predates this PR** and is the most
+important thing in it.
+
+Two further review outcomes, recorded so they are not re-litigated:
+
+- **Declined (Codex medium):** the report and `db push` are separate observations, so a change
+  landing in the seconds between them is applied without appearing in the report. Closing it means
+  applying the captured SQL ourselves instead of calling `db push`, which is a far larger and
+  riskier change. Knowingly accepted and now documented in the script header: the report narrows
+  the blind spot from "always" to "a few seconds", it does not eliminate it.
+- **Applied but NOT reproduced (Codex medium):** `process.exit()` can discard queued stdout on a
+  pipe. All four exit paths now set `process.exitCode` and return. **The predicted truncation did
+  not reproduce here** — 1.3 MB through a pipe lost nothing on macOS — so this is defensive
+  hardening, not an observed bug fixed. The real mitigation is the 200-statement cap.
+- Self-found: the report used to print `SCHEMA_DRIFT_NONE` even when output was unclassifiable,
+  a false all-clear. It now prints `SCHEMA_DRIFT_UNKNOWN` in that case and never asserts sync it
+  cannot prove.
+
+⚠ **Known limitation:** this makes drift visible in the build log, but nothing alerts on it. Someone
+still has to read the log or grep it. Alerting was not built and was not in scope.
+
 ### The opt-out path became reversible, and grew a second channel (2026-08-05)
 
 Three PRs on one path, in merge order. Read all three before touching suppression: each one's fix

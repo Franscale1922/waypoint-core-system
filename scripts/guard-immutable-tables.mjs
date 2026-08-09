@@ -36,6 +36,18 @@
  * already runs before `db push`, and re-running it would add a production round-trip plus a
  * second failure surface to re-fetch SQL we had in hand.
  *
+ * WHAT THE REPORT DOES *NOT* PROVE
+ * --------------------------------
+ * The report and `db push` are two separate observations of the database, seconds apart, and
+ * `db push` recomputes its own diff rather than applying the SQL printed here. So a change
+ * landing inside that window is applied without appearing in the report. The same
+ * time-of-check/time-of-use gap has always existed between this guard and `db push`, and
+ * closing it would mean applying the captured SQL ourselves instead of calling `db push` —
+ * a much larger and riskier change than the one this file is making. Raised by a Codex
+ * round-1 review and knowingly accepted; recorded here so the report is not read as a
+ * guarantee it cannot give. The report narrows the blind spot from "always" to "a few
+ * seconds"; it does not eliminate it.
+ *
  * FAIL-CLOSED, TWO DISTINCT CLASSES
  * ---------------------------------
  *   • GUARD_BLOCKED    — a destructive op on a protected table was found. Always hard-fails,
@@ -129,24 +141,100 @@ const isProtectedType = (name) => {
   return PROTECTED_TYPES.some((t) => t.toLowerCase() === bare);
 };
 
-// Split a string on top-level commas (ignoring commas inside parentheses), so a
-// multi-clause `ALTER TABLE ... ADD ..., DROP COLUMN ...` is examined clause-by-clause.
-function splitTopLevel(s) {
+/**
+ * Split SQL on `delimiter`, respecting quoting, and drop comments as it goes.
+ *
+ * WHY THIS IS NOT A REGEX (found by a Codex round-1 review, 2026-08-09, and reproduced)
+ * ------------------------------------------------------------------------------------
+ * The previous implementation stripped comments with /--.*$/ per line and split on a bare
+ * ";". Both are blind to string literals, and that made the guard FAIL OPEN:
+ *
+ *   ALTER TABLE "MatchScore" ALTER COLUMN "note" SET DEFAULT 'https://x--y', DROP COLUMN "rank";
+ *
+ * The `--` inside the literal truncated the statement, the `DROP COLUMN "rank"` clause
+ * vanished, and findDestructiveOps returned NOTHING for a destructive change to a protected
+ * decision-record table. A guard that exists to prevent silent data loss must not be
+ * defeated by a default value containing two hyphens.
+ *
+ * Handles, outside of quotes: `--` line comments and nested block comments. Preserves
+ * verbatim: single-quoted literals ('' escape), double-quoted identifiers ("" escape) and
+ * dollar-quoted bodies ($tag$…$tag$). `respectParens` additionally keeps the delimiter from
+ * splitting inside parentheses, which is what clause-splitting needs and statement-splitting
+ * must not do.
+ */
+function sqlSplit(text, delimiter, respectParens) {
   const parts = [];
-  let depth = 0;
   let cur = "";
-  for (const ch of s) {
-    if (ch === "(") depth++;
-    else if (ch === ")") depth = Math.max(0, depth - 1);
-    if (ch === "," && depth === 0) {
+  let depth = 0;
+  let i = 0;
+  const n = text.length;
+
+  while (i < n) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    // -- line comment: drop through end of line (the newline itself is kept as whitespace).
+    if (ch === "-" && next === "-") {
+      while (i < n && text[i] !== "\n") i++;
+      continue;
+    }
+    // /* block comment */, nested per PostgreSQL.
+    if (ch === "/" && next === "*") {
+      i += 2;
+      let nest = 1;
+      while (i < n && nest > 0) {
+        if (text[i] === "/" && text[i + 1] === "*") { nest++; i += 2; }
+        else if (text[i] === "*" && text[i + 1] === "/") { nest--; i += 2; }
+        else i++;
+      }
+      continue;
+    }
+    // 'string literal' / "quoted identifier" — copied through untouched, doubled quote escapes.
+    if (ch === "'" || ch === '"') {
+      const q = ch;
+      cur += q;
+      i++;
+      while (i < n) {
+        if (text[i] === q && text[i + 1] === q) { cur += q + q; i += 2; continue; }
+        if (text[i] === q) { cur += q; i++; break; }
+        cur += text[i++];
+      }
+      continue;
+    }
+    // $tag$ dollar-quoted body $tag$.
+    if (ch === "$") {
+      const tag = /^\$[A-Za-z_-￿][A-Za-z_0-9-￿]*\$|^\$\$/.exec(text.slice(i));
+      if (tag) {
+        const close = text.indexOf(tag[0], i + tag[0].length);
+        const end = close === -1 ? n : close + tag[0].length;
+        cur += text.slice(i, end);
+        i = end;
+        continue;
+      }
+    }
+
+    if (respectParens && ch === "(") depth++;
+    else if (respectParens && ch === ")") depth = Math.max(0, depth - 1);
+
+    if (ch === delimiter && depth === 0) {
       parts.push(cur);
       cur = "";
-    } else {
-      cur += ch;
+      i++;
+      continue;
     }
+    cur += ch;
+    i++;
   }
+
   if (cur.trim()) parts.push(cur);
   return parts;
+}
+
+// Split a string on top-level commas (ignoring commas inside parentheses and inside string
+// literals), so a multi-clause `ALTER TABLE ... ADD ..., DROP COLUMN ...` is examined
+// clause-by-clause.
+function splitTopLevel(s) {
+  return sqlSplit(s, ",", true);
 }
 
 /**
@@ -155,12 +243,7 @@ function splitTopLevel(s) {
  * about what counts as a statement.
  */
 export function splitStatements(sql) {
-  const noComments = sql
-    .split("\n")
-    .map((line) => line.replace(/--.*$/, ""))
-    .join("\n");
-  return noComments
-    .split(";")
+  return sqlSplit(sql, ";", false)
     .map((s) => s.trim().replace(/\s+/g, " "))
     .filter(Boolean);
 }
@@ -312,8 +395,16 @@ export function reportDrift(sql, log = console.log) {
   // Deliberately says "the live database", not "production": this same guard runs against a
   // local database in tests, and a log line that names production when it is not looking at
   // production is exactly the kind of confidently-wrong claim this change exists to remove.
-  if (!hasDrift) {
+  if (!hasDrift && unrecognized.length === 0) {
     log("SCHEMA_DRIFT_NONE: the live database already matches the schema; `db push` will be a no-op.");
+  } else if (!hasDrift) {
+    // Deliberately NOT SCHEMA_DRIFT_NONE. There is output we could not classify, so we do not
+    // know the database is clean, and printing an all-clear next to a warning would be exactly
+    // the false reassurance this change exists to remove.
+    log(
+      "SCHEMA_DRIFT_UNKNOWN: no recognizable DDL, but the diff produced output this guard could not\n" +
+        "classify, so it cannot assert the database matches the schema. The raw output is below.",
+    );
   } else {
     log(
       `SCHEMA_DRIFT_DETECTED: the live database differs from the schema in ${statements.length} statement(s).\n` +
@@ -331,6 +422,10 @@ export function reportDrift(sql, log = console.log) {
   if (unrecognized.length > 0) {
     log(`SCHEMA_DRIFT_UNRECOGNIZED_OUTPUT: ${unrecognized.length} non-SQL chunk(s) on stdout, shown verbatim:`);
     for (const chunk of unrecognized.slice(0, MAX_REPORTED_STATEMENTS)) log(`  ${chunk}`);
+    if (unrecognized.length > MAX_REPORTED_STATEMENTS) {
+      // Say what was dropped. A silent cap reads as "you have seen everything" when you have not.
+      log(`  … and ${unrecognized.length - MAX_REPORTED_STATEMENTS} more (truncated at ${MAX_REPORTED_STATEMENTS}).`);
+    }
   }
 
   return hasDrift;
@@ -346,11 +441,13 @@ async function main() {
     console.error(
       "GUARD_INFRA_ERROR: no database URL. Set POSTGRES_URL_NON_POOLING (or pass --from-url / GUARD_FROM_URL). Failing closed.",
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
   if (!existsSync(schemaPath)) {
     console.error(`GUARD_INFRA_ERROR: schema not found at ${schemaPath}. Failing closed.`);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   // Compute the diff, retrying only connection-class failures (transient DB blips).
@@ -374,7 +471,8 @@ async function main() {
         result.connectionError ? " (database unreachable after retries)" : ""
       }. This is NOT a detected destructive change — it means the guard could not verify the deploy is safe, so it fails closed.\n${result.stderr}`,
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   // ── Drift report ────────────────────────────────────────────────────────────────
@@ -395,13 +493,13 @@ async function main() {
     console.error(
       "\nIf this change is intentional, it must be done deliberately and off the auto-deploy path — not through a `prisma db push` deploy.",
     );
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   console.log(
     `✅ guard-immutable-tables: no destructive change to the ${PROTECTED_TABLES.length} protected match-workspace tables.`,
   );
-  process.exit(0);
 }
 
 // Only run when invoked directly, so tests can import findDestructiveOps() without
@@ -409,5 +507,14 @@ async function main() {
 const invokedDirectly =
   process.argv[1] && (process.argv[1].endsWith("guard-immutable-tables.mjs") || process.argv[1].endsWith("guard-immutable-tables"));
 if (invokedDirectly) {
-  main();
+  // No process.exit() anywhere in main(): on Linux CI stdout is a pipe and therefore
+  // ASYNCHRONOUS, so process.exit() discards whatever is still queued. That would drop the
+  // drift report this script exists to print, worst of all on the GUARD_BLOCKED path where
+  // the findings matter most. Setting process.exitCode and returning lets Node drain both
+  // streams and exit on its own; nothing here holds the event loop open (the diff runs via
+  // spawnSync, and the retry timers have already fired). Found by a Codex round-1 review.
+  main().catch((err) => {
+    console.error(`GUARD_INFRA_ERROR: the guard itself threw. Failing closed.\n${err?.stack || err}`);
+    process.exitCode = 1;
+  });
 }
