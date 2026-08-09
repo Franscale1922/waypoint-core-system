@@ -15,6 +15,7 @@ first. The PR #21 section that used to head this file is now history and is summ
 | | |
 |---|---|
 | `main` | **Do not trust a SHA written here — run `git fetch && git log --oneline origin/main -5`.** This row has been stale twice in one day: it sat at `ed22c03` for eleven commits, and the correction to `4b4f9ea` was overtaken by three more PRs within the hour. As of this line, `f4af4f7`, everything deployed green. It moved TWICE during the #47 session alone: #44 landed while the plan was being written and #46 while the code was, and #46 edited both files being worked on. It moved again during the #51 session, from `f84055c` to `f4af4f7` between the branch being cut and the first commit landing |
+| `fix/report-schema-drift` | 🔴 **PR #53 OPEN, awaiting Kelsey's go-live** (`8a04f24`). Both checks green; preview build verified. **Merging deploys to production and runs another production `prisma db push`** — `scripts/` and `.github/` are not in the `ignoreCommand` exclusion list. Makes schema drift visible (`SCHEMA_DRIFT_*`) and closes a **pre-existing fail-open** in `guard-immutable-tables.mjs`. See the section below the State block |
 | `gate/claude-md-directive-lint` | **merged as #52** (`a63401f`) on 2026-08-09, deployed green. **Remote branch deliberately NOT deleted** — the `CLAUDE.md` paragraph it adds names the clean tips as "`main` and the branch that added this gate", so deleting it would falsify a sentence in its own commit. Adds a pre-push lint of `CLAUDE.md`'s slash commands, main tips only. ⚠ Its production deploy re-synced the production DB — see the section below the State block |
 | `fix/webhook-allowlist-accuracy` | **merged as #51** (`b9920bf`), deployed green, remote branch deleted. Corrected a security-allowlist entry that claimed a signature check the route has never had, and fixed the same falsehood in six other places. See the section below the State block |
 | `fix/unsubscribe-recoverability-and-residuals` | **merged as #48** (`767bd78`), deployed green, remote branch deleted. Closed the residual PR #44 findings and made a wrong opt-out reversible. See the opt-out section below |
@@ -125,6 +126,19 @@ Two further review outcomes, recorded so they are not re-litigated:
 
 ⚠ **Known limitation:** this makes drift visible in the build log, but nothing alerts on it. Someone
 still has to read the log or grep it. Alerting was not built and was not in scope.
+
+**Still to do: nothing but the merge.** PR #53 is green and reviewed; it is held only for the
+go-live decision, because merging runs another production `prisma db push`. That push is itself the
+next real test — if production has drifted again since 08-09, the build log will now name the
+statements instead of quietly applying them.
+
+**Local-only file created while verifying, so it is not a mystery later:** the worktree
+`.claude/worktrees/optimistic-tharp-3ea177/` now has a `.env.test` holding
+`TEST_DATABASE_URL=postgresql://…@localhost:5432/waypoint_test`. It is **gitignored** (`.gitignore:34`),
+contains no secret, and points only at the pre-existing local `waypoint_test` database. It exists
+because `tests/match-workspace/**` needs it and no `.env.test` was present; without it that whole
+project silently cannot run. Delete it freely. The throwaway `waypoint_drift_test` database used for
+the end-to-end checks was dropped.
 
 ### The opt-out path became reversible, and grew a second channel (2026-08-05)
 
