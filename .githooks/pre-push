@@ -125,6 +125,21 @@ if [ "$SKIP_ARCHIVE_VERIFY" != "1" ] && [ -f "$VERIFIER" ]; then
   exit $?
 fi
 
+# The degraded path below runs NONE of the orchestrator's checks, the CLAUDE.md
+# directive lint included. Everything about that lint insists a skip must be
+# visible or it is a lie -- and this was the one route that skipped it in
+# silence, because the valve that gets here is a different one
+# (SKIP_ARCHIVE_VERIFY), it is what extractTree's own failure message tells
+# people to reach for, and the degraded banner talks only about the working
+# tree. Say it here, and only when a tip actually lands on main, so the line
+# means something when it appears.
+if [ -n "$MAIN_ARGS" ]; then
+  echo ""
+  echo "CLAUDE_MD_LINT_SKIPPED: this push lands on main, but the archive verifier did not"
+  echo "  run, so the CLAUDE.md directive-file lint did not either. Nothing checked that the"
+  echo "  commands this repo's rules name still resolve."
+fi
+
 # ---------------------------------------------------------------------------
 # Degraded path. Reached when the orchestrator is absent (a checkout whose
 # branch predates it) or when it is switched off deliberately.

@@ -558,9 +558,13 @@ and `--no-verify` is banned, so there would be no way past. Landing-on-`main` is
   **blocked**, not skipped: the gate is not removable by removing its subject. Absence is only
   treated as "this commit predates the file" for intermediate and non-`main` commits, which is where
   that is actually true. The valve is the way through if a removal is genuinely intended.
-- **What it cannot see.** The validator recognises only names matching `[a-z][a-z0-9-]*`, so `/QA`,
-  `/watch_video` and a dotted `/effort.xhigh` go invisible rather than red — the underscore-for-hyphen
-  typo being the plausible one. "Names a command that does not resolve" means *within that grammar*.
+- **What it cannot see — and the sharper case it MIS-sees.** Only names matching `[a-z][a-z0-9-]*`
+  are recognised, so `/QA` and `/watch_video` go invisible rather than red; the underscore-for-hyphen
+  typo is the plausible one. A **dotted** name is worse than invisible, because it is **truncated to
+  its stem**: `/effort.xhigh` is read as `/effort`, resolves, and the file earns a clean attestation
+  while naming an invocation that does not exist. So "names a command that does not resolve" means
+  *within that grammar*, and a green result is never proof the names are right — only that the ones
+  it could see exist.
 - **⚠ A machine divergence is not an `allow-missing` case.** 3 of the 8 commands this file names are
   per-machine installs, so a byte-identical file can pass here and block on the Mini. Install the
   missing skill, or use the valve. Writing `<!-- claude-md-lint: allow-missing … -->` for it records

@@ -556,6 +556,37 @@ describe.skipIf(!IN_GIT_REPO)("pre-push gate: degraded mode is loud", () => {
     },
     TIMEOUT,
   );
+
+  it(
+    "says the CLAUDE.md lint was skipped too, but only when the push lands on main",
+    () => {
+      resetToSeed();
+      const env = { SKIP_ARCHIVE_VERIFY: "1", SKIP_UNIT_TESTS: "1" };
+
+      // SKIP_ARCHIVE_VERIFY is a DIFFERENT valve from SKIP_CLAUDE_MD_LINT, and it
+      // routes past the orchestrator entirely -- so it took the directive lint
+      // with it, in silence, while the banner talked only about the working tree.
+      // It is also the valve extractTree's own failure message tells people to
+      // reach for, so this is a route people are actively sent down.
+      spawnSync("git", ["update-ref", "-d", "refs/heads/main"], {
+        cwd: remote,
+        encoding: "utf8",
+        timeout: TIMEOUT,
+        env: gitEnv() as unknown as NodeJS.ProcessEnv,
+      });
+      const onMain = pushThrough(NEW_HOOK_DIR, "main", env);
+      expect(onMain.code).toBe(0);
+      expect(onMain.out).toContain("CLAUDE_MD_LINT_SKIPPED");
+
+      // Differential: the line has to MEAN something when it shows up. A push
+      // going anywhere else never had the lint to skip, so claiming it did would
+      // be its own small lie.
+      const elsewhere = pushThrough(NEW_HOOK_DIR, "degraded-not-main", env);
+      expect(elsewhere.code).toBe(0);
+      expect(elsewhere.out).not.toContain("CLAUDE_MD_LINT_SKIPPED");
+    },
+    TIMEOUT,
+  );
 });
 
 describe.skipIf(!IN_GIT_REPO)("the hook itself", () => {
