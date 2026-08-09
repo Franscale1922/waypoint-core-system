@@ -68,8 +68,29 @@ What is bounded, and what is not:
   produced no deployment at all.
 
 **The durable fix is to make drift visible instead of self-healing**: have the build print
-`prisma migrate diff` between the live DB and the schema *before* `db push` runs. Until then, a
-future drift will be repaired just as silently. Tracked as a follow-up, not done here.
+`prisma migrate diff` between the live DB and the schema *before* `db push` runs.
+
+**Done on `fix/report-schema-drift` (2026-08-09).** The key finding was that the diff was
+**already being computed and thrown away**: `scripts/guard-immutable-tables.mjs` runs exactly
+`prisma migrate diff --from-url … --to-schema-datamodel prisma/schema.prisma --script` before
+`db push`, and on `a63401f` it held the drift SQL in hand, found nothing destructive among the 10
+protected tables, printed its one ✅ line and discarded it. So the fix prints what that call
+already returns rather than adding a second `migrate diff`; **`vercel.json` is unchanged**, and
+production gains no extra round-trip.
+
+- **Report-only, by contract.** It never changes the exit code. Failing the build on drift would
+  deadlock every deploy behind an out-of-band change (a Neon-side index, an extension) including
+  the deploy that would repair it, with `--no-verify` banned and no valve. The destructive case
+  stays fail-closed in `findDestructiveOps`, untouched.
+- **Grep a build log for `SCHEMA_DRIFT_DETECTED`** (or `SCHEMA_DRIFT_NONE` on a clean build).
+- Two traps were measured, not assumed, against the installed Prisma 6.19.2: a clean diff prints
+  `-- This is an empty migration.`, **not** an empty string, so `sql.trim() === ""` would report
+  drift on every build; and the update-notifier banner carries no `;`, so if it ever preceded the
+  SQL it would merge with the first real statement and **hide** genuine drift. The banner is
+  suppressed via `PRISMA_HIDE_UPDATE_MESSAGE` and stripped line-wise before splitting.
+- Verified end-to-end against a throwaway **local** Postgres (never production): in-sync reports
+  `SCHEMA_DRIFT_NONE` exit 0; a drifted DB lists the statements exit 0; a dropped protected column
+  prints the drift **first** and then `GUARD_BLOCKED` exit 1.
 
 ### The opt-out path became reversible, and grew a second channel (2026-08-05)
 

@@ -14,10 +14,27 @@
  * WHAT IT DOES
  * ------------
  * Before `db push` runs, it recomputes the SAME from(DB)→to(schema) diff via
- * `prisma migrate diff --script` and refuses the build if the SQL contains a destructive
- * operation touching any of the protected match-workspace tables (or the 2 frozen enums). It is
- * DOMAIN-SCOPED on purpose: it protects only the decision-record tables, not the rest of
- * the schema.
+ * `prisma migrate diff --script` and does two separate things with it:
+ *
+ *   1. REPORTS the whole diff (reportDrift) — every statement `db push` is about to apply,
+ *      whatever table it touches. Report-only; it never affects the exit code.
+ *   2. REFUSES the build if the SQL contains a destructive operation touching any of the
+ *      protected match-workspace tables (or the 2 frozen enums). DOMAIN-SCOPED on purpose:
+ *      it protects only the decision-record tables, not the rest of the schema.
+ *
+ * WHY (1) EXISTS (added 2026-08-09)
+ * ---------------------------------
+ * Production drifted off the committed schema between 2026-08-05 and 2026-08-09 and the
+ * `a63401f` deploy silently repaired it — `db push` printed "Your database is now in sync"
+ * where earlier builds printed "already in sync". Git showed zero changes under prisma/, so
+ * the drift did not come from our code, and the cause is still unknown because the push
+ * consumed the only evidence. This guard was ALREADY holding that evidence: it computed the
+ * diff, found nothing destructive in the 10 protected tables, printed one ✅ line and threw
+ * the SQL away. Now it prints it. Grep a build log for SCHEMA_DRIFT_DETECTED.
+ *
+ * That is also why there is no second `migrate diff` call anywhere in the build: this one
+ * already runs before `db push`, and re-running it would add a production round-trip plus a
+ * second failure surface to re-fetch SQL we had in hand.
  *
  * FAIL-CLOSED, TWO DISTINCT CLASSES
  * ---------------------------------
@@ -133,22 +150,66 @@ function splitTopLevel(s) {
 }
 
 /**
+ * Drop SQL line comments (-- ...), then split into normalized statements on ";".
+ * Shared by findDestructiveOps() and summarizeDrift() so the two can never disagree
+ * about what counts as a statement.
+ */
+export function splitStatements(sql) {
+  const noComments = sql
+    .split("\n")
+    .map((line) => line.replace(/--.*$/, ""))
+    .join("\n");
+  return noComments
+    .split(";")
+    .map((s) => s.trim().replace(/\s+/g, " "))
+    .filter(Boolean);
+}
+
+// A statement Prisma's migrate-diff can emit. Used only to tell real DDL apart from
+// non-SQL noise on stdout (see summarizeDrift); the destructive scan does not use it.
+const SQL_STATEMENT = /^(ALTER|CREATE|DROP|COMMENT|TRUNCATE|INSERT|UPDATE|DELETE|SET|GRANT|REVOKE|RENAME)\b/i;
+
+// Prisma's update-notifier draws a box. Those lines must be removed BEFORE splitting on
+// ";", not classified afterwards: the banner contains no semicolon, so if it were ever
+// printed ahead of the SQL it would merge with the first real statement into one chunk and
+// that chunk would fail the SQL_STATEMENT test — silently hiding genuine drift. Observed
+// order today is SQL-then-banner, but correctness here must not depend on it.
+// Anchored to the START of the line (every notifier line opens with ┌ │ or └) so a box
+// character appearing inside a real SQL string literal cannot delete that statement.
+const BANNER_LINE = /^\s*[─-╿]/;
+
+/**
+ * Classify `migrate diff --script` output into "the DB matches the schema" vs "it does not".
+ *
+ * Two things make a naive emptiness check wrong, both verified against Prisma 6.19.2:
+ *   • A clean diff is NOT an empty string — it is the single line
+ *     `-- This is an empty migration.`, which only disappears after comments are stripped.
+ *   • Prisma's update-notifier banner can land on stdout. It carries no ";", so it would
+ *     survive as one pseudo-statement and read as permanent drift on every build.
+ *
+ * So: statements are comment-stripped chunks that begin with a SQL verb. Anything left over
+ * is returned as `unrecognized` and reported rather than silently dropped — under-reporting
+ * here would recreate the exact silence this whole change exists to remove.
+ */
+export function summarizeDrift(sql) {
+  const withoutBanner = sql
+    .split("\n")
+    .filter((line) => !BANNER_LINE.test(line))
+    .join("\n");
+  const chunks = splitStatements(withoutBanner);
+  const statements = chunks.filter((c) => SQL_STATEMENT.test(c));
+  const unrecognized = chunks.filter((c) => !SQL_STATEMENT.test(c));
+  return { statements, unrecognized, hasDrift: statements.length > 0 };
+}
+
+/**
  * Scan migrate-diff SQL and return an array of {table, statement, reason} for every
  * destructive operation on a protected table/type. Empty array = clean.
  */
 export function findDestructiveOps(sql) {
   const findings = [];
-  // Drop SQL line comments (-- ...), then split into statements on ";".
-  const noComments = sql
-    .split("\n")
-    .map((line) => line.replace(/--.*$/, ""))
-    .join("\n");
-  const statements = noComments
-    .split(";")
-    .map((s) => s.trim().replace(/\s+/g, " "))
-    .filter(Boolean);
 
-  for (const stmt of statements) {
+  for (const stmt of splitStatements(sql)) {
     // DROP TABLE [IF EXISTS] <table>
     let m = /^DROP TABLE\s+(?:IF EXISTS\s+)?([^\s]+)/i.exec(stmt);
     if (m && isProtectedTable(m[1])) {
@@ -210,7 +271,14 @@ function runMigrateDiff(fromUrl, schemaPath) {
       schemaPath,
       "--script",
     ],
-    { encoding: "utf8", cwd: ROOT, env: process.env },
+    {
+      encoding: "utf8",
+      cwd: ROOT,
+      // Keep Prisma's update-notifier banner off stdout so it cannot be mistaken for DDL.
+      // summarizeDrift() also filters it defensively — a false "drift detected" on every
+      // build would train everyone to ignore the marker, which is the failure being fixed.
+      env: { ...process.env, PRISMA_HIDE_UPDATE_MESSAGE: "1" },
+    },
   );
   if (res.error) {
     return { ok: false, connectionError: false, stderr: String(res.error.message || res.error) };
@@ -220,6 +288,52 @@ function runMigrateDiff(fromUrl, schemaPath) {
     return { ok: false, connectionError: looksLikeConnectionError(stderr), stderr };
   }
   return { ok: true, sql: res.stdout || "" };
+}
+
+// Cap on printed DDL, so a pathological diff cannot flood the build log. A real drift is
+// a handful of statements; anything near this cap is itself the story.
+const MAX_REPORTED_STATEMENTS = 200;
+
+/**
+ * Print what the live database and prisma/schema.prisma disagree about.
+ *
+ * REPORT-ONLY BY CONTRACT — this never fails the build and never touches the exit code.
+ * Rationale: `db push` reconciling production onto the committed schema is this repo's
+ * INTENDED mechanism, so failing on any drift would deadlock every deploy — including the
+ * deploy that would repair it — behind an out-of-band change (a Neon-side index, an
+ * extension) nobody committed. `--no-verify` is banned and there is no valve. The harm
+ * this addresses is drift being INVISIBLE, not drift being repaired; the genuinely
+ * dangerous case (a destructive op on a protected table) stays fail-closed in
+ * findDestructiveOps() and is unaffected by anything here.
+ */
+export function reportDrift(sql, log = console.log) {
+  const { statements, unrecognized, hasDrift } = summarizeDrift(sql);
+
+  // Deliberately says "the live database", not "production": this same guard runs against a
+  // local database in tests, and a log line that names production when it is not looking at
+  // production is exactly the kind of confidently-wrong claim this change exists to remove.
+  if (!hasDrift) {
+    log("SCHEMA_DRIFT_NONE: the live database already matches the schema; `db push` will be a no-op.");
+  } else {
+    log(
+      `SCHEMA_DRIFT_DETECTED: the live database differs from the schema in ${statements.length} statement(s).\n` +
+        "`prisma db push` is about to apply the following. If no commit under prisma/ explains it,\n" +
+        "the database drifted out-of-band and this deploy is repairing it — investigate rather than ignore.",
+    );
+    for (const stmt of statements.slice(0, MAX_REPORTED_STATEMENTS)) log(`  ${stmt};`);
+    if (statements.length > MAX_REPORTED_STATEMENTS) {
+      log(`  … and ${statements.length - MAX_REPORTED_STATEMENTS} more (truncated at ${MAX_REPORTED_STATEMENTS}).`);
+    }
+  }
+
+  // Never dropped silently: anything on stdout that is not SQL and not a comment is
+  // reported, so a future Prisma output change cannot quietly hide drift behind this filter.
+  if (unrecognized.length > 0) {
+    log(`SCHEMA_DRIFT_UNRECOGNIZED_OUTPUT: ${unrecognized.length} non-SQL chunk(s) on stdout, shown verbatim:`);
+    for (const chunk of unrecognized.slice(0, MAX_REPORTED_STATEMENTS)) log(`  ${chunk}`);
+  }
+
+  return hasDrift;
 }
 
 async function main() {
@@ -262,6 +376,12 @@ async function main() {
     );
     process.exit(1);
   }
+
+  // ── Drift report ────────────────────────────────────────────────────────────────
+  // Printed BEFORE the destructive scan on purpose: if the guard is about to hard-fail,
+  // the log should still carry what drifted. This step never changes the exit code —
+  // see reportDrift()'s contract.
+  reportDrift(result.sql);
 
   const findings = findDestructiveOps(result.sql);
   if (findings.length > 0) {
