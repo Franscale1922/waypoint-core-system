@@ -399,7 +399,149 @@ function extractTree(sha, work, cwd) {
 }
 
 /** Run the four checks inside an extracted tree. Returns true when all pass. */
-function runChecks(tree, cwd, runTests) {
+/**
+ * Lint the pushed tree's CLAUDE.md: does every slash command it names resolve?
+ *
+ * WHY ONLY ON main, AND ONLY ON THE TIP. Measured 2026-08-07 before building
+ * this: of 19 remote branch tips carrying CLAUDE.md, exactly ONE passes --
+ * origin/main. 17 of the last 21 commits touching the file fail too, because
+ * every one before 2026-08-05 names the retired `/verify`. So the placement is
+ * the whole design, and three obvious ones are unusable given that CLAUDE.md
+ * bans --no-verify and a false positive is therefore a hard block with no way
+ * past:
+ *   - per commit (where the content checks live): blocks ~every push
+ *   - ~/dotfiles's own shape (blob vs remote baseline, lint anything on a new
+ *     branch): blocks 18 of 19
+ *   - scoped to pushes that touch CLAUDE.md: still blocks 4 live branches
+ *   - main only, tip only: blocks 0
+ * The four branches the third option would block carry genuinely stale
+ * governance. That is a re-stamping job, not something to discover through a
+ * blocked push.
+ *
+ * WHY $HOME, when ~/dotfiles's pre-push forbids exactly that. There, the repo
+ * SHIPS the validator, so reaching for $HOME would validate every clone against
+ * one machine's working tree, and a $HOME *fallback* would silently borrow a
+ * validator when the repo's own had been deleted -- both were shipped there and
+ * both were caught. This repo ships no copy, so $HOME is the only source there
+ * is. The correct handling is a LOUD skip when it is absent, never a silent one
+ * -- and never a vendored second copy: the validator is out of bounds to edit,
+ * and a fork of it would drift from the original in exactly the way that makes
+ * two copies of one rule a known failure.
+ *
+ * RESIDUAL, and the reason the valve exists: the validator resolves names
+ * against ${CLAUDE_CONFIG_DIR:-$HOME/.claude}, and 3 of the 8 commands this
+ * repo's CLAUDE.md names are per-machine installs (/ground, /qa, /review). A
+ * byte-identical blob can pass on one machine and block on another. The valve is
+ * the escape for that; installing the missing skill is the fix. Do NOT reach for
+ * the validator's own `allow-missing` waiver to route around a machine
+ * divergence -- that writes a false "deliberately absent" claim into the file,
+ * which the stamp then propagates to all 39 governed files.
+ */
+function lintDirectiveFile(tree, env) {
+  const subject = path.join(tree, "CLAUDE.md");
+  const validator =
+    env.CLAUDE_MD_VALIDATOR ||
+    path.join(os.homedir(), "dotfiles", "projects", "check-claude-md-commands.sh");
+
+  // Absence here means the file was DELETED, and that is a block.
+  //
+  // This function only ever runs for a tip that lands on main, so "the commit
+  // predates CLAUDE.md" -- true of intermediate and non-main commits, and the
+  // reason CLAUDE.md is deliberately NOT in REQUIRED_PATHS -- cannot describe
+  // the commit in front of it. The first draft returned success here with the
+  // message "Expected for a commit that predates the file", which meant a
+  // `git rm CLAUDE.md` landing on main removed the gate and its subject
+  // together, reported green, and explained itself with something untrue about
+  // the commit. A gate that can be disabled by deleting the file it guards is
+  // not a gate. (Found by the round-1 external review, 2026-08-09.)
+  if (!fs.existsSync(subject)) {
+    return blocked([
+      "the pushed tip for main has no CLAUDE.md.",
+      "This lint reads the directive file out of the COMMIT, so a push that deletes it",
+      "would otherwise take the gate away along with the file it protects.",
+      "Restore the file, or -- if the removal is genuinely intended:",
+      "  SKIP_CLAUDE_MD_LINT=1 git push",
+    ]);
+  }
+
+  if (!fs.existsSync(validator)) {
+    console.log("");
+    console.log(`CLAUDE_MD_LINT_SKIPPED: ${validator} not found, so the`);
+    console.log("  directive-file lint did not run. It is a dotfiles tool and this repo does");
+    console.log("  not ship it, so a fresh clone, CI, or a machine that has not run its");
+    console.log("  dotfiles catch-up will not have it.");
+    console.log("  Install:   cd ~/dotfiles && git pull && ./install.sh");
+    console.log("  Elsewhere: CLAUDE_MD_VALIDATOR=/path/to/check-claude-md-commands.sh");
+    return true;
+  }
+
+  const r = capture("bash", [validator, subject], { cwd: tree, env });
+  const out = `${r.stdout || ""}${r.stderr || ""}`;
+
+  // 0 / 1 / 2 mean three different things and collapsing them is a real bug in
+  // both directions: treating every nonzero as "dead command" blocks with a
+  // wrong reason, and treating anything but 1 as a pass fails open. Found the
+  // hard way while measuring this -- a probe that fed the validator a process
+  // substitution reported main as FAILING, when the validator had simply refused
+  // a non-regular-file argument (it tests `[ ! -f "$f" ]` and exits 2).
+  if (r.error || r.signal !== null || (r.status !== 0 && r.status !== 1)) {
+    if (out.trim()) console.error(out);
+    return blocked([
+      `the CLAUDE.md directive-file lint could not run (${describeFailure(r)}).`,
+      "This is a tooling or input error, NOT a dead command -- the validator exits 2",
+      "for a usage/input problem and 1 for a command that does not resolve.",
+      `Check by hand:  bash ${validator} --list CLAUDE.md`,
+      "Genuinely need to skip?  SKIP_CLAUDE_MD_LINT=1 git push",
+    ]);
+  }
+
+  if (r.status === 1) {
+    console.error(out);
+    return blocked([
+      "CLAUDE.md names a slash command that does not resolve on this machine.",
+      "A rule that names a command which does not exist is a rule that cannot be",
+      "followed. Either fix the name, or -- if it is genuinely absent on purpose --",
+      "declare it in the file itself:",
+      "  <!-- claude-md-lint: allow-missing <name> (why) -->",
+      "",
+      "If the command exists elsewhere and is only missing HERE, that is a machine",
+      "divergence: install the skill on this machine, or SKIP_CLAUDE_MD_LINT=1 for",
+      "this push. Do NOT use allow-missing for it -- that records a false",
+      "'deliberately absent' claim which the stamp then copies into every repo.",
+      "",
+      "Note this is read from the COMMIT, not your working tree.",
+    ]);
+  }
+
+  // Exit 0 is not yet a pass. The validator discards its own extractor's exit
+  // status, so a failed extraction prints "OK <file>: 0 command(s) resolve" and
+  // exits 0 -- the same vacuous-pass shape this repo already shipped once in
+  // verify-links. Any file carrying the franscale- governance blocks contains
+  // /model and /effort by construction, so a zero count is proof the extractor
+  // broke, never proof the file is clean.
+  const counted = out.match(/(\d+) command\(s\) resolve/);
+  if (counted === null) {
+    if (out.trim()) console.error(out);
+    return blocked([
+      "the CLAUDE.md lint exited 0 but printed no command count, so there is no",
+      "evidence it checked anything. Refusing to read that as a pass.",
+      `Check by hand:  bash ${validator} --list CLAUDE.md`,
+      "Genuinely need to skip?  SKIP_CLAUDE_MD_LINT=1 git push",
+    ]);
+  }
+  if (Number(counted[1]) === 0) {
+    if (out.trim()) console.error(out);
+    return blocked([
+      "the CLAUDE.md lint resolved ZERO commands, which means its extractor failed,",
+      "not that the file is clean. Any file carrying the franscale- blocks contains",
+      "/model and /effort, so zero is impossible for a file this gate should see.",
+      `Check by hand:  bash ${validator} --list CLAUDE.md`,
+    ]);
+  }
+  return true;
+}
+
+function runChecks(tree, cwd, runTests, lintClaudeMd) {
   const env = { ...process.env };
 
   // node_modules must be in place BEFORE any check, not just before vitest.
@@ -473,6 +615,27 @@ function runChecks(tree, cwd, runTests) {
     }
   }
 
+  // 2c. Directive-file lint, on pushes that land on main only. `lintClaudeMd`
+  //     already encodes "this is the tip AND it is going to main"; the decision
+  //     is made in main(), where the ref information actually lives.
+  //
+  //     Deliberately NOT gated on `runTests`. That parameter means "is the tip"
+  //     at its call site but is also what SKIP_UNIT_TESTS switches off, and one
+  //     variable with two meanings is the bug this repo has already shipped
+  //     twice -- SKIP_BIP_DRIFT=0 and SKIP_UNIT_TESTS=0 each silently disabled
+  //     their own guard. This valve is separate and, like those two after they
+  //     were corrected, is tested for exactly "1".
+  if (lintClaudeMd) {
+    if (env.SKIP_CLAUDE_MD_LINT === "1") {
+      // Green-because-skipped has to be visible, or the skip is a lie.
+      console.log("");
+      console.log("CLAUDE_MD_LINT_SKIPPED: SKIP_CLAUDE_MD_LINT=1, so the directive-file lint");
+      console.log("  did not run for this push to main.");
+    } else if (!lintDirectiveFile(tree, env)) {
+      return false;
+    }
+  }
+
   // 3. Brand-identity map drift. The extracted copy must be the one invoked, or
   //    it would compare the INSTALLED repo's map and silently validate the wrong
   //    tree. Its registry source is an absolute homedir()/BIP_REGISTRY_PATH path
@@ -531,7 +694,7 @@ function runChecks(tree, cwd, runTests) {
 // exactly the one we just created.
 let activeWorkdir = null;
 
-function verifyOne(sha, cwd, runTests) {
+function verifyOne(sha, cwd, runTests, lintClaudeMd) {
   let work;
   try {
     // realpath FIRST: on macOS tmpdir() is /var/..., a symlink to /private/var,
@@ -545,7 +708,7 @@ function verifyOne(sha, cwd, runTests) {
   try {
     const tree = extractTree(sha, work, cwd);
     if (tree === null) return false;
-    return runChecks(tree, cwd, runTests);
+    return runChecks(tree, cwd, runTests, lintClaudeMd);
   } finally {
     removeWorkdir(work);
     activeWorkdir = null;
@@ -553,7 +716,34 @@ function verifyOne(sha, cwd, runTests) {
 }
 
 function main() {
-  const shas = process.argv.slice(2).filter(Boolean);
+  const argv = process.argv.slice(2).filter(Boolean);
+
+  // Which pushed tips land on main. The hook decides this, because only the hook
+  // sees the ref list on stdin -- and it reads the REMOTE ref, never the local
+  // one: `git push origin HEAD:refs/heads/main` has a local ref of HEAD.
+  //
+  // `--main-tips-declared` is always passed, even when the answer is "none", so
+  // that "not pushing to main" and "the hook predates this feature" are
+  // distinguishable. Without it a version-skewed hook would silently disable the
+  // lint, which is precisely the quiet fail-open this file exists to end. The
+  // two are committed together, but with long-lived branches around, a checkout
+  // carrying an older hook is a real shape, not a hypothetical.
+  const mainTipsDeclared = argv.includes("--main-tips-declared");
+  const mainTips = new Set();
+  const shas = [];
+  for (let i = 0; i < argv.length; i++) {
+    if (argv[i] === "--main-tips-declared") continue;
+    if (argv[i] === "--main-tip") {
+      const value = argv[i + 1];
+      if (value !== undefined) {
+        mainTips.add(value);
+        i++;
+      }
+      continue;
+    }
+    shas.push(argv[i]);
+  }
+
   if (shas.length === 0) {
     // Not treated as success. A delete-only push has nothing to verify, but
     // that decision belongs to the hook, which simply does not call this. Zero
@@ -565,6 +755,13 @@ function main() {
   }
 
   sweepStaleWorkdirs();
+
+  if (!mainTipsDeclared) {
+    console.log("");
+    console.log("NOT VERIFIED: the hook did not declare which tips land on main, so the");
+    console.log("  CLAUDE.md directive-file lint did not run. The hook and this script are");
+    console.log("  committed together, so this means one of them came from an older branch.");
+  }
 
   const cwd = process.cwd();
   const plural = shas.length === 1 ? "commit" : "commits";
@@ -581,7 +778,7 @@ function main() {
     for (const commit of commits) {
       const isTip = commit === commits[commits.length - 1];
       console.log(`\n[${commit.slice(0, 12)}]${isTip ? "" : " (intermediate)"}`);
-      if (!verifyOne(commit, cwd, isTip)) process.exit(1);
+      if (!verifyOne(commit, cwd, isTip, isTip && mainTips.has(sha))) process.exit(1);
     }
   }
   process.exit(0);
