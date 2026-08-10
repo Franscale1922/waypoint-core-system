@@ -153,6 +153,95 @@ HARD gate. Reproduced:
 Bounded at `\n` as well. This package is a `file:` dependency of `waypoint-video`, so one fix covers
 both surfaces. **Opposite remedy to §3** — narrowing, because this gate is permissive.
 
+> **✅ MERGED 2026-08-10 (fourth session) as `faec5e9`, and the paragraph above understates it by a
+> lot.** "Bounded at `\n` as well" closed 32 of 128 combinations. Full write-up: §4a below.
+
+### 4a. waypoint-compliance — ✅ MERGED `faec5e9`, and what the small fix missed
+
+**Second repo in a row where "a small bounded fix" was the wrong premise.** Every figure below was
+produced by execution on 2026-08-10, not read.
+
+Same 128-combination sweep (16 trigger terms × 8 separators), three states of the same window:
+
+| state | `sentenceAt` boundary | failing open |
+|---|---|---|
+| `origin/main` | `.!?` | **128 / 128** |
+| PR #1 as it stood | `.!?` + LF | **96 / 128** |
+| merged | `.!?` + all 7 terminators | **0 / 128** |
+
+The earlier "48 of 80" figure in the third-session handoff was measured over **5** separators, before
+VT/FF/NEL were known. It was not wrong, it was under-scoped — quote 96/128 instead.
+
+**Six more instances of the class in the same package**, four of them found only because the review
+kept pressing:
+
+1. **BANNED cat 13** — `"A recent client\nmade 200k"` PASSED `no-earnings-claim`. HARD, non-waivable.
+2. **BANNED cat 1** — `"Owners here earn\n$5,000 monthly"` PASSED. Also HARD. Initially dismissed as
+   "regex-level only, usually masked" off a single fixture that happened to contain the vault
+   substring `franchisees earn`; a substring-free fixture shows the gate genuinely passing.
+3. **AI_TELLS_SOFT** `not only`/`not just` twins — same miss, advisory.
+4. **`emdashHits`** — `/ - /` cannot see a dash whose trailing space *is* the line break.
+5. **The `m` flag only reaches column zero** — `"  Indeed,"` and `"- Indeed,"` still walked through
+   after the first fix, which are precisely the indented deck-cell and bullet shapes cited as the
+   motivation. An anchor is a narrowing too.
+6. **VT, FF and NEL were missing** from a set documented as "every character that ends a line".
+   Worse than a gap: `\s` does not match NEL at all, and JS multiline `^` honours none of the three,
+   so neither the anchor nor the whitespace class could ever have covered them.
+
+Plus a consequence of the fix itself: once a matched span can *contain* a terminator, six code paths
+that quote copy back to the caller start emitting raw control characters into gate details that go
+to terminals, `qa-report.json` and Slack.
+
+#### The generalisable finding — polarity decides the direction, per check, in the same file
+
+- **Permissive check** ("is a definition nearby?") → window must be **NARROW** → stop at every terminator.
+- **Prohibitive check** ("does this say something banned?") → window must be **WIDE** → never stop at one.
+
+Same defect class, opposite repairs, both in one file. **This is why §3's `_norm_ws` approach must
+not be copied into this package** — collapsing whitespace would erase the very boundary §4 exists to
+create. It also means a diff between `patterns.mjs` and carousel's `lint.py` is not by itself drift:
+they reach the same net effect by different mechanisms. That is now recorded in the file header, so
+a future session does not "restore parity" by reverting the widenings. **Precondition for the
+carousel rework: check which mechanism each copy uses before treating a difference as a defect.**
+
+#### One reviewer finding DECLINED, with the reason in the file
+
+Codex round 1 (High) argued the widened window should exclude `?` and `!`. Done, then reverted:
+`[^.!?]` is **not** a superset of the original `[^.\n]`, so it lost detections `origin/main` makes —
+`"Can you earn? $5,000 monthly"` and `"A recent client? Made 200k"` both went caught → missed. A
+rhetorical question in front of the number is one of the commonest shapes this copy takes, so
+excluding `?` opens the hole in the likeliest place, as a regression, on a hard non-waivable gate.
+The false positive Codex identified is accepted and pinned by a test.
+
+**The transferable lesson: reproducing a reviewer's finding is not the same as its fix being right.**
+This one reproduced perfectly and still pointed the wrong way. Weigh the polarity before acting.
+
+#### Not fixed, deliberately
+
+The older `/ - /` rule flags every **indented** markdown bullet as a dash — **330 hits across 47 of
+63 real articles, every one a bullet, not one a real dash**. Confirmed pre-existing on `origin/main`
+and pinned by a test so it is not mistaken for this change's doing. It is a fail-**closed** defect
+and repairing it *weakens* a HARD gate, so it is a policy call, tracked separately. Nothing is
+currently broken by it: `waypoint-video` drops this gate for its own `lint-copy.mjs`, and this
+repo's content is gated by aeo-audit — the 330 figure is what any *new* markdown consumer would hit.
+
+#### Verification
+
+19 → **61 assertions**, green. **15 mutants, every one killed**, control green — each fix reverted
+individually, in both the fail-open and false-fail directions. Claim fixtures verified free of all
+**164** vault substrings so only the regex can satisfy them; every leak probe asserted to actually
+trip its gate. Separator fixtures built from codepoints, and all four touched files verified free of
+literal LS/PS/CR/VT/FF/NEL — the first draft of the constant shipped pasted literals and had to be
+caught with `hexdump`. Differential vs `origin/main` over 63 articles × 5 gates: **0 of 315 verdicts
+changed** — a fact about that data, not proof about the logic. Real consumer driven end-to-end
+(`lint-compliance.ts spotlight01`, exit 0), re-run against merged `main` after `git fetch`.
+
+Review: **Codex round 1** (senior engineer) 4 findings, **round 2** (security/data-integrity) 1 —
+both unwrappered `--sandbox read-only`, this repo has no wrapper. **Claude stage 2 ran in-session
+and is self-review**, the biased last resort; it is what caught the over-correction above. Round 2's
+finding also exposed that the sanitisation test written to prove the fix inspected only ONE gate and
+went green over two that were still leaking — the masking trap, inside the test meant to catch it.
+
 ### 5. claude-dotfiles — `git-guard`, the highest blast radius
 
 `strip_heredocs` deletes heredoc bodies **before every rule runs**, so anything it deletes is

@@ -10,6 +10,82 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 ---
 
+## ✅ Tier A part 2 — `waypoint-compliance` #1 MERGED (2026-08-10, fourth session)
+
+**Merged as `faec5e9` on `main`; the repo is restored to `main` and the merged state was re-verified
+AFTER `git fetch` (61 assertions, jargon sweep 0/128, real consumer exit 0).** Remote branch NOT
+deleted — branch deletion always halts and asks. **4 PRs remain open.**
+
+**⚠️ Second repo in a row where "a small bounded fix" was the wrong premise, and the third-session
+handoff's own figure was under-scoped.** "48 of 64 combos" was measured over 5 separators before
+VT/FF/NEL were known. The honest number, same sweep at 8 separators: `origin/main` **128/128** open,
+PR #1 as it stood **96/128**, merged **0/128**.
+
+Six more instances of the class in the same package — two of them fail-opens of a **HARD,
+non-waivable** FTC gate (`"Owners here earn\n$5,000 monthly"` and `"A recent client\nmade 200k"` both
+PASSED), plus an `m`-flag anchor that only reached column-zero starters, a terminator set missing VT/
+FF/NEL, an em-dash rule blind to a dash at end of line, and six paths leaking raw control characters
+into gate details. Full write-up in `AUDIT-regex-fail-open-2026-08-10.md` §4a.
+
+**The finding worth carrying to the other PRs — polarity decides the direction, per check:**
+a PERMISSIVE check ("is a definition nearby?") needs a NARROW window that stops at every terminator;
+a PROHIBITIVE check needs a WIDE one that never does. Same class, opposite repairs, in one file.
+
+> **⚠ PRECONDITION FOR THE CAROUSEL REWORK (parent-plan Phase 4).** Do **not** copy carousel's
+> `_norm_ws` into waypoint-compliance — collapsing whitespace erases the boundary this PR exists to
+> create. And a diff between `patterns.mjs` and carousel's `lint.py` is **not by itself drift**: they
+> reach the same net effect by different mechanisms. That is recorded in the `patterns.mjs` header so
+> nobody "restores parity" by reverting the widenings. Also corrected: the two carousel copies are
+> **different files** — `Gravity Claw/skills/waypoint-carousel/lint.py` is on `main`, 184 lines,
+> still `[^.\n]`, and carries **no `AI_TELLS_V2` block at all**; the live one is
+> `Social Media/.claude/skills/waypoint-carousel/lint.py` (234 lines, on `fix/ftc-gate-fail-open`).
+> An earlier claim that "parity is already broken" was checked on one copy only.
+
+**One Codex finding DECLINED, reason recorded in-file.** Round 1 (High) wanted `[^.!?]`; that is not
+a superset of `[^.\n]` and lost detections `origin/main` makes (`"Can you earn? $5,000 monthly"` →
+caught became missed). Reverted to `[^.]`, false positive accepted and pinned. **Reproducing a
+reviewer's finding is not the same as its fix being right.**
+
+**Deliberately NOT fixed, tracked separately:** the older `/ - /` rule flags every **indented**
+markdown bullet — 330 hits across 47 of 63 real articles, all bullets, none a real dash. Pre-existing
+on `origin/main`, pinned by a test, fail-**closed**, and repairing it weakens a HARD gate.
+
+#### Exact state at close — fourth session, 2026-08-10
+
+| repo | branch | HEAD | state |
+|---|---|---|---|
+| waypoint-core-system | `main` | this commit | docs only; `docs/seo-reviews` is in `vercel.json`'s `ignoreCommand`, so no rebuild and no prod `db push` |
+| waypoint-compliance | **`main`** | **`faec5e9`** | ✅ **PR #1 MERGED**; restored to `main`, re-verified after fetch |
+| waypoint-carousel | `fix/ftc-gate-fail-open` | `9d26709` | OPEN (#3) — not touched this session |
+| x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | OPEN (#5) — not touched |
+| YouTube-Video | `pr21` | `6fe4f3d` | OPEN (#21) — not touched; ⚠ still checked out OFF `main` |
+| everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | OPEN (#1) — not touched |
+
+**Nothing written to n8n. No gitlinks bumped.** Re-read these HEADs rather than trusting them.
+
+⚠ **Address our PRs BY NUMBER.** Those repos hold other people's open PRs too — x-produce has 4 open
+and YouTube-Video 3. "The open PR" is ambiguous there.
+
+**Could NOT verify — stated, not implied:**
+- **The four remaining PRs were not re-read this session** beyond confirming they are open. Their
+  HEADs above are carried from the third-session table, not re-observed.
+- **`waypoint-compliance` has no CI and no local hooks** (`gh pr checks 1` → none, no `core.hooksPath`,
+  no `.git/hooks`), so local runs were the only gate. The squash-merge passed through no hook either.
+- **The false-positive corpus is 63 articles / 714k chars** of this repo's content. Real and 44× the
+  first corpus used, but it is not a guarantee across unwritten copy, and those articles are **not**
+  linted by this engine today — they are a proxy for markdown prose, not a live consumer.
+- **The differential proved 0 of 315 verdicts changed.** Per `[[corpus-comparison-blind-to-correlated-fields]]`
+  that is a fact about the DATA, not about the LOGIC — it did not detect the `?`/`!` behaviour change
+  either. The 15-mutant suite is what proves the logic.
+- **n8n items are untouched and still carried, not verified:** the `verify_live_gate.py` whole-body
+  equality contradiction, the three divergent live S0a states, and that facebook/instagram have never
+  been read by anyone.
+- **`waypoint-video/node_modules/@waypoint/compliance` is a symlink to the working tree**, so that
+  repo's gate is whatever branch waypoint-compliance is checked out on. It is on `main` now; a
+  checkout elsewhere silently changes waypoint-video's gate.
+
+---
+
 ## ✅ Tier A part 1 — `claude-dotfiles` #1 MERGED (2026-08-10, third session)
 
 **Merged as `3506261` on `master`; dotfiles is back on `master` and the live guard is master's copy,
@@ -107,12 +183,13 @@ guard mid-rework — was caught by the strengthened harness and fixed before the
    fail-open. Nobody has ruled on which side is right.
 3. **Whether to fix the `ARG_MAX` path** in git-guard (feed the payload on fd 3) or accept it.
 
-**Next: `waypoint-compliance` #1**, still open and `MERGEABLE`/`CLEAN`. Its residuals were measured
-this session by direct execution: **48 of 64** trigger-term × separator combos still fail open (the
-shipped fix closes LF only; CR, U+2028, U+2029 all bypass), and **exactly 4** of 7 AI starters fail
-open after a bare line break — the other 3 are masked by AI-slop rules, so tests must assert **which
-rule fired**, never just `gate.pass`. Build separator fixtures **by codepoint**; a checker that looks
-for them as typed literals silently compares against an ordinary space.
+~~**Next: `waypoint-compliance` #1**~~ — **DONE, merged `faec5e9` in the fourth session; see the Tier
+A part 2 block at the top of this file.** Two corrections to what this paragraph said: the residual
+was **96 of 128**, not 48 of 64 (this count predates VT/FF/NEL), and the package held **six** more
+instances of the class, two of them fail-opens of a HARD non-waivable gate. The two pieces of advice
+here were both right and both load-bearing — assert **which rule fired** (3 of the 7 starters and one
+of the two claim regexes were masked by other rules), and build separator fixtures **by codepoint**
+(the first draft of the fix itself shipped pasted literals and needed `hexdump` to catch).
 
 ---
 
@@ -185,13 +262,14 @@ machines now pass.
 - **Nothing alerts on `SCHEMA_DRIFT_DETECTED`** — someone has to read or grep for it.
 - ~~**The regex fail-open pattern PR #53 fixed is unaudited in every other repo**~~ — **DONE
   2026-08-10.** Full findings in `AUDIT-regex-fail-open-2026-08-10.md` (this folder). Six repos
-  carried the same class and are fixed in **open PRs**: YouTube-Video #21, everyx-engine #1,
-  waypoint-carousel #3, x-produce #5, waypoint-compliance #1, claude-dotfiles #1. What remains
-  NOT done, and is the next session's first decision:
+  carried the same class. **2 MERGED: claude-dotfiles #1 (`3506261`) and waypoint-compliance #1
+  (`faec5e9`). 4 still open: YouTube-Video #21, everyx-engine #1, waypoint-carousel #3, x-produce
+  #5** — and both merged ones turned out to be several times larger than "a small bounded fix", so
+  do not assume the remaining four are small either. What remains NOT done:
   - **The five live n8n publish receivers still run the old FTC patterns.** Source and every deploy
     artifact are fixed; the live Code nodes must be re-pasted. Until then the newline evasion is
     live in production. Deliberately not automated — it changes what gets published.
-  - **Nothing is merged.** All six PRs await review.
+  - ~~**Nothing is merged.** All six PRs await review.~~ **2 of 6 merged as of 2026-08-10.**
   - **Tier 2/3 in that report is agent-reported and NOT verified** — leads, not findings.
   - Coverage caveat: only the six Tier-1 repos were personally verified. Every "clean" verdict on
     the other ~19 is an exploration pass, not a guarantee.
