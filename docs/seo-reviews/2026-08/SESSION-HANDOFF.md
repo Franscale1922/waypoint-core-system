@@ -90,6 +90,42 @@ machines now pass.
   - Coverage caveat: only the six Tier-1 repos were personally verified. Every "clean" verdict on
     the other ~19 is an exploration pass, not a guarantee.
 
+#### Exact state at session close (2026-08-10) — all pushed, nothing uncommitted of mine
+
+| repo | branch | HEAD | verified |
+|---|---|---|---|
+| YouTube-Video (`Kids Videos`) | `fix/coppa-scanner-fail-open` | `6fe4f3d` | 231 tests, channel-check 33/33, **CI green** |
+| everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | 54 tests, channel-check 20/20, typecheck |
+| waypoint-carousel | `fix/ftc-gate-fail-open` | `9d26709` | test_social_qa 31/31, gate_parity ALL PASS |
+| x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | strict byte parity 7/7, suite 23/23 |
+| waypoint-compliance | `fix/jargon-window-fail-open` | `e14fcd9` | smoke + waypoint-video lint-compliance |
+| claude-dotfiles | `fix/git-guard-heredoc-fail-open` | `63b6f14` | 115/115 |
+| waypoint-core-system | `main` | this commit | docs only, deploy-excluded |
+
+**⚠ The Social-Media parent gitlinks are deliberately NOT bumped.** Two reasons, and the second is
+the one that matters: the submodule PRs are unmerged, AND that working tree is already dirty with
+**five other submodule pointers** (`command-center`, `facebook-produce`, `instagram-produce`,
+`linkedin-produce`, `pinterest-produce`) plus `.claude/CLAUDE.md` and other files belonging to other
+sessions. Bumping `waypoint-carousel`/`x-produce` there would mean staging a file that is already
+dirty from elsewhere. Bump the gitlinks only after those PRs merge, and only from a clean parent.
+
+**Could NOT verify — stated, not implied:**
+- **The live n8n receivers were never read.** That the five Code nodes still carry the old pattern is
+  inferred from the deploy discipline (source → artifact → manual re-paste), not from querying n8n.
+- **No CI exists** on everyx-engine, waypoint-carousel, x-produce, waypoint-compliance or dotfiles —
+  `gh pr checks` reports none. Local runs are the only gate on five of the six PRs.
+- **4 waypoint-carousel and 14 linkedin-produce tests cannot run here** — `reportlab`/`yaml` are
+  absent from this Python environment. Pre-existing; a missing module cannot be caused by the edits,
+  but they were never observed green.
+- **2 assertions in `facebook-produce/test_scene_wiring.py` fail** on a draft-attempt ledger. That
+  file imports none of the changed modules and `test_facebook_common.py` (which does) passes, so it
+  is independent — but it was **not** proven green at HEAD.
+- **Tier 2/3 leads were never read by me**, only by exploration agents.
+- **`gate_parity` proves synchrony, not correctness** — same wrong edit in both halves reads green.
+
+**Undecided, needs Kelsey:** whether to merge the six PRs, and whether to re-paste the five live n8n
+Code nodes (a production publishing change).
+
 ### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
 
 `gate/claude-md-directive-lint` merged as `a63401f`. It lints `CLAUDE.md`'s slash commands on pushes
