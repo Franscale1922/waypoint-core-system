@@ -25,9 +25,18 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   (it's gitignored, so it's gone on a fresh clone): I treat a push as going live if the repo has a committed
   `vercel.json` / `netlify.toml` / deploy CI workflow, OR is a deployable web app (Next.js / Vite /
   SvelteKit / static site) with no obvious non-production host, OR is a known live repo — **auto-deploy on
-  push:** whimsey-and-grace, Bizconnect Carribean (sic — that is the directory name), Timeblock, local-websites/heart-strings,
-  waypoint-core-system. (**Live but push-safe** — deploy is a manual step, a normal push
-  is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.) **The web-app heuristic is a reason to
+  push:** whimsey-and-grace, Bizconnect Carribean (sic — that is the directory name), Timeblock,
+  **local-websites** (see the warning below), waypoint-core-system. (**Live but push-safe** — deploy is a
+  manual step, a normal push is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.)
+  ⚠️ **local-websites is the case that breaks the committed-config test, so never clear it by scanning the
+  file tree:** it has **no `vercel.json` and no `netlify.toml` anywhere**, yet its prospect sites are
+  **dashboard-linked** Vercel projects that build on every PR — measured 2026-08-08, when PR #13 ran green
+  checks for `premier-electrical-svc` and `psi-automation`. (This entry previously read
+  `local-websites/heart-strings`; **there is no `heart-strings` directory in that repo** — corrected
+  2026-08-08.) `tools/`, docs and comment changes there are output-identical for those sites, so they need
+  no go-live surfacing — but the rebuild is real, so never report "no deploy happened". To read a repo's
+  true surface, look at the checks on an open PR (`gh pr checks <n>`), not the file tree.
+  **The web-app heuristic is a reason to
   CHECK, never to list — Franchise Conduit was listed as auto-deploy on it and is NOT:** measured 2026-08-06,
   zero deployments across its entire history, and no `vercel.json`, no workflow, no webhook, so nothing
   reacts to a push (a Vercel *deploy hook* is manual by definition, so it would be push-safe too). Don't
