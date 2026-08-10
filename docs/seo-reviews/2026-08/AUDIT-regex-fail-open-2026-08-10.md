@@ -175,12 +175,135 @@ resolve to "there is nothing here to check". 104/104 tests, up from 98.
 
 ## ⚠️ What is NOT fixed
 
+> **Superseded in part — read "Review before merge" below before trusting this section.** The
+> pre-merge review found that all six PRs fix the *instances* this audit found, not the *class*, and
+> that the re-paste plan described here rests on a false premise. Still accurate: nothing is merged,
+> the live receivers still run the old patterns, and Tier 2/3 is untouched.
+
 - **The five live n8n publish receivers still run the old FTC patterns.** Source, shared gate and all
   deploy artifacts are corrected; the live Code nodes must be re-pasted
   (`wscc/{pinterest,linkedin,x,instagram,facebook}-publish-receiver`). Until then the newline evasion
   is live in production. Deliberately not automated — it is a production publishing change.
 - **All six PRs are open, not merged**, pending review.
 - **Tier 2/3 below is not fixed.**
+
+---
+
+## Review before merge — the six PRs are PARTIAL (2026-08-10, second session)
+
+Method: every suite re-run fresh; the evasion reproduced pre/post fix by driving the real gates; six
+independent Claude subagent reviewers (one per PR, no memory of the authoring session); five
+unwrappered `codex exec --sandbox read-only` runs (skipped on x-produce #5 — a 30-line regenerated
+artifact whose correctness is mechanically established by `test_gate_parity`).
+
+**The headline: two independent reviewers converged on the same residuals in every repo.** Each PR
+closes the specific shapes the audit probed and leaves the class alive in the same file. That
+convergence is the finding — not six unrelated nitpicks.
+
+### Suites re-run (all green, observed this session)
+
+| repo | observed | vs claimed |
+|---|---|---|
+| YouTube-Video #21 | 231 tests / 230 pass / 1 skip / **0 fail**; channel-check 33/33; CI green | matches |
+| everyx-engine #1 | 54 pass, typecheck clean, 20/20 | **the audit body's "50 tests" is wrong; 54 is right** |
+| waypoint-carousel #3 | 31/31 | matches |
+| x-produce #5 | parity 7/7, compliance 37/37 | **"23/23" matches nothing that runs** |
+| waypoint-compliance #1 | all smoke assertions | matches |
+| claude-dotfiles #1 | 115/115 | matches |
+
+The evasion was reproduced per-pattern, with the changed patterns **located by diffing the two BANNED
+tables** rather than hand-picked: exactly 3 of 42 changed, all strictly widening, no detection lost.
+A first harness reported a false FAIL by testing at *category* granularity — cat 1 holds a second
+pattern (`$…a year`) that caught the probe through the newline and masked which pattern fired. Testing
+a category cannot tell you which of its patterns responded: the same narrowing error this audit is about.
+
+### Residuals — confirmed by direct execution unless marked
+
+**waypoint-carousel #3** — the three claimed defects are real and correctly fixed; 71→63 is exact and
+drops **no legitimate destination**. But:
+- **23 of 42 patterns contain a literal space, so one newline defeats them** — 8/8 probes evaded,
+  including cats 2 and 13, *the categories this PR edited*.
+- **CRLF defeats even the three fixed patterns** — `\r\n` costs an extra position and overruns the
+  `{0,N}` bound. Astral characters do the same in JS (2 UTF-16 units each, no `u` flag), so the live
+  JS gate and the Python gate disagree on emoji-bearing copy.
+- **Section scoping is substring-based** (`social_qa.py:207`, `k in heading`), so
+  `### Banned copy of Foundational marketing pages` is treated as approved. The claim that a new
+  section "is not linkable until named, which fails closed" is false as written. Latent — today's
+  vault has no such heading.
+- *Codex, not independently reproduced:* prose inside an allowed section is scraped as a declaration;
+  `###` inside fenced blocks is honoured; the path charset truncates `/docs/v1.2` into `/docs/v1`.
+
+  **One line closes most of it:** `re.sub(r"\s+", " ", text)` before matching handles all 23 patterns
+  *and* CRLF, and makes the three regex widenings unnecessary.
+
+**YouTube-Video #21 / everyx-engine #1** (one shared library, two copies) — 7 of 8 fixtures go
+MISSED→caught, and the tests are genuinely mutation-resistant. But the *fixed* scanner still fails
+open on at least eight shapes: `/[//]/` and `/[/*]/` character classes (the latter blanking to **EOF**,
+losing 5 declarations where the old line-based code lost none), nested template literals, unterminated
+`/*`, `//` not terminating at CR / U+2028 / U+2029, JSX text, computed keys written with a backtick
+or with a JS unicode escape standing in for one letter of the key name, CRLF string continuations —
+plus `.jsx` unscanned and
+`readdirSync` failing open.
+- **The load-bearing comment is backwards.** `mfkscan.ts:75` says an unmodelled regex `//` "would
+  OVER-report". It **under**-reports — a false PASS. The same sentence ships in both repos.
+- **A hand-rolled lexer is the wrong instrument.** `typescript` is already a dependency (Codex used
+  `ts.transpileModule` during its own review); a real token stream removes the class rather than the
+  eight known instances.
+- **everyx's fix is invisible in its own diff.** `origin/main`'s copy holds **one NUL byte at offset
+  2642 (line 47)** — the `scheme://` mask was written as a literal U+0000 — so git calls the file
+  binary: `Bin 5355 -> 8938 bytes, 0 insertions(+), 0 deletions(-)`. All 94 reported additions are
+  test code. The PR incidentally removes the NUL. Review it by reading the file, never the diff.
+
+**waypoint-compliance #1** — correct, the new tests are real regression guards (they fail on the
+pre-fix engine), and the live corpus is unaffected. Residuals: the sibling at `lint.mjs:134` has the
+identical `.!?`-only mis-scoping and leaves four voice-lock starters unguarded on fragmentary copy;
+only LF is treated as a break, so CR / U+2028 / U+2029 still fail open; and the parenthetical is never
+associated with the term, so `Ask about royalty, then call us (weekdays only).` passes.
+
+**claude-dotfiles #1** — all five original defects and both self-inflicted regressions genuinely
+closed, 115/115, with real ALLOW controls. Both reviewers independently found the same three
+survivors: `#` after a metacharacter (`true;# <<EOF`), arithmetic `(( 1 << EOF ))`, and the `$VAR`
+runner branch failing open in every spelling but the one the test uses (`"$SHELL" <<EOF`,
+`$SHELL<<EOF`, `env $SHELL <<EOF`). The docstring at `:330` promises fail-closed behaviour the code
+does not provide. Also `git-guard.test.sh:4` pins `G="$HOME/dotfiles/…"`, so the suite tests the
+*installed* copy — here that is the PR branch, so the 115/115 is valid, but from a worktree or CI it
+would silently test the wrong file.
+
+**x-produce #5** — correct; merge after carousel #3. `test_gate_parity.py` reads the sibling's
+**working tree** via a plain `open()` with no rev or hash, so a green there describes one machine's
+checkout, never the merged state. Scope gap: `FDD_ITEM_TEACHING` (line 118, both artifact and shared
+source) is still newline-blind, and it has drifted from its Python twin — `social_gate.py:141` is a
+**universal, verb-agnostic, ungated** bar on retired Items, while the JS requires a teaching verb
+within 40 chars and is gated per-platform. `"Item 19 is where the real story is"` is refused
+client-side and passes the server gate.
+
+### The n8n re-paste premise is false
+
+The plan of record was "byte-diff each live node against its artifact, then whole-body replace".
+There is **no correct whole-body source**:
+
+- The shared source `social_qa_gate.n8n.js` is **333 lines and carries the S0a block** with
+  `{ linkedin: true, facebook: true, instagram: true, x: true }`.
+- All five `deploy/AS-DEPLOYED-2026-06-24/*.js` are **302 lines with no S0a at all** — a 33-line gap.
+- The live nodes are in **three different states**: X matches the source (verified directly, in
+  `active` mode = the published graph); LinkedIn has S0a with only `linkedin: true`; Pinterest has
+  none *(the last two are reviewer-reported, not independently re-read).*
+
+So pasting the source flips undeployed S2/S3/S4 policy live on Facebook/Instagram/X — dropping a
+Decision-39 hard fail and adding an FDD refuse — riding inside an FTC fix. Pasting AS-DEPLOYED deletes
+LinkedIn's live S0a. **The correct action is a targeted per-node patch of the changed lines**, leaving
+each node's own S0a state alone. The header comment claiming all five run one byte-verified body is
+now false.
+
+Related: merging #3 rewrites the `AS-DEPLOYED-2026-06-24/` files, which claim to be the exact
+live-verified bodies. That directory is a **record of what is deployed**, and editing it to match the
+desired state before the deployment decision destroys the last snapshot of what is actually live.
+
+### Standing recommendation
+
+Fix the class, not the instances: whitespace normalisation + exact section matching in carousel; a
+real lexer in mfkscan; H1–H3 plus runner-word normalisation in dotfiles; line-terminator normalisation
+in compliance. `claude-dotfiles` and `waypoint-compliance` are closest to mergeable.
 
 ---
 
