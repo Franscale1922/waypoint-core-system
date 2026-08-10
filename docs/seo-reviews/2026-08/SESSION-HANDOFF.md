@@ -137,6 +137,61 @@ Code nodes (a production publishing change).
 > verified by execution and which are reviewer-reported, is in the "Review before merge" section of
 > `AUDIT-regex-fail-open-2026-08-10.md` (this folder). Read that before acting on anything above it.
 
+#### Exact state at close — second session, 2026-08-10
+
+| repo | branch | HEAD | state |
+|---|---|---|---|
+| waypoint-core-system | `main` | this commit | 2 docs commits pushed; deploy-excluded, no build, no prod `db push` |
+| YouTube-Video | **`pr21`** (local, = PR #21 head) | `6fe4f3d` | ⚠ **checkout left OFF `main`** — moved to run the suite, tree was clean, nothing lost |
+| everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | unchanged |
+| waypoint-carousel | `fix/ftc-gate-fail-open` | `9d26709` | unchanged |
+| x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | unchanged |
+| waypoint-compliance | `fix/jargon-window-fail-open` | `e14fcd9` | unchanged |
+| dotfiles (`claude-dotfiles`) | `fix/git-guard-heredoc-fail-open` | `63b6f14` | unchanged; base is **`master`** |
+
+**All six PRs still open. Nothing merged. Nothing written to n8n. Gitlinks not bumped.**
+
+**Strategic decisions — do not silently reverse:**
+1. **Held the merge after it was approved.** Kelsey approved "fix the small residuals, then merge" on
+   the characterisation that they were small. That was wrong for carousel and mfkscan. Proceeding
+   would have executed an approval whose premise had changed.
+2. **Fix the class, not the instances.** carousel: one `re.sub(r"\s+", " ", text)` before matching
+   closes all 23 literal-space patterns *and* CRLF, and makes the three regex widenings unnecessary.
+   mfkscan: use the TypeScript scanner (`typescript` is already a dependency) instead of patching
+   eight hand-rolled lexer bugs.
+3. **Targeted per-node line patch is the only safe n8n shape** — never a whole-body paste.
+4. **Do not verify n8n with `assert_gate_live.py`** — it POSTs real payloads at the live publish
+   webhooks and truncates the response at 500 chars (`:149`), a Tier-3 lead of this same audit.
+   `verify_live_gate.py` is sound (read it: fail-closed on missing canonical, `RECEIVER_PLATFORM`
+   id→platform map catches a wrong-receiver paste).
+5. **Skipped Codex on x-produce #5** — 30-line derived artifact, correctness mechanically established
+   by `test_gate_parity` incl. two mutation tests; CLAUDE.md's mechanical-edit carve-out.
+6. **Locate changed patterns by diffing the two tables, never by hand-picking.** A first harness
+   tested at *category* granularity and produced a false FAIL, because cat 1 holds a second pattern
+   that caught the probe through the newline. A category cannot tell you which pattern fired.
+7. **Merge order if this proceeds:** carousel #3 before x-produce #5 (source before the artifact
+   regenerated from it). Nothing automated detects the gap between them — x-produce has no CI.
+
+**Could NOT verify — stated, not implied:**
+- **Only the X live node was read by me** (`active` mode = published graph). LinkedIn's and
+  Pinterest's divergent S0a states are **reviewer-reported**; instagram and facebook were never read
+  at all. The three-different-states claim rests on one direct reading plus one agent's.
+- **Class-level fixes are unimplemented and untested.** The one-line normalisation and the TS-scanner
+  approach are reasoned recommendations, not measured ones.
+- **Codex findings I did not independently reproduce:** carousel prose-scraped-as-declaration,
+  `###` inside fenced blocks, path-charset truncation (`/docs/v1.2` → `/docs/v1`); mfkscan JSX text,
+  computed-key spellings, CRLF string continuation, `readdirSync` failing open, `.jsx` unscanned;
+  compliance CR/U+2028/U+2029 and the unrelated-parenthetical case; dotfiles findings beyond the three
+  both reviewers independently agreed on (`;#`, `(( << ))`, `$VAR` runner).
+- **everyx's caller routing** — that the fixed `blankComments` is actually on the live code path is
+  reviewer-reported; I observed only that channel-check passes 20/20 over 56 files.
+- **The 1 skipped test** in YouTube-Video's 231 was not investigated (reported unrelated to this fix).
+- **Five of six PRs have no CI at all** (`gh pr checks` → none). Local runs plus these reviews are the
+  only gate. Only YouTube-Video has CI and it is green.
+- **Tier 2/3 leads remain untouched and unverified** — deliberately deferred this session.
+- The behavioural harnesses live in a session scratchpad and **will be lost**; the method is recorded
+  in the audit doc, the code is not.
+
 ### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
 
 `gate/claude-md-directive-lint` merged as `a63401f`. It lints `CLAUDE.md`'s slash commands on pushes
