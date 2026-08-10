@@ -30,6 +30,56 @@ first. The PR #21 section that used to head this file is now history and is summ
 | `claude/quirky-lumiere-fc6b90` | **abandoned**, PR **#36 closed** in favour of #39. **Remote branch still exists**, safe to delete. Do not reopen #36: it was cut before #34 and #37 landed in the same file |
 | Working tree | clean (the 3 untracked dirs `.n8n-backups/`, `.skill-edits/`, `expo-2nd-act/` are **not ours — never stage them**) |
 
+### The gate locked the Mini out of `main` (measured + fixed 2026-08-10)
+
+**PR #52 gave a third-party repo veto power over pushing to `main`, and nobody chose that.**
+`CLAUDE.md` names eight commands. `/ground` ships with `dotfiles`, but **`/qa` and `/review` are
+gstack skills** (`github.com/garrytan/gstack`). The validator resolves a skill purely by file
+presence at `~/.claude/skills/<n>/SKILL.md`, and only gstack's own `./setup` creates those symlinks —
+`dotfiles/install.sh` does not run it.
+
+Measured on the Mini the day after the merge, after a full dotfiles catch-up:
+`FAIL CLAUDE.md: 2 dead, 6 resolve`. **That machine could not push to `main` at all**, and
+`--no-verify` is banned.
+
+✅ **Fixed and verified on the Mini 2026-08-10**: `brew install bun` → clone gstack → `./setup --host
+claude` → `bun: 1.3.14`, `qa: OK`, `review: OK`, **gate `exit=0`**. The recipe and both traps are
+staged in `~/dotfiles/projects/MINI-TODO.md` (dotfiles `c49ec75`), so a rebuilt machine does not
+rediscover it. The two traps: `./setup` hard-refuses without **bun** and its error suggests a
+`curl | bash` installer, when bun is in **homebrew-core** at the same 1.3.14 the laptop runs; and
+`brew install` in an already-open shell leaves `./setup` still reporting bun missing until `hash -r`.
+
+⚠ **Do NOT resolve this with the `allow-missing` waiver the validator suggests.** A machine
+divergence is not a deliberately-absent command, and the waiver would stamp a false claim into every
+governed file. The sanctioned escapes are install-the-skill, or `SKIP_CLAUDE_MD_LINT=1 git push` for
+one push.
+
+**The transferable lesson: a single-machine green is not evidence a gate is portable.** This was
+invisible until a *second* machine tried to push.
+
+**UNDECIDED, and worth deciding deliberately rather than by accident:** either accept that pushing to
+`main` depends on a third-party repo plus a JS runtime on every machine, or stop hard-naming
+third-party commands in the very prose this gate lints. Nothing forces the choice today — both
+machines now pass.
+
+#### NOT verified (stated, not implied)
+
+- **Nothing on the Mini was observed directly.** There is no SSH route from the laptop (checked:
+  `~/.ssh/config` holds only `github.com`). Every Mini fact here is **reported by pasted terminal
+  output**, not observed. The end state (`gate exit=0`) is trustworthy as a reading; the steps that
+  produced it were never shown — the `brew install bun` and `./setup` logs were deliberately not
+  pasted because they were enormous.
+- **Only two machines have ever been measured.** Laptop and Mini. Any other checkout is unknown.
+- **The 28 gate tests have never run in CI**, so whether they'd pass there is untested — they spawn
+  real `git push` fixtures against a bare remote.
+- **The cause of the 08-09 production drift remains unknown**; the push consumed the evidence.
+- **A passing directive lint still prints nothing**, so a green push is indistinguishable from one
+  where the lint never ran. Not fixed: it touches `scripts/`, so it costs a production build and
+  another prod `db push` on its own. Fold it into the next change already touching that directory.
+- **Nothing alerts on `SCHEMA_DRIFT_DETECTED`** — someone has to read or grep for it.
+- **The regex fail-open pattern PR #53 fixed is unaudited in every other repo** (memory
+  `guard-regex-sql-parsing-fails-open`).
+
 ### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
 
 `gate/claude-md-directive-lint` merged as `a63401f`. It lints `CLAUDE.md`'s slash commands on pushes
@@ -42,6 +92,10 @@ this work.
 
 It **requires `~/dotfiles` at `fac61de` or later**. On a machine without it, `CLAUDE.md`'s
 "no waiver covers two" sentence is false. The Mini needs `cd ~/dotfiles && git pull && ./install.sh`.
+
+> ⚠ **That dotfiles step alone is NOT sufficient — corrected 2026-08-10 by measuring it on the Mini.**
+> See "The gate locked the Mini out of `main`" below. `install.sh` delivers `/ground`; it does not
+> deliver `/qa` or `/review`, and those are two of the eight commands the gate requires to resolve.
 
 **⚠ The production `prisma db push` was NOT a no-op, and that was not predicted.** Read from the
 build logs, all three on the same `prisma/schema.prisma`:
