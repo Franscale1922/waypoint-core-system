@@ -299,6 +299,31 @@ Related: merging #3 rewrites the `AS-DEPLOYED-2026-06-24/` files, which claim to
 live-verified bodies. That directory is a **record of what is deployed**, and editing it to match the
 desired state before the deployment decision destroys the last snapshot of what is actually live.
 
+### ✅ Decided and part-executed 2026-08-10 (third session) — read SESSION-HANDOFF.md first
+
+**Decision: both paths, split by evidence.** dotfiles + waypoint-compliance are the two cases where
+the small fix IS the class fix, so they merge after it; carousel and both mfkscan copies get reworked;
+x-produce #5 holds behind carousel; the five live n8n receivers are a named deliverable, not a
+deferral. Full plan: `~/.claude/plans/decide-the-six-regex-jiggly-lollipop.md`.
+
+**`claude-dotfiles` #1 is MERGED** (`3506261`). Its "three small residuals" characterisation was
+wrong — four review rounds found 28 defects that did not converge, and it became a 627-line redesign.
+Two corrections this audit should carry forward:
+
+- **The class is one level up from where this audit put it.** Patching spellings kept generating new
+  ones. What worked was changing the instrument: invert the polarity so unknowns fail CLOSED, and use
+  a real tokenizer instead of regex. Apply that lens to carousel (whitespace normalisation is the
+  right shape) and to mfkscan (an AST, not a hand-rolled lexer).
+- **Verify tests by mutation, and test the noise direction.** Five cases here passed with their own
+  fix reverted, and the harness read a crash as a pass. Over-blocking is safe but not free: a check
+  people switch off protects nothing.
+
+Also corrected by direct execution this session: **everyx is 54 tests, not 50**; x-produce's "23/23"
+matches nothing that runs; `assert_gate_live.py`'s truncation is `[:500]` on **both** return paths;
+`verify_live_gate.py` lives in **`pinterest-produce`**, not carousel, and is a **whole-body equality**
+checker — so it will report DRIFT on all five nodes if they are patched per-node, which is exactly
+what the plan intends. Resolve that contradiction before writing anything to n8n.
+
 ### Standing recommendation
 
 Fix the class, not the instances: whitespace normalisation + exact section matching in carousel; a

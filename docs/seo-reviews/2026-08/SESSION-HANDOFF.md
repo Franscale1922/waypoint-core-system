@@ -10,6 +10,51 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 ---
 
+## ✅ Tier A part 1 — `claude-dotfiles` #1 MERGED (2026-08-10, third session)
+
+**Merged as `3506261` on `master`; dotfiles is back on `master` and the live guard is master's copy,
+re-verified AFTER the checkout (178/178).** The six-PR decision is recorded in the plan file
+`~/.claude/plans/decide-the-six-regex-jiggly-lollipop.md`: **merge dotfiles + waypoint-compliance
+after small fixes; rework carousel + both mfkscan copies as class-level fixes; hold x-produce #5
+behind carousel; then patch the five live n8n receivers.**
+
+**⚠️ The approved plan called this PR "3 bounded edits, no rewrite". That premise was WRONG** — the
+same failure as the audit's original "small residuals" characterisation. It became a **627-line**
+redesign of the heredoc classifier. What happened, so nobody re-litigates it:
+
+- Four Codex rounds found **28 defects and did NOT converge** (8, 8, 10, 8 per round). Every serious
+  one was a hand-rolled shell parser losing to a spelling it did not model. Round 3 under a
+  security framing was **REFUSED by OpenAI's classifier**; re-run with neutral defensive framing it
+  produced a **P0** — the `DATA_SINKS` list contradicted its own "cannot execute it" comment
+  (`awk` `system()`, `psql \!`, `sqlite3 .shell`).
+- What ended it was changing the **instrument**, twice: **invert the polarity** so a body is data
+  only when the leading command of the segment that *owns* the heredoc is a recognised sink, and
+  **tokenise with `shlex`** (already used elsewhere in that file) instead of regex.
+- **Noise is a safety property here.** Over-blocking is the safe direction but not free: a guard
+  that refuses `cd repo && git commit -F -` gets switched off. Both directions are now tested.
+- **Test quality is mutation-verified, not asserted.** 115 → 178 cases; **10 mutants, one per
+  load-bearing fix, each caught**. Five earlier cases passed with their own fix reverted and were
+  replaced with sink-led variants. The harness previously read a crash as ALLOW — it now fails one,
+  which is how it caught a syntax error mid-rework.
+
+**Left undone, deliberately, and NOT introduced by this change:** a very large payload is passed to
+python as one argv element, so it can exceed `ARG_MAX` and prevent python starting — no decision
+JSON, contradicting the file's "exit 0 always" contract. Flagged in rounds 3 and 4. Fix is to feed
+the payload on fd 3. Also accepted as-is: `gh`/`glab` entries are namespaces rather than leaf
+subcommands, and two harness nits (`mktemp` unchecked, the non-object loop bypasses `check()`).
+**Declined with reasons, documented in-file:** shadowing a sink name (`cat() { "$SHELL"; }`) and a
+banned command inside a quoted string of a retained non-shell body — both need a real shell to
+resolve, and both are deliberate acts rather than accidents.
+
+**Next: `waypoint-compliance` #1**, still open and `MERGEABLE`/`CLEAN`. Its residuals were measured
+this session by direct execution: **48 of 64** trigger-term × separator combos still fail open (the
+shipped fix closes LF only; CR, U+2028, U+2029 all bypass), and **exactly 4** of 7 AI starters fail
+open after a bare line break — the other 3 are masked by AI-slop rules, so tests must assert **which
+rule fired**, never just `gate.pass`. Build separator fixtures **by codepoint**; a checker that looks
+for them as typed literals silently compares against an ordinary space.
+
+---
+
 ## State
 
 | | |
