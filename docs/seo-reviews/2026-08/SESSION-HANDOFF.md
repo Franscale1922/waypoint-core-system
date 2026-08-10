@@ -77,8 +77,18 @@ machines now pass.
   where the lint never ran. Not fixed: it touches `scripts/`, so it costs a production build and
   another prod `db push` on its own. Fold it into the next change already touching that directory.
 - **Nothing alerts on `SCHEMA_DRIFT_DETECTED`** — someone has to read or grep for it.
-- **The regex fail-open pattern PR #53 fixed is unaudited in every other repo** (memory
-  `guard-regex-sql-parsing-fails-open`).
+- ~~**The regex fail-open pattern PR #53 fixed is unaudited in every other repo**~~ — **DONE
+  2026-08-10.** Full findings in `AUDIT-regex-fail-open-2026-08-10.md` (this folder). Six repos
+  carried the same class and are fixed in **open PRs**: YouTube-Video #21, everyx-engine #1,
+  waypoint-carousel #3, x-produce #5, waypoint-compliance #1, claude-dotfiles #1. What remains
+  NOT done, and is the next session's first decision:
+  - **The five live n8n publish receivers still run the old FTC patterns.** Source and every deploy
+    artifact are fixed; the live Code nodes must be re-pasted. Until then the newline evasion is
+    live in production. Deliberately not automated — it changes what gets published.
+  - **Nothing is merged.** All six PRs await review.
+  - **Tier 2/3 in that report is agent-reported and NOT verified** — leads, not findings.
+  - Coverage caveat: only the six Tier-1 repos were personally verified. Every "clean" verdict on
+    the other ~19 is an exploration pass, not a guarantee.
 
 ### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
 
