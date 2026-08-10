@@ -126,6 +126,17 @@ dirty from elsewhere. Bump the gitlinks only after those PRs merge, and only fro
 **Undecided, needs Kelsey:** whether to merge the six PRs, and whether to re-paste the five live n8n
 Code nodes (a production publishing change).
 
+> **Updated 2026-08-10 (second session) — the review ran; still nothing merged.** Six independent
+> Claude subagents plus five unwrappered Codex runs, and every suite re-run green. Verdict: **all six
+> PRs close the instances this audit probed and leave the class alive in the same file** — carousel's
+> widened patterns are still defeated by CRLF, the mfkscan scanner still fails open eight ways, and
+> everyx's fix is invisible in its own diff (a NUL byte on `main` makes git call the file binary).
+> **The re-paste plan is void:** there is no correct whole-body source — the shared source carries the
+> S0a block, all five AS-DEPLOYED copies do not, and the live nodes are in three different states.
+> A targeted per-node line patch is the only safe shape. Full detail, including which claims were
+> verified by execution and which are reviewer-reported, is in the "Review before merge" section of
+> `AUDIT-regex-fail-open-2026-08-10.md` (this folder). Read that before acting on anything above it.
+
 ### PR #52 merged, and its deploy re-synced the production DB (2026-08-09)
 
 `gate/claude-md-directive-lint` merged as `a63401f`. It lints `CLAUDE.md`'s slash commands on pushes
