@@ -46,6 +46,67 @@ subcommands, and two harness nits (`mktemp` unchecked, the non-object loop bypas
 banned command inside a quoted string of a retained non-shell body — both need a real shell to
 resolve, and both are deliberate acts rather than accidents.
 
+#### Exact state at close — third session, 2026-08-10
+
+| repo | branch | HEAD | state |
+|---|---|---|---|
+| waypoint-core-system | `main` | `b2e9b25` | pushed; deploy-excluded path, no rebuild, no prod `db push` |
+| dotfiles (`claude-dotfiles`) | **`master`** | `3506261` | ✅ **PR #1 MERGED**; restored to master, live guard re-verified 178/178 |
+| waypoint-compliance | `fix/jargon-window-fail-open` | `e14fcd9` | unchanged, OPEN, `MERGEABLE`/`CLEAN` |
+| waypoint-carousel | `fix/ftc-gate-fail-open` | `9d26709` | unchanged, OPEN |
+| x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | unchanged, OPEN |
+| YouTube-Video | **`pr21`** (local, = PR #21 head) | `6fe4f3d` | unchanged, OPEN; ⚠ still checked out OFF `main` |
+| everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | unchanged, OPEN |
+
+**5 of 6 PRs still open. Nothing written to n8n. Gitlinks not bumped.** Re-read these HEADs rather
+than trusting them — the Social-Media submodules have ~5 other sessions in them.
+
+**Not mine, left alone** (dirty in `dotfiles`, another session's): `claude/settings.json` and four
+files under `claude-memory/`. I staged only `claude/hooks/*` — a dirty file belongs to its owner.
+
+**⚠ The plan file is NOT in git.** `~/.claude/plans/decide-the-six-regex-jiggly-lollipop.md` (18 KB)
+is machine-local, so it does not survive a different machine or a wiped `~/.claude`. Everything
+load-bearing from it is duplicated in this section and the audit doc; treat the plan as convenience,
+not as the record.
+
+**Could NOT verify — stated, not implied:**
+- **No live n8n node was read this session, at all.** The three-divergent-S0a-states claim is a
+  prior session's single reading plus one agent's report; **facebook and instagram have never been
+  read by anyone.** Re-read all five before touching any.
+- **The `ARG_MAX` finding was never reproduced.** Codex reported (rounds 3 and 4) that a large
+  payload passed as one argv element can stop python starting. A 200 KB command ran fine in 0.50 s;
+  I never found the failing size. Real-looking, unproven, unfixed.
+- **YouTube-Video's suite was not re-run this session** — its 231/230/1 figure is still the handoff's,
+  not re-observed. everyx's WAS re-run (54 pass / 0 fail). carousel's and x-produce's were not.
+- **`gh pr checks` was only run for 4 of 6 repos** (not the two Social-Media submodules).
+- **Codex round 3 under a security framing was REFUSED by a content classifier**, so whatever that
+  persona would have found is simply unknown — not a clean pass.
+- **Not every item on Codex's "passes by construction" lists was mutation-checked** — I verified the
+  10 load-bearing fixes have a discriminating test each; their broader lists I did not exhaust.
+- **Codex-only, unreproduced:** `gh`/`glab` entries being namespaces rather than leaf subcommands;
+  the two harness nits (`mktemp` unchecked, the non-object loop bypasses `check()`); carousel's
+  prose-as-declaration, fenced `###`, path-charset truncation; mfkscan's JSX text, computed-key
+  spellings, CRLF continuation, `readdirSync`, `.jsx`; everyx's caller routing.
+- **carousel's "71→63 drops no legitimate destination"** is reviewer-reported; never verified.
+- **Whether the Mini runs the old guard** is not checkable from this machine. `master` now carries the
+  fix, so the Mini needs `cd ~/dotfiles && git pull && ./install.sh`.
+- **compliance/dotfiles "do not auto-deploy"** rests on finding no `vercel.json`/`netlify.toml`/
+  workflow and neither being a web app. Per CLAUDE.md a file-tree scan alone is never conclusive.
+- **Tier 2/3 leads** untouched and still unverified.
+
+**Nothing failed and was left failing.** The one red state I created — a syntax error that broke the
+guard mid-rework — was caught by the strengthened harness and fixed before the commit.
+
+**Undecided, and genuinely open:**
+1. **How to verify the n8n patch.** `verify_live_gate.py` asserts whole-body equality with canonical;
+   a per-node patch that preserves each node's own S0a guarantees inequality, so it will report DRIFT
+   on all five *by design*. Either build a per-node expected baseline or verify only the patched lines
+   and say so. **Resolve before any write.**
+2. **The `FDD_ITEM_TEACHING` divergence** (`social_gate.py:143` bars retired item numbers
+   verb-agnostically; the JS needs a teaching verb within 40 chars). A spec disagreement, not a
+   fail-open. Nobody has ruled on which side is right.
+3. **Whether to fix the `ARG_MAX` path** in git-guard (feed the payload on fd 3) or accept it.
+
 **Next: `waypoint-compliance` #1**, still open and `MERGEABLE`/`CLEAN`. Its residuals were measured
 this session by direct execution: **48 of 64** trigger-term × separator combos still fail open (the
 shipped fix closes LF only; CR, U+2028, U+2029 all bypass), and **exactly 4** of 7 AI starters fail
