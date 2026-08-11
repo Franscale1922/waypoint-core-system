@@ -10,6 +10,119 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 ---
 
+## ⏳ Tier A part 3 — `waypoint-carousel` #3 REWORKED, pushed, NOT merged (2026-08-10, fifth session)
+
+**Branch `fix/ftc-gate-fail-open`, HEAD `49cea5a`, pushed. PR #3 is OPEN, `MERGEABLE`/`CLEAN`,
++4,326/-131 across 20 files, zero commits behind `main` (`fbe7de3`) as of close.** Nothing was
+merged this session. 3 PRs remain after it.
+
+#### Exact state at close — fifth session, 2026-08-10
+
+| repo | branch | HEAD | state |
+|---|---|---|---|
+| waypoint-core-system | `main` | this commit | docs only; `docs/seo-reviews` is in `vercel.json`'s `ignoreCommand`, so no rebuild and no prod `db push` |
+| waypoint-carousel | `fix/ftc-gate-fail-open` | **`49cea5a`** | ⏳ **PR #3 OPEN**, pushed, `MERGEABLE`/`CLEAN`. `origin/main` = `fbe7de3` |
+| x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | OPEN (#5) — **now expected-RED**, must regenerate off carousel. `CLAUDE.md` dirty (not mine) |
+| pinterest-produce | `fix/rejection-advances-rotation` | `d667f02` | not touched; `CLAUDE.md` + an untracked fixture dir dirty (not mine) |
+| waypoint-compliance | `main` | `3f93142` | ✅ #1/#2/#3 merged; **not reopened**, `_norm_ws` not copied in — verified clean |
+| YouTube-Video | `pr21` | `6fe4f3d` | OPEN (#21) — not touched; ⚠ still checked out OFF `main` |
+| everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | OPEN (#1) — not touched |
+| Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — not bumped, per instruction |
+
+**No gitlinks bumped. Nothing written to n8n. `main` moved FIVE times — re-read every SHA above.**
+
+**⚠️ Third repo running where "a small bounded fix" was the wrong premise, and the deepest one yet.**
+PR #3 as it stood widened three bounded gaps; the rework is ~3,600 lines across 18 files. The class
+was never about those three patterns: **most BANNED patterns carry a LITERAL SPACE**, and
+`PROHIBITED_CTA` was **7 of 7**, so all of Decision 39 was evadable with one line break.
+
+**⚠️ `main` moved FOUR times during this work** (#4, #5 before I started; #6, #7 — the HR6 refactor —
+*during the review*). Both merges were clean and the HR6 work is intact. **Re-read `origin/main`
+before doing anything; do not trust a SHA in this file.** I never rebased — the branch is published,
+so rebasing would need a force-push; `main` is merged IN twice instead.
+
+**The generalisable finding, and it is now three remedies, not two.** Polarity decides direction, and
+*shape* decides the mechanism:
+- **prohibitive + prose** → collapse whitespace at the match site (`collapse_ws`)
+- **prohibitive + single token** (a URL) → **strip** whitespace (`strip_ws`). Collapsing turns a break
+  into a *space*, and a pattern needing adjacency still fails — my first `NEVER_ROUTES` fix looked
+  right and closed **nothing**. Caught by its own test, not by review.
+- **permissive** → **narrow** the window at every line terminator; never normalise it.
+All three live in one file. "Make them consistent" reopens one of them.
+
+**Four live fail-opens closed, two of them found in code this PR had already "fixed":**
+1. `PROHIBITED_CTA`/`BANNED`/`AI_TELLS_*` — one line break defeated them (the original class).
+2. **The universal retired-FDD HARD bar** passed `Item<U+FEFF>19` while blocking `Item 19`. Python's
+   `\s` covers NEL/VT/FF/LS/PS/NBSP but **not U+FEFF**, which is exactly why the call site looked safe.
+3. **`NEVER_ROUTES`**, left raw one line below the Decision-38 fix. In the deployed receiver it is the
+   **only** hard bar on the link route (that gate has no URL inventory), so nothing was behind it.
+4. **The astral `u`-flag gap** — `[^.]{0,18}` counts UTF-16 units without `u`, so an earnings claim
+   padded with 10 emoji was **blocked by Python and passed by the deployed JS**.
+
+**Cross-engine, and worth carrying to every other repo:** Python's `\s` and JavaScript's differ on
+**six** codepoints — Python has U+001C–U+001F and NEL, JS has U+FEFF. **Never spell a shared
+whitespace class `\s`.** The class here is the explicit union, in `\uXXXX` escapes; a pasted literal
+was written into it **twice** and both were caught with `hexdump`.
+
+**Test quality is where this went worst, and the catalogue is the deliverable.** Four tests proved
+nothing, each differently: assert-only-"BLOCK" (≈306 of 420 answered by a masking rule); two fence
+cases shape-identical to a plain fence; a window test that **derived its expectation from the
+constant under test** (so removing a terminator stopped it being tested); and a structural invariant
+that was a *list of known-bad*, which made the list itself the exemption — `NEVER_ROUTES` was absent,
+so it reported green over the raw call site. **`mutants.sh` first run: 8 of 17 rows needed attention.
+Final: 32 rows, all killed.**
+
+**Do NOT copy a coverage figure out of any comment.** That number drifted three times in one day, and
+for a while a 9-table numerator sat beside a 7-table instrument. `test_social_qa.py` sweeps all nine
+prohibitive tables and **PRINTS the pre-fix measurement on every run**. Read it from a run.
+
+**Both review stages ran, and stage 2 was not optional.** Codex (unwrappered `--sandbox read-only`;
+this repo has no wrapper) found 14 items — 6 real defects. The Claude stage-2 reviewer then found
+**5 unreproducible numbers of mine, 2 more live fail-opens, 14 unmutated behaviours, and 2 vacuous
+tests.** Neither stage would have been enough.
+
+**Deploy record, per Kelsey:** PR #3's edits to `deploy/AS-DEPLOYED-2026-06-24/` are **reverted** —
+that directory is a record of what the live nodes run, and the five are in three different states, so
+overwriting it destroyed the only thing that can say what a patch would change.
+`deploy/PENDING-2026-08-10/` is **a REFERENCE, not a paste target** (generated; `--check` gates drift).
+
+**n8n: NOTHING WRITTEN, and the contradiction is now properly resolved — as "no instrument exists".**
+`verify_live_gate.py` Layer 2 is unconditional whole-body equality, so a per-node patch reports DRIFT
+by design. **Layer 1 cannot substitute**: it compares pattern sources and **discards flags**, and
+knows nothing about `WS_RUN`/`normWs`/call sites — so a node with the right arrays and
+`re.test(text)` passes it. Proof: `gate_parity.py` reported **ALL PASS across this entire change**.
+A verifier must be **built** (assert `WS_RUN` present and byte-equal, every prohibitive call site
+normalised, flags matched) before any paste. Recorded in the PENDING README.
+
+**Left open, deliberately:**
+- **The term-inline cross-slide junction** (a cue on slide 1 defines a term on slide 4). Kelsey handed
+  me this call; I closed the newline hole only. Measured cost of closing it: **2 of 11 payloads
+  (18%)** — and that number is **weak, do not act on it**: this repo holds **no real carousel copy**
+  (2 synthetic fixtures; the other 9 are markdown paragraphs used as a prose proxy).
+- **The Python↔JS FDD policy divergence.** Still undecided item #2 below — but no longer filed as
+  harmless: the asymmetry runs in the **dangerous** direction (the receiver under-blocks relative to
+  the client gate), structurally the same shape as the NEL divergence this PR treats as a fail-open.
+  It stays open because choosing a side changes what five live platforms refuse.
+- **Gravity Claw's vendored copy** (`Gravity Claw/skills/waypoint-carousel/lint.py`, 184 lines) is an
+  independent 2026-06-07 snapshot in the `gravity-claw` repo — not a submodule, no gate layer, and
+  **still `[^.\n]{0,18}` at line 27**. Knowingly left stale; it has callers in that tree
+  (`plan.py`, `pipeline.py`) and whether they ever run is **unverified**.
+
+**Could NOT verify — stated, not implied:**
+- **x-produce #5 is now RED and that is expected**: `test_gate_parity.py` byte-compares its deploy
+  copy against carousel's shared source, so it must regenerate. Exit 1 observed. Not touched.
+- **No live n8n node was written.** The stage-2 reviewer did read the live pinterest receiver
+  read-only and confirmed it still carries `[^.\n]{0,18}`, no `WS_RUN`, no `normWs`, raw `re.test`.
+  Facebook and instagram **still have never been read by anyone.**
+- The pre-push gate runs six suites **from the pushed commit** in a detached worktree, and was proven
+  to refuse a broken **commit** with a clean working tree. It **blocks when `node` is absent** — on a
+  fresh clone install node; do not reach for `SKIP_FTC_GATE_TESTS=1`, an environmental cause is never
+  a reason to bypass.
+- `run-checks.sh` 26 passed / 0 skipped / 0 failed; `mutants.sh` 32 rows all killed, exit 0. Re-run
+  both rather than trusting these.
+
+---
+
 ## ✅ Tier A part 2 — `waypoint-compliance` #1 MERGED (2026-08-10, fourth session)
 
 **Merged as `faec5e9` on `main`; the repo is restored to `main` and the merged state was re-verified

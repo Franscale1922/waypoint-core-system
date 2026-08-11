@@ -138,6 +138,126 @@ the keys the system emits are allowed (`utm_source`/`utm_medium`/`utm_campaign`)
 > producer tests across pinterest, facebook and instagram. The test suites caught an over-correction
 > that would have blocked every properly-attributed post on all five platforms.
 
+### 3a. waypoint-carousel — the rework, and three premises in this document that were wrong
+
+**Third repo in a row where "a small bounded fix" was the wrong premise.** Every figure below was
+produced by execution on 2026-08-10, not read.
+
+Same sweep, per pattern **and per alternative**, over every separator `collapse_ws` touches —
+because one probe per pattern is not enough either: `\b(payback|break[-\s]?even|cash[-\s]?flow
+positive|profitable)\s+(in|within)` is newline-**robust** on its first alternative and
+newline-**blind** on its third, so a first-alternative probe reports the pattern clean.
+
+| state | prohibitive matching | patterns with an evading alternative |
+|---|---|---|
+| PR #3 as it stood | raw text | **97 of 140** (478 of 487 space-bearing alternatives) |
+| reworked | normalised at each site | **0 of 140**, over 6,818 combinations |
+
+**Do not copy those numbers forward — read them off a run.** `test_social_qa.py` sweeps all nine
+prohibitive tables and PRINTS the pre-fix measurement every time it executes. That is deliberate:
+this figure drifted three times in one day (77/140, then 86/140 over 8 separators, then 97/140 over
+14), and for a while a **9-table numerator sat beside a 7-table instrument** — two real measurements
+of different populations wearing one denominator. Every code comment that used to quote a number now
+points at the test instead.
+
+**Three corrections to this audit and the handoff:**
+
+1. **`_norm_ws` never existed.** The handoff's "do not copy carousel's `_norm_ws`" and this
+   document's "the carousel copy reaches the same net effect by normalising whitespace at each match
+   site" describe a mechanism carousel has never had — zero hits in either repo, or either repo's
+   history. That sentence is *shipped* in merged waypoint-compliance `rules/patterns.mjs:52-56` as
+   the reason a diff between the two copies is not drift. It was false when written; landing this
+   rework is what makes it true. Compliance's code was **not** reopened.
+2. **This document's one-line remedy is half dangerous.** "`re.sub(r"\s+", " ", text)` before
+   matching" applied to the blob **opens a new fail-open**: `DEFINITION_CUES` holds `refers to`,
+   `stands for` and a `.{0,40}` sub-pattern that is line-bounded only because there is no `re.S`.
+   Reproduced: `"Bring the annual\nreport"` starts satisfying "the … report", and a correctly
+   flagged `FDD` goes silent. Prohibitive and permissive share **one blob at shared indices**, so
+   one `re.sub` cannot serve both — the fix needs an index map (`collapse_ws_map`).
+3. **Carousel `main` moved twice the same day** (PRs #4 and #5, both `social_gate.py`), leaving PR
+   #3 six commits behind. No file overlap, so the merge was clean — but the branch had to be
+   updated before `social_gate.py` could be touched.
+
+**Also verified, and it changes what `gate_parity` is worth:** `pinterest-produce/gate_parity.py`
+reported **ALL PASS across this entire change**, because it matches regex flags and then discards
+them. So dropping `i` from one deployed JS pattern passes source parity green while the receiver
+under-blocks. Only executing both engines catches it; `test_twin_behavior` now does, over `BANNED`
+as well as `AI_TELLS_V2` (24 → 2543 assertions).
+
+**Two more live fail-opens surfaced in code that had already been "fixed" once**, both on the
+`link` field: `NEVER_ROUTES` (the HR15 nonexistent-route HARD bar, left raw one line below the
+Decision-38 fix — and in the deployed receiver it is the *only* hard bar on the link route, since
+that gate carries no URL inventory), and **U+001F**, where `_WS_CLASS` collapsed FS/GS/RS/US while
+the terminator set listed only FS/GS/RS, so the prohibitive half joined lines the permissive half
+did not. The comment justified that set with `str.splitlines()` — the *wrong criterion*, and exactly
+how it came one codepoint short, since splitlines splits on FS/GS/RS but not US. Now enforced by an
+assertion that every terminator is a member of the whitespace class.
+
+**And the first repair of `NEVER_ROUTES` was itself wrong** — caught by its own test, not by review.
+`collapse_ws` turns a separator into a *space*, and `waypointfranchise\.com/(blog|posts)/` needs
+adjacency, so `com/ blog` still failed. A URL is a single **token**: whitespace there is never
+content, so it must be **stripped**, not collapsed. Prose keeps collapsing, because stripping prose
+welds words together and invents matches. The earlier `BOOKING_URL` fix only appeared to work
+because that pattern tolerates internal whitespace. **Same defect class, third distinct remedy —
+collapse for prose, strip for tokens, narrow for permissive windows.**
+
+**A live cross-engine fail-open, found by testing the engine that actually runs.** `BOOKING_URL`'s
+`[\s-]*` reads newline-proof, and it is — in **Python**, whose `\s` matches NEL. **JS `\s` does
+not**, so the deployed receiver missed a NEL-broken booking URL that the client gate caught. The
+mirror image also holds: Python's `\s` misses **U+FEFF** where JS's matches it. Each engine has a
+blind separator the other does not. It was found only because an exemption's premise was re-checked
+in JS instead of being reasoned about once in Python and assumed to transfer.
+
+**The `u` flag closes a second live one.** `[^.]{0,18}` counts UTF-16 units without `u` and code
+points with it, so an earnings claim padded with 10 astral characters was **blocked by Python and
+passed by the deployed JS**. All 84 table literals were evaluated under node to prove they compile
+under `iu`.
+
+**Mutation-checked, and the harness is what made the tests real — twice.** First run: **8 of 17
+rows needed attention**, every one a genuine gap, because the three probes PR #3 added are the
+*bounded-gap* patterns it had already widened and those still match across a raw newline. After
+stage 2 the count reached **32 rows, all killed**. Rows that had to be added were for behaviours no
+assertion distinguished: both `_fdd_centrality` sites, `AI_SLOP`, `SOFT`, `LINE_TERMINATORS`, both
+fence refinements, and `NEVER_ROUTES` in both engines.
+
+**Four tests were shown to prove nothing, each in a different way** — worth carrying forward as a
+catalogue, because a green suite is what all four looked like:
+1. 420 JS wrapped cases asserted only "BLOCK", so HR4 staccato or a sibling pattern answered ~306
+   of them: they proved the payload was refused, not that the intended rule fired.
+2. Two of four "case per shape" fence tests were shape-identical to a plain fence and survived
+   reverting the fix they named.
+3. A permissive-window test derived its separator list **from the constant under test**, so removing
+   a terminator stopped it being tested. A test that reads its expectation out of the code cannot fail.
+4. The JS structural invariant was a list of known-prohibitive tables — which makes the *list* the
+   exemption mechanism. `NEVER_ROUTES` was simply absent, so it reported green over a raw call site.
+   Fixed by inverting the polarity: every call site must be classified, and an unrecognised one
+   **fails closed**. Same move that ended `claude-dotfiles`' git-guard rework.
+
+**The deploy record is no longer overwritten.** PR #3's edits to the five
+`deploy/AS-DEPLOYED-2026-06-24/*.js` are reverted — they are a record of what the live nodes run,
+and the five are in three different states, so overwriting them destroyed the only thing that can
+say what a patch would change. Desired bodies are generated into `deploy/PENDING-2026-08-10/` by a
+script (`--check` detects drift, and did, once). The header claiming all five receivers run one
+byte-verified body is corrected.
+
+**n8n contradiction, resolved on paper only — nothing was written.** `verify_live_gate.py` Layer 1
+set-compares the five regex tables from the live node: that is the correct instrument for a
+regex-shaped patch. Layer 2 asserts whole-body line equality against canonical, so a per-node patch
+that preserves each node's own S0a **will** report DRIFT **by design**. Give it a per-node baseline
+or run it tables-only and say which — never silence it.
+
+**Left undone, deliberately:** the term-inline window still crosses field junctions, so a cue in
+slide 1 can define a term in slide 4. Closing it strengthens a gate against a flag budget of exactly
+2, so it is a policy call of the same shape as compliance's PR #2. Measured: **2 of 11 payloads
+(18%) would newly fail**, both on the retired-FDD-Item term — and that number is **weak and should
+not be acted on**, because this repo holds no real carousel copy at all (2 synthetic fixtures; the
+other 9 are markdown paragraphs used as a prose proxy). Deciding it needs published copy.
+
+**Not fixed, and out of scope:** HR4 staccato is skipped entirely on copy with fewer than 4
+sentence-terminators, so line-broken copy escapes it — a fail-open of the same shape, in a check
+whose repair is a spec change rather than a widening. `_fk_grade` splits on `.!?` only, which
+over-reports on fragmentary copy (fails closed).
+
 ### 4. waypoint-compliance — the jargon sentence window
 
 `sentenceAt()` bounded only on `.!?`. Copy in this domain is frequently fragmentary — headlines,
