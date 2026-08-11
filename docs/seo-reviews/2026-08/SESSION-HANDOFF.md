@@ -30,7 +30,52 @@ merged tree.** Remote branch NOT deleted — branch deletion always halts and as
 | everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | OPEN (#1) — not touched |
 | Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — `55bd850` → `b86968b` staged in the worktree only, **NOT committed**, per instruction |
 
-**No gitlinks bumped. Nothing written to n8n. `main` moved FIVE times — re-read every SHA above.**
+**No gitlinks bumped. Nothing written to n8n. `main` moved SIX times — re-read every SHA above.**
+
+#### ⚠️ carousel `main` moved a SIXTH time, AFTER my merge, from another session
+
+`origin/main` is **`c4dfb81`**, not `b86968b`. Two commits landed on top of mine while I was closing
+out — `7b2a084` (PR #8, "the JS twin labelled HR6 differently than Python, unguarded") and `c4dfb81`
+("the structured-carrier scan was repr-based and unsound") — and **they touch my files**:
+`social_qa_gate.n8n.js`, all five `deploy/PENDING-2026-08-10/*.js`, `social_qa.py`.
+
+**Verified on `c4dfb81`, in a detached worktree:** my six FTC suites all pass, `mutants.sh` reports
+**32 rows all killed with the control GREEN**, and `deploy/build-pending.py --check` is drift-free —
+so whoever landed #8 regenerated PENDING correctly and did not reopen the class.
+
+**A `run-checks.sh` run in that worktree shows `19 passed / 1 skipped / 7 failed`, and those 7 are
+ENVIRONMENTAL, not a regression.** Confirmed by running one directly: `test_destination_registry.py`
+dies on `../pinterest-produce/tests/fixtures/.../waypoint-url-inventory.md`, absent because a temp
+worktree has no siblings. The same suite passes in the real checkout (`RESULT: PASS (60 records)`).
+This is a live demonstration of exactly why the pre-push hook gates only the six sibling-free suites
+rather than all of `run-checks.sh` — gating the aggregate would block every push from a worktree or a
+fresh clone, and `--no-verify` is banned.
+
+**The local carousel checkout is on `main` at `b86968b`, one merge BEHIND `origin/main`.** Left that
+way deliberately: the parent's dirty gitlink points at `b86968b`, and fast-forwarding would silently
+change what that uncommitted gitlink diff says while I was told not to bump it. Fast-forward first
+thing next session.
+
+#### Could NOT verify — stated, not implied
+
+- **PR #8 / `c4dfb81` were not reviewed.** I verified only that they leave my gate green; I did not
+  read their HR6 logic. Another session owns them.
+- **`run-checks.sh` 27/27 was observed at `b86968b` in the real checkout**, not at `c4dfb81`. At
+  `c4dfb81` only the six FTC suites + the 32 mutants were run (in a worktree).
+- **The other three open PRs were not re-read this session** — YouTube-Video #21 (`6fe4f3d`) and
+  everyx-engine #1 (`d7ce799`) are carried from the fourth session's table, **not re-observed**.
+  x-produce #5's red state I did observe (exit 1) but did not fix.
+- **No live n8n node was written or read by me this session.** Facebook and instagram **still have
+  never been read by anyone.** The stage-2 reviewer reported reading the live pinterest receiver
+  read-only and finding it still pre-fix; that is *its* observation, not mine.
+- **Whether Gravity Claw's stale vendored copy is ever invoked** in production is unverified. It has
+  callers in that tree (`plan.py`, `pipeline.py`) and still carries `[^.\n]{0,18}` at line 27.
+- **The junction figure (2 of 11) is weak and should not be acted on** — no real carousel copy exists
+  in the repo, and the measuring script was NOT committed, so it is not reproducible as it stands.
+- **Three memory files were written/updated** (`check-polarity-decides-window-direction`,
+  `four-ways-a-green-test-proves-nothing`, `python-js-whitespace-class-diverges`). Those live under
+  `~/.claude/projects/.../memory/` and are **machine-local — not in git**, so they do not travel to
+  the Mini without the backup script.
 
 **⚠️ Third repo running where "a small bounded fix" was the wrong premise, and the deepest one yet.**
 PR #3 as it stood widened three bounded gaps; the rework is ~3,600 lines across 18 files. The class
