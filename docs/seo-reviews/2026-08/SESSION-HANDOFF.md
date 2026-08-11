@@ -28,7 +28,7 @@ merged tree.** Remote branch NOT deleted — branch deletion always halts and as
 | waypoint-compliance | `main` | `3f93142` | ✅ #1/#2/#3 merged; **not reopened**, `_norm_ws` not copied in — verified clean |
 | YouTube-Video | `pr21` | `6fe4f3d` | OPEN (#21) — not touched; ⚠ still checked out OFF `main` |
 | everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | OPEN (#1) — not touched |
-| Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — `55bd850` → `b86968b` staged in the worktree only, **NOT committed**, per instruction |
+| Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — `55bd850` → `8da3935` in the worktree only, **NOT committed**, per instruction |
 
 **No gitlinks bumped. Nothing written to n8n. `main` moved SIX times — re-read every SHA above.**
 
