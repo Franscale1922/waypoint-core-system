@@ -216,14 +216,32 @@ The false positive Codex identified is accepted and pinned by a test.
 **The transferable lesson: reproducing a reviewer's finding is not the same as its fix being right.**
 This one reproduced perfectly and still pointed the wrong way. Weigh the polarity before acting.
 
-#### Not fixed, deliberately
+#### The one thing left out — and it was fixed straight after, as PR #2 (`c9464f0`)
 
-The older `/ - /` rule flags every **indented** markdown bullet as a dash — **330 hits across 47 of
-63 real articles, every one a bullet, not one a real dash**. Confirmed pre-existing on `origin/main`
-and pinned by a test so it is not mistaken for this change's doing. It is a fail-**closed** defect
-and repairing it *weakens* a HARD gate, so it is a policy call, tracked separately. Nothing is
-currently broken by it: `waypoint-video` drops this gate for its own `lint-copy.mjs`, and this
-repo's content is gated by aeo-audit — the 330 figure is what any *new* markdown consumer would hit.
+The older `/ - /` rule flagged every **indented** markdown bullet as a dash — **330 hits across 47 of
+63 files, every one a bullet, not one a real dash**. It was excluded from #1 on purpose: it is a
+fail-**closed** defect and repairing it *weakens* a HARD gate, so it is a policy call, not a
+fail-open fix. Surfaced rather than smuggled in, and pinned by a test so it could not be mistaken
+for #1's doing.
+
+**Kelsey took the call the same day and it merged as #2.** `atLineStart()` exempts the bullet
+marker, consuming the exported `LINE_TERMINATORS` rather than re-deriving a set, and testing it
+*before* `\s` — because `\s` does not match NEL. Re-measured against the same 63 files on
+`c9464f0`: **11 failing, down from 47, and all 11 are genuine em/en dash characters** with zero
+hyphen-rule involvement. None is in the published 45 (`content/articles/`) — they are ops docs,
+drafts, the newsletter and social drafts. The gate now reports true positives only.
+
+**The harness that proves all of this is now in the repo** — `test/mutants.sh` / `npm run
+test:mutants`, added as #3 (`3f93142`). #1 and #2 both claimed "verified by mutation" while the
+instrument sat in a session scratchpad. 17 rows, and it pins **both** directions of the polarity
+trade-off so neither the original fail-open nor the reviewed-out over-correction can return quietly.
+Copy this shape into the four remaining repos rather than re-deriving a throwaway each time.
+
+**Worth noting how the two PRs interact**, because it is the polarity lesson again: #1 *widened*
+prohibitive windows, #2 *narrowed* one. Both are correct, because #1's targets were failing open and
+#2's was failing closed on a rule nobody would keep switched on. Verified on `c9464f0` that #2 cost
+#1 nothing: jargon sweep still 0/128, all 7 starters still fire their own rule, both HARD claim
+fail-opens still caught, the end-of-line dash and real mid-line dashes still caught. 96 assertions.
 
 #### Verification
 

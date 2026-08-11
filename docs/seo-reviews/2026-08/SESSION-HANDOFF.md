@@ -46,16 +46,19 @@ a superset of `[^.\n]` and lost detections `origin/main` makes (`"Can you earn? 
 caught became missed). Reverted to `[^.]`, false positive accepted and pinned. **Reproducing a
 reviewer's finding is not the same as its fix being right.**
 
-**Deliberately NOT fixed, tracked separately:** the older `/ - /` rule flags every **indented**
-markdown bullet — 330 hits across 47 of 63 real articles, all bullets, none a real dash. Pre-existing
-on `origin/main`, pinned by a test, fail-**closed**, and repairing it weakens a HARD gate.
+**Left out of #1 on purpose, then fixed as #2 (`c9464f0`) — `main` has moved past my merge.** The
+older `/ - /` rule flagged every **indented** markdown bullet as a dash (330 hits / 47 of 63 files,
+none a real dash). It was excluded because it is fail-**closed** and repairing it weakens a HARD
+gate — a policy call, which Kelsey then took. Re-measured on `c9464f0`: **11 failing, all 11 genuine
+em/en dashes**, none in the published 45. Verified #2 cost #1 nothing (jargon 0/128, starters 0
+missed, both HARD claim fail-opens still caught, 96 assertions green).
 
 #### Exact state at close — fourth session, 2026-08-10
 
 | repo | branch | HEAD | state |
 |---|---|---|---|
 | waypoint-core-system | `main` | this commit | docs only; `docs/seo-reviews` is in `vercel.json`'s `ignoreCommand`, so no rebuild and no prod `db push` |
-| waypoint-compliance | **`main`** | **`faec5e9`** | ✅ **PR #1 MERGED**; restored to `main`, re-verified after fetch |
+| waypoint-compliance | **`main`** | **`3f93142`** | ✅ **#1 (`faec5e9`), #2 (`c9464f0`), #3 (`3f93142`) all MERGED**; `main` re-verified at `3f93142` — 96 assertions, 17 mutants all killed |
 | waypoint-carousel | `fix/ftc-gate-fail-open` | `9d26709` | OPEN (#3) — not touched this session |
 | x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | OPEN (#5) — not touched |
 | YouTube-Video | `pr21` | `6fe4f3d` | OPEN (#21) — not touched; ⚠ still checked out OFF `main` |
@@ -66,9 +69,27 @@ on `origin/main`, pinned by a test, fail-**closed**, and repairing it weakens a 
 ⚠ **Address our PRs BY NUMBER.** Those repos hold other people's open PRs too — x-produce has 4 open
 and YouTube-Video 3. "The open PR" is ambiguous there.
 
+**The mutation harness is now IN THE REPO** — `test/mutants.sh`, or `npm run test:mutants` (#3,
+`3f93142`). #1 and #2 both claimed "verified by mutation" and neither shipped the instrument; it sat
+in a session scratchpad, one `rm -rf` from making the test-quality claim of two merged PRs
+unreproducible. 17 rows, both directions of the polarity trade-off pinned. **`ANCHOR FAILED` is not
+a kill** — it means the code moved; the harness exits non-zero on it. **Do this in the remaining
+four repos too** rather than re-deriving a throwaway each time.
+
 **Could NOT verify — stated, not implied:**
 - **The four remaining PRs were not re-read this session** beyond confirming they are open. Their
   HEADs above are carried from the third-session table, not re-observed.
+- **`main` moved under me between sessions and I nearly wrote a false doc.** My close-out said the
+  indented-bullet FP was "not fixed, tracked separately"; PR #2 had already merged. Anything below
+  this line about another repo's state is a **snapshot** — re-read before acting, especially
+  waypoint-compliance, which took three merges in one day.
+- **I did not review PR #2's diff** beyond confirming it costs #1 nothing and that its own tests and
+  17 mutants pass. Its reasoning is in its commit message; I did not independently re-derive the
+  330/47-of-63 measurement it cites, though I did re-measure the post-fix number (11 of 63).
+- **The 11 remaining em-dash failures** are all genuine em/en dash characters in ops docs, drafts,
+  downloads, newsletter and social copy — **none in the published 45** (`content/articles/`). Those
+  files are not gated by this engine today, so nothing is blocked; it is the correct verdict, not a
+  residual.
 - **`waypoint-compliance` has no CI and no local hooks** (`gh pr checks 1` → none, no `core.hooksPath`,
   no `.git/hooks`), so local runs were the only gate. The squash-merge passed through no hook either.
 - **The false-positive corpus is 63 articles / 714k chars** of this repo's content. Real and 44× the
