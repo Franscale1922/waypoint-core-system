@@ -10,24 +10,25 @@ first. The PR #21 section that used to head this file is now history and is summ
 
 ---
 
-## ⏳ Tier A part 3 — `waypoint-carousel` #3 REWORKED, pushed, NOT merged (2026-08-10, fifth session)
+## ✅ Tier A part 3 — `waypoint-carousel` #3 MERGED (2026-08-10, fifth session)
 
-**Branch `fix/ftc-gate-fail-open`, HEAD `49cea5a`, pushed. PR #3 is OPEN, `MERGEABLE`/`CLEAN`,
-+4,326/-131 across 20 files, zero commits behind `main` (`fbe7de3`) as of close.** Nothing was
-merged this session. 3 PRs remain after it.
+**Merged as `b86968b` on `main` (squash, +4,326/-131 across 20 files); the repo is restored to `main`
+and the merged state was re-verified AFTER `git fetch` — run-checks 27/27, `mutants.sh` 32 rows all
+killed, PENDING drift-free, and all four headline fail-opens re-driven and confirmed closed on the
+merged tree.** Remote branch NOT deleted — branch deletion always halts and asks. **3 PRs remain.**
 
 #### Exact state at close — fifth session, 2026-08-10
 
 | repo | branch | HEAD | state |
 |---|---|---|---|
 | waypoint-core-system | `main` | this commit | docs only; `docs/seo-reviews` is in `vercel.json`'s `ignoreCommand`, so no rebuild and no prod `db push` |
-| waypoint-carousel | `fix/ftc-gate-fail-open` | **`49cea5a`** | ⏳ **PR #3 OPEN**, pushed, `MERGEABLE`/`CLEAN`. `origin/main` = `fbe7de3` |
+| waypoint-carousel | **`main`** | **`b86968b`** | ✅ **PR #3 MERGED**; restored to `main`, re-verified after fetch (27/27, 32 mutants killed) |
 | x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | OPEN (#5) — **now expected-RED**, must regenerate off carousel. `CLAUDE.md` dirty (not mine) |
 | pinterest-produce | `fix/rejection-advances-rotation` | `d667f02` | not touched; `CLAUDE.md` + an untracked fixture dir dirty (not mine) |
 | waypoint-compliance | `main` | `3f93142` | ✅ #1/#2/#3 merged; **not reopened**, `_norm_ws` not copied in — verified clean |
 | YouTube-Video | `pr21` | `6fe4f3d` | OPEN (#21) — not touched; ⚠ still checked out OFF `main` |
 | everyx-engine | `fix/coppa-scanner-fail-open` | `d7ce799` | OPEN (#1) — not touched |
-| Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — not bumped, per instruction |
+| Social Media (parent) | `feat/consult-lane` | `3ac0f1d` | **gitlink left DIRTY on purpose** — `55bd850` → `b86968b` staged in the worktree only, **NOT committed**, per instruction |
 
 **No gitlinks bumped. Nothing written to n8n. `main` moved FIVE times — re-read every SHA above.**
 
