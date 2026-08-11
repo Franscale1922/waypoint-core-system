@@ -22,7 +22,7 @@ merged tree.** Remote branch NOT deleted — branch deletion always halts and as
 | repo | branch | HEAD | state |
 |---|---|---|---|
 | waypoint-core-system | `main` | this commit | docs only; `docs/seo-reviews` is in `vercel.json`'s `ignoreCommand`, so no rebuild and no prod `db push` |
-| waypoint-carousel | **`main`** | **`b86968b`** | ✅ **PR #3 MERGED**; restored to `main`, re-verified after fetch (27/27, 32 mutants killed) |
+| waypoint-carousel | **`main`** | **`8da3935`** | ✅ **#3 and #9 MERGED, ZERO open PRs**; on `main`, clean, re-verified (27/27, 32 mutants killed) |
 | x-produce | `fix/ftc-gate-fail-open` | `3b74fad` | OPEN (#5) — **now expected-RED**, must regenerate off carousel. `CLAUDE.md` dirty (not mine) |
 | pinterest-produce | `fix/rejection-advances-rotation` | `d667f02` | not touched; `CLAUDE.md` + an untracked fixture dir dirty (not mine) |
 | waypoint-compliance | `main` | `3f93142` | ✅ #1/#2/#3 merged; **not reopened**, `_norm_ws` not copied in — verified clean |
@@ -56,22 +56,42 @@ way deliberately: the parent's dirty gitlink points at `b86968b`, and fast-forwa
 change what that uncommitted gitlink diff says while I was told not to bump it. Fast-forward first
 thing next session.
 
+#### Closed at the very end of the session — two of the gaps above are now shut
+
+**PR #9 merged (`8da3935`): the junction measurement is committed and reproducible.** The "2 of 11
+payloads, 18%" figure I handed Kelsey came from a scratch script that was never saved — the same
+defect the review caught elsewhere in this work, a number quoted as evidence that nobody can
+re-derive. `measure_junction_cost.py` reproduces it exactly and prints the caveat as part of the
+result. It does **not** wire the stricter variant into `lint.py` behind a flag (an unused switch in a
+compliance gate gets turned on by accident), and it is named `measure_*` so `run-checks.sh` does not
+treat it as a suite. **carousel now has ZERO open PRs.**
+
+**The three remaining PRs were re-observed, and the carried HEADs were all correct:**
+YouTube-Video **#21 `6fe4f3d`**, everyx-engine **#1 `d7ce799`**, x-produce **#5 `3b74fad`** — all
+OPEN. (YouTube-Video also has #22 and #5 open, x-produce #4/#2/#1 — **address ours by NUMBER**.)
+
+**carousel is now on `main` at `8da3935`, clean and up to date** (fast-forwarded past the sixth move
+and then past #9). Re-verified there: `run-checks.sh` **27 passed / 0 skipped / 0 failed**,
+`mutants.sh` **32 rows all killed**. The parent gitlink is still dirty and **still uncommitted** —
+it now shows `55bd850` → `8da3935`.
+
 #### Could NOT verify — stated, not implied
 
 - **PR #8 / `c4dfb81` were not reviewed.** I verified only that they leave my gate green; I did not
   read their HR6 logic. Another session owns them.
 - **`run-checks.sh` 27/27 was observed at `b86968b` in the real checkout**, not at `c4dfb81`. At
   `c4dfb81` only the six FTC suites + the 32 mutants were run (in a worktree).
-- **The other three open PRs were not re-read this session** — YouTube-Video #21 (`6fe4f3d`) and
-  everyx-engine #1 (`d7ce799`) are carried from the fourth session's table, **not re-observed**.
-  x-produce #5's red state I did observe (exit 1) but did not fix.
+- **x-produce #5's red state I observed (exit 1) but did not fix** — it must regenerate its deploy
+  copy off carousel's merged source. All three remaining PRs were re-observed at close (see above);
+  what I did NOT do is read their diffs.
 - **No live n8n node was written or read by me this session.** Facebook and instagram **still have
   never been read by anyone.** The stage-2 reviewer reported reading the live pinterest receiver
   read-only and finding it still pre-fix; that is *its* observation, not mine.
 - **Whether Gravity Claw's stale vendored copy is ever invoked** in production is unverified. It has
   callers in that tree (`plan.py`, `pipeline.py`) and still carries `[^.\n]{0,18}` at line 27.
-- **The junction figure (2 of 11) is weak and should not be acted on** — no real carousel copy exists
-  in the repo, and the measuring script was NOT committed, so it is not reproducible as it stands.
+- **The junction figure (2 of 11) is now reproducible (PR #9) but still WEAK** — no real carousel
+  copy exists in this repo, so it bounds nothing about production. Re-run
+  `measure_junction_cost.py` against vault copy before deciding.
 - **Three memory files were written/updated** (`check-polarity-decides-window-direction`,
   `four-ways-a-green-test-proves-nothing`, `python-js-whitespace-class-diverges`). Those live under
   `~/.claude/projects/.../memory/` and are **machine-local — not in git**, so they do not travel to
