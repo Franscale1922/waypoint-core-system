@@ -28,14 +28,26 @@ must **never be asked a git question**. Safety comes from how I behave, not from
   push:** whimsey-and-grace, Bizconnect Carribean (sic — that is the directory name), Timeblock,
   **local-websites** (see the warning below), waypoint-core-system. (**Live but push-safe** — deploy is a
   manual step, a normal push is fine: Candidate Navigator, Waypoint Navigator OS, both Firebase.)
-  ⚠️ **local-websites is the case that breaks the committed-config test, so never clear it by scanning the
-  file tree:** it has **no `vercel.json` and no `netlify.toml` anywhere**, yet its prospect sites are
+  ⚠️ **local-websites is TWO deploy surfaces in one directory, and the committed-config test misses both.
+  Never clear it by scanning the file tree.**
+  (a) **The parent repo itself** has no `vercel.json` and no `netlify.toml`, yet its prospect sites are
   **dashboard-linked** Vercel projects that build on every PR — measured 2026-08-08, when PR #13 ran green
-  checks for `premier-electrical-svc` and `psi-automation`. (This entry previously read
-  `local-websites/heart-strings`; **there is no `heart-strings` directory in that repo** — corrected
-  2026-08-08.) `tools/`, docs and comment changes there are output-identical for those sites, so they need
-  no go-live surfacing — but the rebuild is real, so never report "no deploy happened". To read a repo's
-  true surface, look at the checks on an open PR (`gh pr checks <n>`), not the file tree.
+  checks for `premier-electrical-svc` and `psi-automation`. `tools/`, docs and comment changes there are
+  output-identical for those sites, so they need no go-live surfacing — but the rebuild is real, so never
+  report "no deploy happened".
+  (b) **`local-websites/heart-strings` DOES exist and is its own live production site.** A 2026-08-08 edit
+  claimed "there is no `heart-strings` directory in that repo"; that was **wrong and is corrected
+  2026-08-14**. The directory is **gitignored by the parent** (`local-websites/.gitignore:79`), so
+  `git ls-files` in the parent finds nothing — **untracked is not absent**, and that is the whole trap.
+  It is a **separate repo** (`Franscale1922/heartstrings-nwa`) with its **own committed `vercel.json`**,
+  and **every push to its `main` deploys to production at `heartstringsnwa.org` instantly, docs-only
+  commits included** (no `ignoreCommand`; its `buildCommand` is `npm run check`, so a guard failure is a
+  failed deploy). Branch pushes are Previews and are safe. Treat merging to its `main` as a product
+  decision and surface it. **`stamp-git-safety.sh --dry-run` already lists it as
+  `local-websites/heart-strings  LIVE`** — the script that propagates this rule has always known, so when
+  the prose and the manifest disagree, believe the manifest.
+  To read a repo's true surface, look at the checks on an open PR (`gh pr checks <n>`), or the stamp
+  manifest — not the file tree.
   **The web-app heuristic is a reason to
   CHECK, never to list — Franchise Conduit was listed as auto-deploy on it and is NOT:** measured 2026-08-06,
   zero deployments across its entire history, and no `vercel.json`, no workflow, no webhook, so nothing
