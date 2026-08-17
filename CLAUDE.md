@@ -367,10 +367,23 @@ it is cheaper and catches correctness bugs before stage 2 has to.
   `codex exec --sandbox read-only - < /path/to/review-prompt.txt` and say in chat
   that the run is unwrappered. If Codex is unavailable entirely, say so and go to
   stage 2 — never drop the external pass silently.
-- **Scope — skip stage 1** for docs, gitlink/deploy bumps, ops and content files,
-  and one-line mechanical edits: an external review there is latency and noise,
-  and needlessly ships my code to OpenAI. **Skipping Codex never skips stage 2** —
-  a governance-bearing change gets the Claude reviewer even when it is pure prose.
+- **Scope — stage 1 runs on prose too. The old docs/ops carve-out is RETIRED
+  (2026-08-17).** Docs, research, design contracts, governance edits, locks,
+  handoffs and content files all get Codex, not just code. My highest-value
+  artifacts are prose, and an unreviewed prose defect propagates into every later
+  session that trusts it. Worked example: the 2026-08-17 Sweetgrass Refero-gate
+  session skipped Codex under the old carve-out, and the in-session self-review
+  that replaced it still found three real defects — an inflated tally, a sampling
+  limit overstated as corpus-wide absence, and a claim contradicted by the
+  reviewer's own screenshot. The carve-out was not saving latency; it was
+  deferring the finding.
+  **Still skippable, and say so in chat with the reason:** gitlink/submodule
+  bumps, deploy-only commits, and pure typo/whitespace/formatting edits that
+  change no claim, number, status, decision, or instruction. Anything touching a
+  factual claim, tally, gate decision, authority statement, or agent-facing
+  instruction is in scope regardless of file type. Thin diff? Run it anyway and
+  say plainly that thin diffs give thin findings.
+  **Skipping Codex never skips stage 2.**
 - **Feed it the original request verbatim + the diff**, and prompt it to find
   fault, not to bless. Tell it not to summarize the code.
 - **Check the payload before sending.** It leaves the machine: grep the diff for
@@ -384,11 +397,32 @@ it is cheaper and catches correctness bugs before stage 2 has to.
   Reproduce it, fix it, or decline it with a stated reason.
 
 **Stage 2 — Claude: "is this what was asked, and are the calls defensible?"**
-Runs after Codex, on the post-fix state. Use a fresh subagent where the session
-allows one; where agents are forbidden, run it in-session and **label it plainly as
-self-review**, the biased last resort — but never skip stage 2 on that basis. For
-non-code work needing an adversarial pass (a plan, a governance edit, research),
-stage 2 alone is the review.
+Runs after Codex, on the post-fix state. For non-code work needing an adversarial
+pass (a plan, a governance edit, research), stage 2 is still required — but it is
+no longer *alone*, because stage 1 now covers prose as well.
+
+**Stage 2 MUST be independent. The in-session self-review fallback is RETIRED
+(2026-08-17).** It runs in a **fresh subagent** with its own context, which gets
+the original request verbatim, the diff, and the governing files — and reaches its
+own conclusions rather than confirming mine.
+
+- **Do not brief the reviewer on my conclusions.** Give it the request and the
+  artifacts; never tell it what I decided, why I think it's right, or which
+  findings I already dismissed. Priming destroys the independence this buys.
+- **If I genuinely cannot spawn a subagent** — the harness forbids it, or Kelsey
+  has restricted agent use — I **stop and say so**, and report the work as
+  *review-incomplete*. Kelsey then decides: accept it, run the review in a fresh
+  session, or lift the restriction. I do **not** quietly downgrade to reviewing
+  my own work.
+- If asked mid-flight to make reviews independent, I re-run stage 2 properly
+  rather than treat an earlier self-review as sufficient.
+- Independence applies to the *review*, not the fixes: I still verify each
+  finding against the real code or document, then fix it or decline it with a
+  stated reason.
+
+Why: a session reviewing its own work shares every assumption that produced the
+work, so it structurally cannot see errors that come from those assumptions. It
+reliably catches slips and reliably misses premises.
 
 **Between them the two stages must deliver all five.** Stage 1 can only do 3–5;
 **1 and 2 are stage 2's alone**, because Codex never sees the original request,
