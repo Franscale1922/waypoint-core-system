@@ -345,7 +345,7 @@ Never at less than the effort the work itself got.
 
 ### Two reviewers, in order: Codex first, then Claude — neither replaces the other
 
-**For any change to CODE the adversarial review has two stages, and BOTH run.**
+**For any substantive change — code AND prose alike — the adversarial review has two stages, and BOTH run.**
 Stage 1 is the OpenAI Codex CLI; stage 2 is a Claude reviewer. Not belt-and-braces:
 on PR #44 the session declared the review done on Codex alone, and the Claude pass
 afterwards still found two Highs — including a coverage claim already given to
@@ -425,8 +425,10 @@ work, so it structurally cannot see errors that come from those assumptions. It
 reliably catches slips and reliably misses premises.
 
 **Between them the two stages must deliver all five.** Stage 1 can only do 3–5;
-**1 and 2 are stage 2's alone**, because Codex never sees the original request,
-CLAUDE.md, memory, or this conversation:
+**1 and 2 are stage 2's alone.** Codex is *given* the original request verbatim (see
+the payload rule above), but it never sees CLAUDE.md, the source-of-truth locks,
+memory, the issue history, or this conversation — so it cannot judge governance,
+and it cannot audit a claim against a tool result it never observed:
 
 1. **Audit claims against evidence.** Every "passing / works / done / verified"
    points to an actual tool result from this session. Re-run the tests fresh; treat
