@@ -108,3 +108,12 @@ jobs:
       # client, so it is safe under `npm ci --ignore-scripts`.
       - name: Verify schema-drift report (unit tests)
         run: npx vitest run --project unit tests/unit/schema-drift-report.test.ts
+      # /llms.txt, the generated agent index, and the route-inventory gate behind
+      # it. Listed by name for the same reason as every job above. It matters here
+      # because the drift this catches — a page added with no entry in
+      # `staticPages` — arrives through ordinary PRs, and the squash-merge commit
+      # GitHub creates never passes through .githooks/pre-push. Pure filesystem
+      # walk plus content-module reads: no database, no Prisma client, so it is
+      # safe under `npm ci --ignore-scripts`.
+      - name: Verify llms.txt index and route inventory (unit tests)
+        run: npx vitest run --project unit tests/unit/llms-index.test.ts

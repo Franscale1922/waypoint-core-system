@@ -24,17 +24,30 @@ const APP_DIR = join(ROOT, "src", "app");
 // src/data and the markdown view generators. Scan these too so a non-www URL
 // added there can't escape the canonical-host guard below.
 const DATA_DIR = join(ROOT, "src", "data");
-const MARKDOWN_VIEWS = join(ROOT, "src", "lib", "markdown-views.ts");
+// Named individually rather than by walking all of src/lib: that directory also
+// holds src/lib/pdf-magnet-email.ts, whose non-www URL sits in an email body and
+// is legitimately exempt. Add a file here when it starts emitting site links.
+const EXTRA_FILES = [
+  join(ROOT, "src", "lib", "markdown-views.ts"),
+  join(ROOT, "src", "lib", "llms-index.ts"),
+  join(ROOT, "src", "lib", "markdown-negotiable.ts"),
+];
 const STRUCTURED_DATA = join(APP_DIR, "lib", "structured-data.ts");
 
 // Paths whose non-www URLs are legitimately out of scope (email bodies, the RSS
-// fallback, agent plaintext, server-only job/handler code — not page schema).
+// fallback, server-only job/handler code — not page schema).
+//
+// /llms.txt was exempt here until 2026-08-20 as "agent plaintext". That was the
+// wrong call and it cost a real defect: the exemption is precisely why a non-www
+// /book link sat in the live llms.txt, putting a 301 hop on the URL an agent is
+// most likely to follow. The route now builds every link from SITE_URL and holds
+// no literal origin, so it is covered like everything else. Note this pattern
+// never matched llms-full.txt, which was always covered.
 const NON_WWW_EXEMPT = [
   /\/emails\//,
   /\/api\//,
   /\/inngest\//,
   /feed\.xml/,
-  /llms\.txt/,
 ];
 
 const errors = [];
@@ -51,7 +64,7 @@ function walk(dir) {
   return out;
 }
 
-const files = [...walk(APP_DIR), ...walk(DATA_DIR), ...(existsSync(MARKDOWN_VIEWS) ? [MARKDOWN_VIEWS] : [])];
+const files = [...walk(APP_DIR), ...walk(DATA_DIR), ...EXTRA_FILES.filter((f) => existsSync(f))];
 
 // 1) No self-serving review/rating markup reintroduced on the business entity.
 //    Match the property-assignment / typed-node FORM (not the word in a comment),

@@ -152,6 +152,26 @@ import JsonLd from "../../components/JsonLd";
 - **RFC 8288 `Link` header** (`next.config.ts`): advertises `/llms.txt` via
   `rel="describedby"`, scoped to HTML routes only (excludes `_next`, `api`,
   dotted asset paths, and `/llms.txt` itself).
+- **`/llms.txt` is generated, not written** (`src/lib/llms-index.ts`, served by
+  `src/app/llms.txt/route.ts`). The hand-typed version drifted 13 routes behind
+  the site and linked none of the articles. Article links, category groupings,
+  guide links and every count now derive from the content modules, so adding an
+  article, industry, cost guide or financing guide updates the index with no code
+  change. Write no count as a literal.
+  - **The one hand-maintained part is `staticPages`**, because a page's one-line
+    description is editorial. It is held honest by `tests/unit/llms-index.test.ts`,
+    which walks the real App Router tree via `scripts/lib/route-inventory.mjs` and
+    fails when a page exists with no entry, or an entry has no page. Add a page,
+    add its entry.
+  - **`.md` is appended from what `/api/md` RENDERS, never from
+    `isMarkdownNegotiable`.** That predicate is the middleware's PREFIX rewrite
+    rule and answers yes for every path under `/resources/`; the renderer is a
+    closed set. Using the prefix test to decide where to advertise markdown
+    published a dead `/resources/archive.md` while the whole suite stayed green.
+    `markdownRenderablePaths()` is the set to extend if a new markdown view ships.
+  - The route scan runs at TEST time, not runtime: `src/app/**/page.tsx` is source
+    rather than a traced runtime asset, so reading it inside the handler would
+    survive a build and return nothing on the first ISR regeneration.
 - **DNS-AID** (DNS-based agent discovery): **intentionally not implemented** —
   the site runs no A2A/MCP/agent-index endpoint to point records at; publishing
   them would advertise a capability that doesn't exist. Revisit only if a real
