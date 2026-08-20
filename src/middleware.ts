@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import { NextResponse } from "next/server";
 import { isAllowedAdmin } from "@/lib/admin-allowlist";
+import { isMarkdownNegotiable } from "@/lib/markdown-negotiable";
 
 // NOTE ON THE AUTH MODEL
 // ----------------------
@@ -18,21 +19,6 @@ import { isAllowedAdmin } from "@/lib/admin-allowlist";
 //   2. `authorized` runs for EVERY matched path, and the matcher below includes the public
 //      marketing surface (/resources, /glossary, /faq, /industries) for markdown negotiation.
 //      Returning a redirect Response there would 302 the entire public site to /admin/login.
-
-// Content-rich pages that have a markdown representation (src/app/api/md).
-// Articles, the resources index + category pages, the glossary, and the FAQ.
-function isMarkdownNegotiable(pathname: string): boolean {
-  return (
-    pathname === "/resources" ||
-    pathname.startsWith("/resources/") ||
-    pathname === "/glossary" ||
-    pathname === "/faq" ||
-    pathname === "/franchise-financing" ||
-    pathname.startsWith("/franchise-financing/") ||
-    pathname === "/industries" ||
-    pathname.startsWith("/industries/")
-  );
-}
 
 // An agent opts into markdown by sending `Accept: text/markdown`. Browsers send
 // `text/html,...` and never match, so HTML stays the default for humans.

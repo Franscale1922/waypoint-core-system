@@ -18,20 +18,27 @@ import { faqs } from "@/data/faq";
 import { industries, getIndustry, getIndustryCost } from "@/data/industries";
 import { financingMethods, financingFaqs, financingGuides, getFinancingGuide } from "@/data/financing";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://www.waypointfranchise.com";
+// Trailing slashes are stripped because NEXT_PUBLIC_SITE_URL is an unvalidated
+// string: with "https://www.waypointfranchise.com/" set, every URL built here
+// became ".com//<path>". Normalising at the source rather than at each consumer
+// is deliberate - a consumer-side fix left the 45 article links (built through
+// articleBullet, below) still doubled, and covers /llms-full.txt, the [Source]
+// links and the glossary related-links in one place.
+export const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL || "https://www.waypointfranchise.com"
+).replace(/\/+$/, "");
 
 // Category slugs are derived from article frontmatter, not hardcoded, so a new
 // category (e.g. a new `category:` value on an article) is picked up with no
 // code change. "Going Deeper" → "going-deeper", matching the React page routes.
-function slugifyCategory(name: string): string {
+export function categorySlug(name: string): string {
   return name.toLowerCase().replace(/\s+/g, "-");
 }
 
 /** Resolve a /resources/<slug> category segment to its display name, or null. */
 export function categoryNameFromSlug(slug: string): string | null {
   for (const name of Object.keys(getArticlesByCategory())) {
-    if (slugifyCategory(name) === slug) return name;
+    if (categorySlug(name) === slug) return name;
   }
   return null;
 }
@@ -42,7 +49,9 @@ export function estimateTokens(text: string): number {
 }
 
 // Links point at the .md variant so an agent following a link stays in markdown.
-function articleBullet(a: Article): string {
+// Exported because /llms.txt lists the same articles: one bullet shape, defined
+// once, so the index and the markdown views can never drift apart.
+export function articleBullet(a: Article): string {
   return `- [${a.title}](${SITE_URL}/resources/${a.slug}.md): ${a.excerpt}`;
 }
 
